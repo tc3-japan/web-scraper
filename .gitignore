@@ -1,0 +1,16 @@
+# Gradle
+.gradle/
+/gradle/
+
+# IDE
+.idea/
+*.iml
+/out/
+
+# Output
+/amazon/
+/build/
+
+# Work
+/work/
+

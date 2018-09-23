@@ -1,0 +1,12 @@
+logging:
+  level:
+    org.apache.http: off
+    com.gargoylesoftware: off
+
+amazon:
+  #username: ${AMAZON_USERNAME:username}
+  #password: ${AMAZON_PASSWORD:password}
+  username: darboux@mac.com
+  password: dirichlet#ex
+  url: https://www.amazon.com/
+  historyUrl: https://www.amazon.com/gp/your-account/order-history?opt=ab&digitalOrders=1&unifiedOrders=1&returnTo=&orderFilter=

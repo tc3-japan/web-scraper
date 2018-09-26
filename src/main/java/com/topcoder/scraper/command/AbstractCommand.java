@@ -1,9 +1,10 @@
 package com.topcoder.scraper.command;
 
 import com.topcoder.scraper.module.IBasicModule;
+import org.springframework.boot.ApplicationArguments;
+
 import java.util.List;
 import java.util.Optional;
-import org.springframework.boot.ApplicationArguments;
 
 /**
  * Abstract command class

@@ -3,12 +3,13 @@ package com.topcoder.scraper.command.impl;
 import com.topcoder.scraper.command.AbstractCommand;
 import com.topcoder.scraper.exception.AuthenticationFailure;
 import com.topcoder.scraper.module.AuthenticationModule;
-import java.io.IOException;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Authentication Command

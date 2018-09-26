@@ -9,9 +9,10 @@ import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
 import com.topcoder.scraper.config.AmazonProperty;
 import com.topcoder.scraper.module.AuthenticationModule;
 import com.topcoder.scraper.service.WebpageService;
-import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.io.IOException;
 
 /**
  * Amazon implementation for AuthenticationModule

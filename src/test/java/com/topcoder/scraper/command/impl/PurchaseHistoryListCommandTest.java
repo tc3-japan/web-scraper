@@ -1,8 +1,6 @@
 package com.topcoder.scraper.command.impl;
 
 import com.topcoder.scraper.module.PurchaseHistoryListModule;
-import java.io.IOException;
-import java.util.Collections;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,6 +10,9 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.io.IOException;
+import java.util.Collections;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;

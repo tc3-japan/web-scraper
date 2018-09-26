@@ -1,6 +1,7 @@
 package com.topcoder.scraper.service;
 
 import com.topcoder.scraper.model.PurchaseHistory;
+
 import java.util.List;
 import java.util.Optional;
 

@@ -1,12 +1,16 @@
 buildscript {
-  ext {
-    springBootVersion = '1.5.7.RELEASE'
-  }
+  ext.versions = [
+    'springBoot' : '1.5.7.RELEASE',
+    'htmlunit'   : '2.33',
+    'gson'       : '2.8.5',
+    'jackson'    : '2.9.7'
+  ]
+
   repositories {
     mavenCentral()
   }
   dependencies {
-    classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    classpath("org.springframework.boot:spring-boot-gradle-plugin:${versions.springBoot}")
   }
 }
 
@@ -25,18 +29,18 @@ repositories {
 
 
 dependencies {
-  compile('org.springframework.boot:spring-boot-starter')
-  compile('org.springframework.boot:spring-boot-starter-logging')
-  compile('org.springframework.boot:spring-boot-configuration-processor')
+  compile("org.springframework.boot:spring-boot-starter:${versions.springBoot}")
+  compile("org.springframework.boot:spring-boot-starter-logging:${versions.springBoot}")
+  compile("org.springframework.boot:spring-boot-configuration-processor:${versions.springBoot}")
 
-  compile('net.sourceforge.htmlunit:htmlunit:2.33')
-  compile('com.google.code.gson:gson:2.8.5')
+  compile("net.sourceforge.htmlunit:htmlunit:${versions.htmlunit}")
+  compile("com.google.code.gson:gson:${versions.gson}")
 
-  compile('com.fasterxml.jackson.core:jackson-databind:2.9.7')
-  compile('com.fasterxml.jackson.core:jackson-annotations:2.9.7')
-  compile('com.fasterxml.jackson.core:jackson-core:2.9.7')
+  compile("com.fasterxml.jackson.core:jackson-databind:${versions.jackson}")
+  compile("com.fasterxml.jackson.core:jackson-annotations:${versions.jackson}")
+  compile("com.fasterxml.jackson.core:jackson-core:${versions.jackson}")
 
-  testCompile('org.springframework.boot:spring-boot-starter-test')
+  testCompile("org.springframework.boot:spring-boot-starter-test:${versions.springBoot}")
 }
 
 task wrapper(type: Wrapper) {

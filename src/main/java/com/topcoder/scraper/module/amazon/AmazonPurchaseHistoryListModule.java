@@ -63,14 +63,18 @@ public class AmazonPurchaseHistoryListModule extends PurchaseHistoryListModule {
     List<PurchaseHistory> list = new LinkedList<>();
 
     // go to homepage
+    LOGGER.info("goto Home Page");
     HtmlPage homePage = webClient.getPage(property.getUrl());
+
     // go to order page
+    LOGGER.info("goto Order Page");
     HtmlPage page = ((HtmlAnchor) homePage.getFirstByXPath("//*[@id=\"nav-orders\"]")).click();
 
     while (true) {
       if (page == null || !parsePurchaseHistory(list, page, lastPurchaseHistory)) {
         break;
       } else {
+        LOGGER.info("goto Next Page");
         page = gotoNextPage(page);
       }
     }
@@ -95,6 +99,8 @@ public class AmazonPurchaseHistoryListModule extends PurchaseHistoryListModule {
       HtmlSelect select = form.getSelectByName("orderFilter");
       if (select.getSelectedIndex() + 1 < select.getOptionSize()) {
         String optionValue = select.getOption(select.getSelectedIndex() + 1).getValueAttribute();
+        String optionLabel = select.getOption(select.getSelectedIndex() + 1).getText();
+        LOGGER.info("goto " + optionLabel + " Order Page");
         return webClient.getPage(property.getHistoryUrl() + optionValue);
       }
     }

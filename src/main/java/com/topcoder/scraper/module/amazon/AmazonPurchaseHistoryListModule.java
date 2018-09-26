@@ -24,6 +24,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.topcoder.scraper.util.DateUtils.fromString;
+import static com.topcoder.scraper.util.HtmlUtils.getTextContent;
 
 /**
  * Amazon implementation of PurchaseHistoryListModule
@@ -134,15 +135,19 @@ public class AmazonPurchaseHistoryListModule extends PurchaseHistoryListModule {
    */
   private boolean parseOrder(List<PurchaseHistory> list, DomNode order, Optional<PurchaseHistory> last) {
 
-    String date = ((HtmlSpan) order.getFirstByXPath(".//div[contains(@class, \"order-info\")]/div/div/div/div[1]/div/div[1]/div[2]/span")).getTextContent().trim();
-    String total = ((HtmlSpan) order.getFirstByXPath(".//div[contains(@class, \"order-info\")]/div/div/div/div[1]/div/div[2]/div[2]/span")).getTextContent().trim();
-    String orderNumber = ((HtmlSpan) order.getFirstByXPath(".//div[contains(@class, \"order-info\")]/div/div/div/div[2]/div[1]/span[2]")).getTextContent().trim();
+    String date           = getTextContent(order.getFirstByXPath(".//div[contains(@class, \"order-info\")]/div/div/div/div[1]/div/div[1]/div[2]/span"));
+    String total          = getTextContent(order.getFirstByXPath(".//div[contains(@class, \"order-info\")]/div/div/div/div[1]/div/div[2]/div[2]/span"));
+    String orderNumber    = getTextContent(order.getFirstByXPath(".//div[contains(@class, \"order-info\")]/div/div/div/div[2]/div[1]/span[2]"));
+    String deliveryStatus = getTextContent(order.getFirstByXPath(".//div[contains(@class, \"shipment\")]/div/div[1]/div[1]/div[2]/span[1]"));
 
     List<DomNode> products = order.getByXPath(".//div[contains(@class, \"shipment\")]/div/div/div/div[1]/div/div[contains(@class, \"a-fixed-left-grid\")]");
 
     List<ProductInfo> productInfoList = products.stream().map(this::parseProduct).collect(Collectors.toList());
 
-    PurchaseHistory ph = new PurchaseHistory(orderNumber, date, total.substring(1), productInfoList, null);
+    if (total != null) {
+      total = total.substring(1);
+    }
+    PurchaseHistory ph = new PurchaseHistory(orderNumber, date, total, productInfoList, deliveryStatus);
 
     boolean isNewOrder = true;
 
@@ -169,18 +174,18 @@ public class AmazonPurchaseHistoryListModule extends PurchaseHistoryListModule {
    */
   private ProductInfo parseProduct(DomNode product) {
 
-    String name = ((HtmlAnchor) product.getFirstByXPath(".//div/div[2]/div[1]/a")).getTextContent().trim();
-    String distributor = ((HtmlSpan) product.getFirstByXPath(".//span[contains(@class, \"a-color-secondary\")]")).getTextContent().split(":")[1].trim();
-    String price = ((HtmlSpan) product.getFirstByXPath(".//span[contains(@class, \"a-color-price\")]")).getTextContent().trim();
+    String name        = getTextContent(product.getFirstByXPath(".//div/div[2]/div[1]/a"));
+    String distributor = getTextContent(product.getFirstByXPath(".//span[contains(@class, \"a-color-secondary\")]"));
+    String price       = getTextContent(product.getFirstByXPath(".//span[contains(@class, \"a-color-price\")]"));
+    String quantity    = getTextContent(product.getFirstByXPath(".//span[contains(@class, \"item-view-qty\")]"));
 
-    HtmlSpan quantitySpan = product.getFirstByXPath(".//span[contains(@class, \"item-view-qty\")]");
-    String quantity = "1";
-    if (quantitySpan != null) {
-      quantity = quantitySpan.getTextContent().trim();
+    if (distributor != null) {
+      distributor = distributor.split(":")[1].trim();
+    }
+    if (quantity == null) {
+      quantity = "1";
     }
 
     return new ProductInfo(name, price.substring(1), quantity, distributor);
-
-
   }
 }

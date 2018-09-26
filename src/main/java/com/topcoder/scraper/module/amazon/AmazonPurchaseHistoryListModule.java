@@ -128,10 +128,17 @@ public class AmazonPurchaseHistoryListModule extends PurchaseHistoryListModule {
   /**
    * Parse purchase history from an order element
    *
+   * The web-scraper assumes the order that orderDate is greater than or equals to last one as `new order`.
+   * If the order is `new order`, fetch process can continue.
+   *
+   * As other important process than above judgement, this method add the order to list if
+   *   - the orderNumber doesn't equals to last one.
+   *   - the order hasn't pushed in purchase history list yet.
+   *
    * @param list purchase history list
    * @param order DomNode for one order
    * @param last last purchase history
-   * @return purchase history
+   * @return true if all orders are new, requires checking next page
    */
   private boolean parseOrder(List<PurchaseHistory> list, DomNode order, Optional<PurchaseHistory> last) {
 
@@ -149,18 +156,31 @@ public class AmazonPurchaseHistoryListModule extends PurchaseHistoryListModule {
     }
     PurchaseHistory ph = new PurchaseHistory(orderNumber, date, total, productInfoList, deliveryStatus);
 
+    // check if order is new one.
     boolean isNewOrder = true;
-
     if (last.isPresent()) {
       try {
-        isNewOrder = fromString(date).compareTo(fromString(last.get().getOrderDate())) > 0;
+        // Fetched orderDate is greater than or equals to last one.
+        int result = fromString(date).compareTo(fromString(last.get().getOrderDate()));
+        if (result >= 0) {
+          isNewOrder = true;
+        } else {
+          isNewOrder = false;
+        }
       } catch (ParseException e) {
         // fail to parse date, skip
       }
-      if (isNewOrder) {
-        list.add(ph);
-      }
-    } else {
+    }
+    // check if fetched orderNumber equals to last one.
+    boolean equalToLastOrder = false;
+    if (last.isPresent()) {
+      equalToLastOrder = orderNumber.equals(last.get().getOrderNumber());
+    }
+    // check if the order has already pushed in purchase history list.
+    final String orderNumberTemp = orderNumber;
+    boolean existOrderInList = list.stream().anyMatch(purchaseHistory -> purchaseHistory.getOrderNumber().equals(orderNumberTemp));
+
+    if (isNewOrder && !equalToLastOrder && !existOrderInList) {
       list.add(ph);
     }
 

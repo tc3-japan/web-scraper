@@ -22,7 +22,7 @@ public class FileBasedWebpageService implements WebpageService {
   @Override
   public void save(String site, String content) {
     try {
-      FileUtils.write(new File(filename(site)), content);
+      FileUtils.write(new File(filename(site)), content, "UTF-8");
       LOGGER.info("Login page saved");
     } catch (IOException e) {
       LOGGER.error("Fail to write to webpage file");

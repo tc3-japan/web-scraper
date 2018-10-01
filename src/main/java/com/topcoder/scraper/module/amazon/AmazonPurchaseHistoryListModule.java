@@ -11,9 +11,11 @@ import com.topcoder.scraper.model.ProductInfo;
 import com.topcoder.scraper.model.PurchaseHistory;
 import com.topcoder.scraper.module.PurchaseHistoryListModule;
 import com.topcoder.scraper.service.PurchaseHistoryService;
+import com.topcoder.scraper.service.WebpageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -37,15 +39,19 @@ public class AmazonPurchaseHistoryListModule extends PurchaseHistoryListModule {
   private final AmazonProperty property;
   private final WebClient webClient;
   private final PurchaseHistoryService purchaseHistoryService;
+  private final WebpageService webpageService;
+
 
   @Autowired
   public AmazonPurchaseHistoryListModule(
     AmazonProperty property,
     WebClient webClient,
-    PurchaseHistoryService purchaseHistoryService) {
+    PurchaseHistoryService purchaseHistoryService,
+    WebpageService webpageService) {
     this.property = property;
     this.webClient = webClient;
     this.purchaseHistoryService = purchaseHistoryService;
+    this.webpageService = webpageService;
   }
 
   @Override
@@ -126,7 +132,15 @@ public class AmazonPurchaseHistoryListModule extends PurchaseHistoryListModule {
 
     //List<DomNode> orders = page.getByXPath("//*[@id=\"ordersContainer\"]/div[contains(@class, \"order\")]");
     List<DomNode> orders = page.querySelectorAll("#ordersContainer > div.order");
-    return orders.stream().allMatch(order -> parseOrder(list, order, last));
+
+    boolean hasNewOrder = orders.stream().allMatch(order -> parseOrder(list, order, last));
+
+    // only save purchase history page is there is new order
+    if (hasNewOrder && orders.size() > 0) {
+      webpageService.save("purchase-history", getECName(), page.getWebResponse().getContentAsString());
+    }
+
+    return hasNewOrder;
   }
 
   /**

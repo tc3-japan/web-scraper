@@ -1,9 +1,11 @@
 buildscript {
   ext.versions = [
-    'springBoot' : '1.5.7.RELEASE',
-    'htmlunit'   : '2.33',
-    'gson'       : '2.8.5',
-    'jackson'    : '2.9.7'
+    'springBoot'     : '1.5.7.RELEASE',
+    'htmlunit'       : '2.33',
+    'gson'           : '2.8.5',
+    'jackson'        : '2.9.7',
+    'mysqlConnector' : '8.0.12',
+    'flyway'         : '5.1.4'
   ]
 
   repositories {
@@ -30,12 +32,15 @@ repositories {
 
 dependencies {
   compile("org.springframework.boot:spring-boot-starter:${versions.springBoot}")
+  compile("org.springframework.boot:spring-boot-starter-data-jpa:${versions.springBoot}")
   compile("org.springframework.boot:spring-boot-starter-logging:${versions.springBoot}")
   compile("org.springframework.boot:spring-boot-configuration-processor:${versions.springBoot}")
 
   compile("net.sourceforge.htmlunit:htmlunit:${versions.htmlunit}")
   compile("com.google.code.gson:gson:${versions.gson}")
 
+  compile("mysql:mysql-connector-java:${versions.mysqlConnector}")
+  compile("org.flywaydb:flyway-core:${versions.flyway}")
   compile("com.fasterxml.jackson.core:jackson-databind:${versions.jackson}")
   compile("com.fasterxml.jackson.core:jackson-annotations:${versions.jackson}")
   compile("com.fasterxml.jackson.core:jackson-core:${versions.jackson}")

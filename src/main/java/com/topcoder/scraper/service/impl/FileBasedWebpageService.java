@@ -20,9 +20,9 @@ public class FileBasedWebpageService implements WebpageService {
   private static final Logger LOGGER = LoggerFactory.getLogger(FileBasedWebpageService.class);
 
   @Override
-  public void save(String site, String content) {
+  public void save(String filename, String site, String content) {
     try {
-      FileUtils.write(new File(filename(site)), content, "UTF-8");
+      FileUtils.write(new File(generateFilename(filename, site)), content, "UTF-8");
       LOGGER.info("Login page saved");
     } catch (IOException e) {
       LOGGER.error("Fail to write to webpage file");
@@ -35,13 +35,14 @@ public class FileBasedWebpageService implements WebpageService {
    * @param site site name
    * @return absolute file path
    */
-  private String filename(String site) {
+  private String generateFilename(String filename, String site) {
 
     return new File("").getAbsoluteFile().getAbsolutePath() +
       File.separator +
       site +
       File.separator +
-      "login-" +
+      filename +
+      "-" +
       DateUtils.currentDateTime() +
       ".html";
   }

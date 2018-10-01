@@ -22,7 +22,6 @@ import java.util.Optional;
  * File based implementation of PurchaseHistoryService
  * which all records are saved as files in disk
  */
-@Service
 public class FileBasedPurchaseHistoryService implements PurchaseHistoryService {
   private static final Logger LOGGER = LoggerFactory.getLogger(FileBasedPurchaseHistoryService.class);
   private static final ObjectMapper OB = new ObjectMapper();

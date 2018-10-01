@@ -3,10 +3,17 @@ logging:
     org.apache.http: off
     com.gargoylesoftware: off
 
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  datasource:
+    url: jdbc:mysql://localhost:3306/web_scraper
+    username: root
+    password: mypassword
+
 amazon:
-  #username: ${AMAZON_USERNAME:username}
-  #password: ${AMAZON_PASSWORD:password}
-  username: darboux@mac.com
-  password: dirichlet#ex
+  username: ${AMAZON_USERNAME:username}
+  password: ${AMAZON_PASSWORD:password}
   url: https://www.amazon.com/
   historyUrl: https://www.amazon.com/gp/your-account/order-history?opt=ab&digitalOrders=1&unifiedOrders=1&returnTo=&orderFilter=

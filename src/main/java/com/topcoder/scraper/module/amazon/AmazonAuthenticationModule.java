@@ -73,6 +73,6 @@ public class AmazonAuthenticationModule extends AuthenticationModule {
     HtmlPage finalPage = submitInput2.click();
 
     // Save page
-    webpageService.save(getECName(), finalPage.getWebResponse().getContentAsString());
+    webpageService.save("login", getECName(), finalPage.getWebResponse().getContentAsString());
   }
 }

@@ -69,7 +69,8 @@ public class AmazonPurchaseHistoryListModule extends PurchaseHistoryListModule {
 
     // go to order page
     LOGGER.info("goto Order Page");
-    HtmlPage page = ((HtmlAnchor) homePage.getFirstByXPath("//*[@id=\"nav-orders\"]")).click();
+    //HtmlPage page = ((HtmlAnchor) homePage.getFirstByXPath("//*[@id=\"nav-orders\"]")).click();
+    HtmlPage page = ((HtmlAnchor) homePage.querySelector("#nav-orders")).click();
 
     while (true) {
       if (page == null || !parsePurchaseHistory(list, page, lastPurchaseHistory)) {
@@ -89,13 +90,15 @@ public class AmazonPurchaseHistoryListModule extends PurchaseHistoryListModule {
    */
   private HtmlPage gotoNextPage(HtmlPage page) throws IOException {
     // Try to click next page first
-    HtmlAnchor nextPageAnchor = page.getFirstByXPath("//*[@id=\"ordersContainer\"]/div[@class=\"a-row\"]/div/ul/li[@class=\"a-last\"]/a");
+    //HtmlAnchor nextPageAnchor = page.getFirstByXPath("//*[@id=\"ordersContainer\"]/div[@class=\"a-row\"]/div/ul/li[@class=\"a-last\"]/a");
+    HtmlAnchor nextPageAnchor = page.querySelector("#ordersContainer > div.a-row > div > ul > li.a-last > a");
     if (nextPageAnchor != null) {
       return nextPageAnchor.click();
     }
 
     // if pagination reaches end, try to go next time period
-    HtmlForm form = page.getFirstByXPath("//*[@id=\"timePeriodForm\"]");
+    //HtmlForm form = page.getFirstByXPath("//*[@id=\"timePeriodForm\"]");
+    HtmlForm form = page.querySelector("#timePeriodForm");
     if (form != null) {
       HtmlSelect select = form.getSelectByName("orderFilter");
       if (select.getSelectedIndex() + 1 < select.getOptionSize()) {
@@ -121,7 +124,8 @@ public class AmazonPurchaseHistoryListModule extends PurchaseHistoryListModule {
 
     LOGGER.debug("Parsing page url %s", page.getUrl().toString());
 
-    List<DomNode> orders = page.getByXPath("//*[@id=\"ordersContainer\"]/div[contains(@class, \"order\")]");
+    //List<DomNode> orders = page.getByXPath("//*[@id=\"ordersContainer\"]/div[contains(@class, \"order\")]");
+    List<DomNode> orders = page.querySelectorAll("#ordersContainer > div.order");
     return orders.stream().allMatch(order -> parseOrder(list, order, last));
   }
 
@@ -142,12 +146,17 @@ public class AmazonPurchaseHistoryListModule extends PurchaseHistoryListModule {
    */
   private boolean parseOrder(List<PurchaseHistory> list, DomNode order, Optional<PurchaseHistory> last) {
 
-    String date           = getTextContent(order.getFirstByXPath(".//div[contains(@class, \"order-info\")]/div/div/div/div[1]/div/div[1]/div[2]/span"));
-    String total          = getTextContent(order.getFirstByXPath(".//div[contains(@class, \"order-info\")]/div/div/div/div[1]/div/div[2]/div[2]/span"));
-    String orderNumber    = getTextContent(order.getFirstByXPath(".//div[contains(@class, \"order-info\")]/div/div/div/div[2]/div[1]/span[2]"));
-    String deliveryStatus = getTextContent(order.getFirstByXPath(".//div[contains(@class, \"shipment\")]/div/div[1]/div[1]/div[2]/span[1]"));
+    //String date           = getTextContent(order.getFirstByXPath(".//div[contains(@class, \"order-info\")]/div/div/div/div[1]/div/div[1]/div[2]/span"));
+    //String total          = getTextContent(order.getFirstByXPath(".//div[contains(@class, \"order-info\")]/div/div/div/div[1]/div/div[2]/div[2]/span"));
+    //String orderNumber    = getTextContent(order.getFirstByXPath(".//div[contains(@class, \"order-info\")]/div/div/div/div[2]/div[1]/span[2]"));
+    //String deliveryStatus = getTextContent(order.getFirstByXPath(".//div[contains(@class, \"shipment\")]/div/div[1]/div[1]/div[2]/span[1]"));
+    String date           = getTextContent(order.querySelector("div.order-info > div > div > div > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(2) > span"));
+    String total          = getTextContent(order.querySelector("div.order-info > div > div > div > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(2) > span"));
+    String orderNumber    = getTextContent(order.querySelector("div.order-info > div > div > div > div:nth-of-type(2) > div:nth-of-type(1) > span:nth-of-type(2)"));
+    String deliveryStatus = getTextContent(order.querySelector("div.shipment   > div > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) > span:nth-of-type(1)"));
 
-    List<DomNode> products = order.getByXPath(".//div[contains(@class, \"shipment\")]/div/div/div/div[1]/div/div[contains(@class, \"a-fixed-left-grid\")]");
+    //List<DomNode> products = order.getByXPath(".//div[contains(@class, \"shipment\")]/div/div/div/div[1]/div/div[contains(@class, \"a-fixed-left-grid\")]");
+    List<DomNode> products = order.querySelectorAll("div.shipment > div > div > div > div:nth-of-type(1) > div > div.a-fixed-left-grid");
 
     List<ProductInfo> productInfoList = products.stream().map(this::parseProduct).collect(Collectors.toList());
 
@@ -194,10 +203,14 @@ public class AmazonPurchaseHistoryListModule extends PurchaseHistoryListModule {
    */
   private ProductInfo parseProduct(DomNode product) {
 
-    String name        = getTextContent(product.getFirstByXPath(".//div/div[2]/div[1]/a"));
-    String distributor = getTextContent(product.getFirstByXPath(".//span[contains(@class, \"a-color-secondary\")]"));
-    String price       = getTextContent(product.getFirstByXPath(".//span[contains(@class, \"a-color-price\")]"));
-    String quantity    = getTextContent(product.getFirstByXPath(".//span[contains(@class, \"item-view-qty\")]"));
+    //String name        = getTextContent(product.getFirstByXPath(".//div/div[2]/div[1]/a"));
+    //String distributor = getTextContent(product.getFirstByXPath(".//span[contains(@class, \"a-color-secondary\")]"));
+    //String price       = getTextContent(product.getFirstByXPath(".//span[contains(@class, \"a-color-price\")]"));
+    //String quantity    = getTextContent(product.getFirstByXPath(".//span[contains(@class, \"item-view-qty\")]"));
+    String name        = getTextContent(product.querySelector("div > div:nth-of-type(2) > div:nth-of-type(1) > a"));
+    String distributor = getTextContent(product.querySelector("span.a-color-secondary"));
+    String price       = getTextContent(product.querySelector("span.a-color-price"));
+    String quantity    = getTextContent(product.querySelector("span.item-view-qty"));
 
     if (distributor != null) {
       distributor = distributor.split(":")[1].trim();

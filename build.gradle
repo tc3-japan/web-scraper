@@ -51,3 +51,9 @@ dependencies {
 task wrapper(type: Wrapper) {
   gradleVersion = '3.5'
 }
+
+task copyJar(type: Copy) {
+  from jar
+  into './docker/scraper/build/libs'
+}
+build.dependsOn copyJar

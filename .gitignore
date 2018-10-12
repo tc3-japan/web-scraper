@@ -10,6 +10,7 @@
 # Output
 /amazon/
 /build/
+/docker/scraper/build/libs/web-scraper*.jar
 
 # Work
 /work/

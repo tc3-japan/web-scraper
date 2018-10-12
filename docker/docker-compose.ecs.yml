@@ -1,0 +1,35 @@
+version: '3'
+services:
+  scraper-app:
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/scraper-app:latest
+    environment:
+      #SCRAPER_DB_PORT_3306_TCP_ADDR: 10.1.1.2
+      AMAZON_USERNAME: jqp@example.com
+      AMAZON_PASSWORD: password
+    links:
+      - scraper-db
+    #volumes:
+    #  - "../build/dl-html:/scraper/dl-html"
+    #  - "../build/log:/var/log/scraper"
+    command: /bin/sh -c "while true; do echo hello scraper-app; sleep 10; done"
+    logging:
+      driver: awslogs
+      options:
+        awslogs-group: scraper-app-lg
+        awslogs-region: ap-northeast-1
+        awslogs-stream-prefix: scraper-app
+
+  scraper-db:
+    image: mysql:latest
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: web_scraper
+      MYSQL_USER: root
+      MYSQL_ROOT_PASSWORD: mypassword
+    logging:
+      driver: awslogs
+      options:
+        awslogs-group: scraper-db-lg
+        awslogs-region: ap-northeast-1
+        awslogs-stream-prefix: scraper-db

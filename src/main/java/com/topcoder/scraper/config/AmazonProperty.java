@@ -38,6 +38,10 @@ public class AmazonProperty {
 
     private String nextPage;
 
+    private String productInfoTable;
+    private String salesRank;
+    private String price;
+
     public String getLoginButton() {
       return loginButton;
     }
@@ -102,6 +106,18 @@ public class AmazonProperty {
       return nextPage;
     }
 
+    public String getProductInfoTable() {
+      return productInfoTable;
+    }
+
+    public String getSalesRank() {
+      return salesRank;
+    }
+
+    public String getPrice() {
+      return price;
+    }
+
     public void setLoginButton(String loginButton) {
       this.loginButton = loginButton;
     }
@@ -164,6 +180,18 @@ public class AmazonProperty {
 
     public void setNextPage(String nextPage) {
       this.nextPage = nextPage;
+    }
+
+    public void setProductInfoTable(String productInfoTable) {
+      this.productInfoTable = productInfoTable;
+    }
+
+    public void setPrice(String price) {
+      this.price = price;
+    }
+
+    public void setSalesRank(String salesRank) {
+      this.salesRank = salesRank;
     }
   }
 

@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 public class WebClientConfig {
 
 
-  @Bean
+  @Bean(destroyMethod = "close")
   public WebClient webClient() {
     WebClient webClient = new WebClient(BrowserVersion.CHROME);
     webClient.getOptions().setThrowExceptionOnScriptError(false);

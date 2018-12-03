@@ -49,26 +49,29 @@ public class AmazonAuthenticationModule extends AuthenticationModule {
 
     // click login button
     //HtmlPage loginPage = ((HtmlAnchor) homePage.getFirstByXPath("//*[@id=\"nav-link-accountList\"]")).click();
-    HtmlPage loginPage = ((HtmlAnchor) homePage.querySelector("#nav-link-accountList")).click();
+    HtmlPage loginPage = ((HtmlAnchor) homePage.querySelector(property.getCrawling().getLoginButton())).click();
 
     // Fill in email
     //HtmlEmailInput input = loginPage.getFirstByXPath("//input[@id=\"ap_email\"]");
-    HtmlEmailInput input = loginPage.querySelector("input#ap_email");
+    HtmlEmailInput input = loginPage.querySelector(property.getCrawling().getEmailInput());
     input.type(property.getUsername());
 
     // Submit form
     //HtmlSubmitInput submitInput1 = loginPage.getFirstByXPath("//input[@id=\"continue\"]");
-    HtmlSubmitInput submitInput1 = loginPage.querySelector("input#continue");
-    HtmlPage passwordPage = submitInput1.click();
+    HtmlSubmitInput submitInput1 = loginPage.querySelector(property.getCrawling().getContinueInput());
+    // continue button is optional, it shows sometimes
+    if (submitInput1 != null) {
+      loginPage = submitInput1.click();
+    }
 
     // Fill in password
     //HtmlPasswordInput passwordInput = passwordPage.getFirstByXPath("//input[@id=\"ap_password\"]");
-    HtmlPasswordInput passwordInput = passwordPage.querySelector("input#ap_password");
+    HtmlPasswordInput passwordInput = loginPage.querySelector(property.getCrawling().getPasswordInput());
     passwordInput.type(property.getPassword());
 
     // Submit form
     //HtmlSubmitInput submitInput2 = passwordPage.getFirstByXPath("//input[@id=\"signInSubmit\"]");
-    HtmlSubmitInput submitInput2 = passwordPage.querySelector("input#signInSubmit");
+    HtmlSubmitInput submitInput2 = loginPage.querySelector(property.getCrawling().getSubmitButton());
 
     HtmlPage finalPage = submitInput2.click();
 

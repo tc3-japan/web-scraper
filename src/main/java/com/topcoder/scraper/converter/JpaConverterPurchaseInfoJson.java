@@ -2,19 +2,18 @@ package com.topcoder.scraper.converter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.topcoder.scraper.model.PurchaseHistory;
-
+import com.topcoder.scraper.model.ProductInfo;
+import java.io.IOException;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
-import java.io.IOException;
 
 @Converter(autoApply = true)
-public class JpaConverterJson implements AttributeConverter<PurchaseHistory, String> {
+public class JpaConverterPurchaseInfoJson implements AttributeConverter<ProductInfo, String> {
 
     private final static ObjectMapper OB = new ObjectMapper();
 
     @Override
-    public String convertToDatabaseColumn(PurchaseHistory meta) {
+    public String convertToDatabaseColumn(ProductInfo meta) {
         try {
             return OB.writeValueAsString(meta);
         } catch (JsonProcessingException ex) {
@@ -23,9 +22,9 @@ public class JpaConverterJson implements AttributeConverter<PurchaseHistory, Str
     }
 
     @Override
-    public PurchaseHistory convertToEntityAttribute(String dbData) {
+    public ProductInfo convertToEntityAttribute(String dbData) {
         try {
-            return OB.readValue(dbData, PurchaseHistory.class);
+            return OB.readValue(dbData, ProductInfo.class);
         } catch (IOException ex) {
             return null;
         }

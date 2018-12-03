@@ -1,5 +1,9 @@
 package com.topcoder.scraper.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -8,18 +12,28 @@ import java.util.List;
 public class PurchaseHistory {
 
   /**
+   * Represents user id (email / telephone)
+   */
+  @JsonIgnore
+  private String userId;
+
+  /**
    * Represents order number
    */
+  @JsonProperty("order_no")
   private String orderNumber;
 
   /**
    * Represents order date
    */
-  private String orderDate;
+  @JsonProperty("order_date")
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+  private Date orderDate;
 
   /**
    * Represents order total amount
    */
+  @JsonProperty("total_amount")
   private String totalAmount;
 
   /**
@@ -31,12 +45,14 @@ public class PurchaseHistory {
    * Represents order delivery status
    * not implemented currently
    */
+  @JsonProperty("delivery_status")
   private String deliveryStatus;
 
   public PurchaseHistory() {
   }
 
-  public PurchaseHistory(String orderNumber, String orderDate, String totalAmount, List<ProductInfo> products, String deliveryStatus) {
+  public PurchaseHistory(String userId, String orderNumber, Date orderDate, String totalAmount, List<ProductInfo> products, String deliveryStatus) {
+    this.userId = userId;
     this.orderNumber = orderNumber;
     this.orderDate = orderDate;
     this.totalAmount = totalAmount;
@@ -44,11 +60,15 @@ public class PurchaseHistory {
     this.deliveryStatus = deliveryStatus;
   }
 
+  public String getUserId() {
+    return userId;
+  }
+
   public String getOrderNumber() {
     return orderNumber;
   }
 
-  public String getOrderDate() {
+  public Date getOrderDate() {
     return orderDate;
   }
 

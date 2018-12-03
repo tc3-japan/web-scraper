@@ -56,7 +56,7 @@ public class AmazonProductDetailModule extends ProductDetailModule {
       try {
         fetchProductDetail(product);
       } catch (IOException | IllegalStateException e) {
-        LOGGER.error("Fail to fetch product " + product.getProductCode());
+        LOGGER.error(String.format("Fail to fetch product %s, please try again.", product.getProductCode()));
       }
     });
   }

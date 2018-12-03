@@ -19,4 +19,10 @@ public class HtmlUtils {
         return null;
     }
 
+  public static String getTextContentWithoutDuplicatedSpaces(HtmlElement element) {
+    if (element != null) {
+      return element.getTextContent().trim().replaceAll("\\s+", " ");
+    }
+    return null;
+  }
 }

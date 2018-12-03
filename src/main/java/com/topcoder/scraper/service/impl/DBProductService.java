@@ -39,17 +39,23 @@ public class DBProductService implements ProductService {
 
   @Override
   @Transactional
-  public void update(int productId, String price, String fetchInfoStatus) {
+  public void updatePrice(int productId, String price) {
     ProductDAO product = productRepository.findOne(productId);
     product.setUnitPrice(price);
-    product.setFetchInfoStatus(fetchInfoStatus);
     product.setUpdateAt(new Date());
 
     // update product info
     ProductInfo info = product.getProductInfo();
     info.setPrice(price);
     product.setProductInfo(info);
+  }
 
+  @Override
+  @Transactional
+  public void updateFetchInfoStatus(int productId, String fetchInfoStatus) {
+    ProductDAO product = productRepository.findOne(productId);
+    product.setFetchInfoStatus(fetchInfoStatus);
+    product.setUpdateAt(new Date());
   }
 
 

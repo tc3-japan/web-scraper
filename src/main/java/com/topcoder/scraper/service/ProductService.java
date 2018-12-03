@@ -9,7 +9,8 @@ import java.util.List;
 public interface ProductService {
   void addCategoryRanking(int productId, String categoryPath, int ranking);
 
-  void update(int productId, String price, String fetchInfoStatus);
+  void updatePrice(int productId, String price);
+  void updateFetchInfoStatus(int productId, String fetchInfoStatus);
 
   List<ProductDAO> getAllFetchInfoStatusIsNull();
 }

@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import static com.topcoder.scraper.util.HtmlUtils.getTextContent;
+import static com.topcoder.scraper.util.HtmlUtils.getTextContentWithoutDuplicatedSpaces;
 
 /**
  * Amazon implementation of ProductDetailModule
@@ -51,11 +52,6 @@ public class AmazonProductDetailModule extends ProductDetailModule {
   public void fetchProductDetailList() {
     List<ProductDAO> products = this.productService.getAllFetchInfoStatusIsNull();
 
-    try {
-      fetchProductDetail(products.get(15));
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
     products.forEach(product -> {
       try {
         fetchProductDetail(product);
@@ -79,6 +75,12 @@ public class AmazonProductDetailModule extends ProductDetailModule {
 
     fetchProductInfo(productPage, product);
     fetchCategoryRanking(productPage, product);
+    updateProductFetchInfoStatus(product, "updated");
+  }
+
+
+  private void updateProductFetchInfoStatus(ProductDAO product, String status) {
+    productService.updateFetchInfoStatus(product.getId(), status);
   }
 
   /**
@@ -89,12 +91,23 @@ public class AmazonProductDetailModule extends ProductDetailModule {
   private void fetchProductInfo(HtmlPage productPage, ProductDAO product) {
     HtmlElement priceElement = productPage.querySelector(property.getCrawling().getPrice());
     if (priceElement == null) {
+      LOGGER.info(String.format("Could not find price info for product %s:%s",
+        product.getEcSite(), product.getProductCode()));
       return;
     }
 
-    // TODO probably could update more fields
-    String price = getTextContent(priceElement);
-    productService.update(product.getId(), price, "updated");
+    // probably could update more fields
+    String price = getTextContentWithoutDuplicatedSpaces(priceElement);
+
+    // special case handle, for example
+    // https://www.amazon.com/gp/product/B016KBVBCS
+    // current value of price is $ 75 55
+    String[] priceArray = price.split(" ");
+    if (priceArray.length == 3) {
+      price = String.format("%s%s.%s", priceArray[0], priceArray[1], priceArray[2]);
+    }
+
+    productService.updatePrice(product.getId(), price);
   }
   /**
    * Find category ranking and save in database
@@ -102,7 +115,7 @@ public class AmazonProductDetailModule extends ProductDetailModule {
    * @param product the product dao
    */
   private void fetchCategoryRanking(HtmlPage productPage, ProductDAO product) {
-    List<String> categoryInfoList = fetchCategoryInfoList(productPage);
+    List<String> categoryInfoList = fetchCategoryInfoList(productPage, product);
 
     for (String data : categoryInfoList) {
 
@@ -117,7 +130,7 @@ public class AmazonProductDetailModule extends ProductDetailModule {
       String path = categoryInfo[2];
       int topIndex = path.indexOf(" (See ");
       if (topIndex != -1) {
-        path = path.substring(topIndex);
+        path = path.substring(0, topIndex);
       }
 
       productService.addCategoryRanking(product.getId(), path, rank);
@@ -131,7 +144,7 @@ public class AmazonProductDetailModule extends ProductDetailModule {
    * @param page the product page
    * @return list of
    */
-  private List<String> fetchCategoryInfoList(HtmlPage page) {
+  private List<String> fetchCategoryInfoList(HtmlPage page, ProductDAO product) {
     DomNode node = page.querySelector(property.getCrawling().getSalesRank());
 
     // category ranking is from li#salesrank
@@ -158,11 +171,11 @@ public class AmazonProductDetailModule extends ProductDetailModule {
           List<DomNode> spanList = tr.querySelectorAll("td > span > span");
           return spanList.stream().map(span -> getTextContent((HtmlElement) span)).collect(Collectors.toList());
         }
-
       }
-      return new ArrayList<>();
     }
 
+    LOGGER.info(String.format("Could not find category rankings for product %s:%s",
+      product.getEcSite(), product.getProductCode()));
     return new ArrayList<>();
   }
 

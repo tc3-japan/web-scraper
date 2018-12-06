@@ -4,7 +4,6 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
-import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlSelect;
 import com.topcoder.scraper.config.AmazonProperty;
@@ -107,10 +106,9 @@ public class AmazonPurchaseHistoryListModule extends PurchaseHistoryListModule {
     }
 
     // if pagination reaches end, try to go next time period
-    //HtmlForm form = page.getFirstByXPath("//*[@id=\"timePeriodForm\"]");
-    HtmlForm form = page.querySelector("#timePeriodForm");
-    if (form != null) {
-      HtmlSelect select = form.getSelectByName("orderFilter");
+    //HtmlSelect form = page.getFirstByXPath("//*[@id=\"orderFilter\"]");
+    HtmlSelect select = page.querySelector("#orderFilter");
+    if (select != null) {
       if (select.getSelectedIndex() + 1 < select.getOptionSize()) {
         String optionValue = select.getOption(select.getSelectedIndex() + 1).getValueAttribute();
         String optionLabel = select.getOption(select.getSelectedIndex() + 1).getText();

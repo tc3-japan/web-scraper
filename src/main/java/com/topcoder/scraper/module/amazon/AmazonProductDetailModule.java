@@ -6,6 +6,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.topcoder.scraper.config.AmazonProperty;
 import com.topcoder.scraper.dao.ProductDAO;
+import com.topcoder.scraper.model.ProductInfo;
 import com.topcoder.scraper.module.ProductDetailModule;
 import com.topcoder.scraper.service.ProductService;
 import java.io.IOException;
@@ -89,7 +90,7 @@ public class AmazonProductDetailModule extends ProductDetailModule {
    * @param product the product dao
    */
   private void fetchProductInfo(HtmlPage productPage, ProductDAO product) {
-    HtmlElement priceElement = productPage.querySelector(property.getCrawling().getPrice());
+    HtmlElement priceElement = productPage.querySelector(property.getCrawling().getProductDetail().getPrice());
     if (priceElement == null) {
       LOGGER.info(String.format("Could not find price info for product %s:%s",
         product.getEcSite(), product.getProductCode()));
@@ -107,7 +108,12 @@ public class AmazonProductDetailModule extends ProductDetailModule {
       price = String.format("%s%s.%s", priceArray[0], priceArray[1], priceArray[2]);
     }
 
-    productService.updatePrice(product.getId(), price);
+    String name = getTextContent(productPage.querySelector(property.getCrawling().getProductDetail().getName()));
+
+    ProductInfo info = new ProductInfo();
+    info.setPrice(price);
+    info.setName(name);
+    productService.updateProduct(product.getId(), info);
   }
   /**
    * Find category ranking and save in database
@@ -145,7 +151,7 @@ public class AmazonProductDetailModule extends ProductDetailModule {
    * @return list of
    */
   private List<String> fetchCategoryInfoList(HtmlPage page, ProductDAO product) {
-    DomNode node = page.querySelector(property.getCrawling().getSalesRank());
+    DomNode node = page.querySelector(property.getCrawling().getProductDetail().getSalesRank());
 
     // category ranking is from li#salesrank
     if (node != null) {
@@ -161,7 +167,7 @@ public class AmazonProductDetailModule extends ProductDetailModule {
       return categoryInfoList;
     }
 
-    node = page.querySelector(property.getCrawling().getProductInfoTable());
+    node = page.querySelector(property.getCrawling().getProductDetail().getProductInfoTable());
 
     // category ranking is from product table
     if (node != null) {

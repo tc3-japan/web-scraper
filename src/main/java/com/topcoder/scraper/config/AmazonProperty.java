@@ -16,6 +16,45 @@ public class AmazonProperty {
   private String historyUrl;
   private String productUrl;
 
+  public static class ProductDetail {
+    private String productInfoTable;
+    private String salesRank;
+    private String price;
+    private String name;
+
+    public String getProductInfoTable() {
+      return productInfoTable;
+    }
+
+    public String getSalesRank() {
+      return salesRank;
+    }
+
+    public String getPrice() {
+      return price;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public void setProductInfoTable(String productInfoTable) {
+      this.productInfoTable = productInfoTable;
+    }
+
+    public void setSalesRank(String salesRank) {
+      this.salesRank = salesRank;
+    }
+
+    public void setPrice(String price) {
+      this.price = price;
+    }
+
+    public void setName(String name) {
+      this.name = name;
+    }
+  }
+  
   public static class CrawlingProperty {
     private String loginButton;
     private String emailInput;
@@ -38,9 +77,7 @@ public class AmazonProperty {
 
     private String nextPage;
 
-    private String productInfoTable;
-    private String salesRank;
-    private String price;
+    private ProductDetail productDetail;
 
     public String getLoginButton() {
       return loginButton;
@@ -106,16 +143,8 @@ public class AmazonProperty {
       return nextPage;
     }
 
-    public String getProductInfoTable() {
-      return productInfoTable;
-    }
-
-    public String getSalesRank() {
-      return salesRank;
-    }
-
-    public String getPrice() {
-      return price;
+    public ProductDetail getProductDetail() {
+      return productDetail;
     }
 
     public void setLoginButton(String loginButton) {
@@ -182,16 +211,8 @@ public class AmazonProperty {
       this.nextPage = nextPage;
     }
 
-    public void setProductInfoTable(String productInfoTable) {
-      this.productInfoTable = productInfoTable;
-    }
-
-    public void setPrice(String price) {
-      this.price = price;
-    }
-
-    public void setSalesRank(String salesRank) {
-      this.salesRank = salesRank;
+    public void setProductDetail(ProductDetail productDetail) {
+      this.productDetail = productDetail;
     }
   }
 

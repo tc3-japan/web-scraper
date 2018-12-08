@@ -1,6 +1,7 @@
 package com.topcoder.scraper.service;
 
 import com.topcoder.scraper.dao.ProductDAO;
+import com.topcoder.scraper.model.ProductInfo;
 import java.util.List;
 
 /**
@@ -9,7 +10,7 @@ import java.util.List;
 public interface ProductService {
   void addCategoryRanking(int productId, String categoryPath, int ranking);
 
-  void updatePrice(int productId, String price);
+  void updateProduct(int productId, ProductInfo product);
   void updateFetchInfoStatus(int productId, String fetchInfoStatus);
 
   List<ProductDAO> getAllFetchInfoStatusIsNull();

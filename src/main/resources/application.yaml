@@ -46,7 +46,9 @@ amazon:
 
     nextPage: "#ordersContainer > div.a-row > div > ul > li.a-last > a"
 
-    # Product page
-    productInfoTable: "#productDetails_detailBullets_sections1"
-    salesRank: "#SalesRank"
-    price: "#priceblock_ourprice"
+    # Product detail page
+    productDetail:
+      productInfoTable: "#productDetails_detailBullets_sections1"
+      salesRank: "#SalesRank"
+      price: "#priceblock_ourprice"
+      name: "#productTitle"

@@ -5,17 +5,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.topcoder.scraper.model.PurchaseHistory;
 import com.topcoder.scraper.service.PurchaseHistoryService;
 import com.topcoder.scraper.util.DateUtils;
-import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * File based implementation of PurchaseHistoryService
@@ -61,9 +59,9 @@ public class FileBasedPurchaseHistoryService implements PurchaseHistoryService {
   @Override
   public Optional<PurchaseHistory> fetchLast(String site) {
     return listAll(site).stream().max((o1, o2) -> {
-      try {
-        return DateUtils.fromString(o1.getOrderDate()).compareTo(DateUtils.fromString(o2.getOrderDate()));
-      } catch (ParseException e) {
+      if (o1 != null && o2 != null) {
+        return o1.getOrderDate().compareTo(o2.getOrderDate());
+      } else {
         return -1;
       }
     });

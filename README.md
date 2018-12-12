@@ -53,22 +53,25 @@ First, run mysql inside docker
 
 In a new terminal, run
 
-`./gradlew bootRun`
+`./gradlew bootRun -Pargs=--batch=purchase_history`
+
+`./gradlew bootRun -Pargs=--batch=product`
+
 
 To specify site, specify site argument
 
-`./gradlew bootRun -Drun.arguments=--site=amazon`
+`./gradlew bootRun -Pargs=--batch=purchase_history,--site=amazon`
 
 If no site is specified, all sites will be run (currently only amazon is implemented)
 
 ## Local run from jar
 
 - `./gradlew build`
-- `java -jar build/libs/web-scraper-0.0.1.jar`
+- `java -jar build/libs/web-scraper-0.0.1.jar --batch=purchase_history`
 
 To specify site, specify site argument
 
-- `java -jar build/libs/web-scraper-0.0.1.jar --site=amazon`
+- `java -jar build/libs/web-scraper-0.0.1.jar --batch=purchase_history --site=amazon`
 
 If no site is specified, all sites will be run (currently only amazon is implemented)
 

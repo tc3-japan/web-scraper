@@ -4,8 +4,8 @@ buildscript {
     'htmlunit'       : '2.33',
     'gson'           : '2.8.5',
     'jackson'        : '2.9.7',
-    'mysqlConnector' : '8.0.12',
-    'flyway'         : '5.1.4'
+    'mysqlConnector' : '8.0.13',
+    'flyway'         : '5.2.4'
   ]
 
   repositories {

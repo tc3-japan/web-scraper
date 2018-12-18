@@ -36,7 +36,7 @@ public class ProductDetailCommand extends AbstractCommand<ProductDetailModule> {
       LOGGER.error("Fail to fetch product detail list", e);
       throw new FetchPurchaseHistoryListFailure();
     }
-    LOGGER.info("Successfully product detail history");
+    LOGGER.info("Successfully product detail list");
   }
 
 }

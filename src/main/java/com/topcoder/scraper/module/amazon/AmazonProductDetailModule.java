@@ -90,7 +90,7 @@ public class AmazonProductDetailModule extends ProductDetailModule {
    * @param product the product dao
    */
   private void fetchProductInfo(HtmlPage productPage, ProductDAO product) {
-    HtmlElement priceElement = productPage.querySelector(property.getCrawling().getProductDetail().getPrice());
+    HtmlElement priceElement = productPage.querySelector(property.getCrawling().getProductDetailPage().getPrice());
     if (priceElement == null) {
       LOGGER.info(String.format("Could not find price info for product %s:%s",
         product.getEcSite(), product.getProductCode()));
@@ -108,7 +108,7 @@ public class AmazonProductDetailModule extends ProductDetailModule {
       price = String.format("%s%s.%s", priceArray[0], priceArray[1], priceArray[2]);
     }
 
-    String name = getTextContent(productPage.querySelector(property.getCrawling().getProductDetail().getName()));
+    String name = getTextContent(productPage.querySelector(property.getCrawling().getProductDetailPage().getName()));
 
     ProductInfo info = new ProductInfo();
     info.setPrice(price);
@@ -151,7 +151,7 @@ public class AmazonProductDetailModule extends ProductDetailModule {
    * @return list of
    */
   private List<String> fetchCategoryInfoList(HtmlPage page, ProductDAO product) {
-    DomNode node = page.querySelector(property.getCrawling().getProductDetail().getSalesRank());
+    DomNode node = page.querySelector(property.getCrawling().getProductDetailPage().getSalesRank());
 
     // category ranking is from li#salesrank
     if (node != null) {
@@ -167,7 +167,7 @@ public class AmazonProductDetailModule extends ProductDetailModule {
       return categoryInfoList;
     }
 
-    node = page.querySelector(property.getCrawling().getProductDetail().getProductInfoTable());
+    node = page.querySelector(property.getCrawling().getProductDetailPage().getProductInfoTable());
 
     // category ranking is from product table
     if (node != null) {

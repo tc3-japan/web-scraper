@@ -53,12 +53,12 @@ public class AmazonAuthenticationModule extends AuthenticationModule {
 
     // Fill in email
     //HtmlEmailInput input = loginPage.getFirstByXPath("//input[@id=\"ap_email\"]");
-    HtmlEmailInput input = loginPage.querySelector(property.getCrawling().getEmailInput());
+    HtmlEmailInput input = loginPage.querySelector(property.getCrawling().getLoginPage().getEmailInput());
     input.type(property.getUsername());
 
     // Submit form
     //HtmlSubmitInput submitInput1 = loginPage.getFirstByXPath("//input[@id=\"continue\"]");
-    HtmlSubmitInput submitInput1 = loginPage.querySelector(property.getCrawling().getContinueInput());
+    HtmlSubmitInput submitInput1 = loginPage.querySelector(property.getCrawling().getLoginPage().getContinueInput());
     // continue button is optional, it shows sometimes
     if (submitInput1 != null) {
       loginPage = submitInput1.click();
@@ -66,12 +66,12 @@ public class AmazonAuthenticationModule extends AuthenticationModule {
 
     // Fill in password
     //HtmlPasswordInput passwordInput = passwordPage.getFirstByXPath("//input[@id=\"ap_password\"]");
-    HtmlPasswordInput passwordInput = loginPage.querySelector(property.getCrawling().getPasswordInput());
+    HtmlPasswordInput passwordInput = loginPage.querySelector(property.getCrawling().getLoginPage().getPasswordInput());
     passwordInput.type(property.getPassword());
 
     // Submit form
     //HtmlSubmitInput submitInput2 = passwordPage.getFirstByXPath("//input[@id=\"signInSubmit\"]");
-    HtmlSubmitInput submitInput2 = loginPage.querySelector(property.getCrawling().getSubmitButton());
+    HtmlSubmitInput submitInput2 = loginPage.querySelector(property.getCrawling().getLoginPage().getSubmitButton());
 
     HtmlPage finalPage = submitInput2.click();
 

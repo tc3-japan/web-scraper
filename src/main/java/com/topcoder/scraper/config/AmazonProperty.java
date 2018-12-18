@@ -16,72 +16,12 @@ public class AmazonProperty {
   private String historyUrl;
   private String productUrl;
 
-  public static class ProductDetail {
-    private String productInfoTable;
-    private String salesRank;
-    private String price;
-    private String name;
+  public static class LoginPage {
 
-    public String getProductInfoTable() {
-      return productInfoTable;
-    }
-
-    public String getSalesRank() {
-      return salesRank;
-    }
-
-    public String getPrice() {
-      return price;
-    }
-
-    public String getName() {
-      return name;
-    }
-
-    public void setProductInfoTable(String productInfoTable) {
-      this.productInfoTable = productInfoTable;
-    }
-
-    public void setSalesRank(String salesRank) {
-      this.salesRank = salesRank;
-    }
-
-    public void setPrice(String price) {
-      this.price = price;
-    }
-
-    public void setName(String name) {
-      this.name = name;
-    }
-  }
-  
-  public static class CrawlingProperty {
-    private String loginButton;
     private String emailInput;
     private String continueInput;
     private String passwordInput;
     private String submitButton;
-
-    private String orderDate;
-    private String totalAmount;
-    private String orderNumber;
-    private String deliveryStatus;
-
-    private String ordersBox;
-    private String productsBox;
-
-    private String productAnchor;
-    private String productDistributor;
-    private String unitPrice;
-    private String productQuantity;
-
-    private String nextPage;
-
-    private ProductDetail productDetail;
-
-    public String getLoginButton() {
-      return loginButton;
-    }
 
     public String getEmailInput() {
       return emailInput;
@@ -98,6 +38,40 @@ public class AmazonProperty {
     public String getSubmitButton() {
       return submitButton;
     }
+
+    public void setEmailInput(String emailInput) {
+      this.emailInput = emailInput;
+    }
+
+    public void setContinueInput(String continueInput) {
+      this.continueInput = continueInput;
+    }
+
+    public void setPasswordInput(String passwordInput) {
+      this.passwordInput = passwordInput;
+    }
+
+    public void setSubmitButton(String submitButton) {
+      this.submitButton = submitButton;
+    }
+  }
+
+  public static class PurchaseHistoryListPage {
+
+    private String orderDate;
+    private String totalAmount;
+    private String orderNumber;
+    private String deliveryStatus;
+
+    private String ordersBox;
+    private String productsBox;
+
+    private String productAnchor;
+    private String productDistributor;
+    private String unitPrice;
+    private String productQuantity;
+
+    private String nextPage;
 
     public String getOrderDate() {
       return orderDate;
@@ -143,30 +117,6 @@ public class AmazonProperty {
       return nextPage;
     }
 
-    public ProductDetail getProductDetail() {
-      return productDetail;
-    }
-
-    public void setLoginButton(String loginButton) {
-      this.loginButton = loginButton;
-    }
-
-    public void setEmailInput(String emailInput) {
-      this.emailInput = emailInput;
-    }
-
-    public void setContinueInput(String continueInput) {
-      this.continueInput = continueInput;
-    }
-
-    public void setPasswordInput(String passwordInput) {
-      this.passwordInput = passwordInput;
-    }
-
-    public void setSubmitButton(String submitButton) {
-      this.submitButton = submitButton;
-    }
-
     public void setOrderDate(String orderDate) {
       this.orderDate = orderDate;
     }
@@ -210,9 +160,86 @@ public class AmazonProperty {
     public void setNextPage(String nextPage) {
       this.nextPage = nextPage;
     }
+  }
 
-    public void setProductDetail(ProductDetail productDetail) {
-      this.productDetail = productDetail;
+  public static class ProductDetailPage {
+    private String productInfoTable;
+    private String salesRank;
+    private String price;
+    private String name;
+
+    public String getProductInfoTable() {
+      return productInfoTable;
+    }
+
+    public String getSalesRank() {
+      return salesRank;
+    }
+
+    public String getPrice() {
+      return price;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public void setProductInfoTable(String productInfoTable) {
+      this.productInfoTable = productInfoTable;
+    }
+
+    public void setSalesRank(String salesRank) {
+      this.salesRank = salesRank;
+    }
+
+    public void setPrice(String price) {
+      this.price = price;
+    }
+
+    public void setName(String name) {
+      this.name = name;
+    }
+  }
+
+  public static class CrawlingProperty {
+
+    private String loginButton;
+
+    private LoginPage loginPage;
+    private PurchaseHistoryListPage purchaseHistoryListPage;
+    private ProductDetailPage productDetailPage;
+
+    public String getLoginButton() {
+      return loginButton;
+    }
+
+    public LoginPage getLoginPage() {
+      return loginPage;
+    }
+
+    public PurchaseHistoryListPage getPurchaseHistoryListPage() {
+      return purchaseHistoryListPage;
+    }
+
+    public ProductDetailPage getProductDetailPage() {
+      return productDetailPage;
+    }
+
+
+    public void setLoginButton(String loginButton) {
+      this.loginButton = loginButton;
+    }
+
+    public void setLoginPage(LoginPage loginPage) {
+      this.loginPage = loginPage;
+    }
+
+    public void setPurchaseHistoryListPage(PurchaseHistoryListPage purchaseHistoryListPage) {
+      this.purchaseHistoryListPage = purchaseHistoryListPage;
+    }
+
+    public void setProductDetailPage(ProductDetailPage productDetailPage) {
+      this.productDetailPage = productDetailPage;
     }
   }
 

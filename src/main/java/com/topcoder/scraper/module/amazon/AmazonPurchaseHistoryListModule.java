@@ -77,8 +77,9 @@ public class AmazonPurchaseHistoryListModule extends PurchaseHistoryListModule {
 
     // go to order page
     LOGGER.info("goto Order Page");
-    //HtmlPage page = ((HtmlAnchor) homePage.getFirstByXPath("//*[@id=\"nav-orders\"]")).click();
-    HtmlPage page = ((HtmlAnchor) homePage.querySelector("#nav-orders")).click();
+    HtmlPage page = ((HtmlAnchor) homePage.querySelector(property.getCrawling().getHomePage().getOrdersButton())).click();
+    // XPath Version query
+    //String xxx  = homePage.getFirstByXPath(property.getCrawling().getHomePage().getXXX());
 
     while (true) {
       if (page == null || !parsePurchaseHistory(list, page, lastPurchaseHistory)) {
@@ -99,15 +100,16 @@ public class AmazonPurchaseHistoryListModule extends PurchaseHistoryListModule {
    */
   private HtmlPage gotoNextPage(HtmlPage page) throws IOException {
     // Try to click next page first
-    //HtmlAnchor nextPageAnchor = page.getFirstByXPath("//*[@id=\"ordersContainer\"]/div[@class=\"a-row\"]/div/ul/li[@class=\"a-last\"]/a");
     HtmlAnchor nextPageAnchor = page.querySelector(property.getCrawling().getPurchaseHistoryListPage().getNextPage());
     if (nextPageAnchor != null) {
       return nextPageAnchor.click();
     }
 
     // if pagination reaches end, try to go next time period
-    //HtmlSelect form = page.getFirstByXPath("//*[@id=\"orderFilter\"]");
-    HtmlSelect select = page.querySelector("#orderFilter");
+    HtmlSelect select = page.querySelector(property.getCrawling().getPurchaseHistoryListPage().getOrderFilter());
+    // XPath Version query
+    //String xxx      = page.getFirstByXPath(property.getCrawling().getPurchaseHistoryListPage().getXXX());
+
     if (select != null) {
       if (select.getSelectedIndex() + 1 < select.getOptionSize()) {
         String optionValue = select.getOption(select.getSelectedIndex() + 1).getValueAttribute();
@@ -133,8 +135,9 @@ public class AmazonPurchaseHistoryListModule extends PurchaseHistoryListModule {
 
     LOGGER.debug("Parsing page url %s", page.getUrl().toString());
 
-    //List<DomNode> orders = page.getByXPath("//*[@id=\"ordersContainer\"]/div[contains(@class, \"order\")]");
     List<DomNode> orders = page.querySelectorAll(property.getCrawling().getPurchaseHistoryListPage().getOrdersBox());
+    // XPath Version query
+    //List<DomNode> xxx  = page.getByXPath(property.getCrawling().getPurchaseHistoryListPage().getXXX());
 
     boolean hasNewOrder = orders.stream().allMatch(order -> parseOrder(list, order, last));
 
@@ -163,17 +166,14 @@ public class AmazonPurchaseHistoryListModule extends PurchaseHistoryListModule {
    */
   private boolean parseOrder(List<PurchaseHistory> list, DomNode order, Optional<PurchaseHistory> last) {
 
-    //String date           = getTextContent(order.getFirstByXPath(".//div[contains(@class, \"order-info\")]/div/div/div/div[1]/div/div[1]/div[2]/span"));
-    //String total          = getTextContent(order.getFirstByXPath(".//div[contains(@class, \"order-info\")]/div/div/div/div[1]/div/div[2]/div[2]/span"));
-    //String orderNumber    = getTextContent(order.getFirstByXPath(".//div[contains(@class, \"order-info\")]/div/div/div/div[2]/div[1]/span[2]"));
-    //String deliveryStatus = getTextContent(order.getFirstByXPath(".//div[contains(@class, \"shipment\")]/div/div[1]/div[1]/div[2]/span[1]"));
-    String date = getTextContent(order.querySelector(property.getCrawling().getPurchaseHistoryListPage().getOrderDate()));
-    String total = getTextContent(order.querySelector(property.getCrawling().getPurchaseHistoryListPage().getTotalAmount()));
-    String orderNumber = getTextContent(order.querySelector(property.getCrawling().getPurchaseHistoryListPage().getOrderNumber()));
+    String date           = getTextContent(order.querySelector(property.getCrawling().getPurchaseHistoryListPage().getOrderDate()));
+    String total          = getTextContent(order.querySelector(property.getCrawling().getPurchaseHistoryListPage().getTotalAmount()));
+    String orderNumber    = getTextContent(order.querySelector(property.getCrawling().getPurchaseHistoryListPage().getOrderNumber()));
     String deliveryStatus = getTextContent(order.querySelector(property.getCrawling().getPurchaseHistoryListPage().getDeliveryStatus()));
-
-    //List<DomNode> products = order.getByXPath(".//div[contains(@class, \"shipment\")]/div/div/div/div[1]/div/div[contains(@class, \"a-fixed-left-grid\")]");
     List<DomNode> products = order.querySelectorAll(property.getCrawling().getPurchaseHistoryListPage().getProductsBox());
+    // XPath Version query
+    //String xxx          = order.getFirstByXPath(property.getCrawling().getPurchaseHistoryListPage().getXXX());
+    //List<DomNode> xxx   = order.getByXPath(property.getCrawling().getPurchaseHistoryListPage().getXXX());
 
     List<ProductInfo> productInfoList = products.stream().map(this::parseProduct).collect(Collectors.toList());
 
@@ -221,16 +221,14 @@ public class AmazonPurchaseHistoryListModule extends PurchaseHistoryListModule {
    */
   private ProductInfo parseProduct(DomNode product) {
 
-    //String name        = getTextContent(product.getFirstByXPath(".//div/div[2]/div[1]/a"));
-    //String distributor = getTextContent(product.getFirstByXPath(".//span[contains(@class, \"a-color-secondary\")]"));
-    //String price       = getTextContent(product.getFirstByXPath(".//span[contains(@class, \"a-color-price\")]"));
-    //String quantity    = getTextContent(product.getFirstByXPath(".//span[contains(@class, \"item-view-qty\")]"));
     HtmlElement productAnchor = product.querySelector(property.getCrawling().getPurchaseHistoryListPage().getProductAnchor());
-    String code = parseProductCodeFromUrl(getAnchorHref(productAnchor));
-    String name = getTextContent(productAnchor);
+    String code        = parseProductCodeFromUrl(getAnchorHref(productAnchor));
+    String name        = getTextContent(productAnchor);
     String distributor = getTextContent(product.querySelector(property.getCrawling().getPurchaseHistoryListPage().getProductDistributor()));
-    String price = getTextContent(product.querySelector(property.getCrawling().getPurchaseHistoryListPage().getUnitPrice()));
-    String quantity = getTextContent(product.querySelector(property.getCrawling().getPurchaseHistoryListPage().getProductQuantity()));
+    String price       = getTextContent(product.querySelector(property.getCrawling().getPurchaseHistoryListPage().getUnitPrice()));
+    String quantity    = getTextContent(product.querySelector(property.getCrawling().getPurchaseHistoryListPage().getProductQuantity()));
+    // XPath Version query
+    //String xxx       = product.getFirstByXPath(property.getCrawling().getPurchaseHistoryListPage().getXXX());
 
     if (distributor != null) {
       distributor = distributor.split(":")[1].trim();

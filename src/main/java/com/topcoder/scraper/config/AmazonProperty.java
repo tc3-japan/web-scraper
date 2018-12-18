@@ -56,6 +56,19 @@ public class AmazonProperty {
     }
   }
 
+  public static class HomePage {
+
+    private String ordersButton;
+
+    public String getOrdersButton() {
+      return ordersButton;
+    }
+
+    public void setOrdersButton(String ordersButton) {
+      this.ordersButton = ordersButton;
+    }
+  }
+
   public static class PurchaseHistoryListPage {
 
     private String orderDate;
@@ -71,6 +84,7 @@ public class AmazonProperty {
     private String unitPrice;
     private String productQuantity;
 
+    private String orderFilter;
     private String nextPage;
 
     public String getOrderDate() {
@@ -111,6 +125,10 @@ public class AmazonProperty {
 
     public String getProductQuantity() {
       return productQuantity;
+    }
+
+    public String getOrderFilter() {
+      return orderFilter;
     }
 
     public String getNextPage() {
@@ -155,6 +173,10 @@ public class AmazonProperty {
 
     public void setProductQuantity(String productQuantity) {
       this.productQuantity = productQuantity;
+    }
+
+    public void setOrderFilter(String orderFilter) {
+      this.orderFilter = orderFilter;
     }
 
     public void setNextPage(String nextPage) {
@@ -206,6 +228,7 @@ public class AmazonProperty {
     private String loginButton;
 
     private LoginPage loginPage;
+    private HomePage homePage;
     private PurchaseHistoryListPage purchaseHistoryListPage;
     private ProductDetailPage productDetailPage;
 
@@ -215,6 +238,10 @@ public class AmazonProperty {
 
     public LoginPage getLoginPage() {
       return loginPage;
+    }
+
+    public HomePage getHomePage() {
+      return homePage;
     }
 
     public PurchaseHistoryListPage getPurchaseHistoryListPage() {
@@ -232,6 +259,10 @@ public class AmazonProperty {
 
     public void setLoginPage(LoginPage loginPage) {
       this.loginPage = loginPage;
+    }
+
+    public void setHomePage(HomePage homePage) {
+      this.homePage = homePage;
     }
 
     public void setPurchaseHistoryListPage(PurchaseHistoryListPage purchaseHistoryListPage) {

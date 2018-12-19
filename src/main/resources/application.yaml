@@ -74,7 +74,7 @@ amazon:
 
     # Product detail page
     productDetailPage:
-      productInfoTable: "#productDetails_detailBullets_sections1"
-      salesRank:        "#SalesRank"
       price:            "#priceblock_ourprice"
       name:             "#productTitle"
+      salesRank:        "#SalesRank"
+      productInfoTable: "#productDetails_detailBullets_sections1"

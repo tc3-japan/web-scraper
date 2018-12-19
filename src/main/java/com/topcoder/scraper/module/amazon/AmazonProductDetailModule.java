@@ -12,6 +12,8 @@ import com.topcoder.scraper.service.ProductService;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -155,10 +157,19 @@ public class AmazonProductDetailModule extends ProductDetailModule {
 
     // category ranking is from li#salesrank
     if (node != null) {
+      List<String> categoryInfoList = new ArrayList<>();
+
+      // get first rank and category path
+      Pattern pattern = Pattern.compile("(#.*? in .*?)\\(");
+      Matcher matcher = pattern.matcher(node.getTextContent());
+      if (matcher.find()) {
+        String firstRankAndPath = matcher.group(1).trim();
+        categoryInfoList.add(firstRankAndPath);
+      }
+
+      // get rest of ranks and category paths
       List<DomNode> ranks = node.querySelectorAll("ul > li > span:nth-of-type(1)");
       List<DomNode> paths = node.querySelectorAll("ul > li > span:nth-of-type(2)");
-
-      List<String> categoryInfoList = new ArrayList<>();
       for (int i = 0; i < ranks.size(); i++) {
         categoryInfoList.add(
           getTextContent((HtmlElement) ranks.get(i)) + " " + getTextContent((HtmlElement) paths.get(i)));

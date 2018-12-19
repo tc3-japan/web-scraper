@@ -41,7 +41,7 @@ amazon:
       orderDate:      "div.order-info > div > div > div > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(2) > span"
       totalAmount:    "div.order-info > div > div > div > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(2) > span"
       orderNumber:    "div.order-info > div > div > div > div:nth-of-type(2) > div:nth-of-type(1) > span:nth-of-type(2)"
-      deliveryStatus: "div.shipment   > div > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) > span:nth-of-type(1)"
+      deliveryStatus: "div.shipment > div > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) > span:nth-of-type(1)"
       # XPath Version
       #orderDate:      ".//div[contains(@class, \"order-info\")]/div/div/div/div[1]/div/div[1]/div[2]/span"
       #totalAmount:    ".//div[contains(@class, \"order-info\")]/div/div/div/div[1]/div/div[2]/div[2]/span"
@@ -74,7 +74,9 @@ amazon:
 
     # Product detail page
     productDetailPage:
-      price:            "#priceblock_ourprice"
+      prices:
+        -               "#priceblock_ourprice"
+        -               "#MediaMatrix > div > div > ul > li.selected > span > span.a-button-selected > span > a > span > span.a-color-price"
       name:             "#productTitle"
       salesRank:        "#SalesRank"
       productInfoTable: "#productDetails_detailBullets_sections1"

@@ -9,17 +9,20 @@ import com.topcoder.scraper.dao.ProductDAO;
 import com.topcoder.scraper.model.ProductInfo;
 import com.topcoder.scraper.module.ProductDetailModule;
 import com.topcoder.scraper.service.ProductService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
+import org.springframework.stereotype.Component;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
+import static com.topcoder.scraper.util.HtmlUtils.findFirstElementInSelectors;
 import static com.topcoder.scraper.util.HtmlUtils.getTextContent;
 import static com.topcoder.scraper.util.HtmlUtils.getTextContentWithoutDuplicatedSpaces;
 
@@ -92,29 +95,43 @@ public class AmazonProductDetailModule extends ProductDetailModule {
    * @param product the product dao
    */
   private void fetchProductInfo(HtmlPage productPage, ProductDAO product) {
-    HtmlElement priceElement = productPage.querySelector(property.getCrawling().getProductDetailPage().getPrice());
-    if (priceElement == null) {
-      LOGGER.info(String.format("Could not find price info for product %s:%s",
-        product.getEcSite(), product.getProductCode()));
-      return;
-    }
-
-    // probably could update more fields
-    String price = getTextContentWithoutDuplicatedSpaces(priceElement);
-
-    // special case handle, for example
-    // https://www.amazon.com/gp/product/B016KBVBCS
-    // current value of price is $ 75 55
-    String[] priceArray = price.split(" ");
-    if (priceArray.length == 3) {
-      price = String.format("%s%s.%s", priceArray[0], priceArray[1], priceArray[2]);
-    }
-
-    String name = getTextContent(productPage.querySelector(property.getCrawling().getProductDetailPage().getName()));
-
     ProductInfo info = new ProductInfo();
-    info.setPrice(price);
-    info.setName(name);
+
+    // update price
+    // Pair includes element and it's selector string.
+    Pair<HtmlElement, String> priceElementPair = findFirstElementInSelectors(productPage, property.getCrawling().getProductDetailPage().getPrices());
+    if (priceElementPair == null) {
+      LOGGER.info(String.format("Could not find price info for product %s:%s",
+              product.getEcSite(), product.getProductCode()));
+    } else {
+      HtmlElement priceElement  = priceElementPair.getFirst();
+      String      priceSelector = priceElementPair.getSecond();
+      LOGGER.info("Price's found by selector: " + priceSelector);
+
+      String price = getTextContentWithoutDuplicatedSpaces(priceElement);
+
+      // special case handle, for example
+      // https://www.amazon.com/gp/product/B016KBVBCS
+      // current value of price is $ 75 55
+      String[] priceArray = price.split(" ");
+      if (priceArray.length == 3) {
+        price = String.format("%s%s.%s", priceArray[0], priceArray[1], priceArray[2]);
+      }
+
+      info.setPrice(price);
+    }
+
+    // update name
+    HtmlElement nameElement = productPage.querySelector(property.getCrawling().getProductDetailPage().getName());
+    if (nameElement == null) {
+      LOGGER.info(String.format("Could not find name info for product %s:%s",
+              product.getEcSite(), product.getProductCode()));
+    } else {
+      String name = getTextContent(nameElement);
+      info.setName(name);
+    }
+
+    // save updated information
     productService.updateProduct(product.getId(), info);
   }
   /**

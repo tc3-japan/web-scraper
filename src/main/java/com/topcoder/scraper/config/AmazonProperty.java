@@ -3,6 +3,8 @@ package com.topcoder.scraper.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.List;
+
 /**
  * amazon related property
  */
@@ -187,7 +189,7 @@ public class AmazonProperty {
   public static class ProductDetailPage {
     private String productInfoTable;
     private String salesRank;
-    private String price;
+    private List<String> prices;
     private String name;
 
     public String getProductInfoTable() {
@@ -198,8 +200,8 @@ public class AmazonProperty {
       return salesRank;
     }
 
-    public String getPrice() {
-      return price;
+    public List<String> getPrices() {
+      return prices;
     }
 
     public String getName() {
@@ -214,8 +216,8 @@ public class AmazonProperty {
       this.salesRank = salesRank;
     }
 
-    public void setPrice(String price) {
-      this.price = price;
+    public void setPrices(List<String> prices) {
+      this.prices = prices;
     }
 
     public void setName(String name) {

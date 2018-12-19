@@ -32,7 +32,7 @@ public class FileBasedPurchaseHistoryService implements PurchaseHistoryService {
     }
 
     try {
-      FileUtils.write(new File(filename(site)), OB.writeValueAsString(list));
+      FileUtils.write(new File(filename(site)), OB.writeValueAsString(list), "UTF-8");
     } catch (IOException e) {
       LOGGER.error("Fail to write purchase history file", e);
     }

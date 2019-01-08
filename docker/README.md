@@ -50,7 +50,7 @@ docker
     └── build
         ├── Dockerfile                 <--- to build the application's docker image
         └── libs
-            ├── application.yml        <--- Application config file for deploying docker container
+            ├── application.yaml       <--- Application config file for deploying docker container
             └── web-scraper-0.0.1.jar  <--- Application Jar built with $PROJECT_HOME/gradlew build
 ```
 
@@ -211,12 +211,12 @@ export AWS_ACCOUNT_ID=xxxxxxxxxxxx
 
 #### Set AMAZON-Retated Environment Variables
 ```bash
-% AMAZON_PASSWORD=xxxxxxxxxxxx
-% AMAZON_USERNAME=xxxxxxxxxxxx
+% export AMAZON_USERNAME=xxxxxxxxxxxx
+% export AMAZON_PASSWORD=xxxxxxxxxxxx
 ```
 
 #### Execute Scraper 
 ```bash
 % cd /root/scraper/
-% java -jar web-scraper-0.0.1.jar --spring.config.location=file:application.yml
+% java -jar web-scraper-0.0.1.jar --spring.config.location=file:application.yaml
 ```

@@ -1,34 +1,23 @@
 package com.topcoder.scraper.module.amazon;
 
 import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.DomNode;
-import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
-import com.gargoylesoftware.htmlunit.html.HtmlElement;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.gargoylesoftware.htmlunit.html.HtmlSelect;
 import com.topcoder.scraper.config.AmazonProperty;
-import com.topcoder.scraper.model.ProductInfo;
+import com.topcoder.scraper.exception.FetchPurchaseHistoryListFailure;
 import com.topcoder.scraper.model.PurchaseHistory;
 import com.topcoder.scraper.module.PurchaseHistoryListModule;
+import com.topcoder.scraper.module.amazon.crawler.AmazonAuthenticationCrawler;
+import com.topcoder.scraper.module.amazon.crawler.AmazonAuthenticationCrawlerResult;
+import com.topcoder.scraper.module.amazon.crawler.AmazonPurchaseHistoryListCrawler;
+import com.topcoder.scraper.module.amazon.crawler.AmazonPurchaseHistoryListCrawlerResult;
 import com.topcoder.scraper.service.PurchaseHistoryService;
 import com.topcoder.scraper.service.WebpageService;
 import java.io.IOException;
-import java.text.ParseException;
-import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import static com.topcoder.scraper.util.DateUtils.fromString;
-import static com.topcoder.scraper.util.HtmlUtils.getAnchorHref;
-import static com.topcoder.scraper.util.HtmlUtils.getTextContent;
 
 /**
  * Amazon implementation of PurchaseHistoryListModule
@@ -69,188 +58,20 @@ public class AmazonPurchaseHistoryListModule extends PurchaseHistoryListModule {
 
     Optional<PurchaseHistory> lastPurchaseHistory = purchaseHistoryService.fetchLast(getECName());
 
-    List<PurchaseHistory> list = new LinkedList<>();
-
-    // go to homepage
-    LOGGER.info("goto Home Page");
-    HtmlPage homePage = webClient.getPage(property.getUrl());
-
-    // go to order page
-    LOGGER.info("goto Order Page");
-    HtmlPage page = ((HtmlAnchor) homePage.querySelector(property.getCrawling().getHomePage().getOrdersButton())).click();
-    // XPath Version query
-    //String xxx  = homePage.getFirstByXPath(property.getCrawling().getHomePage().getXXX());
-
-    while (true) {
-      if (page == null || !parsePurchaseHistory(list, page, lastPurchaseHistory)) {
-        break;
-      } else {
-        LOGGER.info("goto Next Page");
-        page = gotoNextPage(page);
-      }
+    AmazonAuthenticationCrawler authenticationCrawler = new AmazonAuthenticationCrawler(getECName(), property, webpageService);
+    AmazonAuthenticationCrawlerResult loginResult = authenticationCrawler.authenticate(webClient, property.getUsername(), property.getPassword());
+    if (!loginResult.isSuccess()) {
+      LOGGER.warn(String.format("Fail to login to %s %s", getECName(), property.getUsername()));
+      throw new FetchPurchaseHistoryListFailure("Login failure");
     }
+
+    AmazonPurchaseHistoryListCrawler crawler = new AmazonPurchaseHistoryListCrawler(getECName(), property, webpageService);
+
+    AmazonPurchaseHistoryListCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClient, lastPurchaseHistory.orElse(null), true);
+    List<PurchaseHistory> list = crawlerResult.getPurchaseHistoryList();
 
     purchaseHistoryService.save(getECName(), list);
   }
 
-  /**
-   * check if next page button exist, or next time range is available
-   *
-   * @return next page if has next page
-   */
-  private HtmlPage gotoNextPage(HtmlPage page) throws IOException {
-    // Try to click next page first
-    HtmlAnchor nextPageAnchor = page.querySelector(property.getCrawling().getPurchaseHistoryListPage().getNextPage());
-    if (nextPageAnchor != null) {
-      return nextPageAnchor.click();
-    }
 
-    // if pagination reaches end, try to go next time period
-    HtmlSelect select = page.querySelector(property.getCrawling().getPurchaseHistoryListPage().getOrderFilter());
-    // XPath Version query
-    //String xxx      = page.getFirstByXPath(property.getCrawling().getPurchaseHistoryListPage().getXXX());
-
-    if (select != null) {
-      if (select.getSelectedIndex() + 1 < select.getOptionSize()) {
-        String optionValue = select.getOption(select.getSelectedIndex() + 1).getValueAttribute();
-        String optionLabel = select.getOption(select.getSelectedIndex() + 1).getText();
-        LOGGER.info("goto " + optionLabel + ":" + optionValue + " Order Page");
-        return webClient.getPage(property.getHistoryUrl() + optionValue);
-      }
-    }
-
-    return null;
-  }
-
-  /**
-   * Parse purchase history from webpage
-   *
-   * @param list purchase history list
-   * @param page html page
-   * @param last last purchase history
-   * @return true if all orders are new, requires checking next page
-   */
-  private boolean parsePurchaseHistory(
-    List<PurchaseHistory> list, HtmlPage page, Optional<PurchaseHistory> last) {
-
-    LOGGER.debug("Parsing page url %s", page.getUrl().toString());
-
-    List<DomNode> orders = page.querySelectorAll(property.getCrawling().getPurchaseHistoryListPage().getOrdersBox());
-    // XPath Version query
-    //List<DomNode> xxx  = page.getByXPath(property.getCrawling().getPurchaseHistoryListPage().getXXX());
-
-    boolean hasNewOrder = orders.stream().allMatch(order -> parseOrder(list, order, last));
-
-    // only save purchase history page is there is new order
-    if (hasNewOrder && orders.size() > 0) {
-      webpageService.save("purchase-history", getECName(), page.getWebResponse().getContentAsString());
-    }
-
-    return hasNewOrder;
-  }
-
-  /**
-   * Parse purchase history from an order element
-   *
-   * The web-scraper assumes the order that orderDate is greater than or equals to last one as `new order`.
-   * If the order is `new order`, fetch process can continue.
-   *
-   * As other important process than above judgement, this method add the order to list if
-   * - the orderNumber doesn't equals to last one.
-   * - the order hasn't pushed in purchase history list yet.
-   *
-   * @param list purchase history list
-   * @param order DomNode for one order
-   * @param last last purchase history
-   * @return true if all orders are new, requires checking next page
-   */
-  private boolean parseOrder(List<PurchaseHistory> list, DomNode order, Optional<PurchaseHistory> last) {
-
-    String date           = getTextContent(order.querySelector(property.getCrawling().getPurchaseHistoryListPage().getOrderDate()));
-    String total          = getTextContent(order.querySelector(property.getCrawling().getPurchaseHistoryListPage().getTotalAmount()));
-    String orderNumber    = getTextContent(order.querySelector(property.getCrawling().getPurchaseHistoryListPage().getOrderNumber()));
-    String deliveryStatus = getTextContent(order.querySelector(property.getCrawling().getPurchaseHistoryListPage().getDeliveryStatus()));
-    List<DomNode> products = order.querySelectorAll(property.getCrawling().getPurchaseHistoryListPage().getProductsBox());
-    // XPath Version query
-    //String xxx          = order.getFirstByXPath(property.getCrawling().getPurchaseHistoryListPage().getXXX());
-    //List<DomNode> xxx   = order.getByXPath(property.getCrawling().getPurchaseHistoryListPage().getXXX());
-
-    List<ProductInfo> productInfoList = products.stream().map(this::parseProduct).collect(Collectors.toList());
-
-    Date orderDate = null;
-    try {
-      orderDate = fromString(date);
-    } catch (ParseException e) {
-    }
-
-    PurchaseHistory ph = new PurchaseHistory(property.getUsername(), orderNumber, orderDate, total, productInfoList, deliveryStatus);
-
-    // check if order is new one.
-    boolean isNewOrder = true;
-    if (last.isPresent() && orderDate != null) {
-      // Fetched orderDate is greater than or equals to last one.
-      int result = orderDate.compareTo((last.get().getOrderDate()));
-      if (result >= 0) {
-        isNewOrder = true;
-      } else {
-        isNewOrder = false;
-      }
-    }
-
-    // check if fetched orderNumber equals to last one.
-    boolean equalToLastOrder = false;
-    if (last.isPresent()) {
-      equalToLastOrder = orderNumber.equals(last.get().getOrderNumber());
-    }
-    // check if the order has already pushed in purchase history list.
-    final String orderNumberTemp = orderNumber;
-    boolean existOrderInList = list.stream().anyMatch(purchaseHistory -> purchaseHistory.getOrderNumber().equals(orderNumberTemp));
-
-    if (isNewOrder && !equalToLastOrder && !existOrderInList) {
-      list.add(ph);
-    }
-
-    return isNewOrder;
-  }
-
-  /**
-   * Parse product info from an product element
-   *
-   * @param product DomNode for one product
-   * @return product info
-   */
-  private ProductInfo parseProduct(DomNode product) {
-
-    HtmlElement productAnchor = product.querySelector(property.getCrawling().getPurchaseHistoryListPage().getProductAnchor());
-    String code        = parseProductCodeFromUrl(getAnchorHref(productAnchor));
-    String name        = getTextContent(productAnchor);
-    String distributor = getTextContent(product.querySelector(property.getCrawling().getPurchaseHistoryListPage().getProductDistributor()));
-    String price       = getTextContent(product.querySelector(property.getCrawling().getPurchaseHistoryListPage().getUnitPrice()));
-    String quantity    = getTextContent(product.querySelector(property.getCrawling().getPurchaseHistoryListPage().getProductQuantity()));
-    // XPath Version query
-    //String xxx       = product.getFirstByXPath(property.getCrawling().getPurchaseHistoryListPage().getXXX());
-
-    if (distributor != null) {
-      distributor = distributor.split(":")[1].trim();
-    }
-
-    int quantityNum = 1;
-    if (quantity != null) {
-      quantityNum = Integer.valueOf(quantity);
-    }
-
-    return new ProductInfo(code, name, price, quantityNum, distributor);
-  }
-
-  private String parseProductCodeFromUrl(String url) {
-    if (url == null) {
-      return null;
-    }
-    Pattern pattern = Pattern.compile("\\/gp\\/product\\/([A-Z0-9]+)\\/");
-    Matcher matcher = pattern.matcher(url);
-    if (matcher.find()) {
-      return matcher.group(1);
-    }
-    return null;
-  }
 }

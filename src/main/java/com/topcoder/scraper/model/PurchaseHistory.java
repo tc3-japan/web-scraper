@@ -3,6 +3,11 @@ package com.topcoder.scraper.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -11,6 +16,7 @@ import java.util.List;
  */
 public class PurchaseHistory {
 
+  private final static ObjectMapper OB = new ObjectMapper();
   /**
    * Represents user id (email / telephone)
    */
@@ -82,6 +88,70 @@ public class PurchaseHistory {
 
   public String getDeliveryStatus() {
     return deliveryStatus;
+  }
+
+  public void setUserId(String userId) {
+    this.userId = userId;
+  }
+
+  public void setOrderNumber(String orderNumber) {
+    this.orderNumber = orderNumber;
+  }
+
+  public void setOrderDate(Date orderDate) {
+    this.orderDate = orderDate;
+  }
+
+  public void setTotalAmount(String totalAmount) {
+    this.totalAmount = totalAmount;
+  }
+
+  public void setProducts(List<ProductInfo> products) {
+    this.products = products;
+  }
+
+  public void setDeliveryStatus(String deliveryStatus) {
+    this.deliveryStatus = deliveryStatus;
+  }
+
+  public static PurchaseHistory fromJson(String jsonString) {
+    if (jsonString == null || jsonString.isEmpty()) {
+      return null;
+    }
+
+    try {
+      return OB.readValue(jsonString, PurchaseHistory.class);
+    } catch (IOException e) {
+      return null;
+    }
+  }
+
+  public String toJson() {
+    try {
+      return OB.writeValueAsString(this);
+    } catch (JsonProcessingException ex) {
+      return null;
+    }
+  }
+
+  public static List<PurchaseHistory> fromJsonToList(String jsonString) {
+    if (jsonString == null || jsonString.isEmpty()) {
+      return null;
+    }
+
+    try {
+      return Arrays.asList(OB.readValue(jsonString, PurchaseHistory[].class));
+    } catch (IOException e) {
+      return null;
+    }
+  }
+
+  public static String toArrayJson(List<PurchaseHistory> list) {
+    try {
+      return OB.writeValueAsString(list);
+    } catch (JsonProcessingException ex) {
+      return null;
+    }
   }
 }
 

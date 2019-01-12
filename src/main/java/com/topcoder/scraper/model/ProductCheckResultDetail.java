@@ -1,66 +1,75 @@
 package com.topcoder.scraper.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Product information model
+ * Product Check Result model
  */
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-public class ProductInfo {
+public class ProductCheckResultDetail {
   private final static ObjectMapper OB = new ObjectMapper();
+
   /**
-   * Represents product code
+   * Represents if result is passed
+   */
+  @JsonIgnore
+  private boolean ok = true;
+
+  /**
+   * Represents check result for product code
    */
   @JsonProperty("product_code")
   private String code;
 
   /**
-   * Represents product name
+   * Represents check result for product name
    */
   @JsonProperty("product_name")
   private String name;
 
   /**
-   * Represents product price
+   * Represents check result for product price
    */
   @JsonProperty("unit_price")
   private String price;
 
   /**
-   * Represents product quantity
+   * Represents check result for product quantity
    */
   @JsonProperty("product_quantity")
-  private int quantity;
+  private String quantity;
 
   /**
-   * Represents product distributor
+   * Represents check result for product distributor
    */
   @JsonProperty("product_distributor")
   private String distributor;
 
+  /**
+   * Represents check result for categories
+   */
   @JsonProperty("categories")
-  private List<String> categoryList = new ArrayList<>();
+  private List<String> categoryList = new LinkedList<>();
 
-  @JsonProperty("rankings")
-  private List<Integer> rankingList = new ArrayList<>();
-
-  public ProductInfo() {
+  public ProductCheckResultDetail() {
   }
 
-  public ProductInfo(String code, String name, String price, Integer quantity, String distributor) {
+  public ProductCheckResultDetail(String code, String name, String price, String quantity, String distributor) {
     this.code = code;
     this.name = name;
     this.price = price;
-    if (quantity != null) {
-      this.quantity = quantity;
-    }
+    this.quantity = quantity;
     this.distributor = distributor;
+  }
+
+  public boolean isOk() {
+    return ok;
   }
 
   public String getCode() {
@@ -75,7 +84,7 @@ public class ProductInfo {
     return price;
   }
 
-  public int getQuantity() {
+  public String getQuantity() {
     return quantity;
   }
 
@@ -87,8 +96,8 @@ public class ProductInfo {
     return categoryList;
   }
 
-  public List<Integer> getRankingList() {
-    return rankingList;
+  public void setOk(boolean ok) {
+    this.ok = ok;
   }
 
   public void setName(String name) {
@@ -99,7 +108,7 @@ public class ProductInfo {
     this.price = price;
   }
 
-  public void setQuantity(int quantity) {
+  public void setQuantity(String quantity) {
     this.quantity = quantity;
   }
 
@@ -115,25 +124,8 @@ public class ProductInfo {
     this.categoryList = categoryList;
   }
 
-  public void setRankingList(List<Integer> rankingList) {
-    this.rankingList = rankingList;
-  }
-
-  public void addCategoryRanking(String category, int ranking) {
+  public void addCategory(String category) {
     this.categoryList.add(category);
-    this.rankingList.add(ranking);
-  }
-
-  public static ProductInfo fromJson(String jsonString) {
-    if (jsonString == null || jsonString.isEmpty()) {
-      return null;
-    }
-
-    try {
-      return OB.readValue(jsonString, ProductInfo.class);
-    } catch (IOException e) {
-      return null;
-    }
   }
 
   public String toJson() {

@@ -44,6 +44,14 @@ For example
 There are several ways to update configuration, for detail, please check spring boot official docs:
 https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html
 
+## Monitor target definition and check items definition
+
+Please check `resources/monitor-target-definition.yaml`
+and `resources/check-items-definition.yaml`
+
+It is required to have environment variable `AMAZON_CHECK_TARGET_KEYS_PASSWORDS`,
+which contains comma separated passwords, which match `check_target_keys` for `purchase_history_list` page.
+The order matters!
 
 ## Local run from source code
 
@@ -97,4 +105,4 @@ If no site is specified, all sites will be run (currently only amazon is impleme
 
 To connect to mysql in docker, please specify host as `0.0.0.0`, see below:
 
-> `mysql --host 0.0.0.0 --port 3306 --user root --password`
+> `mysql --host 0.0.0.0 --port 3306 --user root --password web_scraper`

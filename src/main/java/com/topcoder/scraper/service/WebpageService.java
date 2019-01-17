@@ -10,5 +10,5 @@ public interface WebpageService {
    * @param site site name
    * @param content webpage content
    */
-  void save(String filename, String site, String content);
+  String save(String filename, String site, String content);
 }

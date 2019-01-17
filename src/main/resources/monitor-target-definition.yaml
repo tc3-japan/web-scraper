@@ -1,0 +1,8 @@
+ec-site: amazon.com
+check-pages:
+  - page_name: purchase_history_list
+    check_target_keys:
+      - test@gmail.com
+  - page_name: product_detail
+    check_target_keys:
+      - B006GQYSC8

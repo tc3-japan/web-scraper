@@ -31,6 +31,13 @@ amazon:
       passwordInput: "input#ap_password"
       submitButton:  "input#signInSubmit"
 
+      captchaInput1st:  "input#captchacharacters"
+      captchaImage1st:  "body > div > div.a-row.a-spacing-double-large > div.a-section > div > div > form > div.a-row.a-spacing-large > div > div > div.a-row.a-text-center > img"
+      captchaSubmit1st: "body > div > div.a-row.a-spacing-double-large > div.a-section > div > div > form > div.a-section.a-spacing-extra-large > div > span > span > button"
+
+      captchaInput2nd:  "input#auth-captcha-guess"
+      captchaImage2nd:  "div#auth-captcha-image-container > img"
+
     homePage:
       ordersButton: "#nav-orders"
       # XPath Version

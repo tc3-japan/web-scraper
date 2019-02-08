@@ -25,6 +25,12 @@ public class AmazonProperty {
     private String passwordInput;
     private String submitButton;
 
+    private String captchaInput1st;
+    private String captchaInput2nd;
+    private String captchaImage1st;
+    private String captchaImage2nd;
+    private String captchaSubmit1st;
+
     public String getEmailInput() {
       return emailInput;
     }
@@ -41,6 +47,26 @@ public class AmazonProperty {
       return submitButton;
     }
 
+    public String getCaptchaInput1st() {
+      return captchaInput1st;
+    }
+
+    public String getCaptchaInput2nd() {
+      return captchaInput2nd;
+    }
+
+    public String getCaptchaImage1st() {
+      return captchaImage1st;
+    }
+
+    public String getCaptchaImage2nd() {
+      return captchaImage2nd;
+    }
+
+    public String getCaptchaSubmit1st() {
+      return captchaSubmit1st;
+    }
+
     public void setEmailInput(String emailInput) {
       this.emailInput = emailInput;
     }
@@ -55,6 +81,26 @@ public class AmazonProperty {
 
     public void setSubmitButton(String submitButton) {
       this.submitButton = submitButton;
+    }
+
+    public void setCaptchaInput1st(String captchaInput1st) {
+      this.captchaInput1st = captchaInput1st;
+    }
+
+    public void setCaptchaInput2nd(String captchaInput2nd) {
+      this.captchaInput2nd = captchaInput2nd;
+    }
+
+    public void setCaptchaImage1st(String captchaImage1st) {
+      this.captchaImage1st = captchaImage1st;
+    }
+
+    public void setCaptchaImage2nd(String captchaImage2nd) {
+      this.captchaImage2nd = captchaImage2nd;
+    }
+
+    public void setCaptchaSubmit1st(String captchaSubmit1st) {
+      this.captchaSubmit1st = captchaSubmit1st;
     }
   }
 

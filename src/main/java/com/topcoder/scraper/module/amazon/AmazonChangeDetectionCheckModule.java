@@ -131,7 +131,7 @@ public class AmazonChangeDetectionCheckModule extends ChangeDetectionCheckModule
       .filter((page) -> page.getPageName().equals(Consts.PURCHASE_HISTORY_LIST_PAGE_NAME))
       .findFirst().orElseThrow(RuntimeException::new);
 
-    NormalDataDAO normalDataDAO = normalDataRepository.findFirstByEcSiteAndPageAndPageKey(getECName(), Consts.PURCHASE_HISTORY_LIST_PAGE_NAME, null);
+    NormalDataDAO normalDataDAO = normalDataRepository.findFirstByEcSiteAndPageAndPageKey(getECName(), Consts.PURCHASE_HISTORY_LIST_PAGE_NAME, pageKey);
     if (normalDataDAO == null) {
       // Could not find in database.
       // It's new product.

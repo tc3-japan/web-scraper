@@ -17,6 +17,6 @@ check_pages:
         product_name: Equivalence check
         product_quantity: Equivalence check
         unit_price: Format check:^\$[0-9.]+
-        categories: Format check:^[A-Za-z '&>]+
+        categories: Format check:^[A-Za-z ,'&>]+
         product_distributor: Equivalence check
 

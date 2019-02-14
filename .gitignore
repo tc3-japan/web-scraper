@@ -8,7 +8,7 @@
 /out/
 
 # Output
-/amazon/
+/logs/
 /build/
 /docker/scraper/build/libs/web-scraper*.jar
 

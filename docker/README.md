@@ -68,8 +68,8 @@ docker
 }
 ```
 __xxxxxxxxxxxx__ here is AWS_ACCOUNT_ID. Please remember that.
-871766548585
-871766548585.dkr.ecr.ap-northeast-1.amazonaws.com/scraper-app
+
+xxxxxxxxxxxx.dkr.ecr.ap-northeast-1.amazonaws.com/scraper-app
 
 ### Step 2: Build the Docker Image
 ```bash

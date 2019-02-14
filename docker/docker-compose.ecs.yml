@@ -8,7 +8,8 @@ services:
       AMAZON_PASSWORD: password
     links:
       - scraper-db
-    #volumes:
+    volumes:
+      - "/home/ec2-user/docker/scraper/logs:/root/scraper/logs"
     #  - "../build/dl-html:/scraper/dl-html"
     #  - "../build/log:/var/log/scraper"
     command: /bin/sh -c "while true; do echo hello scraper-app; sleep 10; done"

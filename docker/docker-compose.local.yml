@@ -15,7 +15,8 @@ services:
         ipv4_address: 10.1.1.1
     depends_on:
       - scraper-db
-    #volumes:
+    volumes:
+      - "../build/docker/scraper/logs:/root/scraper/logs"
     #  - "../build/dl-html:/scraper/dl-html"
     #  - "../build/log:/var/log/scraper"
     tty: true

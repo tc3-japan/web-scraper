@@ -15,3 +15,9 @@
 # Work
 /work/
 
+# Config
+.classpath
+.project
+.settings/
+
+

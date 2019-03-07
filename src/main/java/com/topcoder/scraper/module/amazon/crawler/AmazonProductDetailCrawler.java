@@ -123,11 +123,10 @@ public class AmazonProductDetailCrawler {
     for (String data : categoryInfoList) {
 
       // categoryInfo = [rank] [in] [category path]
-      // in may contain ascii char number 160, so replace it with space
+      // it may contain ascii char number 160, so replace it with space
       String[] categoryInfo = data.replace("\u00A0", " ").split(" ", 3);
-
-      // remove possible leading # and comma, then convert to int
-      int rank = Integer.valueOf(categoryInfo[0].replace("#", "").replace(",", ""));
+      String rankNumberStr = categoryInfo[0].replaceAll("[^\\d.]", "");
+      int rank = Integer.valueOf(rankNumberStr);
 
       // remove See [Tt]op 100 info from category path
       String path = categoryInfo[2];

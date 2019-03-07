@@ -15,9 +15,9 @@ spring:
 amazon:
   username: ${AMAZON_USERNAME:username}
   password: ${AMAZON_PASSWORD:password}
-  url: https://www.amazon.com/
-  historyUrl: https://www.amazon.com/gp/your-account/order-history?opt=ab&digitalOrders=1&unifiedOrders=1&returnTo=&orderFilter=
-  productUrl: https://www.amazon.com/gp/product/
+  url: https://www.amazon.co.jp/
+  historyUrl: https://www.amazon.co.jp/gp/your-account/order-history?opt=ab&digitalOrders=1&unifiedOrders=1&returnTo=&orderFilter=
+  productUrl: https://www.amazon.co.jp/gp/product/
 
   crawling:
     # Front page button

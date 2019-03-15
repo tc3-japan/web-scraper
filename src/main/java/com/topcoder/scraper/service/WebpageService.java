@@ -15,4 +15,6 @@ public interface WebpageService {
   String save(String filename, String site, String content);
 
   String saveImage(String filename, String fileExt, String site, HtmlImage htmlImage);
+
+  String toBase64Image(HtmlImage htmlImage);
 }

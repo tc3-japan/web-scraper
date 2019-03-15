@@ -1,15 +1,15 @@
 package com.topcoder.scraper.module.amazon.crawler;
 
 import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.DomNode;
-import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
-import com.gargoylesoftware.htmlunit.html.HtmlElement;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.gargoylesoftware.htmlunit.html.HtmlSelect;
+import com.gargoylesoftware.htmlunit.html.*;
+import com.topcoder.api.util.Common;
 import com.topcoder.scraper.config.AmazonProperty;
 import com.topcoder.scraper.model.ProductInfo;
 import com.topcoder.scraper.model.PurchaseHistory;
 import com.topcoder.scraper.service.WebpageService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Date;
@@ -18,8 +18,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static com.topcoder.scraper.util.DateUtils.fromString;
 import static com.topcoder.scraper.util.HtmlUtils.getAnchorHref;
@@ -52,17 +50,9 @@ public class AmazonPurchaseHistoryListCrawler {
   public AmazonPurchaseHistoryListCrawlerResult fetchPurchaseHistoryList(WebClient webClient, PurchaseHistory lastPurchaseHistory, boolean saveHtml) throws IOException {
     List<PurchaseHistory> list = new LinkedList<>();
     List<String> pathList = new LinkedList<>();
-
-    // go to homepage
-    LOGGER.info("goto Home Page");
-    HtmlPage homePage = webClient.getPage(property.getUrl());
-
-    // go to order page
     LOGGER.info("goto Order Page");
-    HtmlPage page = ((HtmlAnchor) homePage.querySelector(property.getCrawling().getHomePage().getOrdersButton())).click();
-    // XPath Version query
-    //String xxx  = homePage.getFirstByXPath(property.getCrawling().getHomePage().getXXX());
-
+    HtmlPage page = webClient.getPage(Common.wrapURL(webClient, property.getHistoryUrl()));
+    webpageService.save("order-home", siteName, page.getWebResponse().getContentAsString());
     while (true) {
       if (page == null || !parsePurchaseHistory(list, page, lastPurchaseHistory, saveHtml, pathList)) {
         break;
@@ -116,7 +106,7 @@ public class AmazonPurchaseHistoryListCrawler {
     List<PurchaseHistory> list, HtmlPage page,
     PurchaseHistory last, boolean saveHtml, List<String> pathList) {
 
-    LOGGER.debug("Parsing page url %s", page.getUrl().toString());
+    LOGGER.debug("Parsing page url " + page.getUrl().toString());
 
     List<DomNode> orders = page.querySelectorAll(property.getCrawling().getPurchaseHistoryListPage().getOrdersBox());
     // XPath Version query

@@ -2,171 +2,175 @@ package com.topcoder.scraper.dao;
 
 import com.topcoder.scraper.converter.JpaConverterPurchaseHistoryJson;
 import com.topcoder.scraper.model.PurchaseHistory;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.persistence.*;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "purchase_history")
 public class PurchaseHistoryDAO {
 
-    /**
-     * Purchase history id
-     */
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+  /**
+   * Purchase history id
+   */
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private int id;
 
-    /**
-     * EC Site name
-     */
-    @Column(name = "ec_site", length = 32)
-    private String ecSite;
+  /**
+   * EC Site name
+   */
+  @Column(name = "ec_site", length = 32)
+  private String ecSite;
 
-    /**
-     * User id (email / telephone)
-     */
-    @Column(name = "user_id", length = 64)
-    private String userId;
+  /**
+   * UserDAO id (email / telephone)
+   */
+  @Column(name = "user_id", length = 64)
+  private String userId;
 
-    /**
-     * Order number
-     */
-    @Column(name = "order_no")
-    private String orderNo;
 
-    /**
-     * Order date
-     */
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "order_date")
-    private Date orderDate;
+  /**
+   * ecSiteAccount Dao id
+   */
+  @Getter
+  @Setter
+  @Column(name = "ec_site_account_id")
+  private Integer ecSiteAccountId;
 
-    /**
-     * Total amount
-     */
-    @Column(name = "total_amount")
-    private String totalAmount;
+  /**
+   * Order number
+   */
+  @Column(name = "order_no")
+  private String orderNo;
 
-    /**
-     * Delivery status
-     */
-    @Column(name = "delivery_status")
-    private String deliveryStatus;
+  /**
+   * Order date
+   */
+  @Temporal(TemporalType.TIMESTAMP)
+  @Column(name = "order_date")
+  private Date orderDate;
 
-    /**
-     * Update at
-     */
-    @Column(name = "update_at")
-    private Date updateAt;
+  /**
+   * Total amount
+   */
+  @Column(name = "total_amount")
+  private String totalAmount;
 
-    /**
-     * Purchase history as json
-     */
-    @Column(name = "purchase_history_info", columnDefinition = "json")
-    @Convert(converter = JpaConverterPurchaseHistoryJson.class)
-    private PurchaseHistory purchaseHistory;
+  /**
+   * Delivery status
+   */
+  @Column(name = "delivery_status")
+  private String deliveryStatus;
 
-    @OneToMany(mappedBy = "purchaseHistory")
-    private Set<PurchaseProductDAO> purchaseProducts = new HashSet<>();
+  /**
+   * Update at
+   */
+  @Column(name = "update_at")
+  private Date updateAt;
 
-    public PurchaseHistoryDAO(String ecSite, PurchaseHistory purchaseHistory) {
-        this.ecSite = ecSite;
-        this.purchaseHistory = purchaseHistory;
-        this.userId = purchaseHistory.getUserId();
-        this.orderNo = purchaseHistory.getOrderNumber();
-        this.orderDate = purchaseHistory.getOrderDate();
-        this.totalAmount = purchaseHistory.getTotalAmount();
-        this.deliveryStatus = purchaseHistory.getDeliveryStatus();
-        this.updateAt = new Date();
-    }
+  /**
+   * Purchase history as json
+   */
+  @Column(name = "purchase_history_info", columnDefinition = "json")
+  @Convert(converter = JpaConverterPurchaseHistoryJson.class)
+  private PurchaseHistory purchaseHistory;
 
-    public PurchaseHistoryDAO() {
-    }
+  @OneToMany(mappedBy = "purchaseHistory")
+  private Set<PurchaseProductDAO> purchaseProducts = new HashSet<>();
 
-    public void setId(int id) {
-        this.id = id;
-    }
+  public PurchaseHistoryDAO(String ecSite, PurchaseHistory purchaseHistory) {
+    this.ecSite = ecSite;
+    this.purchaseHistory = purchaseHistory;
+    this.userId = purchaseHistory.getUserId();
+    this.orderNo = purchaseHistory.getOrderNumber();
+    this.orderDate = purchaseHistory.getOrderDate();
+    this.totalAmount = purchaseHistory.getTotalAmount();
+    this.deliveryStatus = purchaseHistory.getDeliveryStatus();
+    this.ecSiteAccountId = purchaseHistory.getEcSiteAccountId();
+    this.updateAt = new Date();
+  }
 
-    public void setPurchaseHistory(PurchaseHistory purchaseHistory) {
-        this.purchaseHistory = purchaseHistory;
-    }
+  public PurchaseHistoryDAO() {
+  }
 
-    public void setEcSite(String ecSite) {
-        this.ecSite = ecSite;
-    }
+  public void setId(int id) {
+    this.id = id;
+  }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
+  public void setPurchaseHistory(PurchaseHistory purchaseHistory) {
+    this.purchaseHistory = purchaseHistory;
+  }
 
-    public void setOrderNo(String orderNo) {
-        this.orderNo = orderNo;
-    }
+  public void setEcSite(String ecSite) {
+    this.ecSite = ecSite;
+  }
 
-    public void setOrderDate(Date orderDate) {
-        this.orderDate = orderDate;
-    }
+  public void setUserId(String userId) {
+    this.userId = userId;
+  }
 
-    public void setTotalAmount(String totalAmount) {
-        this.totalAmount = totalAmount;
-    }
+  public void setOrderNo(String orderNo) {
+    this.orderNo = orderNo;
+  }
 
-    public void setDeliveryStatus(String deliveryStatus) {
-        this.deliveryStatus = deliveryStatus;
-    }
+  public void setOrderDate(Date orderDate) {
+    this.orderDate = orderDate;
+  }
 
-    public void setUpdateAt(Date updateAt) {
-        this.updateAt = updateAt;
-    }
+  public void setTotalAmount(String totalAmount) {
+    this.totalAmount = totalAmount;
+  }
 
-    public String getEcSite() {
-        return ecSite;
-    }
+  public void setDeliveryStatus(String deliveryStatus) {
+    this.deliveryStatus = deliveryStatus;
+  }
 
-    public String getUserId() {
-        return userId;
-    }
+  public void setUpdateAt(Date updateAt) {
+    this.updateAt = updateAt;
+  }
 
-    public String getOrderNo() {
-        return orderNo;
-    }
+  public String getEcSite() {
+    return ecSite;
+  }
 
-    public Date getOrderDate() {
-        return orderDate;
-    }
+  public String getUserId() {
+    return userId;
+  }
 
-    public String getTotalAmount() {
-        return totalAmount;
-    }
+  public String getOrderNo() {
+    return orderNo;
+  }
 
-    public String getDeliveryStatus() {
-        return deliveryStatus;
-    }
+  public Date getOrderDate() {
+    return orderDate;
+  }
 
-    public Date getUpdateAt() {
-        return updateAt;
-    }
+  public String getTotalAmount() {
+    return totalAmount;
+  }
 
-    public Set<PurchaseProductDAO> getPurchaseProducts() {
-        return purchaseProducts;
-    }
+  public String getDeliveryStatus() {
+    return deliveryStatus;
+  }
 
-    public int getId() {
-        return id;
-    }
+  public Date getUpdateAt() {
+    return updateAt;
+  }
 
-    public PurchaseHistory getPurchaseHistory() {
-        return purchaseHistory;
-    }
+  public Set<PurchaseProductDAO> getPurchaseProducts() {
+    return purchaseProducts;
+  }
+
+  public int getId() {
+    return id;
+  }
+
+  public PurchaseHistory getPurchaseHistory() {
+    return purchaseHistory;
+  }
 }

@@ -8,22 +8,18 @@ import com.topcoder.scraper.dao.NormalDataDAO;
 import com.topcoder.scraper.model.ProductInfo;
 import com.topcoder.scraper.model.PurchaseHistory;
 import com.topcoder.scraper.module.ChangeDetectionInitModule;
-import com.topcoder.scraper.module.amazon.crawler.AmazonAuthenticationCrawler;
-import com.topcoder.scraper.module.amazon.crawler.AmazonAuthenticationCrawlerResult;
-import com.topcoder.scraper.module.amazon.crawler.AmazonProductDetailCrawler;
-import com.topcoder.scraper.module.amazon.crawler.AmazonProductDetailCrawlerResult;
-import com.topcoder.scraper.module.amazon.crawler.AmazonPurchaseHistoryListCrawler;
-import com.topcoder.scraper.module.amazon.crawler.AmazonPurchaseHistoryListCrawlerResult;
+import com.topcoder.scraper.module.amazon.crawler.*;
 import com.topcoder.scraper.repository.NormalDataRepository;
 import com.topcoder.scraper.service.WebpageService;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Amazon implementation for ChangeDetectionInitModule
@@ -79,6 +75,7 @@ public class AmazonChangeDetectionInitModule extends ChangeDetectionInitModule {
           String username = usernameList.get(i);
           String password = passwordList.get(i);
 
+          LOGGER.info("init ...");
           AmazonAuthenticationCrawler authenticationCrawler = new AmazonAuthenticationCrawler(getECName(), property, webpageService);
           AmazonAuthenticationCrawlerResult loginResult = authenticationCrawler.authenticate(webClient, username, password);
           if (!loginResult.isSuccess()) {

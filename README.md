@@ -6,6 +6,7 @@
 - Gradle 3.5
 - Spring Boot 1.5.7
 - Docker
+- Mysql 8+ (if you did not use docker mysql)
 
 ## Configuration
 
@@ -15,19 +16,9 @@ The app configuration can be changed in `./src/main/resources/application.yaml`
 
 The following variables need to be configured correctly:
 
-- `amazon.username` the username for amazon
-- `amazon.password` the password for amazon
-
 - `spring.datasource.url` mysql url
 - `spring.datasource.username` mysql username
 - `spring.datasource.password` mysql password
-
-### environment variables
-
-Values could be configured by environment variables also:
-
-- `AMAZON_USERNAME`
-- `AMAZON_PASSWORD`
 
 ### arguments
 
@@ -35,7 +26,7 @@ Values could be configured by providing arguments:
 
 For example
 
-`java -Damazon.username=helloworld -jar build/libs/web-scraper-0.0.1.jar`
+`java -Dspring.datasource.url= -jar build/libs/web-scraper-0.0.1.jar`
 
 ### property file
 
@@ -61,9 +52,11 @@ First, run mysql inside docker
 
 In a new terminal, run
 
-`./gradlew bootRun -Pargs=--batch=purchase_history`
+`./gradlew bootRun -Pargs=--batch=purchase_history` to fetch purchase histories
 
-`./gradlew bootRun -Pargs=--batch=product`
+`./gradlew bootRun -Pargs=--batch=product ` to fetch products (purchased products)
+
+`./gradlew bootRun -Pargs=--rest ` to run rest api server
 
 
 To specify site, specify site argument
@@ -74,24 +67,28 @@ If no site is specified, all sites will be run (currently only amazon is impleme
 
 ## Local run from jar
 
-- `./gradlew build`
-- `java -jar build/libs/web-scraper-0.0.1.jar --batch=purchase_history`
+- `./gradlew clean build -x test` to build jar file
+- `java -jar build/libs/web-scraper-develop-0.0.1.jar --batch=purchase_history`
 
 To specify site, specify site argument
 
-- `java -jar build/libs/web-scraper-0.0.1.jar --batch=purchase_history --site=amazon`
+- `java -jar build/libs/web-scraper-develop-0.0.1.jar --batch=purchase_history --site=amazon`, If no site is specified, all sites will be run (currently only amazon is implemented)
+- or use `java -jar build/libs/web-scraper-develop-0.0.1.jar --rest` to run rest api server, default port is 8085
 
-If no site is specified, all sites will be run (currently only amazon is implemented)
+## Impor test data
 
+after success run rest api server, the databse table will be auto created,  now
 
-## Verification
+import *./docs/test-data.sql* into mysql database (web_scraper database)
+
+## Scraper Verification
 
 ### File based purchase history 
 
 - change configure, updating amazon username and password either in configuration file, or through environment
-	variables, or through other way
+  variables, or through other way
 - run though gradle, or jar file
-- check `./amazon` folder, `login-*.html` are initial pages after login and `history-*.json` are purchase histories.
+- check `./logs/amazon` folder, `login-*.html` are initial pages after login and `history-*.json` are purchase histories.
 - to verify incremental save, edit history json file, remove one order. Then rerun application, there should be a new json file containing removed order. 
 
 ### Mysql purchase history
@@ -100,7 +97,7 @@ If no site is specified, all sites will be run (currently only amazon is impleme
     changes could be made either in configuration file, or through environment
 	variables, or through other way
 - run though gradle, or jar file
-- check `./amazon` folder, `login-*.html` are initial pages after login and `purchase-history-*.json` are purchase histories pages.
+- check `./logs/amazon` folder, `login-*.html` are initial pages after login and `purchase-history-*.json` are purchase histories pages.
 - to verify incremental save, delete last record in mysql. Then rerun application, there should be one new row containing removed order. 
 
 To connect to mysql in docker, please specify host as `0.0.0.0`, see below:

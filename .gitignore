@@ -1,16 +1,17 @@
 # Gradle
-.gradle/
-/gradle/
+web-scraper-server/.gradle/
+web-scraper-server/gradle/
 
 # IDE
 .idea/
+web-scraper-server/.idea/
 *.iml
 /out/
 
 # Output
-/logs/
-/build/
-/docker/scraper/build/libs/web-scraper*.jar
+web-scraper-server/logs/
+web-scraper-server/build/
+web-scraper-server/docker/scraper/build/libs/web-scraper*.jar
 
 # Work
 /work/
@@ -21,4 +22,8 @@
 .settings/
 input.txt
 
-
+# Stop Mac OS from Littering
+.DS_Store
+._.DS_Store
+**/.DS_Store
+**/._.DS_Store

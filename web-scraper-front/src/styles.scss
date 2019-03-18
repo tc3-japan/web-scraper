@@ -1,0 +1,27 @@
+.app-button {
+  outline: none;
+  background-color: white;
+  border-radius: 2px;
+  border: 1px solid #1167db;
+  font-size: 14px;
+  font-weight: bold;
+  color: #1167db;
+  padding: 5px 12px 5px 12px;
+  cursor: pointer;
+  opacity: 1;
+
+  &:disabled {
+    cursor: not-allowed;
+    background-color: gainsboro;
+    opacity: 0.6;
+  }
+
+  &:active {
+    color: #0f5ac0;
+    border: 1px solid #0f5ac0;
+  }
+
+  &:hover {
+    opacity: 0.7;
+  }
+}

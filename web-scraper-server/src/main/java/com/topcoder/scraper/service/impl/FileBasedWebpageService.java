@@ -2,7 +2,7 @@ package com.topcoder.scraper.service.impl;
 
 import com.gargoylesoftware.htmlunit.html.HtmlImage;
 import com.topcoder.scraper.service.WebpageService;
-import com.topcoder.scraper.util.DateUtils;
+import com.topcoder.common.util.DateUtils;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -12,8 +12,8 @@ import com.gargoylesoftware.htmlunit.html.HtmlPasswordInput;
 import com.gargoylesoftware.htmlunit.html.HtmlRadioButtonInput;
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
-import com.topcoder.api.entity.CodeType;
-import com.topcoder.scraper.config.AmazonProperty;
+import com.topcoder.common.model.CodeType;
+import com.topcoder.common.config.AmazonProperty;
 import com.topcoder.scraper.module.AuthStep;
 import com.topcoder.scraper.service.WebpageService;
 

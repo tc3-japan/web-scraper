@@ -1,6 +1,6 @@
 package com.topcoder.scraper.module.amazon.crawler;
 
-import com.topcoder.scraper.model.ProductInfo;
+import com.topcoder.common.model.ProductInfo;
 
 /**
  * Result from AmazonProductDetailCrawler

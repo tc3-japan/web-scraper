@@ -1,6 +1,6 @@
 package com.topcoder.scraper.module.amazon.crawler;
 
-import com.topcoder.scraper.model.PurchaseHistory;
+import com.topcoder.common.model.PurchaseHistory;
 import java.util.List;
 
 /**

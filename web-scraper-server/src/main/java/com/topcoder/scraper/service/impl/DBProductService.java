@@ -1,10 +1,10 @@
 package com.topcoder.scraper.service.impl;
 
-import com.topcoder.scraper.dao.CategoryDAO;
-import com.topcoder.scraper.dao.ProductDAO;
-import com.topcoder.scraper.model.ProductInfo;
-import com.topcoder.scraper.repository.CategoryRepository;
-import com.topcoder.scraper.repository.ProductRepository;
+import com.topcoder.common.dao.CategoryDAO;
+import com.topcoder.common.dao.ProductDAO;
+import com.topcoder.common.model.ProductInfo;
+import com.topcoder.common.repository.CategoryRepository;
+import com.topcoder.common.repository.ProductRepository;
 import com.topcoder.scraper.service.ProductService;
 import java.util.Date;
 import java.util.List;

@@ -1,12 +1,12 @@
-package com.topcoder.scraper.util;
+package com.topcoder.common.util;
 
 import com.topcoder.scraper.Consts;
-import com.topcoder.scraper.config.CheckItemsDefinitionProperty;
-import com.topcoder.scraper.config.YamlPropertySourceFactory;
-import com.topcoder.scraper.model.ProductCheckResultDetail;
-import com.topcoder.scraper.model.ProductInfo;
-import com.topcoder.scraper.model.PurchaseHistory;
-import com.topcoder.scraper.model.PurchaseHistoryCheckResultDetail;
+import com.topcoder.common.config.CheckItemsDefinitionProperty;
+import com.topcoder.common.config.YamlPropertySourceFactory;
+import com.topcoder.common.model.ProductCheckResultDetail;
+import com.topcoder.common.model.ProductInfo;
+import com.topcoder.common.model.PurchaseHistory;
+import com.topcoder.common.model.PurchaseHistoryCheckResultDetail;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;

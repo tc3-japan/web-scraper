@@ -4,8 +4,8 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.topcoder.scraper.config.AmazonProperty;
-import com.topcoder.scraper.model.ProductInfo;
+import com.topcoder.common.config.AmazonProperty;
+import com.topcoder.common.model.ProductInfo;
 import com.topcoder.scraper.service.WebpageService;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,9 +17,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.util.Pair;
 
-import static com.topcoder.scraper.util.HtmlUtils.findFirstElementInSelectors;
-import static com.topcoder.scraper.util.HtmlUtils.getTextContent;
-import static com.topcoder.scraper.util.HtmlUtils.getTextContentWithoutDuplicatedSpaces;
+import static com.topcoder.common.util.HtmlUtils.findFirstElementInSelectors;
+import static com.topcoder.common.util.HtmlUtils.getTextContent;
+import static com.topcoder.common.util.HtmlUtils.getTextContentWithoutDuplicatedSpaces;
 
 /**
  * Crawl amazon product detail page

@@ -1,11 +1,15 @@
 package com.topcoder.scraper.module.amazon.crawler;
 
 import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.*;
-import com.topcoder.api.util.Common;
-import com.topcoder.scraper.config.AmazonProperty;
-import com.topcoder.scraper.model.ProductInfo;
-import com.topcoder.scraper.model.PurchaseHistory;
+import com.gargoylesoftware.htmlunit.html.DomNode;
+import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
+import com.gargoylesoftware.htmlunit.html.HtmlElement;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.html.HtmlSelect;
+import com.topcoder.common.util.Common;
+import com.topcoder.common.config.AmazonProperty;
+import com.topcoder.common.model.ProductInfo;
+import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.scraper.service.WebpageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,9 +23,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static com.topcoder.scraper.util.DateUtils.fromString;
-import static com.topcoder.scraper.util.HtmlUtils.getAnchorHref;
-import static com.topcoder.scraper.util.HtmlUtils.getTextContent;
+import static com.topcoder.common.util.DateUtils.fromString;
+import static com.topcoder.common.util.HtmlUtils.getAnchorHref;
+import static com.topcoder.common.util.HtmlUtils.getTextContent;
 
 /**
  * Crawl amazon purchase history page

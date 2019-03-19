@@ -2,9 +2,9 @@ package com.topcoder.scraper.service.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.topcoder.scraper.model.PurchaseHistory;
+import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.scraper.service.PurchaseHistoryService;
-import com.topcoder.scraper.util.DateUtils;
+import com.topcoder.common.util.DateUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;

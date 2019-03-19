@@ -1,15 +1,20 @@
 package com.topcoder.scraper.module.amazon;
 
 import com.gargoylesoftware.htmlunit.WebClient;
+import com.topcoder.common.dao.NormalDataDAO;
+import com.topcoder.common.repository.NormalDataRepository;
 import com.topcoder.scraper.Consts;
-import com.topcoder.scraper.config.AmazonProperty;
-import com.topcoder.scraper.config.MonitorTargetDefinitionProperty;
-import com.topcoder.scraper.dao.NormalDataDAO;
-import com.topcoder.scraper.model.ProductInfo;
-import com.topcoder.scraper.model.PurchaseHistory;
+import com.topcoder.common.config.AmazonProperty;
+import com.topcoder.common.config.MonitorTargetDefinitionProperty;
+import com.topcoder.common.model.ProductInfo;
+import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.scraper.module.ChangeDetectionInitModule;
-import com.topcoder.scraper.module.amazon.crawler.*;
-import com.topcoder.scraper.repository.NormalDataRepository;
+import com.topcoder.scraper.module.amazon.crawler.AmazonAuthenticationCrawler;
+import com.topcoder.scraper.module.amazon.crawler.AmazonAuthenticationCrawlerResult;
+import com.topcoder.scraper.module.amazon.crawler.AmazonProductDetailCrawler;
+import com.topcoder.scraper.module.amazon.crawler.AmazonProductDetailCrawlerResult;
+import com.topcoder.scraper.module.amazon.crawler.AmazonPurchaseHistoryListCrawler;
+import com.topcoder.scraper.module.amazon.crawler.AmazonPurchaseHistoryListCrawlerResult;
 import com.topcoder.scraper.service.WebpageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

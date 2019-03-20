@@ -1,7 +1,7 @@
 package com.topcoder.scraper.service;
 
-import com.topcoder.scraper.dao.ProductDAO;
-import com.topcoder.scraper.model.ProductInfo;
+import com.topcoder.common.dao.ProductDAO;
+import com.topcoder.common.model.ProductInfo;
 import java.util.List;
 
 /**

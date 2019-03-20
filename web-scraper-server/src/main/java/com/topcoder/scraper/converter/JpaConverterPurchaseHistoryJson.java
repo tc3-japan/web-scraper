@@ -1,6 +1,6 @@
 package com.topcoder.scraper.converter;
 
-import com.topcoder.scraper.model.PurchaseHistory;
+import com.topcoder.common.model.PurchaseHistory;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;

@@ -1,12 +1,12 @@
 package com.topcoder.scraper.module.amazon;
 
 import com.gargoylesoftware.htmlunit.WebClient;
-import com.topcoder.api.dao.ECSiteAccountDAO;
-import com.topcoder.api.entity.AuthStatusType;
-import com.topcoder.api.repository.ECSiteAccountRepository;
-import com.topcoder.api.util.Common;
-import com.topcoder.scraper.config.AmazonProperty;
-import com.topcoder.scraper.model.PurchaseHistory;
+import com.topcoder.common.dao.ECSiteAccountDAO;
+import com.topcoder.common.model.AuthStatusType;
+import com.topcoder.common.repository.ECSiteAccountRepository;
+import com.topcoder.common.util.Common;
+import com.topcoder.common.config.AmazonProperty;
+import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.scraper.module.PurchaseHistoryListModule;
 import com.topcoder.scraper.module.amazon.crawler.AmazonPurchaseHistoryListCrawler;
 import com.topcoder.scraper.module.amazon.crawler.AmazonPurchaseHistoryListCrawlerResult;

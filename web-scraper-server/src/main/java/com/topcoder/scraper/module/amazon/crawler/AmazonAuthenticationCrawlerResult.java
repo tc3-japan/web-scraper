@@ -1,6 +1,6 @@
 package com.topcoder.scraper.module.amazon.crawler;
 
-import com.topcoder.api.entity.CodeType;
+import com.topcoder.common.model.CodeType;
 import lombok.Data;
 
 /**

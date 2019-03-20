@@ -1,13 +1,13 @@
 package com.topcoder.scraper.service.impl;
 
-import com.topcoder.scraper.dao.ProductDAO;
-import com.topcoder.scraper.dao.PurchaseHistoryDAO;
-import com.topcoder.scraper.dao.PurchaseProductDAO;
-import com.topcoder.scraper.model.ProductInfo;
-import com.topcoder.scraper.model.PurchaseHistory;
-import com.topcoder.scraper.repository.ProductRepository;
-import com.topcoder.scraper.repository.PurchaseHistoryRepository;
-import com.topcoder.scraper.repository.PurchaseProductRepository;
+import com.topcoder.common.dao.ProductDAO;
+import com.topcoder.common.dao.PurchaseHistoryDAO;
+import com.topcoder.common.dao.PurchaseProductDAO;
+import com.topcoder.common.model.ProductInfo;
+import com.topcoder.common.model.PurchaseHistory;
+import com.topcoder.common.repository.ProductRepository;
+import com.topcoder.common.repository.PurchaseHistoryRepository;
+import com.topcoder.common.repository.PurchaseProductRepository;
 import com.topcoder.scraper.service.PurchaseHistoryService;
 import java.util.ArrayList;
 import java.util.Date;

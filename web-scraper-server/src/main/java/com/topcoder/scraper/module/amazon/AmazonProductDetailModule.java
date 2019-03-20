@@ -1,9 +1,9 @@
 package com.topcoder.scraper.module.amazon;
 
 import com.gargoylesoftware.htmlunit.WebClient;
-import com.topcoder.scraper.config.AmazonProperty;
-import com.topcoder.scraper.dao.ProductDAO;
-import com.topcoder.scraper.model.ProductInfo;
+import com.topcoder.common.config.AmazonProperty;
+import com.topcoder.common.dao.ProductDAO;
+import com.topcoder.common.model.ProductInfo;
 import com.topcoder.scraper.module.ProductDetailModule;
 import com.topcoder.scraper.module.amazon.crawler.AmazonProductDetailCrawler;
 import com.topcoder.scraper.module.amazon.crawler.AmazonProductDetailCrawlerResult;

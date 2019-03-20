@@ -1,7 +1,7 @@
 package com.topcoder.scraper.converter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.topcoder.scraper.model.ProductInfo;
+import com.topcoder.common.model.ProductInfo;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;

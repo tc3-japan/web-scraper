@@ -127,7 +127,7 @@ public class AmazonProductDetailCrawler {
       String[] categoryInfo = data.replace("\u00A0", " ").split(" ", 3);
 
       // remove possible leading # and comma, then convert to int
-      int rank = Integer.valueOf(categoryInfo[0].replace("#", "").replace(",", ""));
+      int rank = Integer.valueOf(categoryInfo[0].replaceAll("[^0-9]*", ""));
 
       // remove See [Tt]op 100 info from category path
       String path = categoryInfo[2];

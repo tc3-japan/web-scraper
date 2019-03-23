@@ -36,6 +36,9 @@ amazon:
       captchaInput2nd:  "input#auth-captcha-guess"
       captchaImage2nd:  "div#auth-captcha-image-container > img"
 
+      mfaInput:       "input#auth-mfa-otpcode"
+      mfaLoginButton: "input#auth-signin-button"
+
     homePage:
       ordersButton: "#nav-orders"
       # XPath Version

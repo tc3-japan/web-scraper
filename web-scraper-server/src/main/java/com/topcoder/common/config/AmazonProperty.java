@@ -31,6 +31,10 @@ public class AmazonProperty {
     private String captchaImage2nd;
     private String captchaSubmit1st;
 
+    private String mfaInput;
+
+    private String mfaLoginButton;
+
     public String getEmailInput() {
       return emailInput;
     }
@@ -67,6 +71,14 @@ public class AmazonProperty {
       return captchaSubmit1st;
     }
 
+    public String getMfaInput() {
+      return mfaInput;
+    }
+
+    public String getMfaLoginButton() {
+      return mfaLoginButton;
+    }
+
     public void setEmailInput(String emailInput) {
       this.emailInput = emailInput;
     }
@@ -101,6 +113,14 @@ public class AmazonProperty {
 
     public void setCaptchaSubmit1st(String captchaSubmit1st) {
       this.captchaSubmit1st = captchaSubmit1st;
+    }
+
+    public void setMfaInput(String mfaInput) {
+      this.mfaInput = mfaInput;
+    }
+
+    public void setMfaLoginButton(String mfaLoginButton) {
+      this.mfaLoginButton = mfaLoginButton;
     }
   }
 

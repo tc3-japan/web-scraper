@@ -11,6 +11,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlPasswordInput;
 import com.gargoylesoftware.htmlunit.html.HtmlRadioButtonInput;
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
+import com.gargoylesoftware.htmlunit.html.HtmlTelInput;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 import com.topcoder.common.model.CodeType;
 import com.topcoder.common.config.AmazonProperty;
@@ -114,6 +115,7 @@ public class AmazonAuthenticationCrawler {
       webpageService.save("home", siteName, homePage.getWebResponse().getContentAsString());
     }
 
+    SubmitResult result = null;
     if (authStep == AuthStep.FIRST) {
       logger.info("start auth step 1");
       // Check CAPTCHA 1st
@@ -125,7 +127,7 @@ public class AmazonAuthenticationCrawler {
           return new AmazonAuthenticationCrawlerResult(false,
             "CAPTCHA code needed on home page", CodeType.CAPTCHA, webpageService.toBase64Image(image), true);
         } else { // fill code
-          SubmitResult result = handleCaptchaInput1st(homePage, code);
+          result = handleCaptchaInput1st(homePage, code);
           homePage = webClient.getPage(property.getUrl());
           if (result.isSuccess()) {     // succeed
             authStep = AuthStep.SECOND; // goto step2
@@ -208,7 +210,7 @@ public class AmazonAuthenticationCrawler {
         }
       } else { // fill code
         logger.info("start check Captcha in step 2 with code = " + code);
-        SubmitResult result = handleCaptchaInput2st(finalPage, password, code);
+        result = handleCaptchaInput2st(finalPage, password, code);
         finalPage = result.getHtmlPage();
 
         if (result.isSuccess()) {
@@ -226,31 +228,52 @@ public class AmazonAuthenticationCrawler {
 
     if (authStep == AuthStep.LAST) {
       if (code == null) {
+
+        // Check Login Successfully > MFA Code Needed
+        HtmlTelInput mfaInputCheck = finalPage.querySelector(property.getCrawling().getLoginPage().getMfaInput());
+        if (mfaInputCheck != null) {
+          LOGGER.info("MFA Code Needed, at step = " + authStep);
+          return new AmazonAuthenticationCrawlerResult(false, "MFA Code Needed",
+                  CodeType.MFA, null, true);
+        }
         // Check Login Successfully > Verification Code Needed
         HtmlRadioButtonInput smsInputCheck = finalPage.querySelector("input[type='radio'][name='option']");
         if (smsInputCheck != null) {
           LOGGER.info("Verification Code Needed, at step = " + authStep);
           return new AmazonAuthenticationCrawlerResult(false, "Verification Code Needed",
             CodeType.Verification, null, true);
-        } else {
-          authStep = AuthStep.DONE;
         }
+        authStep = AuthStep.DONE;
+
       } else { // fill code
-        SubmitResult result = this.fillVerificationCodeNeeded(finalPage, code);
-        if (result != null && result.isSuccess()) {
-          authStep = AuthStep.DONE;
+        HtmlSubmitInput mfaLoginButton = finalPage.querySelector(property.getCrawling().getLoginPage().getMfaLoginButton());
+        if (mfaLoginButton != null) {
+          result = this.fillMFACodeNeeded(finalPage, code);
+          if (result != null && result.isSuccess()) {
+            authStep = AuthStep.DONE;
+          } else {
+            LOGGER.info("MFA Code check failed, at step = " + authStep);
+            // here MFA code check failed, we cannot continue
+            return new AmazonAuthenticationCrawlerResult(false, "MFA Code Needed",
+                    CodeType.MFA,null, true);
+          }
         } else {
-          LOGGER.info("Verification Code check failed, at step = " + authStep);
-          // here Verification code check failed, we cannot continue
-          return new AmazonAuthenticationCrawlerResult(false, "Verification Code Needed",
-            CodeType.Verification, null, true);
+          result = this.fillVerificationCodeNeeded(finalPage, code);
+          if (result != null && result.isSuccess()) {
+            authStep = AuthStep.DONE;
+          } else {
+            LOGGER.info("Verification Code check failed, at step = " + authStep);
+            // here Verification code check failed, we cannot continue
+            return new AmazonAuthenticationCrawlerResult(false, "Verification Code Needed",
+                    CodeType.Verification, null, true);
+          }
         }
       }
     }
 
     if (authStep == AuthStep.DONE) {
       // Save page
-      webpageService.save("login-done", siteName, finalPage.getWebResponse().getContentAsString());
+      webpageService.save("login-done", siteName, result.getHtmlPage().getWebResponse().getContentAsString());
       return new AmazonAuthenticationCrawlerResult(true, path);
     }
 
@@ -493,6 +516,30 @@ public class AmazonAuthenticationCrawler {
     }
   }
 
+
+  private SubmitResult fillMFACodeNeeded(HtmlPage page, String code) throws IOException {
+
+    // Fill in MFA Code
+    HtmlTelInput codeInput = page.querySelector(property.getCrawling().getLoginPage().getMfaInput());
+    codeInput.type(code);
+
+    // Submit form
+    // Continue Submit form
+    HtmlSubmitInput mfaLoginButton = page.querySelector(property.getCrawling().getLoginPage().getMfaLoginButton());
+    HtmlPage page1 = mfaLoginButton.click();
+
+    // Save page
+    String path1 = webpageService.save("login-mfa-submit", siteName, page1.getWebResponse().getContentAsString());
+
+    // code input check
+    HtmlTelInput codeInputCheck = page1.querySelector(property.getCrawling().getLoginPage().getMfaInput());
+    if (codeInputCheck == null) {
+      // success case
+      return new SubmitResult(true, page1, path1);
+    } else {
+      return null;
+    }
+  }
 
   private SubmitResult fillVerificationCodeNeeded(HtmlPage page, String code) throws IOException {
 

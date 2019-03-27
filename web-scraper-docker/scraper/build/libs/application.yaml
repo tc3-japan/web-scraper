@@ -1,5 +1,6 @@
 logging:
   level:
+    com.topcoder.api: debug
     org.apache.http: off
     com.gargoylesoftware: off
 
@@ -12,17 +13,23 @@ spring:
     username: root
     password: mypassword
 
+server:
+  servlet-path: /api/v1
+  port: 8085
+
 amazon:
-  username: ${AMAZON_USERNAME:username}
-  password: ${AMAZON_PASSWORD:password}
-  url: https://www.amazon.com/
-  historyUrl: https://www.amazon.com/gp/your-account/order-history?opt=ab&digitalOrders=1&unifiedOrders=1&returnTo=&orderFilter=
-  productUrl: https://www.amazon.com/gp/product/
+  # amazon.com
+  #url: https://www.amazon.com/
+  #historyUrl: https://www.amazon.com/gp/your-account/order-history?opt=ab&digitalOrders=1&unifiedOrders=1&returnTo=&orderFilter=
+  #productUrl: https://www.amazon.com/gp/product/
+  # amazon.co.jp
+  url: https://www.amazon.co.jp/
+  historyUrl: https://www.amazon.co.jp/gp/your-account/order-history?opt=ab&digitalOrders=1&unifiedOrders=1&returnTo=&orderFilter=
+  productUrl: https://www.amazon.co.jp/gp/product/
 
   crawling:
     # Front page button
     loginButton: "#nav-link-accountList"
-
 
     # Login page
     loginPage:
@@ -37,6 +44,9 @@ amazon:
 
       captchaInput2nd:  "input#auth-captcha-guess"
       captchaImage2nd:  "div#auth-captcha-image-container > img"
+
+      mfaInput:       "input#auth-mfa-otpcode"
+      mfaLoginButton: "input#auth-signin-button"
 
     homePage:
       ordersButton: "#nav-orders"

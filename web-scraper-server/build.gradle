@@ -69,6 +69,6 @@ compileJava {
 
 task copyJar(type: Copy) {
   from jar
-  into './docker/scraper/build/libs'
+  into '../web-scraper-docker/scraper/build/libs'
 }
 build.dependsOn copyJar

@@ -12,7 +12,17 @@ spring:
     url: jdbc:mysql://localhost:3306/web_scraper
     username: root
     password: mypassword
+
+server:
+  servlet-path: /api/v1
+  port: 8085
+
 amazon:
+  # amazon.com
+  #url: https://www.amazon.com/
+  #historyUrl: https://www.amazon.com/gp/your-account/order-history?opt=ab&digitalOrders=1&unifiedOrders=1&returnTo=&orderFilter=
+  #productUrl: https://www.amazon.com/gp/product/
+  # amazon.co.jp
   url: https://www.amazon.co.jp/
   historyUrl: https://www.amazon.co.jp/gp/your-account/order-history?opt=ab&digitalOrders=1&unifiedOrders=1&returnTo=&orderFilter=
   productUrl: https://www.amazon.co.jp/gp/product/
@@ -20,7 +30,6 @@ amazon:
   crawling:
     # Front page button
     loginButton: "#nav-link-accountList"
-
 
     # Login page
     loginPage:
@@ -88,6 +97,3 @@ amazon:
       name:             "#productTitle"
       salesRank:        "#SalesRank"
       productInfoTable: "#productDetails_detailBullets_sections1"
-server:
-  servlet-path: /api/v1
-  port: 8085

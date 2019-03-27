@@ -1,17 +1,20 @@
 # Gradle
 web-scraper-server/.gradle/
-web-scraper-server/gradle/
 
 # IDE
 .idea/
+web-scraper-front/.idea/
 web-scraper-server/.idea/
+web-scraper-docker/.idea/
 *.iml
 /out/
 
 # Output
 web-scraper-server/logs/
 web-scraper-server/build/
-web-scraper-server/docker/scraper/build/libs/web-scraper*.jar
+web-scraper-docker/local-data/
+web-scraper-docker/scraper/build/libs/web-scraper-server-*.jar
+web-scraper-docker/nginx/build/libs
 
 # Work
 /work/

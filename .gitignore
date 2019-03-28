@@ -7,6 +7,7 @@ web-scraper-server/gradle/
 web-scraper-server/.idea/
 *.iml
 /out/
+.vscode
 
 # Output
 web-scraper-server/logs/

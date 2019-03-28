@@ -8,6 +8,7 @@ web-scraper-server/.idea/
 web-scraper-docker/.idea/
 *.iml
 /out/
+.vscode
 
 # Output
 web-scraper-server/logs/

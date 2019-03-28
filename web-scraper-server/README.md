@@ -68,14 +68,14 @@ If no site is specified, all sites will be run (currently only amazon is impleme
 ## Local run from jar
 
 - `./gradlew clean build -x test` to build jar file
-- `java -jar build/libs/web-scraper-develop-0.0.1.jar --batch=purchase_history`
+- `java -jar build/libs/web-scraper-server-0.0.1.jar --batch=purchase_history`
 
 To specify site, specify site argument
 
-- `java -jar build/libs/web-scraper-develop-0.0.1.jar --batch=purchase_history --site=amazon`, If no site is specified, all sites will be run (currently only amazon is implemented)
-- or use `java -jar build/libs/web-scraper-develop-0.0.1.jar --rest` to run rest api server, default port is 8085
+- `java -jar build/libs/web-scraper-server-0.0.1.jar --batch=purchase_history --site=amazon`, If no site is specified, all sites will be run (currently only amazon is implemented)
+- or use `java -jar build/libs/web-scraper-server-0.0.1.jar --rest` to run rest api server, default port is 8085
 
-## Impor test data
+## Import test data
 
 after success run rest api server, the databse table will be auto created,  now
 
@@ -103,3 +103,12 @@ import *./docs/test-data.sql* into mysql database (web_scraper database)
 To connect to mysql in docker, please specify host as `0.0.0.0`, see below:
 
 > `mysql --host 0.0.0.0 --port 3306 --user root --password web_scraper`
+
+
+### Create CSV of encrypted user ids / email addresses:
+Run the script using the --batch=encrypt_user option.
+- set url base parts (scheme, host, and port) with --url_base=\<scheme://host:port>, If no url_base is specified, "http://127.0.0.1:8085" is used.
+- set output file with --output_file=\<file>. If no output_file is specified, a file called encryptedUsers.txt will be created.
+- set flag to limit users who have login failure ec site with get_failed_logins, If no get_failed_logins is specified, all users will be processed.
+
+java -jar build/libs/web-scraper-server-0.0.1.jar --batch=encrypt_user --url_base=http://127.0.0.1:8085 --output_file=output.txt --get_failed_logins

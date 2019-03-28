@@ -1,6 +1,9 @@
 package com.topcoder.common.dao;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import org.springframework.transaction.annotation.Transactional;
+
 import lombok.Data;
 import lombok.ToString;
 
@@ -9,6 +12,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -86,4 +91,9 @@ public class ECSiteAccountDAO {
   @Temporal(TemporalType.TIMESTAMP)
   @Column(name = "update_at")
   private Date updateAt;
+
+  @JsonIgnore
+  @ManyToOne
+  @JoinColumn(name = "user_id", insertable=false, updatable=false)
+  private UserDAO user;
 }

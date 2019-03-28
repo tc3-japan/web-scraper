@@ -4,6 +4,7 @@ import com.topcoder.scraper.command.impl.ChangeDetectionCheckCommand;
 import com.topcoder.scraper.command.impl.ChangeDetectionInitCommand;
 import com.topcoder.scraper.command.impl.ProductDetailCommand;
 import com.topcoder.scraper.command.impl.PurchaseHistoryListCommand;
+import com.topcoder.scraper.command.impl.UserEncoderCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,16 +26,17 @@ public class AppRunner implements ApplicationRunner {
   private final ProductDetailCommand productDetailCommand;
   private final ChangeDetectionInitCommand changeDetectionInitCommand;
   private final ChangeDetectionCheckCommand changeDetectionCheckCommand;
+  private final UserEncoderCommand userEncoderCommand;
 
   @Autowired
-  public AppRunner(PurchaseHistoryListCommand purchaseHistoryListCommand,
-                   ProductDetailCommand productDetailCommand,
-                   ChangeDetectionInitCommand changeDetectionInitCommand,
-                   ChangeDetectionCheckCommand changeDetectionCheckCommand) {
-    this.purchaseHistoryListCommand = purchaseHistoryListCommand;
-    this.productDetailCommand = productDetailCommand;
-    this.changeDetectionInitCommand = changeDetectionInitCommand;
+  public AppRunner(PurchaseHistoryListCommand purchaseHistoryListCommand, ProductDetailCommand productDetailCommand,
+                   ChangeDetectionInitCommand changeDetectionInitCommand, ChangeDetectionCheckCommand changeDetectionCheckCommand,
+                   UserEncoderCommand userEncoderCommand) {
+    this.purchaseHistoryListCommand  = purchaseHistoryListCommand;
+    this.productDetailCommand        = productDetailCommand;
+    this.changeDetectionInitCommand  = changeDetectionInitCommand;
     this.changeDetectionCheckCommand = changeDetectionCheckCommand;
+    this.userEncoderCommand          = userEncoderCommand;
   }
 
   /**
@@ -59,6 +61,8 @@ public class AppRunner implements ApplicationRunner {
       changeDetectionInitCommand.run(args);
     } else if (batches.contains("change_detection_check")) {
       changeDetectionCheckCommand.run(args);
+    } else if (batches.contains("encrypt_user")) {
+      userEncoderCommand.run(args);
     } else {
       usage();
     }

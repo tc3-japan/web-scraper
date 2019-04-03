@@ -5,16 +5,17 @@
   ],
   "linterOptions": {
     "exclude": [
-      "node_modules/**"
+      "node_modules/**",
+      "translations.json"
     ]
   },
   "rules": {
     "quotemark": [
-      true,
+      false,
       "single"
     ],
     "indent": [
-      true,
+      false,
       "spaces",
       2
     ],

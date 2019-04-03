@@ -1,11 +1,11 @@
 <template>
   <div class="ec-site-setting-root">
-    <div class="title">{{this.ecSiteSettings.title}}</div>
-    <div class="description">{{this.ecSiteSettings.description}}</div>
+    <div class="title">{{ trans('ecsitelisttitle') }}</div>
+    <div class="description">{{ trans('ecsitedesc') }}</div>
 
     <div class="load-error" v-if="this.userLoadErrorMsg">{{this.userLoadErrorMsg}}</div>
     <div class="site-list" v-if="!this.userLoadErrorMsg && sites">
-      <div class="load-error" v-if="sites.length === 0">No Any EC site found for this user!</div>
+      <div class="load-error" v-if="sites.length === 0">{{ trans('noecsitesfound') }}</div>
 
       <div class="site" v-for="site in sites">
         <div class="name row">
@@ -18,13 +18,13 @@
                  v-model="site['ecUseFlag']"
                  @change="ecUseFlagChange($event, site)"
           />
-          <label for="get-purchase-history">Get Purchase History</label>
+          <label for="get-purchase-history">{{ trans('getpurchasehistory') }}</label>
         </div>
 
         <div class="status row">
           <div class="left">Status:</div>
           <div class="text">
-            <div class="value">{{site['authStatus'] ? site['authStatus'] : 'Did not login yet'}}</div>
+            <div class="value">{{site['authStatus'] ? site['authStatus'] : trans('notloggedin')}}</div>
             <div class="reason" v-if="site['authFailReason']">{{site['authFailReason']}}</div>
           </div>
         </div>
@@ -32,7 +32,7 @@
         <div class="button row" v-if="isFailed(site)">
           <div class="left"></div>
           <button class="app-button"
-                  @click="gotoLogin(site)">Try to login
+                  @click="gotoLogin(site)">{{trans('login')}}
           </button>
         </div>
       </div>
@@ -49,9 +49,8 @@ import ApiService from '../services/ApiService';
 })
 export default class ECSiteList extends Vue {
   public ecSiteSettings = {
-    title: 'EC Site Settings List',
-    description: ' This screen is showing EC Sites settings.' +
-      'Check and Try to login for EC Site you will get purchase history.',
+    title: Vue.prototype.trans('title'),
+    description: '',
   };
   public userLoadErrorMsg = null;
   public sites = null;

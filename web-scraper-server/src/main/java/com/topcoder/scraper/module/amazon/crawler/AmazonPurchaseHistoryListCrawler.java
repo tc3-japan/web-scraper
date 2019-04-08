@@ -1,17 +1,16 @@
 package com.topcoder.scraper.module.amazon.crawler;
 
-import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlSelect;
-import com.topcoder.common.traffic.TrafficWebClient;
-import com.topcoder.common.util.Common;
 import com.topcoder.common.config.AmazonProperty;
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.model.PurchaseHistory;
+import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.service.WebpageService;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,10 +37,14 @@ public class AmazonPurchaseHistoryListCrawler {
   private final AmazonProperty property;
   private final WebpageService webpageService;
 
+  // TODO : delete, this is for PoC Code that limits the count to go to next page to 3
+  private int nextPageCount;
+
   public AmazonPurchaseHistoryListCrawler(String siteName, AmazonProperty property, WebpageService webpageService) {
     this.siteName = siteName;
     this.property = property;
     this.webpageService = webpageService;
+    this.nextPageCount = 0;
   }
 
   /**
@@ -56,13 +59,13 @@ public class AmazonPurchaseHistoryListCrawler {
     List<PurchaseHistory> list = new LinkedList<>();
     List<String> pathList = new LinkedList<>();
     LOGGER.info("goto Order Page");
+
     HtmlPage page = webClient.getPage(property.getHistoryUrl());
     webpageService.save("order-home", siteName, page.getWebResponse().getContentAsString());
     while (true) {
       if (page == null || !parsePurchaseHistory(list, page, lastPurchaseHistory, saveHtml, pathList)) {
         break;
       } else {
-        LOGGER.info("goto Next Page");
         page = gotoNextPage(page, webClient);
       }
     }
@@ -76,23 +79,60 @@ public class AmazonPurchaseHistoryListCrawler {
    * @return next page if has next page
    */
   private HtmlPage gotoNextPage(HtmlPage page, TrafficWebClient webClient) throws IOException {
-    // Try to click next page first
-    HtmlAnchor nextPageAnchor = page.querySelector(property.getCrawling().getPurchaseHistoryListPage().getNextPage());
-    if (nextPageAnchor != null) {
-      return webClient.click(nextPageAnchor);
-    }
 
-    // if pagination reaches end, try to go next time period
     HtmlSelect select = page.querySelector(property.getCrawling().getPurchaseHistoryListPage().getOrderFilter());
     // XPath Version query
     //String xxx      = page.getFirstByXPath(property.getCrawling().getPurchaseHistoryListPage().getXXX());
 
+    String optionValue = "";
+    String optionLabel = "";
     if (select != null) {
       if (select.getSelectedIndex() + 1 < select.getOptionSize()) {
-        String optionValue = select.getOption(select.getSelectedIndex() + 1).getValueAttribute();
-        String optionLabel = select.getOption(select.getSelectedIndex() + 1).getText();
+        optionValue = select.getOption(select.getSelectedIndex() + 1).getValueAttribute();
+      }
+    }
+
+    HtmlPage nextPage = null;
+    // Try to click next page first
+    HtmlAnchor nextPageAnchor = page.querySelector(property.getCrawling().getPurchaseHistoryListPage().getNextPage());
+    if (nextPageAnchor != null) {
+      // TODO : delete below condition, this is for PoC Code that limits the count to go to next page to 3
+      if (nextPageCount >= 4) {
+        LOGGER.info(">>> next page count limit exceeded.");
+
+      } else {
+        LOGGER.info(">>> next page count = " + nextPageCount);
+        nextPageCount++;
+
+        LOGGER.info("goto Next Page");
+
+        // "click" doesn't work
+        //nextPage = webClient.click(nextPageAnchor);
+        // below code is work-around: use "getPage" instead of "click"
+        String link = property.getUrl() + nextPageAnchor.getHrefAttribute();
+        nextPage = webClient.getPage(property.getUrl()+nextPageAnchor.getHrefAttribute());
+        webpageService.save("purchase-history_" + optionValue, siteName, nextPage.getWebResponse().getContentAsString());
+        return nextPage;
+      }
+    }
+    // TODO : delete, this is for PoC Code that limits the count to go to next page to 3
+    nextPageCount = 0;
+
+    // if pagination reaches end, try to go next time period
+    if (select != null) {
+      if (select.getSelectedIndex() + 1 < select.getOptionSize()) {
+        optionValue = select.getOption(select.getSelectedIndex() + 1).getValueAttribute();
+        optionLabel = select.getOption(select.getSelectedIndex() + 1).getText();
+        // TODO: delete, this is for PoC Code that limits the purchase history to the one after 2017
+        if (optionValue.startsWith("2017") || optionLabel.startsWith("2017")) {
+          LOGGER.info("in dev: at 2017, return null and quit");
+          return null;
+        }
         LOGGER.info("goto " + optionLabel + ":" + optionValue + " Order Page");
-        return webClient.getPage(property.getHistoryUrl() + optionValue);
+
+        nextPage = webClient.getPage(property.getHistoryUrl() + optionValue);
+        webpageService.save("purchase-history_" + optionValue, siteName, nextPage.getWebResponse().getContentAsString());
+        return nextPage;
       }
     }
 
@@ -209,7 +249,7 @@ public class AmazonPurchaseHistoryListCrawler {
     // XPath Version query
     //String xxx       = product.getFirstByXPath(property.getCrawling().getPurchaseHistoryListPage().getXXX());
 
-    if (distributor != null) {
+    if (StringUtils.isNotEmpty(distributor)) {
       distributor = distributor.split(":")[1].trim();
     }
 

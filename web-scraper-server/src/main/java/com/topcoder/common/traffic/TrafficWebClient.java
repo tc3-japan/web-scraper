@@ -287,17 +287,21 @@ public class TrafficWebClient {
 
     logger.info("user-agent = " + webClient.getBrowserVersion().getUserAgent());
 
-    long waitTime;
+    long waitTime = 1000 * Common.getValueOrDefault(tactic.getRequestInterval(), 1);
     /*
      * Request Interval Random: Yes/No (Default No)
      * a. Random value(α) is set to 0-1.
      * b. Derived Request Interval：N * (1 + α)
      */
     if (Boolean.TRUE.equals(tactic.getRequestIntervalRandom())) {
-      waitTime = 1000 + (int) (Math.random() * 1000);
-    } else {
-      waitTime = 1000 * Common.getValueOrDefault(tactic.getRequestInterval(), 1);
+      waitTime = (int) (waitTime * (1.0 + Math.random()));
     }
+    // TODO: delete
+    //if (Boolean.TRUE.equals(tactic.getRequestIntervalRandom())) {
+    //  waitTime = 1000 + (int) (Math.random() * 1000);
+    //} else {
+    //  waitTime = 1000 * Common.getValueOrDefault(tactic.getRequestInterval(), 1);
+    //}
 
     if (!skipWait && waitTime > 0) {
       try {

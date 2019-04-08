@@ -32,6 +32,8 @@ public class AmazonProperty {
     private String captchaSubmit1st;
 
     private String mfaInput;
+    private String verificationCodeSubmit;
+    private String verificationCodeInput;
 
     private String mfaLoginButton;
 
@@ -77,6 +79,22 @@ public class AmazonProperty {
 
     public String getMfaLoginButton() {
       return mfaLoginButton;
+    }
+
+    public String getVerificationCodeSubmit() {
+      return verificationCodeSubmit;
+    }
+
+    public void setVerificationCodeSubmit(String verificationCodeSubmit) {
+      this.verificationCodeSubmit = verificationCodeSubmit;
+    }
+
+    public String getVerificationCodeInput() {
+      return verificationCodeInput;
+    }
+
+    public void setVerificationCodeInput(String verificationCodeInput) {
+      this.verificationCodeInput = verificationCodeInput;
     }
 
     public void setEmailInput(String emailInput) {

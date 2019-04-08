@@ -1,21 +1,21 @@
 package com.topcoder.api.service;
 
-import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.util.Cookie;
+import com.topcoder.api.exception.AppException;
+import com.topcoder.api.exception.BadRequestException;
+import com.topcoder.api.exception.EntityNotFoundException;
+import com.topcoder.common.config.AmazonProperty;
+import com.topcoder.common.dao.ECSiteAccountDAO;
+import com.topcoder.common.dao.UserDAO;
 import com.topcoder.common.model.AuthStatusType;
 import com.topcoder.common.model.CrawlerContext;
 import com.topcoder.common.model.ECCookie;
 import com.topcoder.common.model.ECCookies;
 import com.topcoder.common.model.LoginRequest;
 import com.topcoder.common.model.LoginResponse;
-import com.topcoder.api.exception.AppException;
-import com.topcoder.api.exception.BadRequestException;
-import com.topcoder.api.exception.EntityNotFoundException;
-import com.topcoder.common.dao.ECSiteAccountDAO;
-import com.topcoder.common.dao.UserDAO;
 import com.topcoder.common.repository.ECSiteAccountRepository;
 import com.topcoder.common.repository.UserRepository;
-import com.topcoder.common.config.AmazonProperty;
+import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.module.amazon.crawler.AmazonAuthenticationCrawler;
 import com.topcoder.scraper.module.amazon.crawler.AmazonAuthenticationCrawlerResult;
 import com.topcoder.scraper.service.WebpageService;
@@ -112,17 +112,16 @@ public class ECSiteService {
 
 
   public LoginResponse loginInit(String userId, Integer siteId, String uuid) throws AppException {
-    checkUserByCryptoID(userId);
+    UserDAO userDAO = checkUserByCryptoID(userId);
     ECSiteAccountDAO ecSiteAccountDAO = ecSiteAccountRepository.findOne(siteId);
 
     CrawlerContext context = crawlerContextMap.get(siteId);
 
     if (context == null || !context.getUuid().equals(uuid)) { // ignore previous context, because of uuid is different
-      context = new CrawlerContext(applicationContext.getBean(WebClient.class),
+      context = new CrawlerContext(new TrafficWebClient(userDAO.getId(), false),
         amazonProperty,
         applicationContext.getBean(WebpageService.class),
         uuid, null);
-
       context.setCrawler(new AmazonAuthenticationCrawler(ecSiteAccountDAO.getEcSite(),
         context.getProperty(),
         context.getWebpageService()));
@@ -180,7 +179,7 @@ public class ECSiteService {
         ecSiteAccountDAO.setAuthStatus(AuthStatusType.SUCCESS);
         ecSiteAccountDAO.setAuthFailReason(null);
         List<ECCookie> ecCookies = new LinkedList<>();
-        for (Cookie cookie : context.getWebClient().getCookieManager().getCookies()) {
+        for (Cookie cookie : context.getWebClient().getWebClient().getCookieManager().getCookies()) {
           ECCookie ecCookie = new ECCookie();
           ecCookie.setName(cookie.getName());
           ecCookie.setDomain(cookie.getDomain());

@@ -6,6 +6,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlSelect;
+import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.common.util.Common;
 import com.topcoder.common.config.AmazonProperty;
 import com.topcoder.common.model.ProductInfo;
@@ -51,11 +52,11 @@ public class AmazonPurchaseHistoryListCrawler {
    * @return AmazonPurchaseHistoryListCrawlerResult
    * @throws IOException
    */
-  public AmazonPurchaseHistoryListCrawlerResult fetchPurchaseHistoryList(WebClient webClient, PurchaseHistory lastPurchaseHistory, boolean saveHtml) throws IOException {
+  public AmazonPurchaseHistoryListCrawlerResult fetchPurchaseHistoryList(TrafficWebClient webClient, PurchaseHistory lastPurchaseHistory, boolean saveHtml) throws IOException {
     List<PurchaseHistory> list = new LinkedList<>();
     List<String> pathList = new LinkedList<>();
     LOGGER.info("goto Order Page");
-    HtmlPage page = webClient.getPage(Common.wrapURL(webClient, property.getHistoryUrl()));
+    HtmlPage page = webClient.getPage(property.getHistoryUrl());
     webpageService.save("order-home", siteName, page.getWebResponse().getContentAsString());
     while (true) {
       if (page == null || !parsePurchaseHistory(list, page, lastPurchaseHistory, saveHtml, pathList)) {
@@ -74,11 +75,11 @@ public class AmazonPurchaseHistoryListCrawler {
    *
    * @return next page if has next page
    */
-  private HtmlPage gotoNextPage(HtmlPage page, WebClient webClient) throws IOException {
+  private HtmlPage gotoNextPage(HtmlPage page, TrafficWebClient webClient) throws IOException {
     // Try to click next page first
     HtmlAnchor nextPageAnchor = page.querySelector(property.getCrawling().getPurchaseHistoryListPage().getNextPage());
     if (nextPageAnchor != null) {
-      return nextPageAnchor.click();
+      return webClient.click(nextPageAnchor);
     }
 
     // if pagination reaches end, try to go next time period

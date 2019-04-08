@@ -1,6 +1,7 @@
 package com.topcoder.scraper.module.amazon;
 
 import com.gargoylesoftware.htmlunit.WebClient;
+import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.Consts;
 import com.topcoder.common.config.AmazonProperty;
 import com.topcoder.common.config.CheckItemsDefinitionProperty;
@@ -43,7 +44,7 @@ public class AmazonChangeDetectionCheckModule extends ChangeDetectionCheckModule
   private final AmazonProperty property;
   private final MonitorTargetDefinitionProperty monitorTargetDefinitionProperty;
   private final CheckItemsDefinitionProperty checkItemsDefinitionProperty;
-  private final WebClient webClient;
+  private final TrafficWebClient webClient;
   private final WebpageService webpageService;
   private final NormalDataRepository normalDataRepository;
   private final CheckResultRepository checkResultRepository;
@@ -53,14 +54,13 @@ public class AmazonChangeDetectionCheckModule extends ChangeDetectionCheckModule
     AmazonProperty property,
     MonitorTargetDefinitionProperty monitorTargetDefinitionProperty,
     CheckItemsDefinitionProperty checkItemsDefinitionProperty,
-    WebClient webClient,
     WebpageService webpageService,
     CheckResultRepository checkResultRepository,
     NormalDataRepository normalDataRepository) {
     this.property = property;
     this.monitorTargetDefinitionProperty = monitorTargetDefinitionProperty;
     this.checkItemsDefinitionProperty = checkItemsDefinitionProperty;
-    this.webClient = webClient;
+    this.webClient = new TrafficWebClient(0, false);
     this.webpageService = webpageService;
     this.checkResultRepository = checkResultRepository;
     this.normalDataRepository = normalDataRepository;

@@ -3,6 +3,7 @@ package com.topcoder.scraper.module.amazon;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.topcoder.common.dao.NormalDataDAO;
 import com.topcoder.common.repository.NormalDataRepository;
+import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.Consts;
 import com.topcoder.common.config.AmazonProperty;
 import com.topcoder.common.config.MonitorTargetDefinitionProperty;
@@ -36,7 +37,7 @@ public class AmazonChangeDetectionInitModule extends ChangeDetectionInitModule {
 
   private final AmazonProperty property;
   private final MonitorTargetDefinitionProperty monitorTargetDefinitionProperty;
-  private final WebClient webClient;
+  private final TrafficWebClient webClient;
   private final WebpageService webpageService;
   private final NormalDataRepository repository;
 
@@ -44,13 +45,12 @@ public class AmazonChangeDetectionInitModule extends ChangeDetectionInitModule {
   public AmazonChangeDetectionInitModule(
           AmazonProperty property,
           MonitorTargetDefinitionProperty monitorTargetDefinitionProperty,
-          WebClient webClient,
           WebpageService webpageService,
           NormalDataRepository repository
   ) {
     this.property = property;
     this.monitorTargetDefinitionProperty = monitorTargetDefinitionProperty;
-    this.webClient = webClient;
+    this.webClient = new TrafficWebClient(0, false);
     this.webpageService = webpageService;
     this.repository = repository;
   }

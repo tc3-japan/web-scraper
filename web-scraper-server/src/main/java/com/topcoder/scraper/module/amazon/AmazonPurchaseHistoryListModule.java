@@ -1,12 +1,13 @@
 package com.topcoder.scraper.module.amazon;
 
 import com.gargoylesoftware.htmlunit.WebClient;
+import com.topcoder.common.config.AmazonProperty;
 import com.topcoder.common.dao.ECSiteAccountDAO;
 import com.topcoder.common.model.AuthStatusType;
-import com.topcoder.common.repository.ECSiteAccountRepository;
-import com.topcoder.common.util.Common;
-import com.topcoder.common.config.AmazonProperty;
 import com.topcoder.common.model.PurchaseHistory;
+import com.topcoder.common.repository.ECSiteAccountRepository;
+import com.topcoder.common.traffic.TrafficWebClient;
+import com.topcoder.common.util.Common;
 import com.topcoder.scraper.module.PurchaseHistoryListModule;
 import com.topcoder.scraper.module.amazon.crawler.AmazonPurchaseHistoryListCrawler;
 import com.topcoder.scraper.module.amazon.crawler.AmazonPurchaseHistoryListCrawlerResult;
@@ -29,7 +30,6 @@ public class AmazonPurchaseHistoryListModule extends PurchaseHistoryListModule {
   private static final Logger LOGGER = LoggerFactory.getLogger(AmazonPurchaseHistoryListModule.class);
 
   private final AmazonProperty property;
-  private final WebClient webClient;
   private final PurchaseHistoryService purchaseHistoryService;
   private final WebpageService webpageService;
   private final ECSiteAccountRepository ecSiteAccountRepository;
@@ -37,12 +37,10 @@ public class AmazonPurchaseHistoryListModule extends PurchaseHistoryListModule {
   @Autowired
   public AmazonPurchaseHistoryListModule(
     AmazonProperty property,
-    WebClient webClient,
     PurchaseHistoryService purchaseHistoryService,
     ECSiteAccountRepository ecSiteAccountRepository,
     WebpageService webpageService) {
     this.property = property;
-    this.webClient = webClient;
     this.purchaseHistoryService = purchaseHistoryService;
     this.webpageService = webpageService;
     this.ecSiteAccountRepository = ecSiteAccountRepository;
@@ -61,12 +59,14 @@ public class AmazonPurchaseHistoryListModule extends PurchaseHistoryListModule {
 
     Optional<PurchaseHistory> lastPurchaseHistory = purchaseHistoryService.fetchLast(getECName());
 
-    LOGGER.info("web client version = " + webClient.getBrowserVersion());
+
 
     Iterable<ECSiteAccountDAO> accountDAOS = ecSiteAccountRepository.findAll();
     for (ECSiteAccountDAO ecSiteAccountDAO : accountDAOS) {
 
-      boolean restoreRet = Common.restoreCookies(webClient, ecSiteAccountDAO);
+      TrafficWebClient webClient = new TrafficWebClient(ecSiteAccountDAO.getUserId(), true);
+      LOGGER.info("web client version = " + webClient.getWebClient().getBrowserVersion());
+      boolean restoreRet = Common.restoreCookies(webClient.getWebClient(), ecSiteAccountDAO);
       if (!restoreRet) {
         LOGGER.error("skip ecSite id = " + ecSiteAccountDAO.getId() + ", restore cookies failed");
         continue;
@@ -83,7 +83,8 @@ public class AmazonPurchaseHistoryListModule extends PurchaseHistoryListModule {
         LOGGER.info("succeed fetch purchaseHistory for ecSite id = " + ecSiteAccountDAO.getId());
       } catch (Exception e) { // here catch all exception and did not throw it
         ecSiteAccountDAO.setAuthStatus(AuthStatusType.FAILED);
-        ecSiteAccountDAO.setAuthFailReason("Cookie expires"); // if error here, i think the only reason is cookie expires
+        //ecSiteAccountDAO.setAuthFailReason("Cookie expires"); // if error here, i think the only reason is cookie expires
+        ecSiteAccountDAO.setAuthFailReason(e.getMessage());
         ecSiteAccountRepository.save(ecSiteAccountDAO);
         LOGGER.error("failed to PurchaseHistory for ecSite id = " + ecSiteAccountDAO.getId());
         e.printStackTrace();

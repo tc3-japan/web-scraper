@@ -6,6 +6,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.topcoder.common.config.AmazonProperty;
 import com.topcoder.common.model.ProductInfo;
+import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.service.WebpageService;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -49,7 +50,7 @@ public class AmazonProductDetailCrawler {
    * @return AmazonProductDetailCrawlerResult
    * @throws IOException
    */
-  public AmazonProductDetailCrawlerResult fetchProductInfo(WebClient webClient, String productCode, boolean saveHtml) throws IOException {
+  public AmazonProductDetailCrawlerResult fetchProductInfo(TrafficWebClient webClient, String productCode, boolean saveHtml) throws IOException {
 
     String productUrl = property.getProductUrl() + productCode;
     LOGGER.info("Product url " + productUrl);

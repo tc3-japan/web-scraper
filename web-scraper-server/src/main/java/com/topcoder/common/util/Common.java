@@ -48,8 +48,8 @@ public class Common {
 
     for (ECCookie ecCookie : ecCookies.getCookies()) {
       webClient.getCookieManager().addCookie(new Cookie(
-        ecCookie.getDomain(), ecCookie.getName(), ecCookie.getValue(), ecCookie.getPath(), ecCookie.getExpires(),
-        ecCookie.isSecure(), ecCookie.isHttpOnly()
+              ecCookie.getDomain(), ecCookie.getName(), ecCookie.getValue(), ecCookie.getPath(), ecCookie.getExpires(),
+              ecCookie.isSecure(), ecCookie.isHttpOnly()
       ));
     }
     return true;
@@ -69,5 +69,17 @@ public class Common {
     WebRequest page = new WebRequest(new URL(url));
     page.setAdditionalHeader("cookie", cookies.substring(0, cookies.length() - 2));
     return page;
+  }
+
+  /**
+   * get default value
+   *
+   * @param value        the value
+   * @param defaultValue the default value
+   * @param <T>          the type
+   * @return the value
+   */
+  public static <T> T getValueOrDefault(T value, T defaultValue) {
+    return value == null ? defaultValue : value;
   }
 }

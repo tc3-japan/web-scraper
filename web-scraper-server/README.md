@@ -20,6 +20,11 @@ The following variables need to be configured correctly:
 - `spring.datasource.username` mysql username
 - `spring.datasource.password` mysql password
 
+
+the app traffic contro file can be changed in `web-scraper-server/src/main/resources/tactic.yaml`
+
+the `proxy_server` must be a vaild value, other values can be default value
+
 ### arguments
 
 Values could be configured by providing arguments:

@@ -6,7 +6,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
 @SpringBootApplication
-//@ComponentScan({"com.topcoder.scraper.*.", "com.topcoder.api.*."})
 public class Application {
 
   private static Logger logger = LoggerFactory.getLogger(Application.class.getName());

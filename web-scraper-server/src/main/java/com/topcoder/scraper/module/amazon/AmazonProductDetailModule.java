@@ -4,6 +4,7 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import com.topcoder.common.config.AmazonProperty;
 import com.topcoder.common.dao.ProductDAO;
 import com.topcoder.common.model.ProductInfo;
+import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.module.ProductDetailModule;
 import com.topcoder.scraper.module.amazon.crawler.AmazonProductDetailCrawler;
 import com.topcoder.scraper.module.amazon.crawler.AmazonProductDetailCrawlerResult;
@@ -25,18 +26,17 @@ public class AmazonProductDetailModule extends ProductDetailModule {
   private static final Logger LOGGER = LoggerFactory.getLogger(AmazonProductDetailModule.class);
 
   private final AmazonProperty property;
-  private final WebClient webClient;
+  private final TrafficWebClient webClient;
   private final ProductService productService;
   private final WebpageService webpageService;
 
   @Autowired
   public AmazonProductDetailModule(
     AmazonProperty property,
-    WebClient webClient,
     ProductService productService,
     WebpageService webpageService) {
     this.property = property;
-    this.webClient = webClient;
+    this.webClient = new TrafficWebClient(0, false);
     this.productService = productService;
     this.webpageService = webpageService;
   }

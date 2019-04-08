@@ -19,9 +19,9 @@ server:
 
 amazon:
   # amazon.com
-  #url: https://www.amazon.com/
-  #historyUrl: https://www.amazon.com/gp/your-account/order-history?opt=ab&digitalOrders=1&unifiedOrders=1&returnTo=&orderFilter=
-  #productUrl: https://www.amazon.com/gp/product/
+#  url: https://www.amazon.com/
+#  historyUrl: https://www.amazon.com/gp/your-account/order-history?opt=ab&digitalOrders=1&unifiedOrders=1&returnTo=&orderFilter=
+#  productUrl: https://www.amazon.com/gp/product/
   # amazon.co.jp
   url: https://www.amazon.co.jp/
   historyUrl: https://www.amazon.co.jp/gp/your-account/order-history?opt=ab&digitalOrders=1&unifiedOrders=1&returnTo=&orderFilter=
@@ -47,6 +47,9 @@ amazon:
 
       mfaInput:       "input#auth-mfa-otpcode"
       mfaLoginButton: "input#auth-signin-button"
+
+      verificationCodeSubmit: "span.cvf-widget-btn-verify > span > input"
+      verificationCodeInput:  "input.cvf-widget-input-code"
 
     homePage:
       ordersButton: "#nav-orders"

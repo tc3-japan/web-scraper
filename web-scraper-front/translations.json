@@ -1,0 +1,30 @@
+{
+	"en" : {
+		"title" : "EC Site Home Page",
+		"ecsitelisttitle" : "EC Site Settings",
+		"clickHereFor" : ": Click here for EC Site Settings",
+		"noEcSitesFound" : "No EC sites found for this user!",
+		"getPurchaseHistory" : "Get Purchase History",
+		"ecSiteDesc" : "This screen shows EC Sites settings. Check and Try to login for EC Site you will get purchase history.",
+		"notLoggedIn" : "Not logged in",
+		"login" : "Log in",
+		"loginInitializing" : "Login initializing. Please wait...",
+		"mfaPlease" : "Please input the MFA code.",
+		"verifyPlease" : "Please input the verification code you recieved via SMS or Email.",
+		"capchaPlease" : "Please input the characters in the image below."
+	},
+	"ja" : {
+		"title" : "ECサイトホームページ",
+		"ecSiteSetting" : "ECサイト設定",
+		"clickHereFor" : "のECサイト設定はこちらをクリックしてください。",
+		"noEcSitesFound" : "ユーザーが使用できるECサイトが登録されていません！",
+		"getPurchaseHistory" : "購入履歴を取得する",
+		"ecSiteDesc" : "このページはECサイト設定を表示しています。購入履歴を取得するにはログインしてください。",
+		"notLoggedIn" : "ログインされていません。",
+		"login" : "ログイン",
+		"loginInitializing" : "ログインしています。しばらくお待ち下さい。",
+		"mfaPlease" : "MFAコードを入力してください。",
+		"verifyPlease" : "SMS/Emailに送ったベVerificationコードを入力してください。",
+		"capchaPlease" : "CAPTCHAに表示されている文字を入れてください。"
+	}
+}

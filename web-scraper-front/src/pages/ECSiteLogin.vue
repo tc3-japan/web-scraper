@@ -1,8 +1,8 @@
 <template>
   <div class="login-site">
-    <div class="title" v-if="siteLoaded">{{site['ecSite'] + ' Login'}}</div>
+    <div class="title" v-if="siteLoaded">{{site['ecSite'] + trans('login')}}</div>
     <div class="load-error" v-if="this.userLoadErrorMsg">{{this.userLoadErrorMsg}}</div>
-    <div v-if="!siteLoaded">Login initializing, please wait ...</div>
+    <div v-if="!siteLoaded">{{trans('loginInitializing')}}</div>
 
     <div class="user-login" v-if="siteLoaded && !userLoadErrorMsg">
       <div class="row">
@@ -28,7 +28,7 @@
       <div class="row buttons">
         <button class="app-button"
                 :disabled="isInvalid() || isDoingLogin"
-                @click="login()">Login
+                @click="login()">{{trans('login')}}
         </button>
       </div>
     </div>
@@ -65,9 +65,9 @@ export default class ECSiteLogin extends Vue {
   public loginError = null;
 
   public codeMessageMap = {
-    MFA: 'Please input the MFA code.',
-    Verification: 'Please input the verification code sent for SMS or EMail.',
-    CAPTCHA: 'Please input characters in below image.',
+    MFA: Vue.prototype.trans('mfaPlease'),
+    Verification: Vue.prototype.trans('verifyPlease'),
+    CAPTCHA: Vue.prototype.trans('capchaPlease'),
   };
 
   /**

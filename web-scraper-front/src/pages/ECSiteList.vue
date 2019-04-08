@@ -1,11 +1,11 @@
 <template>
   <div class="ec-site-setting-root">
-    <div class="title">{{ trans('ecsitelisttitle') }}</div>
-    <div class="description">{{ trans('ecsitedesc') }}</div>
+    <div class="title">{{ trans('ecSiteSetting') }}</div>
+    <div class="description">{{ trans('ecSiteDesc') }}</div>
 
     <div class="load-error" v-if="this.userLoadErrorMsg">{{this.userLoadErrorMsg}}</div>
     <div class="site-list" v-if="!this.userLoadErrorMsg && sites">
-      <div class="load-error" v-if="sites.length === 0">{{ trans('noecsitesfound') }}</div>
+      <div class="load-error" v-if="sites.length === 0">{{ trans('noEcSitesFound') }}</div>
 
       <div class="site" v-for="site in sites">
         <div class="name row">
@@ -18,13 +18,13 @@
                  v-model="site['ecUseFlag']"
                  @change="ecUseFlagChange($event, site)"
           />
-          <label for="get-purchase-history">{{ trans('getpurchasehistory') }}</label>
+          <label for="get-purchase-history">{{ trans('getPurchaseHistory') }}</label>
         </div>
 
         <div class="status row">
           <div class="left">Status:</div>
           <div class="text">
-            <div class="value">{{site['authStatus'] ? site['authStatus'] : trans('notloggedin')}}</div>
+            <div class="value">{{site['authStatus'] ? site['authStatus'] : trans('notLoggedIn')}}</div>
             <div class="reason" v-if="site['authFailReason']">{{site['authFailReason']}}</div>
           </div>
         </div>

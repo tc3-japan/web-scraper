@@ -2,7 +2,7 @@
   <div class="login-site">
     <div class="title" v-if="siteLoaded">{{site['ecSite'] + trans('login')}}</div>
     <div class="load-error" v-if="this.userLoadErrorMsg">{{this.userLoadErrorMsg}}</div>
-    <div v-if="!siteLoaded">{{trans('logininitializing')}}</div>
+    <div v-if="!siteLoaded">{{trans('loginInitializing')}}</div>
 
     <div class="user-login" v-if="siteLoaded && !userLoadErrorMsg">
       <div class="row">
@@ -65,9 +65,9 @@ export default class ECSiteLogin extends Vue {
   public loginError = null;
 
   public codeMessageMap = {
-    MFA: Vue.prototype.trans('mfaplease'),
-    Verification: Vue.prototype.trans('verifyplease'),
-    CAPTCHA: Vue.prototype.trans('capchaplease'),
+    MFA: Vue.prototype.trans('mfaPlease'),
+    Verification: Vue.prototype.trans('verifyPlease'),
+    CAPTCHA: Vue.prototype.trans('capchaPlease'),
   };
 
   /**

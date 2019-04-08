@@ -1,30 +1,30 @@
 {
-  	"en" : {
-    	"title" : "EC Site Home Page",
-    	"ecsitelisttitle" : "EC Site Settings",
-    	"clickherefor" : ": Click here for EC Site Settings",
-    	"noecsitesfound" : "No EC sites found for this user!",
-    	"getpurchasehistory" : "Get Purchase History",
-    	"ecsitedesc" : "This screen shows EC Sites settings. Check and Try to login for EC Site you will get purchase history.",
-    	"notloggedin" : "Not logged in",
-    	"login" : "Log in",
-		"logininitializing" : "Login initializing. Please wait...",
-		"mfaplease" : "Please input the MFA code.",
-		"verifyplease" : "Please input the verification code you recieved via SMS or Email.",
-		"capchaplease" : "Please input the characters in the image below."
-  	},
-  	"jp" : {
-    	"title" : "ECサイトホームページ",
-    	"ecsitelisttitle" : "ECサイト設定",
-    	"clickherefor" : "のECサイト設定はこちらをクリックしてください。",
-    	"noecsitesfound" : "このユーザーはECサイトが登録されていません！",
-    	"getpurchasehistory" : "購入履歴を習得する",
-    	"ecsitedesc" : "このページはECサイト設定を表示しています。 購入履歴を取るにはログインしてください。",
-    	"notloggedin" : "ログインされていません。",
-    	"login" : "ログイン",
-		"logininitializing" : "ログインしています。　しばらく待ってください。",
-		"mfaplease" : "MFAコードを入力してください。",
-		"verifyplease" : "SMS/Emailに送ったベリフィケーションコードを入力してください。",
-		"capchaplease" : "Capchaに表示されている文字を入れてください。"
-  	}
+	"en" : {
+		"title" : "EC Site Home Page",
+		"ecsitelisttitle" : "EC Site Settings",
+		"clickHereFor" : ": Click here for EC Site Settings",
+		"noEcSitesFound" : "No EC sites found for this user!",
+		"getPurchaseHistory" : "Get Purchase History",
+		"ecSiteDesc" : "This screen shows EC Sites settings. Check and Try to login for EC Site you will get purchase history.",
+		"notLoggedIn" : "Not logged in",
+		"login" : "Log in",
+		"loginInitializing" : "Login initializing. Please wait...",
+		"mfaPlease" : "Please input the MFA code.",
+		"verifyPlease" : "Please input the verification code you recieved via SMS or Email.",
+		"capchaPlease" : "Please input the characters in the image below."
+	},
+	"ja" : {
+		"title" : "ECサイトホームページ",
+		"ecSiteSetting" : "ECサイト設定",
+		"clickHereFor" : "のECサイト設定はこちらをクリックしてください。",
+		"noEcSitesFound" : "ユーザーが使用できるECサイトが登録されていません！",
+		"getPurchaseHistory" : "購入履歴を取得する",
+		"ecSiteDesc" : "このページはECサイト設定を表示しています。購入履歴を取得するにはログインしてください。",
+		"notLoggedIn" : "ログインされていません。",
+		"login" : "ログイン",
+		"loginInitializing" : "ログインしています。しばらくお待ち下さい。",
+		"mfaPlease" : "MFAコードを入力してください。",
+		"verifyPlease" : "SMS/Emailに送ったベVerificationコードを入力してください。",
+		"capchaPlease" : "CAPTCHAに表示されている文字を入れてください。"
+	}
 }

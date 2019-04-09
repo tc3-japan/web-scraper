@@ -1,7 +1,7 @@
 package com.topcoder.scraper.command.impl;
 
 import com.topcoder.scraper.command.AbstractCommand;
-import com.topcoder.scraper.exception.FetchPurchaseHistoryListFailure;
+import com.topcoder.scraper.exception.FetchPurchaseHistoryListException;
 import com.topcoder.scraper.module.PurchaseHistoryListModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +34,7 @@ public class PurchaseHistoryListCommand extends AbstractCommand<PurchaseHistoryL
       module.fetchPurchaseHistoryList();
     } catch (IOException e) {
       LOGGER.error("Fail to fetch purchase history list", e);
-      throw new FetchPurchaseHistoryListFailure();
+      throw new FetchPurchaseHistoryListException();
     }
     LOGGER.info("Successfully fetch purchase history");
   }

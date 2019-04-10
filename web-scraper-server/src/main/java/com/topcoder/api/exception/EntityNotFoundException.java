@@ -3,7 +3,7 @@ package com.topcoder.api.exception;
 /**
  * This is exception is thrown if there is no entity with given criteria.
  */
-public class EntityNotFoundException extends AppException {
+public class EntityNotFoundException extends ApiException {
 
   /**
    * The serial version UID.

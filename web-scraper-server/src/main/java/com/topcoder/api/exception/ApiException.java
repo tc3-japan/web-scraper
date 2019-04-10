@@ -3,7 +3,7 @@ package com.topcoder.api.exception;
 /**
  * This is the base exception of the application.
  */
-public class AppException extends Exception {
+public class ApiException extends Exception {
 
   /**
    * The serial version UID.
@@ -15,7 +15,7 @@ public class AppException extends Exception {
    *
    * @param message the message
    */
-  public AppException(String message) {
+  public ApiException(String message) {
     super(message);
   }
 
@@ -25,7 +25,7 @@ public class AppException extends Exception {
    * @param message the message
    * @param cause   the cause of the exception
    */
-  public AppException(String message, Throwable cause) {
+  public ApiException(String message, Throwable cause) {
     super(message, cause);
   }
 }

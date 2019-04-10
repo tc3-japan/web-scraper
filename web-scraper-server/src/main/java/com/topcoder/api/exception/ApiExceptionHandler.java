@@ -27,7 +27,7 @@ import java.util.Map;
  * The exception handler that maps exceptions to corresponding response status and message.
  */
 @RestControllerAdvice
-public class SimpleExceptionHandler extends ResponseEntityExceptionHandler {
+public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
 
   /**
@@ -105,9 +105,9 @@ public class SimpleExceptionHandler extends ResponseEntityExceptionHandler {
    * @param ex the exception
    * @return the error response entity
    */
-  @ExceptionHandler(AppException.class)
+  @ExceptionHandler(ApiException.class)
   @ResponseBody
-  public ResponseEntity<Object> handleApplicationException(AppException ex) {
+  public ResponseEntity<Object> handleApplicationException(ApiException ex) {
     HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
 
     if (ex instanceof EntityNotFoundException) {

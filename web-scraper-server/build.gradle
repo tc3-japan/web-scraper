@@ -72,3 +72,39 @@ task copyJar(type: Copy) {
   into '../web-scraper-docker/scraper/build/libs'
 }
 build.dependsOn copyJar
+
+// Setting secret key for application encrypt / decrypt
+def secretKeyPlaceHolder   = "{{SECRET_KEY}}"
+def secretKey              = "YPLxRKc2cWpLiJZi" // default value
+def secretKeyConfirmation  = ""
+def SECRET_KEY_TRIAL_MAX   = 5
+compileJava.doFirst {
+  println("compileJava first task: replace " + secretKeyPlaceHolder + ".")
+
+  // ./gradlew build -Psecret
+  if (project.hasProperty('secret')) {
+    for (i in 1..SECRET_KEY_TRIAL_MAX) {
+      sleep(1000) // for correct console output below
+      secretKey               = String.valueOf(System.console().readPassword("\nPlease enter secret key: "))
+      sleep(1000) // for correct console output below
+      secretKeyConfirmation   = String.valueOf(System.console().readPassword("\nPlease enter secret key again: "))
+      if (secretKey == secretKeyConfirmation) {
+        break
+      } else {
+        println("Entered values don't match each other.")
+        if (i >= SECRET_KEY_TRIAL_MAX) {
+          throw new GradleException("Trial count reached the maximum value ${i}. Exit Process.")
+        }
+        println("Please try again.")
+      }
+    }
+  }
+
+  // replace
+  ant.replace(file: 'src/main/java/com/topcoder/common/util/CipherUtils.java', token: secretKeyPlaceHolder, value: secretKey)
+}
+compileJava.doLast {
+  println("compileJava last task: replace back.")
+  // replace back
+  ant.replace(file: 'src/main/java/com/topcoder/common/util/CipherUtils.java', token: secretKey, value: secretKeyPlaceHolder)
+}

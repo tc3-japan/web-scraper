@@ -2,6 +2,7 @@ package com.topcoder.common.dao;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import com.topcoder.common.util.CipherUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.Data;
@@ -96,4 +97,20 @@ public class ECSiteAccountDAO {
   @ManyToOne
   @JoinColumn(name = "user_id", insertable=false, updatable=false)
   private UserDAO user;
+
+  public String getLoginEmail() {
+    return CipherUtils.decrypt(this.loginEmail);
+  }
+
+  public void setLoginEmail(String loginEmail) {
+    this.loginEmail = CipherUtils.encrypt(loginEmail);
+  }
+
+  public String getPassword() {
+    return CipherUtils.decrypt(this.password);
+  }
+
+  public void setPassword(String password) {
+    this.password = CipherUtils.encrypt(password);
+  }
 }

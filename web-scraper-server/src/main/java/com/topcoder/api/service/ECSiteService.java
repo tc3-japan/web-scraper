@@ -1,7 +1,7 @@
 package com.topcoder.api.service;
 
 import com.gargoylesoftware.htmlunit.util.Cookie;
-import com.topcoder.api.exception.AppException;
+import com.topcoder.api.exception.ApiException;
 import com.topcoder.api.exception.BadRequestException;
 import com.topcoder.api.exception.EntityNotFoundException;
 import com.topcoder.common.config.AmazonProperty;
@@ -70,7 +70,7 @@ public class ECSiteService {
    */
   private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-  public List<ECSiteAccountDAO> getAll(String userId) throws AppException {
+  public List<ECSiteAccountDAO> getAll(String userId) throws ApiException {
     UserDAO userDAO = checkUserByCryptoID(userId);
     return ecSiteAccountRepository.findAllByUserId(userDAO.getId());
   }
@@ -82,9 +82,9 @@ public class ECSiteService {
    * @param userId the user id
    * @param id     the site id
    * @return the db ECSiteAccountDAO
-   * @throws AppException if not exist
+   * @throws ApiException if not exist
    */
-  public ECSiteAccountDAO getECSite(String userId, Integer id) throws AppException {
+  public ECSiteAccountDAO getECSite(String userId, Integer id) throws ApiException {
     checkUserByCryptoID(userId);
     return get(id);
   }
@@ -97,9 +97,9 @@ public class ECSiteService {
    * @param id     the ECSiteAccountDAO id
    * @param entity the request entity
    * @return the updated
-   * @throws AppException if user not found or ECSiteAccountDAO not found
+   * @throws ApiException if user not found or ECSiteAccountDAO not found
    */
-  public ECSiteAccountDAO updateECSite(String userId, Integer id, ECSiteAccountDAO entity) throws AppException {
+  public ECSiteAccountDAO updateECSite(String userId, Integer id, ECSiteAccountDAO entity) throws ApiException {
     checkUserByCryptoID(userId);
 
     ECSiteAccountDAO accountDAO = get(id);
@@ -111,7 +111,7 @@ public class ECSiteService {
   }
 
 
-  public LoginResponse loginInit(String userId, Integer siteId, String uuid) throws AppException {
+  public LoginResponse loginInit(String userId, Integer siteId, String uuid) throws ApiException {
     UserDAO userDAO = checkUserByCryptoID(userId);
     ECSiteAccountDAO ecSiteAccountDAO = ecSiteAccountRepository.findOne(siteId);
 
@@ -146,12 +146,12 @@ public class ECSiteService {
       ecSiteAccountDAO.setAuthStatus(AuthStatusType.FAILED);
       ecSiteAccountDAO.setAuthFailReason(e.getMessage());
       ecSiteAccountRepository.save(ecSiteAccountDAO);
-      throw new AppException(e.getMessage());
+      throw new ApiException(e.getMessage());
     }
   }
 
 
-  public LoginResponse login(String userId, LoginRequest request) throws AppException {
+  public LoginResponse login(String userId, LoginRequest request) throws ApiException {
     checkUserByCryptoID(userId);
 
     ECSiteAccountDAO ecSiteAccountDAO = ecSiteAccountRepository.findOne(request.getSiteId());
@@ -203,7 +203,7 @@ public class ECSiteService {
           return new LoginResponse(ecSiteAccountDAO.getLoginEmail(), result.getCodeType(), result.getImg(),
             context.getCrawler().getAuthStep(), result.getReason());
         } else { // cannot continue, throw error
-          throw new AppException(result.getReason());
+          throw new ApiException(result.getReason());
         }
       }
     } catch (Exception e) {
@@ -211,7 +211,7 @@ public class ECSiteService {
       ecSiteAccountDAO.setAuthStatus(AuthStatusType.FAILED);
       ecSiteAccountDAO.setAuthFailReason(e.getMessage());
       ecSiteAccountRepository.save(ecSiteAccountDAO);
-      throw new AppException(e.getMessage());
+      throw new ApiException(e.getMessage());
     }
   }
 

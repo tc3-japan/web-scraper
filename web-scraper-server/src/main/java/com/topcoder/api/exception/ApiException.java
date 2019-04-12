@@ -1,21 +1,21 @@
 package com.topcoder.api.exception;
 
 /**
- * This is exception is thrown if db error happend
+ * This is the base exception of the application.
  */
-public class DBException extends AppException {
+public class ApiException extends Exception {
 
   /**
    * The serial version UID.
    */
-  private static final long serialVersionUID = 6981076108348619981L;
+  private static final long serialVersionUID = -5073963263497851791L;
 
   /**
    * Create a new instance with message argument.
    *
    * @param message the message
    */
-  public DBException(String message) {
+  public ApiException(String message) {
     super(message);
   }
 
@@ -23,9 +23,9 @@ public class DBException extends AppException {
    * Create a new instance with message and cause arguments.
    *
    * @param message the message
-   * @param cause the cause of the exception
+   * @param cause   the cause of the exception
    */
-  public DBException(String message, Throwable cause) {
+  public ApiException(String message, Throwable cause) {
     super(message, cause);
   }
 }

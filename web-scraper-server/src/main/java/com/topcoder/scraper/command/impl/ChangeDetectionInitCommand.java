@@ -1,7 +1,7 @@
 package com.topcoder.scraper.command.impl;
 
 import com.topcoder.scraper.command.AbstractCommand;
-import com.topcoder.scraper.exception.ChangeDetectionFailure;
+import com.topcoder.scraper.exception.ChangeDetectionException;
 import com.topcoder.scraper.module.ChangeDetectionInitModule;
 import java.io.IOException;
 import java.util.List;
@@ -33,7 +33,7 @@ public class ChangeDetectionInitCommand extends AbstractCommand<ChangeDetectionI
       module.init();
     } catch (IOException e) {
       LOGGER.error("Fail to init check detection", e);
-      throw new ChangeDetectionFailure();
+      throw new ChangeDetectionException();
     }
     LOGGER.info("Successfully init check detection");
   }

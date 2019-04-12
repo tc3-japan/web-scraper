@@ -3,7 +3,7 @@ package com.topcoder.api.exception;
 /**
  * This is exception is thrown if there is a data conflict.
  */
-public class ConflictException extends AppException {
+public class ConflictException extends ApiException {
 
   /**
    * The serial version UID.

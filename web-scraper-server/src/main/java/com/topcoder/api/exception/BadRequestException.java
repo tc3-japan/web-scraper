@@ -3,7 +3,7 @@ package com.topcoder.api.exception;
 /**
  * This is exception is thrown if params error
  */
-public class BadRequestException extends AppException {
+public class BadRequestException extends ApiException {
 
   /**
    * Create a new instance with message argument.

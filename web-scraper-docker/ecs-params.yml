@@ -1,9 +1,12 @@
 version: 1
 task_definition:
   services:
+    scraper-web:
+      cpu_shares: 100
+      mem_limit: 1048576000
     scraper-app:
       cpu_shares: 100
       mem_limit: 2097152000
     scraper-db:
       cpu_shares: 100
-      mem_limit: 1048576000
+      mem_limit: 2097152000

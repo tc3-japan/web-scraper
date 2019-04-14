@@ -43,8 +43,10 @@ services:
     volumes:
       - "/home/ec2-user/docker/mysql/conf.d:/etc/mysql/conf.d"
       - "/home/ec2-user/docker/mysql/initdb.d:/root/mysql/initdb.d"
+      - "/home/ec2-user/docker/mysql/jobs.d:/root/mysql/jobs.d"
       - "/home/ec2-user/docker/mysql/data:/var/lib/mysql"
       - "/home/ec2-user/docker/mysql/logs:/var/log/mysql"
+      - "/home/ec2-user/docker/mysql/backup:/root/mysql/backup"
     logging:
       driver: awslogs
       options:

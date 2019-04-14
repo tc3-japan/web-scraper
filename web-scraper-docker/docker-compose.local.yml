@@ -53,8 +53,10 @@ services:
     volumes:
       - "./mysql/build/conf.d:/etc/mysql/conf.d"
       - "./mysql/build/initdb.d:/root/mysql/initdb.d"
+      - "./mysql/build/jobs.d:/root/mysql/jobs.d"
       - "./local-data/mysql/data:/var/lib/mysql"
       - "./local-data/mysql/logs:/var/log/mysql"
+      - "./local-data/mysql/backup:/root/mysql/backup"
 
 networks:
   scraper_net:

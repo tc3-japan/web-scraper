@@ -11,3 +11,6 @@ mkdir -p ${LOCAL_DOCKER_DIR}/mysql/data
 
 echo "mkdir -p ${LOCAL_DOCKER_DIR}/mysql/logs"
 mkdir -p ${LOCAL_DOCKER_DIR}/mysql/logs
+
+echo "mkdir -p ${LOCAL_DOCKER_DIR}/mysql/backup"
+mkdir -p ${LOCAL_DOCKER_DIR}/mysql/backup

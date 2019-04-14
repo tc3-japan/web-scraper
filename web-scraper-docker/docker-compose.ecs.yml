@@ -1,18 +1,30 @@
 version: '3'
 services:
+
+  scraper-web:
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/scraper-web:latest
+    ports:
+      - 8080:80
+    links:
+      - scraper-app
+    volumes:
+      - "/home/ec2-user/docker/nginx/libs:/usr/share/nginx/html"
+    logging:
+      driver: awslogs
+      options:
+        awslogs-group: scraper-web-lg
+        awslogs-region: ap-northeast-1
+        awslogs-stream-prefix: scraper-web
+
   scraper-app:
     image: ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/scraper-app:latest
-    environment:
-      #SCRAPER_DB_PORT_3306_TCP_ADDR: 10.1.1.2
-      AMAZON_USERNAME: jqp@example.com
-      AMAZON_PASSWORD: password
+    ports:
+      - 8085:8085
     links:
       - scraper-db
     volumes:
       - "/home/ec2-user/docker/scraper/logs:/root/scraper/logs"
-    #  - "../build/dl-html:/scraper/dl-html"
-    #  - "../build/log:/var/log/scraper"
-    command: /bin/sh -c "while true; do echo hello scraper-app; sleep 10; done"
+    command: bash -c "sleep 30; cd /root/scraper/; java -jar web-scraper-server-*.jar --rest --spring.config.location=file:application.yaml"
     logging:
       driver: awslogs
       options:
@@ -21,13 +33,18 @@ services:
         awslogs-stream-prefix: scraper-app
 
   scraper-db:
-    image: mysql:latest
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/scraper-db:latest
     ports:
       - 3306:3306
     environment:
       MYSQL_DATABASE: web_scraper
       MYSQL_USER: root
       MYSQL_ROOT_PASSWORD: mypassword
+    volumes:
+      - "/home/ec2-user/docker/mysql/conf.d:/etc/mysql/conf.d"
+      - "/home/ec2-user/docker/mysql/initdb.d:/root/mysql/initdb.d"
+      - "/home/ec2-user/docker/mysql/data:/var/lib/mysql"
+      - "/home/ec2-user/docker/mysql/logs:/var/log/mysql"
     logging:
       driver: awslogs
       options:

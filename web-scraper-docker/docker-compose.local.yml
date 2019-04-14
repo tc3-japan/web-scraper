@@ -34,7 +34,7 @@ services:
       SCRAPER_DB_PORT_3306_TCP_ADDR: 10.1.1.3
     volumes:
       - "./local-data/scraper/logs:/root/scraper/logs"
-    command: bash -c "cd /root/scraper/; java -jar web-scraper-server-*.jar --rest --spring.config.location=file:application.yaml"
+    command: bash -c "sleep 30; cd /root/scraper/; java -jar web-scraper-server-*.jar --rest --spring.config.location=file:application.yaml"
     #tty: true
 
   scraper-db:

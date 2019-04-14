@@ -40,22 +40,58 @@ In this README, we assume to be set to scraper-dev
 
 ### Step 0: Confirm AWS/Docker-Related files
 ```bash
-% tree docker
-docker
-├── README.md                          <--- This file
-├── docker-compose.ecs.yml             <--- to run container at Amazon ECS
-├── docker-compose.local.yml           <--- to build docker image and run container locally
-├── ecs-params.yml                     <--- docker-compose support file at Amazon ECS
-└── scraper
-    └── build
-        ├── Dockerfile                 <--- to build the application's docker image
-        └── libs
-            ├── application.yaml       <--- Application config file for deploying docker container
-            └── web-scraper-0.0.1.jar  <--- Application Jar built with $PROJECT_HOME/gradlew build
+% tree web-scraper-docker
+web-scraper-docker
+├── README.md                                 <--- This file
+├── docker-compose.ecs.yml                    <--- to run container at Amazon ECS
+├── docker-compose.local.yml                  <--- to build docker image and run container locally
+├── ecs-params.yml                            <--- docker-compose support file at Amazon ECS
+├── mysql
+│   └── build
+│       ├── Dockerfile                        <--- to build the mysql docker image
+│       ├── conf.d                            <--- mysql additional config files
+│       │   └── web-scraper.cnf
+│       └── initdb.d                          <--- mysql initialization SQLs
+│           ├── encrypt-table.sql
+│           └── test-data.sql
+├── nginx
+│   └── build
+│       ├── Dockerfile                        <--- to build the nginx docker image
+│       └── libs                              <--- to build the front apps docker image
+│           ├── app.a6f649c2.css
+│           ├── css
+│           │   └── app.a6f649c2.css
+│           ├── favicon.ico
+│           ├── index.html
+│           └── js
+│               ├── app.d17e1534.js
+│               ├── app.d17e1534.js.map
+│               ├── chunk-vendors.c0172bdd.js
+│               └── chunk-vendors.c0172bdd.js.map
+├── scraper
+│   └── build
+│       ├── Dockerfile
+│       └── libs
+│           ├── application.yaml              <--- Application config file for deploying docker container
+│           └── web-scraper-server-0.0.1.jar  <--- Application Jar built with $PROJECT_HOME/gradlew build
+└── scripts
+    ├── scp-to-aws.sh                         <--- Script to copy local files to AWS ECS host
+    └── setup-local.sh
 ```
 
 ### Step 1: Creating ECR Repository
 ```bash
+% aws ecr create-repository --repository-name scraper-web
+{
+    "repository": {
+        "repositoryArn": "arn:aws:ecr:ap-northeast-1: xxxxxxxxxxxx:repository/scraper-web",
+        "registryId": "xxxxxxxxxxxx",
+        "repositoryName": "scraper-web",
+        "repositoryUri": "xxxxxxxxxxxx.dkr.ecr.ap-northeast-1.amazonaws.com/scraper-web",
+        "createdAt": 1555169250.0
+    }
+}
+
 % aws ecr create-repository --repository-name scraper-app
 {
     "repository": {
@@ -66,8 +102,19 @@ docker
         "createdAt": 1539200225.0
     }
 }
+
+% aws ecr create-repository --repository-name scraper-db
+{
+    "repository": {
+        "repositoryArn": "arn:aws:ecr:ap-northeast-1: xxxxxxxxxxxx:repository/scraper-db",
+        "registryId": "xxxxxxxxxxxx",
+        "repositoryName": "scraper-db",
+        "repositoryUri": "xxxxxxxxxxxx.dkr.ecr.ap-northeast-1.amazonaws.com/scraper-db",
+        "createdAt": 1555169254.0
+    }
+}
 ```
-__xxxxxxxxxxxx__ here is AWS_ACCOUNT_ID. Please remember that.
+__xxxxxxxxxxxx__ here is AWS\_ACCOUNT_ID. Please remember that.
 
 xxxxxxxxxxxx.dkr.ecr.ap-northeast-1.amazonaws.com/scraper-app
 
@@ -79,12 +126,22 @@ xxxxxxxxxxxx.dkr.ecr.ap-northeast-1.amazonaws.com/scraper-app
 
 ### Step 3: Add tag to Docker Image
 ```bash
-% docker tag scraper:0.0.1 xxxxxxxxxxxx.dkr.ecr.ap-northeast-1.amazonaws.com/scraper-app
 % docker images
 REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
-xxxxxxxxxxxx.dkr.ecr.ap-northeast-1.amazonaws.com/scraper-app   latest              2a9bdcd0d9ce        2 minutes ago       280MB
-scraper             0.0.1               2a9bdcd0d9ce        4 seconds ago       280MB
-openjdk             8-jdk-slim          f1313c1cebfd        5 weeks ago         244MB
+scraper-web         latest              e3bd63f25585        9 days ago          176MB
+scraper-app         latest              012c1c90109f        9 days ago          357MB
+scraper-db          latest              e903ce5b62b0        9 days ago          543MB
+% docker tag scraper-web:latest xxxxxxxxxxxx.dkr.ecr.ap-northeast-1.amazonaws.com/scraper-web
+% docker tag scraper-app:latest xxxxxxxxxxxx.dkr.ecr.ap-northeast-1.amazonaws.com/scraper-app
+% docker tag scraper-db:latest  xxxxxxxxxxxx.dkr.ecr.ap-northeast-1.amazonaws.com/scraper-db
+% docker images
+REPOSITORY                                                      TAG                 IMAGE ID            CREATED             SIZE
+xxxxxxxxxxxx.dkr.ecr.ap-northeast-1.amazonaws.com/scraper-web   latest              e3bd63f25585        9 days ago          176MB
+scraper-web                                                     latest              e3bd63f25585        9 days ago          176MB
+xxxxxxxxxxxx.dkr.ecr.ap-northeast-1.amazonaws.com/scraper-app   latest              012c1c90109f        9 days ago          357MB
+scraper-app                                                     latest              012c1c90109f        9 days ago          357MB
+xxxxxxxxxxxx.dkr.ecr.ap-northeast-1.amazonaws.com/scraper-db    latest              e903ce5b62b0        9 days ago          543MB
+scraper-db                                                      latest              e903ce5b62b0        9 days ago          543MB
 ```
 
 ### Step 4: Push Docker Image to ECR Repository
@@ -98,7 +155,9 @@ docker login -u AWS -p eyJwYX...(SNIP)...MjAxfQ== https://xxxxxxxxxxxx.dkr.ecr.a
 ```
 #### Push Docker Image 
 ```bash
+% docker push xxxxxxxxxxxx.dkr.ecr.ap-northeast-1.amazonaws.com/scraper-web
 % docker push xxxxxxxxxxxx.dkr.ecr.ap-northeast-1.amazonaws.com/scraper-app
+% docker push xxxxxxxxxxxx.dkr.ecr.ap-northeast-1.amazonaws.com/scraper-db
 ```
 
 
@@ -147,7 +206,7 @@ In this README, we assume to be set to scraper-dev
 
 #### Create cluster
 ```bash
-% ecs-cli up --keypair scraper-dev --capability-iam --instance-type t2.medium --cluster-config scraper-cfg
+% ecs-cli up --keypair scraper-dev --capability-iam --instance-type t2.large --cluster-config scraper-cfg
 INFO[0000] Using recommended Amazon Linux AMI with ECS Agent 1.20.3 and Docker version 18.06.1-ce
 INFO[0000] Created cluster                               cluster=scraper-cluster region=ap-northeast-1
 INFO[0001] Waiting for your cluster resources to be created...
@@ -161,14 +220,22 @@ Cluster creation succeeded.
 
 #### Add SSH rule to AWS security group
 ```bash
-% aws ec2 authorize-security-group-ingress --group-id sg-xxxxxxxxxxxxxxxxx --protocol tcp --port 22 --cidr 0.0.0.0/0
+% aws ec2 authorize-security-group-ingress --group-id sg-xxxxxxxxxxxxxxxxx --ip-permissions IpProtocol=tcp,FromPort=22,ToPort=22,IpRanges='[{CidrIp=0.0.0.0/0,Description="ssh to docker engine"}]'
+(No description % aws ec2 authorize-security-group-ingress --group-id sg-xxxxxxxxxxxxxxxxx --protocol tcp --port 22 --cidr 0.0.0.0/0)
+
+% aws ec2 authorize-security-group-ingress --group-id sg-xxxxxxxxxxxxxxxxx --ip-permissions IpProtocol=tcp,FromPort=8080,ToPort=8080,IpRanges='[{CidrIp=0.0.0.0/0,Description="docker: scraper-web"}]'
+(No description % aws ec2 authorize-security-group-ingress --group-id sg-xxxxxxxxxxxxxxxxx --protocol tcp --port 8080 --cidr 0.0.0.0/0)
+
+% aws ec2 authorize-security-group-ingress --group-id sg-xxxxxxxxxxxxxxxxx --ip-permissions IpProtocol=tcp,FromPort=8085,ToPort=8085,IpRanges='[{CidrIp=0.0.0.0/0,Description="docker: scraper-app"}]'
+(No description % aws ec2 authorize-security-group-ingress --group-id sg-xxxxxxxxxxxxxxxxx --protocol tcp --port 8085 --cidr 0.0.0.0/0)
+
 ```
 
 ### Step 4: Deploy the Compose File to a Cluster 
 
 #### Change directory where docker files exists
 ```bash
-% cd $PROJECT_HOME/docker
+% cd $PROJECT_HOME/web-scraper-docker
 ```
 
 #### Set AWS_ACCOUNT_ID environment variable
@@ -181,6 +248,7 @@ export AWS_ACCOUNT_ID=xxxxxxxxxxxx
 ```bash
 % ecs-cli compose --project-name scraper-prj  --file docker-compose.ecs.yml up --create-log-groups --cluster-config scraper-cfg
 ```
+see: AWS console > (services) CloudWatch > Logs
 ##### Deploy without creating AWS Log Groups (When setup again)
 ```bash
 % ecs-cli compose --project-name scraper-prj  --file docker-compose.ecs.yml up --cluster-config scraper-cfg
@@ -198,25 +266,34 @@ export AWS_ACCOUNT_ID=xxxxxxxxxxxx
 
 ### Step 7: Execute Scraper Application
 
+#### Copy local files related to scraper-web and scraper-db
+```bash
+% ./scripts/scp-to-aws.sh <path/to/scraper-dev.pem> <aws ecs host>
+```
+
 #### Connect EC2 Instance(Docker Engine)
 ```bash
-% ssh -i "scraper-dev.pem" ec2-user@xxx.xxx.xxx.xxx
+% ssh -i <path/to/scraper-dev.pem> ec2-user@<aws ecs host>
 ```
 
 #### Connect Scraper Container
 ```bash
 % docker ps
+CONTAINER ID        IMAGE                                                                  COMMAND                  CREATED             STATUS              PORTS                               NAMES
+3d169b42c646        xxxxxxxxxxxx.dkr.ecr.ap-northeast-1.amazonaws.com/scraper-web:latest   "nginx -g 'daemon of…"   2 hours ago         Up 2 hours          0.0.0.0:8080->80/tcp                ecs-scraper-prj-34-scraper-web-80b8acecdfeb9dc58a01
+f55871c2bc57        xxxxxxxxxxxx.dkr.ecr.ap-northeast-1.amazonaws.com/scraper-app:latest   "bash -c 'sleep 30; …"   2 hours ago         Up 2 hours          0.0.0.0:8085->8085/tcp              ecs-scraper-prj-34-scraper-app-8caf84dda4b79dbed601
+bf9b07bfc6e8        xxxxxxxxxxxx.dkr.ecr.ap-northeast-1.amazonaws.com/scraper-db:latest    "docker-entrypoint.s…"   2 hours ago         Up 2 hours          0.0.0.0:3306->3306/tcp, 33060/tcp   ecs-scraper-prj-34-scraper-db-dcca859ba7a9a7bbf901
 % docker exec -ti xxxxxxxxxxxx bash
 ```
 
-#### Set AMAZON-Retated Environment Variables
+#### Register scraper users to get purchase history
 ```bash
-% export AMAZON_USERNAME=xxxxxxxxxxxx
-% export AMAZON_PASSWORD=xxxxxxxxxxxx
+% docker exec -ti <scraper-db's CONTAINER ID> bash
+$ mysql --host 0.0.0.0 --port 3306 --user root --password web_scraper < /root/mysql/initdb.d/test-data.sql
 ```
 
 #### Execute Scraper 
 ```bash
 % cd /root/scraper/
-% java -jar web-scraper-0.0.1.jar --spring.config.location=file:application.yaml
+% java -jar web-scraper-server-0.0.1.jar --spring.config.location=file:application.yaml --batch=purchase_history
 ```

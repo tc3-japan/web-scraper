@@ -4,8 +4,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
+//Hack: Workaround for unable to component-scan "com.topcoder.common.util.SpringTool" by "java" command.
+//      Using "gradle bootRun", it can be scanned normally.
+@ComponentScan({
+        "com.topcoder.api",
+        "com.topcoder.common",
+        "com.topcoder.scraper"
+})
 public class Application {
 
   private static Logger logger = LoggerFactory.getLogger(Application.class.getName());

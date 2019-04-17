@@ -29,13 +29,6 @@ repositories {
   mavenCentral()
 }
 
-bootRun {
-  if (project.hasProperty('args')) {
-    args project.args.split(',')
-  }
-}
-
-
 dependencies {
   compile("org.springframework.boot:spring-boot-starter:${versions.springBoot}")
   compile("org.springframework.boot:spring-boot-starter-data-jpa:${versions.springBoot}")
@@ -107,4 +100,22 @@ compileJava.doLast {
   println("compileJava last task: replace back.")
   // replace back
   ant.replace(file: 'src/main/java/com/topcoder/common/util/CipherUtils.java', token: secretKey, value: secretKeyPlaceHolder)
+}
+
+bootRun {
+  // with Parameters
+  // Usage:
+  //   ./gradlew bootRun -Pargs=--batch=purchase_history
+  //   ./gradlew bootRun -Pargs="--batch=purchase_history,--site=amazon"
+  if (project.hasProperty('args')) {
+    args project.args.split(',')
+  }
+  // with JVM Parameters
+  // Usage:
+  //   ./gradlew bootRun -PjvmArgs=-DtacticFile=tactic_01.yaml -Pargs=--rest
+  //   ./gradlew bootRun -PjvmArgs=-DtacticFile=tactic_01.yaml -Pargs=--batch=purchase_history
+  //   ./gradlew bootRun -PjvmArgs="-DtacticFile=tactic_01.yaml,-DmonitorTargetFile=monitor-target_01.yaml,-DcheckItemsFile=check-items_01.yaml" -Pargs=--batch=change_detection_check
+  if ( project.hasProperty('jvmArgs') ) {
+    jvmArgs project.jvmArgs.split(',')
+  }
 }

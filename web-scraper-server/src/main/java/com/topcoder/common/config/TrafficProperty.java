@@ -3,6 +3,7 @@ package com.topcoder.common.config;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -11,7 +12,10 @@ import java.util.List;
  * Traffic definition property
  */
 @Component
-@PropertySource(factory = YamlPropertySourceFactory.class, value = "classpath:tactic.yaml")
+@PropertySources({
+        @PropertySource(factory = YamlPropertySourceFactory.class, value = {"classpath:tactic.yaml"}),
+        @PropertySource(factory = YamlPropertySourceFactory.class, value = {"file:${tacticsFile}"}, ignoreResourceNotFound = true)
+})
 @ConfigurationProperties
 @Data
 public class TrafficProperty {

@@ -25,6 +25,12 @@ the app traffic contro file can be changed in `web-scraper-server/src/main/resou
 
 the `proxy_server` must be a vaild value, other values can be default value
 
+- you also can load external tactic config file when run, just like this 
+
+  `java -DtacticsFile=tactic.yaml -jar ./build/libs/web-scraper-server-0.0.1.jar  --rest`
+
+  note :  `-DtacticsFile=tactic.yaml ` must be before `-jar`
+
 ### arguments
 
 Values could be configured by providing arguments:

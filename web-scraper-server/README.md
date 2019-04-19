@@ -27,9 +27,11 @@ the `proxy_server` must be a vaild value, other values can be default value
 
 - you also can load external tactic config file when run, just like this 
 
-  `java -DtacticsFile=tactic.yaml -jar ./build/libs/web-scraper-server-0.0.1.jar  --rest`
+  `./gradlew bootRun -PjvmArgs=-DtacticFile=tactic.yaml -Pargs=--rest`
 
-  note :  `-DtacticsFile=tactic.yaml ` must be before `-jar`
+  `java -DtacticFile=tactic.yaml -jar ./build/libs/web-scraper-server-0.0.1.jar  --rest`
+
+  note :  `-DtacticFile=tactic.yaml ` must be before `-jar`
 
 ### arguments
 
@@ -79,6 +81,8 @@ If no site is specified, all sites will be run (currently only amazon is impleme
 ## Local run from jar
 
 - `./gradlew clean build -x test` to build jar file
+- `./gradlew clean build -x test -Psecret` to build jar file with secret used when encrypting confidential information in database
+
 - `java -jar build/libs/web-scraper-server-0.0.1.jar --batch=purchase_history`
 
 To specify site, specify site argument

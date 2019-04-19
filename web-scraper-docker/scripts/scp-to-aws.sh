@@ -25,3 +25,19 @@ echo "scp -r -i ${PEM} ${DOCKER_DIR}/mysql/build/conf.d   ec2-user@${HOST}:/home
 scp -r -i ${PEM} ${DOCKER_DIR}/mysql/build/conf.d   ec2-user@${HOST}:/home/ec2-user/docker/mysql/
 echo "scp -r -i ${PEM} ${DOCKER_DIR}/mysql/build/initdb.d ec2-user@${HOST}:/home/ec2-user/docker/mysql/"
 scp -r -i ${PEM} ${DOCKER_DIR}/mysql/build/initdb.d ec2-user@${HOST}:/home/ec2-user/docker/mysql/
+echo "scp -r -i ${PEM} ${DOCKER_DIR}/mysql/build/jobs.d   ec2-user@${HOST}:/home/ec2-user/docker/mysql/"
+scp -r -i ${PEM} ${DOCKER_DIR}/mysql/build/jobs.d   ec2-user@${HOST}:/home/ec2-user/docker/mysql/
+
+# jobs
+echo "ssh -i ${PEM} ec2-user@${HOST} mkdir /home/ec2-user/jobs"
+ssh -i ${PEM} ec2-user@${HOST} mkdir /home/ec2-user/jobs
+
+echo "scp -r -i ${PEM} ${DOCKER_DIR}/scripts/docker-host/jobs   ec2-user@${HOST}:/home/ec2-user/"
+scp -r -i ${PEM} ${DOCKER_DIR}/scripts/docker-host/jobs   ec2-user@${HOST}:/home/ec2-user/
+
+echo "scp -i ${PEM} ${DOCKER_DIR}/scripts/docker-host/cron.d/docker-jobs ec2-user@${HOST}:/home/ec2-user/"
+scp -i ${PEM} ${DOCKER_DIR}/scripts/docker-host/cron.d/docker-jobs ec2-user@${HOST}:/home/ec2-user/
+
+echo "ssh -i ${PEM} ec2-user@${HOST} 'sudo mv /home/ec2-user/docker-jobs /etc/cron.d/; sudo chown root:root /etc/cron.d/docker-jobs'"
+ssh -i ${PEM} ec2-user@${HOST} 'sudo mv /home/ec2-user/docker-jobs /etc/cron.d/; sudo chown root:root /etc/cron.d/docker-jobs'
+

@@ -14,7 +14,7 @@ import java.util.List;
 @Component
 @PropertySources({
         @PropertySource(factory = YamlPropertySourceFactory.class, value = {"classpath:tactic.yaml"}),
-        @PropertySource(factory = YamlPropertySourceFactory.class, value = {"file:${tacticsFile}"}, ignoreResourceNotFound = true)
+        @PropertySource(factory = YamlPropertySourceFactory.class, value = {"file:${tacticFile}"}, ignoreResourceNotFound = true)
 })
 @ConfigurationProperties
 @Data

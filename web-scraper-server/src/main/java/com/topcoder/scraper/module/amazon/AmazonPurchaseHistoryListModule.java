@@ -61,8 +61,13 @@ public class AmazonPurchaseHistoryListModule extends PurchaseHistoryListModule {
 
 
 
-    Iterable<ECSiteAccountDAO> accountDAOS = ecSiteAccountRepository.findAll();
+    Iterable<ECSiteAccountDAO> accountDAOS = ecSiteAccountRepository.findAllByEcSite(getECName());
     for (ECSiteAccountDAO ecSiteAccountDAO : accountDAOS) {
+      
+      if (ecSiteAccountDAO.getEcUseFlag() != Boolean.TRUE) {
+        LOGGER.info("EC Site [" + ecSiteAccountDAO.getId() + ":" + ecSiteAccountDAO.getEcSite() + "] is not active. Skipped.");
+        continue;
+      }
 
       TrafficWebClient webClient = new TrafficWebClient(ecSiteAccountDAO.getUserId(), true);
       LOGGER.info("web client version = " + webClient.getWebClient().getBrowserVersion());

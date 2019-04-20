@@ -95,6 +95,8 @@ public class ECSiteController {
    */
   @PostMapping("/{userId}/login")
   public LoginResponse login(@PathVariable("userId") String userId, @RequestBody LoginRequest request) throws ApiException {
-    return ecSiteService.login(userId, request);
+    // TODO: PoC
+    //return ecSiteService.login(userId, request);
+    return ecSiteService.loginKojima(userId, request);
   }
 }

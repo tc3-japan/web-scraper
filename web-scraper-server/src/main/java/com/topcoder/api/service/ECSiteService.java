@@ -18,6 +18,7 @@ import com.topcoder.common.repository.UserRepository;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.module.amazon.crawler.AmazonAuthenticationCrawler;
 import com.topcoder.scraper.module.amazon.crawler.AmazonAuthenticationCrawlerResult;
+import com.topcoder.scraper.module.kojima.crawler.KojimaAuthenticationCrawler;
 import com.topcoder.scraper.service.WebpageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +27,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
@@ -110,7 +112,7 @@ public class ECSiteService {
     return accountDAO;
   }
 
-
+  
   public LoginResponse loginInit(String userId, Integer siteId, String uuid) throws ApiException {
     UserDAO userDAO = checkUserByCryptoID(userId);
     ECSiteAccountDAO ecSiteAccountDAO = ecSiteAccountRepository.findOne(siteId);
@@ -118,6 +120,7 @@ public class ECSiteService {
     CrawlerContext context = crawlerContextMap.get(siteId);
 
     if (context == null || !context.getUuid().equals(uuid)) { // ignore previous context, because of uuid is different
+      // TODO: Amazon-specific code
       context = new CrawlerContext(new TrafficWebClient(userDAO.getId(), false),
         amazonProperty,
         applicationContext.getBean(WebpageService.class),
@@ -150,6 +153,50 @@ public class ECSiteService {
     }
   }
 
+  public LoginResponse loginKojima(String userId, LoginRequest request) throws ApiException {
+    UserDAO userDAO = checkUserByCryptoID(userId);
+
+    ECSiteAccountDAO ecSiteAccountDAO = ecSiteAccountRepository.findOne(request.getSiteId());
+
+    ecSiteAccountDAO.setPassword(request.getPassword());
+    ecSiteAccountDAO.setLoginEmail(request.getEmail());
+    ecSiteAccountRepository.save(ecSiteAccountDAO); // save it first
+
+    KojimaAuthenticationCrawler crawler = new KojimaAuthenticationCrawler("kojima", applicationContext.getBean(WebpageService.class));
+    TrafficWebClient webClient = new TrafficWebClient(userDAO.getId(), false);
+    
+    try {
+      boolean result = crawler.authenticate(webClient, request.getEmail(), request.getPassword());
+      if (result) { // succeed , update status and save cookies
+
+        ecSiteAccountDAO.setAuthStatus(AuthStatusType.SUCCESS);
+        ecSiteAccountDAO.setAuthFailReason(null);
+        List<ECCookie> ecCookies = new LinkedList<>();
+        for (Cookie cookie : webClient.getWebClient().getCookieManager().getCookies()) {
+          ECCookie ecCookie = new ECCookie();
+          ecCookie.setName(cookie.getName());
+          ecCookie.setDomain(cookie.getDomain());
+          ecCookie.setValue(cookie.getValue());
+          ecCookie.setExpires(cookie.getExpires());
+          ecCookie.setHttpOnly(cookie.isHttpOnly());
+          ecCookie.setPath(cookie.getPath());
+          ecCookie.setSecure(cookie.isSecure());
+          ecCookies.add(ecCookie);
+        }
+        ecSiteAccountDAO.setEcCookies(new ECCookies(ecCookies).toJSONString());
+        ecSiteAccountRepository.save(ecSiteAccountDAO);
+
+        return new LoginResponse(ecSiteAccountDAO.getLoginEmail(), null, null, null, "");
+      } else { // login failed
+        ecSiteAccountDAO.setAuthStatus(AuthStatusType.FAILED);
+        ecSiteAccountDAO.setAuthFailReason("REASON");
+        ecSiteAccountRepository.save(ecSiteAccountDAO);
+        throw new ApiException("REASON");
+      }
+    } catch (IOException e) {
+      throw new ApiException(e.getMessage());
+    }
+  }
 
   public LoginResponse login(String userId, LoginRequest request) throws ApiException {
     checkUserByCryptoID(userId);

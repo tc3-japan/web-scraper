@@ -3,13 +3,18 @@ package com.topcoder.common.config;
 import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.stereotype.Component;
 
 /**
  * Monitor target definition property
  */
 @Component
-@PropertySource(factory = YamlPropertySourceFactory.class, value = "classpath:monitor-target-definition.yaml")
+
+@PropertySources({
+        @PropertySource(factory = YamlPropertySourceFactory.class, value = {"classpath:monitor-target-definition.yaml"}),
+        @PropertySource(factory = YamlPropertySourceFactory.class, value = {"file:${monitorTargetFile}"}, ignoreResourceNotFound = true)
+})
 @ConfigurationProperties
 public class MonitorTargetDefinitionProperty {
 

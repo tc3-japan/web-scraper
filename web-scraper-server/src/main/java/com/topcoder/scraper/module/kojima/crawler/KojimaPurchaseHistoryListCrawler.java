@@ -60,7 +60,7 @@ public class KojimaPurchaseHistoryListCrawler {
     //member-orderhistorydetails
     List<DomNode> orders = page.querySelectorAll(".member-orderhistorydetails > tbody");
     
-    for (DomNode orderNode : orders.subList(0, 2)) {
+    for (DomNode orderNode : orders) {
       DomNode itemNoNode = orderNode.querySelector(".itemnumber");
       String nodeText = itemNoNode.asText();
       Date orderDate = extractDate(nodeText);

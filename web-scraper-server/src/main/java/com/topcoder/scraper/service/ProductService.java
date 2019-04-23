@@ -11,7 +11,8 @@ public interface ProductService {
   void addCategoryRanking(int productId, String categoryPath, int ranking);
 
   void updateProduct(int productId, ProductInfo product);
+  
   void updateFetchInfoStatus(int productId, String fetchInfoStatus);
 
-  List<ProductDAO> getAllFetchInfoStatusIsNull();
+  List<ProductDAO> getAllFetchInfoStatusIsNull(String ecSite);
 }

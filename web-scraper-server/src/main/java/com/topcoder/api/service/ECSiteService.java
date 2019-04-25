@@ -1,39 +1,27 @@
 package com.topcoder.api.service;
 
-import com.gargoylesoftware.htmlunit.util.Cookie;
+import java.time.Instant;
+import java.util.Date;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import com.topcoder.api.exception.ApiException;
 import com.topcoder.api.exception.BadRequestException;
 import com.topcoder.api.exception.EntityNotFoundException;
+import com.topcoder.api.service.login.LoginHandler;
+import com.topcoder.api.service.login.LoginHandlerFactory;
 import com.topcoder.common.config.AmazonProperty;
 import com.topcoder.common.dao.ECSiteAccountDAO;
 import com.topcoder.common.dao.UserDAO;
-import com.topcoder.common.model.AuthStatusType;
-import com.topcoder.common.model.CrawlerContext;
-import com.topcoder.common.model.ECCookie;
-import com.topcoder.common.model.ECCookies;
 import com.topcoder.common.model.LoginRequest;
 import com.topcoder.common.model.LoginResponse;
 import com.topcoder.common.repository.ECSiteAccountRepository;
 import com.topcoder.common.repository.UserRepository;
-import com.topcoder.common.traffic.TrafficWebClient;
-import com.topcoder.scraper.module.amazon.crawler.AmazonAuthenticationCrawler;
-import com.topcoder.scraper.module.amazon.crawler.AmazonAuthenticationCrawlerResult;
-import com.topcoder.scraper.module.kojima.crawler.KojimaAuthenticationCrawler;
-import com.topcoder.scraper.service.WebpageService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
-
-import java.io.IOException;
-import java.time.Instant;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
 @Service
 public class ECSiteService {
@@ -55,13 +43,8 @@ public class ECSiteService {
   AmazonProperty amazonProperty;
 
   @Autowired
-  private ApplicationContext applicationContext;
-
-  /**
-   * save Crawler context
-   */
-  private Map<Integer, CrawlerContext> crawlerContextMap = new HashMap<>();
-
+  private LoginHandlerFactory loginHandlerFactory;
+  
   /**
    * the logger
    */
@@ -114,152 +97,23 @@ public class ECSiteService {
 
   
   public LoginResponse loginInit(String userId, Integer siteId, String uuid) throws ApiException {
+        
     UserDAO userDAO = checkUserByCryptoID(userId);
     ECSiteAccountDAO ecSiteAccountDAO = ecSiteAccountRepository.findOne(siteId);
 
-    CrawlerContext context = crawlerContextMap.get(siteId);
-
-    if (context == null || !context.getUuid().equals(uuid)) { // ignore previous context, because of uuid is different
-      // TODO: Amazon-specific code
-      context = new CrawlerContext(new TrafficWebClient(userDAO.getId(), false),
-        amazonProperty,
-        applicationContext.getBean(WebpageService.class),
-        uuid, null);
-      context.setCrawler(new AmazonAuthenticationCrawler(ecSiteAccountDAO.getEcSite(),
-        context.getProperty(),
-        context.getWebpageService()));
-
-      crawlerContextMap.put(siteId, context); // save context
-    }
-
-    try {
-      AmazonAuthenticationCrawlerResult result = context.getCrawler().authenticate(context.getWebClient(),
-        null, null, null, true);
-      if (result.isSuccess()) {
-        return new LoginResponse(ecSiteAccountDAO.getLoginEmail(), null, null,
-          context.getCrawler().getAuthStep(), result.getReason());
-      } else {
-        ecSiteAccountDAO.setAuthStatus(AuthStatusType.FAILED);
-        ecSiteAccountDAO.setAuthFailReason(result.getReason());
-        ecSiteAccountRepository.save(ecSiteAccountDAO);
-        return new LoginResponse(ecSiteAccountDAO.getLoginEmail(), result.getCodeType(), result.getImg(),
-          context.getCrawler().getAuthStep(), result.getReason());
-      }
-    } catch (Exception e) { // here is fatal error, cannot continue
-      ecSiteAccountDAO.setAuthStatus(AuthStatusType.FAILED);
-      ecSiteAccountDAO.setAuthFailReason(e.getMessage());
-      ecSiteAccountRepository.save(ecSiteAccountDAO);
-      throw new ApiException(e.getMessage());
-    }
-  }
-
-  public LoginResponse loginKojima(String userId, LoginRequest request) throws ApiException {
-    UserDAO userDAO = checkUserByCryptoID(userId);
-
-    ECSiteAccountDAO ecSiteAccountDAO = ecSiteAccountRepository.findOne(request.getSiteId());
-
-    ecSiteAccountDAO.setPassword(request.getPassword());
-    ecSiteAccountDAO.setLoginEmail(request.getEmail());
-    ecSiteAccountRepository.save(ecSiteAccountDAO); // save it first
-
-    KojimaAuthenticationCrawler crawler = new KojimaAuthenticationCrawler("kojima", applicationContext.getBean(WebpageService.class));
-    TrafficWebClient webClient = new TrafficWebClient(userDAO.getId(), false);
+    LoginHandler handler = this.loginHandlerFactory.getLoginHandler(ecSiteAccountDAO.getEcSite());
     
-    try {
-      boolean result = crawler.authenticate(webClient, request.getEmail(), request.getPassword());
-      if (result) { // succeed , update status and save cookies
-
-        ecSiteAccountDAO.setAuthStatus(AuthStatusType.SUCCESS);
-        ecSiteAccountDAO.setAuthFailReason(null);
-        List<ECCookie> ecCookies = new LinkedList<>();
-        for (Cookie cookie : webClient.getWebClient().getCookieManager().getCookies()) {
-          ECCookie ecCookie = new ECCookie();
-          ecCookie.setName(cookie.getName());
-          ecCookie.setDomain(cookie.getDomain());
-          ecCookie.setValue(cookie.getValue());
-          ecCookie.setExpires(cookie.getExpires());
-          ecCookie.setHttpOnly(cookie.isHttpOnly());
-          ecCookie.setPath(cookie.getPath());
-          ecCookie.setSecure(cookie.isSecure());
-          ecCookies.add(ecCookie);
-        }
-        ecSiteAccountDAO.setEcCookies(new ECCookies(ecCookies).toJSONString());
-        ecSiteAccountRepository.save(ecSiteAccountDAO);
-
-        return new LoginResponse(ecSiteAccountDAO.getLoginEmail(), null, null, null, "");
-      } else { // login failed
-        ecSiteAccountDAO.setAuthStatus(AuthStatusType.FAILED);
-        ecSiteAccountDAO.setAuthFailReason("REASON");
-        ecSiteAccountRepository.save(ecSiteAccountDAO);
-        throw new ApiException("REASON");
-      }
-    } catch (IOException e) {
-      throw new ApiException(e.getMessage());
-    }
+    return handler.loginInit(userDAO.getId(), siteId, uuid);
   }
 
   public LoginResponse login(String userId, LoginRequest request) throws ApiException {
-    checkUserByCryptoID(userId);
-
+    
+    UserDAO userDAO = checkUserByCryptoID(userId);
     ECSiteAccountDAO ecSiteAccountDAO = ecSiteAccountRepository.findOne(request.getSiteId());
-
-    ecSiteAccountDAO.setPassword(request.getPassword());
-    ecSiteAccountDAO.setLoginEmail(request.getEmail());
-    ecSiteAccountRepository.save(ecSiteAccountDAO); // save it first
-
-
-    CrawlerContext context = crawlerContextMap.get(request.getSiteId());
-    if (context == null || !context.getUuid().equals(request.getUuid())) { // context error
-      ecSiteAccountDAO.setAuthStatus(AuthStatusType.FAILED);
-      ecSiteAccountDAO.setAuthFailReason("crawler context error");
-      ecSiteAccountRepository.save(ecSiteAccountDAO);
-      throw new BadRequestException(ecSiteAccountDAO.getAuthFailReason());
-    }
-
-    try {
-      AmazonAuthenticationCrawlerResult result = context.getCrawler()
-        .authenticate(context.getWebClient(), request.getEmail(),
-          request.getPassword(), request.getCode(), false);
-
-      if (result.isSuccess()) { // succeed , update status and save cookies
-
-        ecSiteAccountDAO.setAuthStatus(AuthStatusType.SUCCESS);
-        ecSiteAccountDAO.setAuthFailReason(null);
-        List<ECCookie> ecCookies = new LinkedList<>();
-        for (Cookie cookie : context.getWebClient().getWebClient().getCookieManager().getCookies()) {
-          ECCookie ecCookie = new ECCookie();
-          ecCookie.setName(cookie.getName());
-          ecCookie.setDomain(cookie.getDomain());
-          ecCookie.setValue(cookie.getValue());
-          ecCookie.setExpires(cookie.getExpires());
-          ecCookie.setHttpOnly(cookie.isHttpOnly());
-          ecCookie.setPath(cookie.getPath());
-          ecCookie.setSecure(cookie.isSecure());
-          ecCookies.add(ecCookie);
-        }
-        ecSiteAccountDAO.setEcCookies(new ECCookies(ecCookies).toJSONString());
-        ecSiteAccountRepository.save(ecSiteAccountDAO);
-
-        return new LoginResponse(ecSiteAccountDAO.getLoginEmail(), result.getCodeType(), result.getImg(),
-          context.getCrawler().getAuthStep(), result.getReason());
-      } else { // login failed
-        ecSiteAccountDAO.setAuthStatus(AuthStatusType.FAILED);
-        ecSiteAccountDAO.setAuthFailReason(result.getReason());
-        ecSiteAccountRepository.save(ecSiteAccountDAO);
-        if (result.isNeedContinue()) {
-          return new LoginResponse(ecSiteAccountDAO.getLoginEmail(), result.getCodeType(), result.getImg(),
-            context.getCrawler().getAuthStep(), result.getReason());
-        } else { // cannot continue, throw error
-          throw new ApiException(result.getReason());
-        }
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-      ecSiteAccountDAO.setAuthStatus(AuthStatusType.FAILED);
-      ecSiteAccountDAO.setAuthFailReason(e.getMessage());
-      ecSiteAccountRepository.save(ecSiteAccountDAO);
-      throw new ApiException(e.getMessage());
-    }
+    
+    LoginHandler handler = this.loginHandlerFactory.getLoginHandler(ecSiteAccountDAO.getEcSite());
+    
+    return handler.login(userDAO.getId(), request);
   }
 
 

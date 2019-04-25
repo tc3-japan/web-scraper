@@ -14,7 +14,6 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.traffic.TrafficWebClient;
-import com.topcoder.scraper.module.amazon.crawler.AmazonProductDetailCrawlerResult;
 import com.topcoder.scraper.service.WebpageService;
 
 
@@ -43,6 +42,12 @@ public class KojimaProductDetailCrawler {
     HtmlPage searchResultPage = webClient.click(searchButtonInput);
     
     DomNode firstItemAnchorNode = searchResultPage.querySelector("#category_item_list > li:first-child > a");
+    if (saveHtml) {
+      webpageService.save("kojima-search-result", siteName, searchResultPage.getWebResponse().getContentAsString());
+    }    
+    if (firstItemAnchorNode == null) {
+      return null;
+    }
     NamedNodeMap attributeMap = firstItemAnchorNode.getAttributes();
     String linkToItem = attributeMap.getNamedItem("href") != null ? attributeMap.getNamedItem("href").getNodeValue() : null;
     
@@ -53,13 +58,13 @@ public class KojimaProductDetailCrawler {
     String stkNo = stkNoHidden != null ? stkNoHidden.getValueAttribute() : null;
     
     DomNode prodNameNode = productDetailPage.querySelector("h1.htxt02");
-    String prodName = prodNameNode != null ? prodNameNode.asText().replaceAll("\\n", " ") : null;
+    String prodName = prodNameNode != null ? prodNameNode.asText().replaceAll("\\n", " ").trim() : null;
     
     DomNode vendorNameNode = prodNameNode.querySelector("span");
-    String vendorName = vendorNameNode != null ? vendorNameNode.asText() : null;
+    String vendorName = vendorNameNode != null ? vendorNameNode.asText().trim() : null;
     
     DomNode prodPriceNode = productDetailPage.querySelector("td.price > span");
-    String prodPrice = prodPriceNode != null ? prodPriceNode.asText() : null;
+    String prodPrice = prodPriceNode != null ? prodPriceNode.asText().trim() : null;
     
     LOGGER.info("Product name from Purchase hitosry: [" + productName + "]");
     LOGGER.info("Product name from Product page    : [" + prodName    + "] matched: " + (productName.equals(prodName)));
@@ -75,7 +80,6 @@ public class KojimaProductDetailCrawler {
     if (saveHtml) {
       savedPath = webpageService.save("kojima-product-details", siteName, productDetailPage.getWebResponse().getContentAsString());
     }
-
     return new KojimaProductDetailCrawlerResult(productInfo, savedPath);
   }
 }

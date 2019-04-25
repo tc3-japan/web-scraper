@@ -52,9 +52,14 @@ public class KojimaProductDetailModule extends ProductDetailModule {
     });
   }
 
-  private void fetchProductDetail(KojimaProductDetailCrawler crawler, int productId, String productCode) throws IOException {
-    KojimaProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productCode, false);
-    ProductInfo productInfo = crawlerResult.getProductInfo();
+  private void fetchProductDetail(KojimaProductDetailCrawler crawler, int productId, String productName) throws IOException {
+    KojimaProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productName, false);
+    ProductInfo productInfo = crawlerResult != null ? crawlerResult.getProductInfo() : null;
+    
+    if (productInfo == null) {
+      LOGGER.warn("Unable to obtain a detailed information about: " + productName);
+      return;
+    }
 
     // save updated information
     productService.updateProduct(productId, productInfo);

@@ -14,8 +14,11 @@ public interface ProductRepository extends CrudRepository<ProductDAO, Integer> {
   
   ProductDAO findByProductCode(String productCode);
   
+  @Query("select p from ProductDAO p where p.ecSite = :ecSite and p.productName = :productName")
+  ProductDAO findByECSiteAndProductName(@Param("ecSite") String ecSite, @Param("productName") String productName);
+  
   List<ProductDAO> findByFetchInfoStatusIsNull();
   
-  @Query("select p from ProductDAO p where p.ecSite = :ecSite and fetchInfoStatus = null")
+  @Query("select p from ProductDAO p where p.ecSite = :ecSite and p.fetchInfoStatus = null")
   List<ProductDAO> findByFetchInfoStatusAndECSite(@Param("ecSite") String ecSite);
 }

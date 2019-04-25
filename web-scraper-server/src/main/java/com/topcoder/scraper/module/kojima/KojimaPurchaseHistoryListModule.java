@@ -2,6 +2,7 @@ package com.topcoder.scraper.module.kojima;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +47,7 @@ public class KojimaPurchaseHistoryListModule extends PurchaseHistoryListModule {
 
   @Override
   public void fetchPurchaseHistoryList() throws IOException {
+    
     Iterable<ECSiteAccountDAO> accountDAOS = ecSiteAccountRepository.findAllByEcSite(getECName());
     for (ECSiteAccountDAO ecSiteAccountDAO : accountDAOS) {
 
@@ -63,13 +65,16 @@ public class KojimaPurchaseHistoryListModule extends PurchaseHistoryListModule {
       }
       
       try {
-        KojimaPurchaseHistoryListCrawler crawler = new KojimaPurchaseHistoryListCrawler(getECName(), webpageService);
+        Optional<PurchaseHistory> lastPurchaseHistory = purchaseHistoryService.fetchLast(ecSiteAccountDAO.getId());
 
-        KojimaPurchaseHistoryListCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClient, null/*lastPurchaseHistory.orElse(null)*/, true);
+        KojimaPurchaseHistoryListCrawler crawler = new KojimaPurchaseHistoryListCrawler(getECName(), webpageService);
+        KojimaPurchaseHistoryListCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClient, lastPurchaseHistory.orElse(null), true);
         List<PurchaseHistory> list = crawlerResult.getPurchaseHistoryList();
 
-        list.forEach(purchaseHistory -> purchaseHistory.setEcSiteAccountId(ecSiteAccountDAO.getId()));
-        purchaseHistoryService.save(getECName(), list);
+        if (list != null && list.size() > 0) {
+          list.forEach(purchaseHistory -> purchaseHistory.setEcSiteAccountId(ecSiteAccountDAO.getId()));
+          purchaseHistoryService.save(getECName(), list);
+        }
         LOGGER.info("succeed fetch purchaseHistory for ecSite id = " + ecSiteAccountDAO.getId());
       } catch (Exception e) { // here catch all exception and did not throw it
         ecSiteAccountDAO.setAuthStatus(AuthStatusType.FAILED);

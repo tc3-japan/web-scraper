@@ -133,6 +133,10 @@ export default class ECSiteList extends Vue {
       display: flex;
       flex-direction: column;
       align-items: flex-start;
+      padding: 20px 90px;
+      border: solid 2px #ccc;
+      margin-bottom: 10px;
+      
       .left {
         width: 80px;
         padding-top: 2.5px;

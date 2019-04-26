@@ -126,6 +126,7 @@ export default class ECSiteList extends Vue {
         align-items: flex-start;
         .left {
           width: 80px;
+          padding-top: 2.5px;
         }
         .row {
           display: flex;
@@ -141,6 +142,8 @@ export default class ECSiteList extends Vue {
           .value {
             font-weight: bold;
             font-size: 18px;
+            width: 220px;
+            text-align: left;
           }
           .text {
             display: flex;

@@ -143,20 +143,11 @@ export default class ECSiteList extends Vue {
       }
       .row {
         display: flex;
-        flex-direction: row;
-      }
-      .name {
-        font-weight: bold;
-        font-size: 24px;
-        margin-bottom: 8px;
-      }
-
-      .status {
-        .value {
-          font-weight: bold;
-          font-size: 18px;
-          width: 220px;
-          text-align: left;
+        flex-direction: column;
+        align-items: flex-start;
+        .left {
+          width: 80px;
+          padding-top: 2.5px;
         }
         .text {
           display: flex;
@@ -168,13 +159,32 @@ export default class ECSiteList extends Vue {
           word-break: break-all;
           width: 300px;
         }
-        margin-bottom: 18px;
-      }
-      .check-box {
-        color: #1167bd;
-        margin-bottom: 8px;
-        label {
-          margin-left: 6px;
+
+        .status {
+          .value {
+            font-weight: bold;
+            font-size: 18px;
+            width: 220px;
+            text-align: left;
+          }
+          .text {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            font-size: 14px;
+          }
+          .reason {
+            word-break: break-all;
+            width: 300px;
+          }
+          margin-bottom: 18px;
+        }
+        .check-box {
+          color: #1167bd;
+          margin-bottom: 8px;
+          label {
+            margin-left: 6px;
+          }
         }
       }
     }

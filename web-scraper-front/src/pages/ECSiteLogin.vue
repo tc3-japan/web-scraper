@@ -39,6 +39,7 @@
 <script lang="ts">
 import {Component, Vue} from 'vue-property-decorator';
 import ApiService from '../services/ApiService';
+import EcSite from "../models/EcSite";
 
 @Component({
   components: {},
@@ -128,7 +129,9 @@ export default class ECSiteLogin extends Vue {
     if (this.step !== 'FIRST' && this.email.trim().length <= 0) {
       return true;
     }
-    if (this.step !== 'FIRST' && !this.validateEmail(this.email)) {
+    if (this.step !== "FIRST" 
+        && this.site["ecSite"] !== EcSite.kojima 
+        && !this.validateEmail(this.email)) {
       return true;
     }
     return this.codeType && this.code.trim().length <= 0;

@@ -2,6 +2,8 @@ package com.topcoder.common.dao;
 
 import com.topcoder.scraper.converter.JpaConverterPurchaseInfoJson;
 import com.topcoder.common.model.ProductInfo;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -78,7 +80,27 @@ public class ProductDAO {
    */
   @Temporal(TemporalType.TIMESTAMP)
   @Column(name = "update_at")
+  @UpdateTimestamp
   private Date updateAt;
+
+  /**
+   * Product number
+   */
+  @Column(name = "model_no")
+  private String modelNo;
+
+
+  /**
+   * Product group status
+   */
+  @Column(name = "group_status")
+  private String groupStatus;
+
+  /**
+   * Product group id
+   */
+  @Column(name = "product_group_id")
+  private Integer productGroupId;
 
   @OneToMany(
     mappedBy = "product",
@@ -216,5 +238,33 @@ public class ProductDAO {
 
   public List<RankingDAO> getRankings() {
     return rankings;
+  }
+
+  public String getModelNo() {
+    return modelNo;
+  }
+
+  public void setModelNo(String modelNo) {
+    this.modelNo = modelNo;
+  }
+
+  public String getGroupStatus() {
+    return groupStatus;
+  }
+
+  public void setGroupStatus(String groupStatus) {
+    this.groupStatus = groupStatus;
+  }
+
+  public Integer getProductGroupId() {
+    return productGroupId;
+  }
+
+  public void setProductGroupId(Integer productGroupId) {
+    this.productGroupId = productGroupId;
+  }
+
+  public static class GroupStatus {
+    public static String grouped = "grouped";
   }
 }

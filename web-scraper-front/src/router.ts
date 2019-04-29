@@ -3,7 +3,7 @@ import Router from 'vue-router';
 import Home from './pages/Home.vue';
 import ECSiteList from './pages/ECSiteList.vue';
 import ECSiteLogin from './pages/ECSiteLogin.vue';
-
+import ProductGroup from './pages/ProductGroup.vue';
 Vue.use(Router);
 
 export default new Router({
@@ -22,6 +22,11 @@ export default new Router({
       path: '/users/:id/ec-site-login/:siteId',
       name: 'EC Site Login',
       component: ECSiteLogin,
+    },
+    {
+      path: '/product-groups',
+      name: 'Products',
+      component: ProductGroup,
     },
   ],
 });

@@ -13,6 +13,9 @@ public class JpaConverterPurchaseInfoJson implements AttributeConverter<ProductI
 
   @Override
   public String convertToDatabaseColumn(ProductInfo meta) {
+    if (meta == null) {
+      return null;
+    }
     return meta.toJson();
   }
 

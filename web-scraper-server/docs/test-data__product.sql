@@ -13,6 +13,10 @@ insert into web_scraper.product (id, ec_site, product_code, product_name, unit_p
 ,(6, 'kojima', '3792608',    'Rice cooker',                51111, 'MITSUBISHI', 'NJ-SW069-B')
 ,(7, 'EC3',    'QWERTY002',  'Rice cooker IH(Panasonic)',  51234, 'MITSUBISHI', 'NJ-SW069-B')
 ,(8, 'EC4',    'HJKL002',    'Rice cooker',                51234, 'MITSUBISHI', 'NJ-SW069-B')
+,(9, 'amazon', 'B008PSWX9A', 'DELSEY Paris Luggage Helium', 255000, 'SHARP', null )
+,(10, 'amazon', 'B008PSWX9B', 'DELSEY Paris Luggage Helium02', 255000, 'SHARP', 'ES-W111-SR' )
+,(11, 'amazon', 'B008PSWX9C', 'DELSEY Paris Luggage Helium03', 255000, 'SHARP', 'ES-W111-SB' )
+,(12, 'amazon', 'B07KH55LSF', 'Drum type washer / dryer', 239114, 'SHARP', 'ES-W111-SC')
 ;
 
 /*

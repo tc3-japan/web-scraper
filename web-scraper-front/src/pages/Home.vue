@@ -11,6 +11,8 @@
     <br />
     <router-link to="/users/$2a$10$deEPiskgx7XOJE7e4sf5K.J20m6qWFnoKfo6H73r5aDoVliC5JNtG/ec-site-settings">4. (user_id: 2){{ trans('clickHereFor') }} </router-link>
     <br />
+    <router-link to="/product-groups">5. Product groups</router-link>
+    <br />
   </div>
 </template>
 

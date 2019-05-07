@@ -41,16 +41,16 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import ApiService from "../services/ApiService";
+import { Component, Vue } from 'vue-property-decorator';
+import ApiService from '../services/ApiService';
 
 @Component({
-  components: {}
+  components: {},
 })
 export default class ECSiteList extends Vue {
   public ecSiteSettings = {
-    title: Vue.prototype.trans("title"),
-    description: ""
+    title: Vue.prototype.trans('title'),
+    description: '',
   };
   public userLoadErrorMsg = null;
   public sites = null;
@@ -61,7 +61,7 @@ export default class ECSiteList extends Vue {
    */
   public isFailed(site: any) {
     return !(
-      site.authStatus && site.authStatus.toLowerCase().indexOf("success") >= 0
+      site.authStatus && site.authStatus.toLowerCase().indexOf('success') >= 0
     );
   }
 
@@ -74,9 +74,9 @@ export default class ECSiteList extends Vue {
     const userId = this.$route.params.id;
     ApiService.updateECSite(userId, site.id, { ecUseFlag: e.target.checked })
       .then(() => {
-        console.log("update successful");
+        console.log('update successful');
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err);
       });
   }
@@ -88,18 +88,18 @@ export default class ECSiteList extends Vue {
   public gotoLogin(site: any) {
     const userId = this.$route.params.id;
     this.$router.push({
-      name: "EC Site Login",
-      params: { id: userId, siteId: site.id }
+      name: 'EC Site Login',
+      params: { id: userId, siteId: site.id },
     });
   }
 
   public mounted() {
     ApiService.getAllEcSites(this.$route.params.id)
-      .then(rsp => {
+      .then((rsp) => {
         console.log(rsp);
         this.sites = rsp.data;
       })
-      .catch(err => {
+      .catch((err) => {
         this.userLoadErrorMsg = ApiService.getErrorString(err);
       });
   }

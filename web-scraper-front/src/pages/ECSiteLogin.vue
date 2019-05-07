@@ -43,7 +43,7 @@ import ApiService from '../services/ApiService';
 import EcSite from '../models/EcSite';
 
 @Component({
-  components: {}
+  components: {},
 })
 export default class ECSiteLogin extends Vue {
   public userId = null;
@@ -53,23 +53,23 @@ export default class ECSiteLogin extends Vue {
   public site = {};
   public userLoadErrorMsg = null;
 
-  public email = "";
-  public password = "";
-  public code = "";
-  public uuid = "";
+  public email = '';
+  public password = '';
+  public code = '';
+  public uuid = '';
 
   public isDoingLogin = false;
 
   public codeType = null;
   public captcha = null;
 
-  public step = "";
+  public step = '';
   public loginError = null;
 
   public codeMessageMap = {
-    MFA: Vue.prototype.trans("mfaPlease"),
-    Verification: Vue.prototype.trans("verifyPlease"),
-    CAPTCHA: Vue.prototype.trans("capchaPlease")
+    MFA: Vue.prototype.trans('mfaPlease'),
+    Verification: Vue.prototype.trans('verifyPlease'),
+    CAPTCHA: Vue.prototype.trans('capchaPlease'),
   };
 
   /**
@@ -78,14 +78,14 @@ export default class ECSiteLogin extends Vue {
   public mounted() {
     this.userId = this.$route.params.id;
     this.siteId = this.$route.params.siteId;
-    this.uuid = Math.random() + "-" + Date.now();
+    this.uuid = Math.random() + '-' + Date.now();
 
     ApiService.getECSite(this.userId, this.siteId)
-      .then(rsp => {
+      .then((rsp) => {
         this.site = rsp.data;
         this.loginInit();
       })
-      .catch(err => {
+      .catch((err) => {
         this.siteLoaded = true;
         this.userLoadErrorMsg = ApiService.getErrorString(err);
       });
@@ -96,7 +96,7 @@ export default class ECSiteLogin extends Vue {
    */
   public loginInit() {
     ApiService.loginInit(this.userId, this.siteId, this.uuid)
-      .then(rsp => {
+      .then((rsp) => {
         console.log(rsp.data);
         this.step = rsp.data.authStep;
         this.email = rsp.data.emailId;
@@ -106,7 +106,7 @@ export default class ECSiteLogin extends Vue {
           this.loginError = rsp.data.reason;
         }
       })
-      .catch(err => {
+      .catch((err) => {
         this.userLoadErrorMsg = ApiService.getErrorString(err);
       })
       .finally(() => {
@@ -129,10 +129,10 @@ export default class ECSiteLogin extends Vue {
    */
   public isInvalid() {
     // ignore email and password in first step
-    if (this.step !== "FIRST" && this.password.trim().length <= 0) {
+    if (this.step !== 'FIRST' && this.password.trim().length <= 0) {
       return true;
     }
-    if (this.step !== "FIRST" && this.email.trim().length <= 0) {
+    if (this.step !== 'FIRST' && this.email.trim().length <= 0) {
       return true;
     }
     if (this.step !== 'FIRST'
@@ -153,31 +153,31 @@ export default class ECSiteLogin extends Vue {
       password: this.password,
       code: this.code.trim().length <= 0 ? null : this.code.trim(),
       uuid: this.uuid,
-      siteId: this.siteId
+      siteId: this.siteId,
     };
 
     this.isDoingLogin = true;
     this.loginError = null;
     ApiService.login(this.userId, loginBody)
-      .then(rsp => {
+      .then((rsp) => {
         console.log(rsp);
         this.step = rsp.data.authStep;
         this.email = rsp.data.emailId;
         this.codeType = rsp.data.codeType;
-        this.captcha = "data:image/png;base64, " + rsp.data.image;
+        this.captcha = 'data:image/png;base64, ' + rsp.data.image;
         if (rsp.data.reason) {
           this.loginError = rsp.data.reason;
         }
 
-        if (this.step === "DONE") {
+        if (this.step === 'DONE') {
           // login success
           this.$router.push({
-            name: "EC Site Settings",
-            params: { id: this.userId }
+            name: 'EC Site Settings',
+            params: { id: this.userId },
           });
         }
       })
-      .catch(err => {
+      .catch((err) => {
         this.loginError = ApiService.getErrorString(err);
       })
       .finally(() => {

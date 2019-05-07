@@ -1,17 +1,9 @@
 package com.topcoder.common.repository;
 
-import java.util.List;
-
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
-
 import com.topcoder.common.dao.PurchaseHistoryDAO;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PurchaseHistoryRepository extends CrudRepository<PurchaseHistoryDAO, Integer> {
-  
-  @Query("select h from PurchaseHistoryDAO h where h.ecSiteAccountId = :siteId order by h.orderDate desc")
-  public List<PurchaseHistoryDAO> getPurchaseHistoriesBySiteIdOrderByOrderDateDesc(@Param("siteId") int siteId); 
 }

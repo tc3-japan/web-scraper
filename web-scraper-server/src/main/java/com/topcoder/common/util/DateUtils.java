@@ -11,10 +11,6 @@ public class DateUtils {
   }
 
   public static Date fromString(String in) throws ParseException {
-    return fromString(in, "MMM dd, yyyy");
-  }
-  
-  public static Date fromString(String in, String format) throws ParseException {
-    return new SimpleDateFormat(format).parse(in);
+    return new SimpleDateFormat("MMM dd, yyyy").parse(in);
   }
 }

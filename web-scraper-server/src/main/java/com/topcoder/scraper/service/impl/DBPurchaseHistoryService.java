@@ -43,12 +43,7 @@ public class DBPurchaseHistoryService implements PurchaseHistoryService {
         purchaseProductRepository.save(purchaseProductDAO);
 
         // Save ProductDAO, if product is not in DB
-        ProductDAO existingProductDao = null;
-        if (productInfo.getCode() != null) {
-          existingProductDao = productRepository.findByProductCode(productInfo.getCode());
-        } else {
-          existingProductDao = productRepository.findByECSiteAndProductName(site, productInfo.getName());
-        }
+        ProductDAO existingProductDao = productRepository.findByProductCode(productInfo.getCode());
         if (existingProductDao == null) {
           ProductDAO productDao = new ProductDAO(site, productInfo);
           productRepository.save(productDao);
@@ -78,11 +73,5 @@ public class DBPurchaseHistoryService implements PurchaseHistoryService {
         return -1;
       }
     });
-  }
-  
-  @Override
-  public Optional<PurchaseHistory> fetchLast(int siteId) {
-    List<PurchaseHistoryDAO> histories = historyRepository.getPurchaseHistoriesBySiteIdOrderByOrderDateDesc(siteId);
-    return Optional.ofNullable(histories != null && histories.size() > 0 ? histories.get(0).getPurchaseHistory() : null);
   }
 }

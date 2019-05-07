@@ -14,12 +14,10 @@
         </div>
         <div class="check-box row">
           <div class="left"></div>
-          <input
-            id="get-purchase-history"
-            type="checkbox"
-            v-model="site['ecUseFlag']"
-            @change="ecUseFlagChange($event, site)"
-          >
+          <input id="get-purchase-history" type="checkbox"
+                 v-model="site['ecUseFlag']"
+                 @change="ecUseFlagChange($event, site)"
+          />
           <label for="get-purchase-history">{{ trans('getPurchaseHistory') }}</label>
         </div>
 
@@ -33,7 +31,9 @@
 
         <div class="button row" v-if="isFailed(site)">
           <div class="left"></div>
-          <button class="app-button" @click="gotoLogin(site)">{{trans('login')}}</button>
+          <button class="app-button"
+                  @click="gotoLogin(site)">{{trans('login')}}
+          </button>
         </div>
       </div>
     </div>
@@ -41,16 +41,16 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import ApiService from "../services/ApiService";
+import {Component, Vue} from 'vue-property-decorator';
+import ApiService from '../services/ApiService';
 
 @Component({
-  components: {}
+  components: {},
 })
 export default class ECSiteList extends Vue {
   public ecSiteSettings = {
-    title: Vue.prototype.trans("title"),
-    description: ""
+    title: Vue.prototype.trans('title'),
+    description: '',
   };
   public userLoadErrorMsg = null;
   public sites = null;
@@ -60,9 +60,7 @@ export default class ECSiteList extends Vue {
    * @param site the site entity
    */
   public isFailed(site: any) {
-    return !(
-      site.authStatus && site.authStatus.toLowerCase().indexOf("success") >= 0
-    );
+    return !(site.authStatus && site.authStatus.toLowerCase().indexOf('success') >= 0);
   }
 
   /**
@@ -72,13 +70,11 @@ export default class ECSiteList extends Vue {
    */
   public ecUseFlagChange(e: any, site: any) {
     const userId = this.$route.params.id;
-    ApiService.updateECSite(userId, site.id, { ecUseFlag: e.target.checked })
-      .then(() => {
-        console.log("update successful");
-      })
-      .catch(err => {
-        console.error(err);
-      });
+    ApiService.updateECSite(userId, site.id, {ecUseFlag: e.target.checked}).then(() => {
+      console.log('update successful');
+    }).catch((err) => {
+      console.error(err);
+    });
   }
 
   /**
@@ -87,61 +83,44 @@ export default class ECSiteList extends Vue {
    */
   public gotoLogin(site: any) {
     const userId = this.$route.params.id;
-    this.$router.push({
-      name: "EC Site Login",
-      params: { id: userId, siteId: site.id }
-    });
+    this.$router.push({name: 'EC Site Login', params: {id: userId, siteId: site.id}});
   }
 
   public mounted() {
-    ApiService.getAllEcSites(this.$route.params.id)
-      .then(rsp => {
-        console.log(rsp);
-        this.sites = rsp.data;
-      })
-      .catch(err => {
-        this.userLoadErrorMsg = ApiService.getErrorString(err);
-      });
+    ApiService.getAllEcSites(this.$route.params.id).then((rsp) => {
+      console.log(rsp);
+      this.sites = rsp.data;
+    }).catch((err) => {
+      this.userLoadErrorMsg = ApiService.getErrorString(err);
+    });
   }
 }
 </script>
 
 
 <style lang="scss">
-.ec-site-setting-root {
-  .title {
-    font-weight: bold;
-    font-size: 24px;
-  }
-  .description {
-    margin-top: 8px;
-  }
-  .load-error {
-    margin-top: 16px;
-    font-size: 24px;
-    font-weight: bold;
-    color: #c93114;
-  }
+  .ec-site-setting-root {
+    .title {
+      font-weight: bold;
+      font-size: 24px;
+    }
+    .description {
+      margin-top: 8px;
+    }
+    .load-error {
+      margin-top: 16px;
+      font-size: 24px;
+      font-weight: bold;
+      color: #c93114;
+    }
 
-  .site-list {
-    margin-top: 36px;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    .site {
+    .site-list {
+      margin-top: 36px;
+      width: 100%;
       display: flex;
       flex-direction: column;
-      align-items: flex-start;
-      padding: 20px 90px;
-      border: solid 2px #ccc;
-      margin-bottom: 10px;
-      
-      .left {
-        width: 80px;
-        padding-top: 2.5px;
-      }
-      .row {
+      align-items: center;
+      .site {
         display: flex;
         flex-direction: column;
         align-items: flex-start;
@@ -149,15 +128,14 @@ export default class ECSiteList extends Vue {
           width: 80px;
           padding-top: 2.5px;
         }
-        .text {
+        .row {
           display: flex;
-          flex-direction: column;
-          align-items: flex-start;
-          font-size: 14px;
+          flex-direction: row;
         }
-        .reason {
-          word-break: break-all;
-          width: 300px;
+        .name {
+          font-weight: bold;
+          font-size: 24px;
+          margin-bottom: 8px;
         }
 
         .status {
@@ -189,5 +167,4 @@ export default class ECSiteList extends Vue {
       }
     }
   }
-}
 </style>

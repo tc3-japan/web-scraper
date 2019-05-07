@@ -66,12 +66,6 @@ public class FileBasedPurchaseHistoryService implements PurchaseHistoryService {
       }
     });
   }
-  
-  @Override
-  public Optional<PurchaseHistory> fetchLast(int siteId) {
-    throw new UnsupportedOperationException();
-  }
-  
 
   /**
    * generate filename

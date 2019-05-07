@@ -43,10 +43,6 @@ public class DBProductService implements ProductService {
     ProductDAO product = productRepository.findOne(productId);
     ProductInfo info = product.getProductInfo();
 
-    if (productInfo.getCode() != null) {
-      product.setProductCode(productInfo.getCode());
-      info.setCode(productInfo.getCode());
-    }
     if (productInfo.getName() != null) {
       product.setProductName(productInfo.getName());
       info.setName(productInfo.getName());
@@ -54,10 +50,6 @@ public class DBProductService implements ProductService {
     if (productInfo.getPrice() != null) {
       product.setUnitPrice(productInfo.getPrice());
       info.setPrice(productInfo.getPrice());
-    }
-    if (productInfo.getDistributor() != null) {
-      product.setProductDistributor(productInfo.getDistributor());
-      info.setDistributor(productInfo.getDistributor());
     }
 
     product.setProductInfo(info);
@@ -74,7 +66,7 @@ public class DBProductService implements ProductService {
 
 
   @Override
-  public List<ProductDAO> getAllFetchInfoStatusIsNull(String ecSite) {
-    return this.productRepository.findByFetchInfoStatusAndECSite(ecSite);
+  public List<ProductDAO> getAllFetchInfoStatusIsNull() {
+    return this.productRepository.findByFetchInfoStatusIsNull();
   }
 }

@@ -1,6 +1,7 @@
 package com.topcoder.common.config;
 
 import java.util.List;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,58 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties
 public class CheckItemsDefinitionProperty {
 
+  private List<CheckItemsCheckSite> checkSites;
+  
+  public List<CheckItemsCheckSite> getCheckSites() {
+    return checkSites;
+  }
+
+  public void setCheckSites(List<CheckItemsCheckSite> checkSites) {
+    this.checkSites = checkSites;
+  }
+  
+  public CheckItemsCheckSite getCheckSiteDefinition(String siteKey) {
+    if (siteKey == null || siteKey.length() == 0) {
+      throw new IllegalArgumentException("siteKey is required.");
+    }
+    return getCheckSites()
+        .stream()
+        .filter((site) -> site.getEcSite().equalsIgnoreCase(siteKey))
+        .findFirst().get();
+  }
+
+  public static class CheckItemsCheckSite {
+    private String ecSite;
+    private List<CheckItemsCheckPage> checkPages;
+
+    public String getEcSite() {
+      return ecSite;
+    }
+
+    public List<CheckItemsCheckPage> getCheckPages() {
+      return checkPages;
+    }
+
+    public void setEcSite(String ecSite) {
+      this.ecSite = ecSite;
+    }
+
+    public void setCheckPages(List<CheckItemsCheckPage> checkPages) {
+      this.checkPages = checkPages;
+    }
+    
+    
+    public CheckItemsCheckPage getCheckPageDefinition(String pageKey) {
+      if (pageKey == null || pageKey.length() == 0) {
+        throw new IllegalArgumentException("pageKey is required.");
+      }
+      return getCheckPages()
+          .stream()
+          .filter((page) -> page.getPageName().equals(pageKey))
+          .findFirst().get();
+    }
+  }
+  
   /**
    * Represents `products` in check-items-definition.yaml
    */
@@ -137,24 +190,5 @@ public class CheckItemsDefinitionProperty {
     public void setCheckItems(CheckItems checkItems) {
       this.checkItems = checkItems;
     }
-  }
-
-  private String ecSite;
-  private List<CheckItemsCheckPage> checkPages;
-
-  public String getEcSite() {
-    return ecSite;
-  }
-
-  public List<CheckItemsCheckPage> getCheckPages() {
-    return checkPages;
-  }
-
-  public void setEcSite(String ecSite) {
-    this.ecSite = ecSite;
-  }
-
-  public void setCheckPages(List<CheckItemsCheckPage> checkPages) {
-    this.checkPages = checkPages;
   }
 }

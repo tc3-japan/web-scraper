@@ -13,6 +13,38 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties
 public class MonitorTargetDefinitionProperty {
 
+  private List<MonitorTargetCheckSite> checkSites;
+  
+  public List<MonitorTargetCheckSite> getCheckSites() {
+    return checkSites;
+  }
+
+  public void setCheckSites(List<MonitorTargetCheckSite> checkSites) {
+    this.checkSites = checkSites;
+  }
+
+  public static class MonitorTargetCheckSite {
+
+    private String ecSite;
+    private List<MonitorTargetCheckPage> checkPages;
+
+    public void setEcSite(String ecSite) {
+      this.ecSite = ecSite;
+    }
+
+    public void setCheckPages(List<MonitorTargetCheckPage> checkPages){
+      this.checkPages = checkPages;
+    }
+
+    public String getEcSite() {
+      return ecSite;
+    }
+
+    public List<MonitorTargetCheckPage> getCheckPages() {
+      return checkPages;
+    }
+  }
+  
   /**
    * Represents `check_pages` in monitor-target-definition.yaml
    */
@@ -35,24 +67,5 @@ public class MonitorTargetDefinitionProperty {
     public List<String> getCheckTargetKeys() {
       return checkTargetKeys;
     }
-  }
-
-  private String ecSite;
-  private List<MonitorTargetCheckPage> checkPages;
-
-  public void setEcSite(String ecSite) {
-    this.ecSite = ecSite;
-  }
-
-  public void setCheckPages(List<MonitorTargetCheckPage> checkPages){
-    this.checkPages = checkPages;
-  }
-
-  public String getEcSite() {
-    return ecSite;
-  }
-
-  public List<MonitorTargetCheckPage> getCheckPages() {
-    return checkPages;
   }
 }

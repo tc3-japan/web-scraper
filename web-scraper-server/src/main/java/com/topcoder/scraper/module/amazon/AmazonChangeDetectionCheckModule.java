@@ -76,44 +76,52 @@ public class AmazonChangeDetectionCheckModule extends ChangeDetectionCheckModule
    */
   @Override
   public void check() throws IOException {
-    for (MonitorTargetDefinitionProperty.MonitorTargetCheckPage monitorTargetCheckPage : monitorTargetDefinitionProperty.getCheckPages()) {
-      if (monitorTargetCheckPage.getPageName().equalsIgnoreCase(Consts.PURCHASE_HISTORY_LIST_PAGE_NAME)) {
-        List<String> usernameList = monitorTargetCheckPage.getCheckTargetKeys();
+    for (MonitorTargetDefinitionProperty.MonitorTargetCheckSite checkSite : monitorTargetDefinitionProperty.getCheckSites()) {
+      if (!this.getECName().equalsIgnoreCase(checkSite.getEcSite())) {
+        continue;
+      }
+      CheckItemsDefinitionProperty.CheckItemsCheckSite checkSiteDefinition = checkItemsDefinitionProperty.getCheckSiteDefinition(getECName());
+      
+      for (MonitorTargetDefinitionProperty.MonitorTargetCheckPage monitorTargetCheckPage : checkSite.getCheckPages()) {
+        if (monitorTargetCheckPage.getPageName().equalsIgnoreCase(Consts.PURCHASE_HISTORY_LIST_PAGE_NAME)) {
+          List<String> usernameList = monitorTargetCheckPage.getCheckTargetKeys();
 
-        String passwordListString = System.getenv(Consts.AMAZON_CHECK_TARGET_KEYS_PASSWORDS);
-        if (passwordListString == null) {
-          LOGGER.error("Please set environment variable AMAZON_CHECK_TARGET_KEYS_PASSWORDS first");
-          throw new RuntimeException("environment variable AMAZON_CHECK_TARGET_KEYS_PASSWORDS not set");
-        }
-        List<String> passwordList = Arrays.asList(passwordListString.split(","));
+          String passwordListString = System.getenv(Consts.AMAZON_CHECK_TARGET_KEYS_PASSWORDS);
+          if (passwordListString == null) {
+            LOGGER.error("Please set environment variable AMAZON_CHECK_TARGET_KEYS_PASSWORDS first");
+            throw new RuntimeException("environment variable AMAZON_CHECK_TARGET_KEYS_PASSWORDS not set");
+          }
+          List<String> passwordList = Arrays.asList(passwordListString.split(","));
 
-        for (int i = 0; i < usernameList.size(); i++) {
-          String username = usernameList.get(i);
-          String password = passwordList.get(i);
+          for (int i = 0; i < usernameList.size(); i++) {
+            String username = usernameList.get(i);
+            String password = passwordList.get(i);
 
-          AmazonAuthenticationCrawler authenticationCrawler = new AmazonAuthenticationCrawler(getECName(), property, webpageService);
-          AmazonAuthenticationCrawlerResult loginResult = authenticationCrawler.authenticate(webClient, username, password);
-          if (!loginResult.isSuccess()) {
-            LOGGER.error(String.format("Failed to login %s with username %s. Skip.", getECName(), username));
-            continue;
+            AmazonAuthenticationCrawler authenticationCrawler = new AmazonAuthenticationCrawler(getECName(), property, webpageService);
+            AmazonAuthenticationCrawlerResult loginResult = authenticationCrawler.authenticate(webClient, username, password);
+            if (!loginResult.isSuccess()) {
+              LOGGER.error(String.format("Failed to login %s with username %s. Skip.", getECName(), username));
+              continue;
+            }
+
+            AmazonPurchaseHistoryListCrawler purchaseHistoryListCrawler = new AmazonPurchaseHistoryListCrawler(getECName(), property, webpageService);
+            AmazonPurchaseHistoryListCrawlerResult crawlerResult = purchaseHistoryListCrawler.fetchPurchaseHistoryList(webClient, null, true);
+            
+            processPurchaseHistory(crawlerResult, username, checkSiteDefinition);
           }
 
-          AmazonPurchaseHistoryListCrawler purchaseHistoryListCrawler = new AmazonPurchaseHistoryListCrawler(getECName(), property, webpageService);
-          AmazonPurchaseHistoryListCrawlerResult crawlerResult = purchaseHistoryListCrawler.fetchPurchaseHistoryList(webClient, null, true);
-          processPurchaseHistory(crawlerResult, username);
+        } else if (monitorTargetCheckPage.getPageName().equalsIgnoreCase(Consts.PRODUCT_DETAIL_PAGE_NAME)) {
+          AmazonProductDetailCrawler crawler = new AmazonProductDetailCrawler(getECName(), property, webpageService);
+          for (String productCode : monitorTargetCheckPage.getCheckTargetKeys()) {
+            AmazonProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productCode, true);
+            processProductInfo(crawlerResult, checkSiteDefinition);
+          }
+
+        } else {
+          throw new RuntimeException("Unknown monitor target definition " + monitorTargetCheckPage.getPageName());
         }
 
-      } else if (monitorTargetCheckPage.getPageName().equalsIgnoreCase(Consts.PRODUCT_DETAIL_PAGE_NAME)) {
-        AmazonProductDetailCrawler crawler = new AmazonProductDetailCrawler(getECName(), property, webpageService);
-        for (String productCode : monitorTargetCheckPage.getCheckTargetKeys()) {
-          AmazonProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productCode, true);
-          processProductInfo(crawlerResult);
-        }
-
-      } else {
-        throw new RuntimeException("Unknown monitor target definition " + monitorTargetCheckPage.getPageName());
       }
-
     }
 
   }
@@ -123,13 +131,10 @@ public class AmazonChangeDetectionCheckModule extends ChangeDetectionCheckModule
    * @param crawlerResult the crawler result
    * @param pageKey the page key
    */
-  private void processPurchaseHistory(AmazonPurchaseHistoryListCrawlerResult crawlerResult, String pageKey) {
+  private void processPurchaseHistory(AmazonPurchaseHistoryListCrawlerResult crawlerResult, String pageKey, CheckItemsDefinitionProperty.CheckItemsCheckSite checkSiteDefinition) {
     List<PurchaseHistory> purchaseHistoryList = crawlerResult.getPurchaseHistoryList();
 
-    CheckItemsDefinitionProperty.CheckItemsCheckPage checkItemsCheckPage = checkItemsDefinitionProperty.getCheckPages()
-      .stream()
-      .filter((page) -> page.getPageName().equals(Consts.PURCHASE_HISTORY_LIST_PAGE_NAME))
-      .findFirst().orElseThrow(RuntimeException::new);
+    CheckItemsDefinitionProperty.CheckItemsCheckPage checkItemsCheckPage = checkSiteDefinition.getCheckPageDefinition(Consts.PURCHASE_HISTORY_LIST_PAGE_NAME);
 
     NormalDataDAO normalDataDAO = normalDataRepository.findFirstByEcSiteAndPageAndPageKey(getECName(), Consts.PURCHASE_HISTORY_LIST_PAGE_NAME, pageKey);
     if (normalDataDAO == null) {
@@ -161,14 +166,10 @@ public class AmazonChangeDetectionCheckModule extends ChangeDetectionCheckModule
    * Process product info crawler result
    * @param crawlerResult the crawler result
    */
-  private void processProductInfo(AmazonProductDetailCrawlerResult crawlerResult) {
+  private void processProductInfo(AmazonProductDetailCrawlerResult crawlerResult, CheckItemsDefinitionProperty.CheckItemsCheckSite checkSiteDefinition) {
     ProductInfo productInfo = crawlerResult.getProductInfo();
-
-    CheckItemsDefinitionProperty.CheckItemsCheckPage checkItemsCheckPage = checkItemsDefinitionProperty.getCheckPages()
-      .stream()
-      .filter((page) -> page.getPageName().equalsIgnoreCase(Consts.PRODUCT_DETAIL_PAGE_NAME))
-      .findFirst().orElseThrow(RuntimeException::new);
-
+    
+    CheckItemsDefinitionProperty.CheckItemsCheckPage checkItemsCheckPage = checkSiteDefinition.getCheckPageDefinition(Consts.PRODUCT_DETAIL_PAGE_NAME);
     NormalDataDAO normalDataDAO = normalDataRepository.findFirstByEcSiteAndPageAndPageKey(getECName(), Consts.PRODUCT_DETAIL_PAGE_NAME, productInfo.getCode());
 
     if (normalDataDAO == null) {

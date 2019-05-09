@@ -1,11 +1,11 @@
 package com.topcoder.scraper.module.kojima.crawler;
 
+import static com.topcoder.common.util.HtmlUtils.*;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -24,6 +24,7 @@ import com.topcoder.scraper.service.WebpageService;
 public class KojimaPurchaseHistoryListCrawler {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(KojimaPurchaseHistoryListCrawler.class);
+  private static final Pattern PAT_ORDER_NO = Pattern.compile("([\\d]{13})", Pattern.DOTALL);
   private final String siteName;
   private final WebpageService webpageService;
   
@@ -63,7 +64,7 @@ public class KojimaPurchaseHistoryListCrawler {
     for (DomNode orderNode : orders) {
       DomNode itemNoNode = orderNode.querySelector(".itemnumber");
       String nodeText = itemNoNode.asText();
-      String orderNumber = extruct(nodeText, PAT_ORDER_NO);
+      String orderNumber = extract(nodeText, PAT_ORDER_NO);
       LOGGER.info("ORDER NO: " + orderNumber);
 
       Date orderDate = extractDate(nodeText);
@@ -125,8 +126,6 @@ public class KojimaPurchaseHistoryListCrawler {
   
   
   private static final Pattern PAT_DATE = Pattern.compile("(20[\\d]{2}/[\\d]{2}/[\\d]{2} [\\d]{2}:[\\d]{2}:[\\d]{2})", Pattern.DOTALL);
-  private static final Pattern PAT_INT = Pattern.compile("([\\d,-]+)", Pattern.DOTALL);
-  private static final Pattern PAT_ORDER_NO = Pattern.compile("([\\d]{13})", Pattern.DOTALL);
   private static final String FORMAT_DATE = "yyyy/MM/dd HH:mm:ss";
   
   private String normalizeProductName(String productName) {
@@ -135,25 +134,9 @@ public class KojimaPurchaseHistoryListCrawler {
     }
     return productName.trim().replaceAll("　", " ");
   }
-  private String extruct(String text, String pat) {
-    return extruct(text, Pattern.compile(pat, Pattern.DOTALL));
-  }
-  private String extruct(String text, Pattern pat) {
-    Matcher m = pat.matcher(text);
-    if(m.find()) {
-      return m.group(0);
-    }
-    return "";
-  }
-  private Integer extractInt(String text) {
-    String intText = extruct(text, PAT_INT);
-    if (intText == null)
-      return null;
-    return Integer.valueOf(intText.replaceAll(",", ""));
-  }
   
   private Date extractDate(String text) {
-    String dateStr = extruct(text, PAT_DATE);
+    String dateStr = extract(text, PAT_DATE);
     try {
       return DateUtils.fromString(dateStr, FORMAT_DATE);
     } catch (ParseException e) {

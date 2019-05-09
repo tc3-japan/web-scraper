@@ -7,6 +7,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.topcoder.common.config.AmazonProperty;
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.traffic.TrafficWebClient;
+import com.topcoder.scraper.exception.SessionExpiredException;
 import com.topcoder.scraper.service.WebpageService;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -56,7 +57,11 @@ public class AmazonProductDetailCrawler {
     LOGGER.info("Product url " + productUrl);
 
     HtmlPage productPage = webClient.getPage(productUrl);
-
+    /* TODO: Pending
+    if (AmazonPurchaseHistoryListCrawler.isSessionExpired(productPage)) {
+      throw new SessionExpiredException("Session has been expired.");
+    }
+    */
     ProductInfo productInfo = new ProductInfo();
     fetchProductInfo(productPage, productInfo, productCode);
     fetchCategoryRanking(productPage, productInfo, productCode);

@@ -118,7 +118,7 @@ public class AmazonChangeDetectionInitModule extends ChangeDetectionInitModule {
    * @param page the page name
    * @param pageKey the page key
    */
-  private void saveNormalData(String normalData, String pageKey, String page) {
+  protected void saveNormalData(String normalData, String pageKey, String page) {
     NormalDataDAO dao = repository.findFirstByEcSiteAndPageAndPageKey(getECName(), page, pageKey);
     if (dao == null) {
       dao = new NormalDataDAO();
@@ -137,7 +137,7 @@ public class AmazonChangeDetectionInitModule extends ChangeDetectionInitModule {
    * @param crawlerResult the crawler result
    * @param pageKey the page key
    */
-  private void processPurchaseHistory(AmazonPurchaseHistoryListCrawlerResult crawlerResult, String pageKey) {
+  protected void processPurchaseHistory(AmazonPurchaseHistoryListCrawlerResult crawlerResult, String pageKey) {
     List<PurchaseHistory> purchaseHistoryList = crawlerResult.getPurchaseHistoryList();
     saveNormalData(PurchaseHistory.toArrayJson(purchaseHistoryList), pageKey, Consts.PURCHASE_HISTORY_LIST_PAGE_NAME);
   }
@@ -146,7 +146,7 @@ public class AmazonChangeDetectionInitModule extends ChangeDetectionInitModule {
    * process product info crawler result
    * @param crawlerResult the crawler result
    */
-  private void processProductInfo(AmazonProductDetailCrawlerResult crawlerResult) {
+  protected void processProductInfo(AmazonProductDetailCrawlerResult crawlerResult) {
     ProductInfo productInfo = crawlerResult.getProductInfo();
     saveNormalData(productInfo.toJson(), productInfo.getCode(), Consts.PRODUCT_DETAIL_PAGE_NAME);
   }

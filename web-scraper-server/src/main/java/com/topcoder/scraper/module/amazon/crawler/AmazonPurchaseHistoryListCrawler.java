@@ -1,14 +1,17 @@
 package com.topcoder.scraper.module.amazon.crawler;
 
+import com.gargoylesoftware.htmlunit.ElementNotFoundException;
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
+import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlSelect;
 import com.topcoder.common.config.AmazonProperty;
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.common.traffic.TrafficWebClient;
+import com.topcoder.scraper.exception.SessionExpiredException;
 import com.topcoder.scraper.service.WebpageService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -61,7 +64,13 @@ public class AmazonPurchaseHistoryListCrawler {
     LOGGER.info("goto Order Page");
 
     HtmlPage page = webClient.getPage(property.getHistoryUrl());
-    webpageService.save("order-home", siteName, page.getWebResponse().getContentAsString());
+
+    /* TODO: Pending
+    if (AmazonPurchaseHistoryListCrawler.isSessionExpired(page)) {
+      throw new SessionExpiredException("Session has been expired.");
+    }
+    */
+    webpageService.save("order-home", siteName, page.getWebResponse().getContentAsString());    
     while (true) {
       if (page == null || !parsePurchaseHistory(list, page, lastPurchaseHistory, saveHtml, pathList)) {
         break;
@@ -271,5 +280,17 @@ public class AmazonPurchaseHistoryListCrawler {
       return matcher.group(1);
     }
     return null;
+  }
+  
+  public static boolean isSessionExpired(HtmlPage page) {
+    if (page == null) {
+      return false;
+    }
+    try {
+      HtmlForm signInForm = page.getFormByName("signIn");
+      return signInForm != null;
+    } catch (ElementNotFoundException e) {
+      return false;
+    }
   }
 }

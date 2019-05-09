@@ -57,10 +57,6 @@ public class AmazonPurchaseHistoryListModule extends PurchaseHistoryListModule {
   @Override
   public void fetchPurchaseHistoryList() {
 
-    Optional<PurchaseHistory> lastPurchaseHistory = purchaseHistoryService.fetchLast(getECName());
-
-
-
     Iterable<ECSiteAccountDAO> accountDAOS = ecSiteAccountRepository.findAllByEcSite(getECName());
     for (ECSiteAccountDAO ecSiteAccountDAO : accountDAOS) {
       
@@ -68,6 +64,7 @@ public class AmazonPurchaseHistoryListModule extends PurchaseHistoryListModule {
         LOGGER.info("EC Site [" + ecSiteAccountDAO.getId() + ":" + ecSiteAccountDAO.getEcSite() + "] is not active. Skipped.");
         continue;
       }
+      Optional<PurchaseHistory> lastPurchaseHistory = purchaseHistoryService.fetchLast(ecSiteAccountDAO.getId());
 
       TrafficWebClient webClient = new TrafficWebClient(ecSiteAccountDAO.getUserId(), true);
       LOGGER.info("web client version = " + webClient.getWebClient().getBrowserVersion());
@@ -95,8 +92,5 @@ public class AmazonPurchaseHistoryListModule extends PurchaseHistoryListModule {
         e.printStackTrace();
       }
     }
-
   }
-
-
 }

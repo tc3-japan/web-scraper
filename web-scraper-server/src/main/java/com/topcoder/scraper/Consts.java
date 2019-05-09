@@ -15,4 +15,5 @@ public class Consts {
   public static final String CHECK_RESULT_BLANK = "<BLANK>";
 
   public static final String AMAZON_CHECK_TARGET_KEYS_PASSWORDS = "AMAZON_CHECK_TARGET_KEYS_PASSWORDS";
+  public static final String KOJIMA_CHECK_TARGET_KEYS_PASSWORDS = "KOJIMA_CHECK_TARGET_KEYS_PASSWORDS";
 }

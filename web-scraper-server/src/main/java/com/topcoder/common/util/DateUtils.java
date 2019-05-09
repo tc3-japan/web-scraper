@@ -11,7 +11,11 @@ public class DateUtils {
   }
 
   public static Date fromString(String in) throws ParseException {
-    return fromString(in, "MMM dd, yyyy");
+    String dateFmt = "MMM dd, yyyy";
+    if (in.contains("年")) {
+      dateFmt = "yyyy年M月d日"; // Japanese Format
+    }
+    return fromString(in, dateFmt);
   }
   
   public static Date fromString(String in, String format) throws ParseException {

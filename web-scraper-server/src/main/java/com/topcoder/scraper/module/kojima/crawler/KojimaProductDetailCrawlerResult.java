@@ -1,21 +1,11 @@
 package com.topcoder.scraper.module.kojima.crawler;
 
 import com.topcoder.common.model.ProductInfo;
+import com.topcoder.scraper.module.amazon.crawler.AmazonProductDetailCrawlerResult;
 
-public class KojimaProductDetailCrawlerResult {
-  private ProductInfo productInfo;
-  private String htmlPath;
+public class KojimaProductDetailCrawlerResult extends AmazonProductDetailCrawlerResult {
 
   public KojimaProductDetailCrawlerResult(ProductInfo productInfo, String htmlPath) {
-    this.productInfo = productInfo;
-    this.htmlPath = htmlPath;
-  }
-
-  public ProductInfo getProductInfo() {
-    return productInfo;
-  }
-
-  public String getHtmlPath() {
-    return htmlPath;
+    super(productInfo, htmlPath);
   }
 }

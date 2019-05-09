@@ -20,4 +20,21 @@ check_sites:
             unit_price: Format check:^\$[0-9.]+
             categories: Format check:^[A-Za-z ,'&>]+
             product_distributor: Equivalence check
+  - ec-site: kojima
+    check_pages:
+      - page_name: purchase_history_list
+        check_items:
+          order_no: Equivalence check
+          order_date: Equivalence check
+          total_amount: Equivalence check
+          products:
+            product_name: Equivalence check
+            product_quantity: Equivalence check
+            unit_price: Format check:^[0-9.,]+
+      - page_name: product_detail
+        check_items:
+          products:
+            product_name: Equivalence check
+            unit_price: Format check:^[0-9.,]+
+            product_distributor: Equivalence check
 

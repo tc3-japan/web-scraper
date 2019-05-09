@@ -3,24 +3,11 @@ package com.topcoder.scraper.module.kojima.crawler;
 import java.util.List;
 
 import com.topcoder.common.model.PurchaseHistory;
+import com.topcoder.scraper.module.amazon.crawler.AmazonPurchaseHistoryListCrawlerResult;
 
-/**
- * Result for AmazonPurchaseHistoryListCrawler
- */
-public class KojimaPurchaseHistoryListCrawlerResult {
-  private List<PurchaseHistory> purchaseHistoryList;
-  private List<String> htmlPathList;
+public class KojimaPurchaseHistoryListCrawlerResult extends AmazonPurchaseHistoryListCrawlerResult {
 
   public KojimaPurchaseHistoryListCrawlerResult(List<PurchaseHistory> purchaseHistoryList, List<String> htmlPathList) {
-    this.purchaseHistoryList = purchaseHistoryList;
-    this.htmlPathList = htmlPathList;
-  }
-
-  public List<PurchaseHistory> getPurchaseHistoryList() {
-    return purchaseHistoryList;
-  }
-
-  public List<String> getHtmlPathList() {
-    return htmlPathList;
+    super(purchaseHistoryList, htmlPathList);
   }
 }

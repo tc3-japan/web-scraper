@@ -42,12 +42,12 @@ public class AmazonChangeDetectionCheckModule extends ChangeDetectionCheckModule
   private static final Logger LOGGER = LoggerFactory.getLogger(AmazonChangeDetectionCheckModule.class);
 
   private final AmazonProperty property;
-  private final MonitorTargetDefinitionProperty monitorTargetDefinitionProperty;
-  private final CheckItemsDefinitionProperty checkItemsDefinitionProperty;
-  private final TrafficWebClient webClient;
-  private final WebpageService webpageService;
-  private final NormalDataRepository normalDataRepository;
-  private final CheckResultRepository checkResultRepository;
+  protected final MonitorTargetDefinitionProperty monitorTargetDefinitionProperty;
+  protected final CheckItemsDefinitionProperty checkItemsDefinitionProperty;
+  protected final TrafficWebClient webClient;
+  protected final WebpageService webpageService;
+  protected final NormalDataRepository normalDataRepository;
+  protected final CheckResultRepository checkResultRepository;
 
   @Autowired
   public AmazonChangeDetectionCheckModule(
@@ -131,7 +131,7 @@ public class AmazonChangeDetectionCheckModule extends ChangeDetectionCheckModule
    * @param crawlerResult the crawler result
    * @param pageKey the page key
    */
-  private void processPurchaseHistory(AmazonPurchaseHistoryListCrawlerResult crawlerResult, String pageKey, CheckItemsDefinitionProperty.CheckItemsCheckSite checkSiteDefinition) {
+  protected void processPurchaseHistory(AmazonPurchaseHistoryListCrawlerResult crawlerResult, String pageKey, CheckItemsDefinitionProperty.CheckItemsCheckSite checkSiteDefinition) {
     List<PurchaseHistory> purchaseHistoryList = crawlerResult.getPurchaseHistoryList();
 
     CheckItemsDefinitionProperty.CheckItemsCheckPage checkItemsCheckPage = checkSiteDefinition.getCheckPageDefinition(Consts.PURCHASE_HISTORY_LIST_PAGE_NAME);
@@ -152,7 +152,7 @@ public class AmazonChangeDetectionCheckModule extends ChangeDetectionCheckModule
     List<PurchaseHistoryCheckResultDetail> results =
       CheckUtils.checkPurchaseHistoryList(checkItemsCheckPage, dbPurchaseHistoryList, purchaseHistoryList);
 
-    boolean passed = results.stream().anyMatch(r -> !r.isOk());
+    boolean passed = results.stream().allMatch(r -> r.isOk());
 
     saveCheckResult(passed, PurchaseHistoryCheckResultDetail.toArrayJson(results), Consts.PURCHASE_HISTORY_LIST_PAGE_NAME, null);
 
@@ -166,7 +166,7 @@ public class AmazonChangeDetectionCheckModule extends ChangeDetectionCheckModule
    * Process product info crawler result
    * @param crawlerResult the crawler result
    */
-  private void processProductInfo(AmazonProductDetailCrawlerResult crawlerResult, CheckItemsDefinitionProperty.CheckItemsCheckSite checkSiteDefinition) {
+  protected void processProductInfo(AmazonProductDetailCrawlerResult crawlerResult, CheckItemsDefinitionProperty.CheckItemsCheckSite checkSiteDefinition) {
     ProductInfo productInfo = crawlerResult.getProductInfo();
     
     CheckItemsDefinitionProperty.CheckItemsCheckPage checkItemsCheckPage = checkSiteDefinition.getCheckPageDefinition(Consts.PRODUCT_DETAIL_PAGE_NAME);
@@ -199,7 +199,7 @@ public class AmazonChangeDetectionCheckModule extends ChangeDetectionCheckModule
    * @param page the page name
    * @param pageKey the page key
    */
-  private void saveCheckResult(boolean passed, String checkResultDetail, String page, String pageKey) {
+  protected void saveCheckResult(boolean passed, String checkResultDetail, String page, String pageKey) {
     CheckResultDAO dao = checkResultRepository.findFirstByEcSiteAndPageAndPageKey(getECName(), page, pageKey);
     if (dao == null) {
       dao = new CheckResultDAO();

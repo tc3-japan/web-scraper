@@ -19,9 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.util.Pair;
 
-import static com.topcoder.common.util.HtmlUtils.findFirstElementInSelectors;
-import static com.topcoder.common.util.HtmlUtils.getTextContent;
-import static com.topcoder.common.util.HtmlUtils.getTextContentWithoutDuplicatedSpaces;
+import static com.topcoder.common.util.HtmlUtils.*;
 
 /**
  * Crawl amazon product detail page
@@ -104,7 +102,7 @@ public class AmazonProductDetailCrawler {
         price = String.format("%s%s.%s", priceArray[0], priceArray[1], priceArray[2]);
       }
 
-      info.setPrice(price);
+      info.setPrice(getNumberAsStringFrom(price));
     }
 
     // update name

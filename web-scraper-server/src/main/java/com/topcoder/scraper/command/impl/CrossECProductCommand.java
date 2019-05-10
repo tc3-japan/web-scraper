@@ -53,6 +53,19 @@ public class CrossECProductCommand {
       logger.info("start group " + key + " with item count = " + productDAOS.size());
       if (productDAOS.size() <= 1) {
         logger.info("skip group " + key + " , because of item count < 2");
+        // Find this product on other EC Site
+          //Just make your own super simple scraper. Get:
+          /*
+<div class="s-result-list sg-row">
+        <div data-asin="OIEJAFOIJ" data-index="0" << This
+          */
+        // Scrape and save to DB *don't need to worry about access time; available immediately
+          //Just import and call AmazonProductDetailCrawlerResult fetchProductInfo(TrafficWebClient webClient, String productCode, boolean saveHtml)
+          //for the ASIN codes of the product discovered
+          //*See AmazonProductDetail.java #50ish for example of calling
+          //Modify (*add) fetchProductDetail -> fetchProductDetailIfSameModelNo in AmazonProductDetail.java
+        // Append to list... *that we're looping over
+
         return;
       }
       ProductGroupDAO groupDAO = productGroupRepository.getByModelNo(key);

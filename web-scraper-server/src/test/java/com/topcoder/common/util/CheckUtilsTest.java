@@ -17,10 +17,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertNull;
-import static junit.framework.TestCase.assertTrue;
+import static junit.framework.TestCase.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {
@@ -177,7 +174,11 @@ public class CheckUtilsTest {
     PurchaseHistoryCheckResultDetail result = resultList.get(0);
 
     assertNull(result.getUserId());
-    assertEquals("NG(NOT-EQUAL, Fri Jun 01 00:00:00 CEST 2018, Sun Jul 01 00:00:00 CEST 2018)", result.getOrderDate());
+    
+    assertNotNull(result.getOrderDate());
+    assertTrue("result.getOrderDate().length() should be >= 2", result.getOrderDate().length() >= 2);
+    assertEquals("NG", result.getOrderDate().substring(0, 2));
+    
     assertEquals("OK", result.getOrderNumber());
     assertEquals("OK", result.getDeliveryStatus());
     assertEquals("OK", result.getTotalAmount());

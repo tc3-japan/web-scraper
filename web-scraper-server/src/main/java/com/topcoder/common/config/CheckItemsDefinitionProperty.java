@@ -4,13 +4,17 @@ import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.stereotype.Component;
 
 /**
  * Check items definition property
  */
 @Component
-@PropertySource(factory = YamlPropertySourceFactory.class, value = "classpath:check-items-definition.yaml")
+@PropertySources({
+        @PropertySource(factory = YamlPropertySourceFactory.class, value = {"classpath:check-items-definition.yaml"}),
+        @PropertySource(factory = YamlPropertySourceFactory.class, value = {"file:${checkItemsFile}"}, ignoreResourceNotFound = true)
+})
 @ConfigurationProperties
 public class CheckItemsDefinitionProperty {
 

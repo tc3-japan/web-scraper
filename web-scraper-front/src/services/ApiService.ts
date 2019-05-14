@@ -1,7 +1,24 @@
 import axios from 'axios';
 import AppConfig from '../config';
+import NProgress from 'nprogress';
+import 'nprogress/nprogress.css';
 
 
+axios.interceptors.request.use((config) => {
+  NProgress.start();
+  return config;
+}, (error) => {
+  NProgress.done();
+  return Promise.reject(error);
+});
+axios.interceptors.response.use((response) => {
+  NProgress.done();
+  return response;
+}, (error) => {
+  NProgress.done();
+  return Promise.reject(error);
+})
+;
 export default class ApiService {
 
 
@@ -62,5 +79,47 @@ export default class ApiService {
    */
   public static login(userId: string, entity: any) {
     return axios.post(`${AppConfig.baseApi}/users/${userId}/login`, entity);
+  }
+
+  /**
+   * get all product groups
+   */
+  public static getAllProductGroups() {
+    return axios.get(`${AppConfig.baseApi}/product_groups`);
+  }
+
+  /**
+   * search products and fill default values
+   * @param searchBody the search body
+   */
+  public static searchProducts(searchBody) {
+    searchBody.pageSize = searchBody.pageSize || 100;
+    searchBody.pageNo = searchBody.pageNo || 0;
+    return axios.post(`${AppConfig.baseApi}/products/search`, searchBody);
+  }
+
+  /**
+   * update group
+   * @param id the group id
+   * @param entity the entity
+   */
+  public static updateGroup(id, entity) {
+    return axios.put(`${AppConfig.baseApi}/product_groups/${id}`, entity);
+  }
+
+  /**
+   * delete group
+   * @param id the group id
+   */
+  public static ungroup(id) {
+    return axios.delete(`${AppConfig.baseApi}/product_groups/${id}`);
+  }
+
+  /**
+   * create or update group
+   * @param entity the group entity
+   */
+  public static createOrUpdateGroup(entity) {
+    return axios.post(`${AppConfig.baseApi}/product_groups/`, entity);
   }
 }

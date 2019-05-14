@@ -1,10 +1,6 @@
 package com.topcoder.scraper;
 
-import com.topcoder.scraper.command.impl.ChangeDetectionCheckCommand;
-import com.topcoder.scraper.command.impl.ChangeDetectionInitCommand;
-import com.topcoder.scraper.command.impl.ProductDetailCommand;
-import com.topcoder.scraper.command.impl.PurchaseHistoryListCommand;
-import com.topcoder.scraper.command.impl.UserEncoderCommand;
+import com.topcoder.scraper.command.impl.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,16 +23,18 @@ public class AppRunner implements ApplicationRunner {
   private final ChangeDetectionInitCommand changeDetectionInitCommand;
   private final ChangeDetectionCheckCommand changeDetectionCheckCommand;
   private final UserEncoderCommand userEncoderCommand;
+  private final CrossECProductCommand crossECProductCommand;
 
   @Autowired
   public AppRunner(PurchaseHistoryListCommand purchaseHistoryListCommand, ProductDetailCommand productDetailCommand,
                    ChangeDetectionInitCommand changeDetectionInitCommand, ChangeDetectionCheckCommand changeDetectionCheckCommand,
-                   UserEncoderCommand userEncoderCommand) {
+                   UserEncoderCommand userEncoderCommand, CrossECProductCommand crossECProductCommand) {
     this.purchaseHistoryListCommand  = purchaseHistoryListCommand;
     this.productDetailCommand        = productDetailCommand;
     this.changeDetectionInitCommand  = changeDetectionInitCommand;
     this.changeDetectionCheckCommand = changeDetectionCheckCommand;
     this.userEncoderCommand          = userEncoderCommand;
+    this.crossECProductCommand       = crossECProductCommand;
   }
 
   /**
@@ -46,7 +44,6 @@ public class AppRunner implements ApplicationRunner {
    */
   @Override
   public void run(ApplicationArguments args) {
-
     List<String> batches = args.getOptionValues("batch");
     if (batches == null) {
       usage();
@@ -63,7 +60,9 @@ public class AppRunner implements ApplicationRunner {
       changeDetectionCheckCommand.run(args);
     } else if (batches.contains("encrypt_user")) {
       userEncoderCommand.run(args);
-    } else {
+    } else if(batches.contains("cross_ec_product")){
+      crossECProductCommand.run(args);
+    }else {
       usage();
     }
   }

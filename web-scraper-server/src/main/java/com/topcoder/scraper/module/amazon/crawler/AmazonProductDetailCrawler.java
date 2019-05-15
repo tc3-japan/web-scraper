@@ -7,6 +7,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.topcoder.common.config.AmazonProperty;
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.traffic.TrafficWebClient;
+import com.topcoder.scraper.exception.SessionExpiredException;
 import com.topcoder.scraper.service.WebpageService;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,9 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.util.Pair;
 
-import static com.topcoder.common.util.HtmlUtils.findFirstElementInSelectors;
-import static com.topcoder.common.util.HtmlUtils.getTextContent;
-import static com.topcoder.common.util.HtmlUtils.getTextContentWithoutDuplicatedSpaces;
+import static com.topcoder.common.util.HtmlUtils.*;
 
 /**
  * Crawl amazon product detail page
@@ -56,7 +55,11 @@ public class AmazonProductDetailCrawler {
     LOGGER.info("Product url " + productUrl);
 
     HtmlPage productPage = webClient.getPage(productUrl);
-
+    /* TODO: Pending
+    if (AmazonPurchaseHistoryListCrawler.isSessionExpired(productPage)) {
+      throw new SessionExpiredException("Session has been expired.");
+    }
+    */
     ProductInfo productInfo = new ProductInfo();
     fetchProductInfo(productPage, productInfo, productCode);
     fetchCategoryRanking(productPage, productInfo, productCode);
@@ -99,7 +102,7 @@ public class AmazonProductDetailCrawler {
         price = String.format("%s%s.%s", priceArray[0], priceArray[1], priceArray[2]);
       }
 
-      info.setPrice(price);
+      info.setPrice(getNumberAsStringFrom(price));
     }
 
     // update name

@@ -125,7 +125,19 @@ public class CheckUtils {
 
       List<ProductCheckResultDetail> productResults =
         dbProductInfoList.stream().map(dbProductInfo -> {
-          ProductInfo matchedProductInfo = matchedPurchaseHistory.get().getProducts().stream().filter(pi -> pi.getCode().equals(dbProductInfo.getCode())).findFirst().orElse(null);
+          ProductInfo matchedProductInfo = matchedPurchaseHistory.get().getProducts()
+              .stream()
+              .filter(pi -> {
+                if (pi.getCode() != null) {
+                  return pi.getCode().equals(dbProductInfo.getCode());
+                }
+                else if (pi.getName() != null) {
+                  return pi.getName().equals(dbProductInfo.getName());                  
+                }
+                return false;
+              })
+              .findFirst()
+              .orElse(null);
 
           if (matchedProductInfo == null) {
             // new ProductInfo

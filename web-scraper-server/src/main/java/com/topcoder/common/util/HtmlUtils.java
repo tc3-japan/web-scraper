@@ -6,6 +6,8 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.springframework.data.util.Pair;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class HtmlUtils {
 
@@ -16,6 +18,22 @@ public class HtmlUtils {
     return null;
   }
 
+  public static String getNumberAsStringFrom(HtmlElement element) {
+    String text = getTextContent(element);
+    if (text == null)
+      return null;
+    return getNumberAsStringFrom(text);
+  }
+  
+  public static String getNumberAsStringFrom(String text) {
+    if (text == null)
+      return null;
+    String num = extract(text, PAT_NUM);
+    if (num == null)
+      return null;
+    return num.replaceAll(",", "");
+  }
+  
   public static String getAnchorHref(HtmlElement element) {
     if (element != null) {
       return ((HtmlAnchor) element).getHrefAttribute();
@@ -40,5 +58,26 @@ public class HtmlUtils {
     }
     return null;
   }
+  
+  public static String extract(String text, Pattern pat) {
+    if (text == null) {
+      return "";
+    }
+    Matcher m = pat.matcher(text);
+    if(m.find()) {
+      return m.group(0);
+    }
+    return "";
+  }
+  
+  private static final Pattern PAT_NUM = Pattern.compile("([\\d,-.]+)", Pattern.DOTALL);
 
+  public static Integer extractInt(String text) {
+    String intText = extract(text, PAT_NUM);
+    if (intText == null || intText.length() == 0) {
+      return null;
+    }
+    return Integer.valueOf(intText.replaceAll(",", ""));
+  }
+ 
 }

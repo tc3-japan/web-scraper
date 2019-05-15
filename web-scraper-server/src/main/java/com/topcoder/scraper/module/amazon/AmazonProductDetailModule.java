@@ -49,7 +49,7 @@ public class AmazonProductDetailModule extends ProductDetailModule {
 
   @Override
   public void fetchProductDetailList() {
-    List<ProductDAO> products = this.productService.getAllFetchInfoStatusIsNull();
+    List<ProductDAO> products = this.productService.getAllFetchInfoStatusIsNull(getECName());
     AmazonProductDetailCrawler crawler = new AmazonProductDetailCrawler(getECName(), property, webpageService);
 
     products.forEach(product -> {

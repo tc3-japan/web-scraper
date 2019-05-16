@@ -12,34 +12,33 @@ import org.springframework.stereotype.Component;
 
 import com.gargoylesoftware.htmlunit.util.Cookie;
 import com.topcoder.api.exception.ApiException;
-import com.topcoder.api.service.login.LoginHandler;
+import com.topcoder.api.service.login.LoginHandlerBase;
 import com.topcoder.common.dao.ECSiteAccountDAO;
-import com.topcoder.common.model.AuthStatusType;
 import com.topcoder.common.model.ECCookie;
 import com.topcoder.common.model.ECCookies;
 import com.topcoder.common.model.LoginRequest;
 import com.topcoder.common.model.LoginResponse;
 import com.topcoder.common.repository.ECSiteAccountRepository;
+import com.topcoder.common.repository.UserRepository;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.module.AuthStep;
 import com.topcoder.scraper.module.kojima.crawler.KojimaAuthenticationCrawler;
 import com.topcoder.scraper.service.WebpageService;
 
 @Component
-public class KojimaLoginHandler implements LoginHandler {
+public class KojimaLoginHandler extends LoginHandlerBase {
 
-  /**
-   * ec site account repository
-   */
-  @Autowired
-  ECSiteAccountRepository ecSiteAccountRepository;
-
-  @Autowired
-  private ApplicationContext applicationContext;
-
-  
   private static final Logger LOGGER = LoggerFactory.getLogger(KojimaLoginHandler.class);
 
+  private ApplicationContext applicationContext;
+
+  @Autowired
+  public KojimaLoginHandler(ECSiteAccountRepository ecSiteAccountRepository,
+      UserRepository userRepository, ApplicationContext applicationContext) {
+    super(ecSiteAccountRepository, userRepository);
+    this.applicationContext = applicationContext;
+  }
+  
   @Override
   public String getECSite() {
     return "kojima";
@@ -64,9 +63,6 @@ public class KojimaLoginHandler implements LoginHandler {
     try {
       boolean result = crawler.authenticate(webClient, request.getEmail(), request.getPassword());
       if (result) { // succeed , update status and save cookies
-
-        ecSiteAccountDAO.setAuthStatus(AuthStatusType.SUCCESS);
-        ecSiteAccountDAO.setAuthFailReason(null);
         List<ECCookie> ecCookies = new LinkedList<>();
         for (Cookie cookie : webClient.getWebClient().getCookieManager().getCookies()) {
           ECCookie ecCookie = new ECCookie();
@@ -80,16 +76,15 @@ public class KojimaLoginHandler implements LoginHandler {
           ecCookies.add(ecCookie);
         }
         ecSiteAccountDAO.setEcCookies(new ECCookies(ecCookies).toJSONString());
-        ecSiteAccountRepository.save(ecSiteAccountDAO);
+        saveSuccessResult(ecSiteAccountDAO);
 
         return new LoginResponse(ecSiteAccountDAO.getLoginEmail(), null, null, AuthStep.DONE, "");
       } else { // login failed
-        ecSiteAccountDAO.setAuthStatus(AuthStatusType.FAILED);
-        ecSiteAccountDAO.setAuthFailReason("REASON");
-        ecSiteAccountRepository.save(ecSiteAccountDAO);
-        throw new ApiException("REASON");
+        saveFailedResult(ecSiteAccountDAO, "Authentication failed");
+        throw new ApiException("Authentication failed");
       }
     } catch (IOException e) {
+      saveFailedResult(ecSiteAccountDAO, e.getMessage());
       throw new ApiException(e.getMessage());
     }
   }

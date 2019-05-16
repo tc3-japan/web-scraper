@@ -14,36 +14,27 @@ import org.springframework.stereotype.Component;
 import com.gargoylesoftware.htmlunit.util.Cookie;
 import com.topcoder.api.exception.ApiException;
 import com.topcoder.api.exception.BadRequestException;
-import com.topcoder.api.service.login.LoginHandler;
+import com.topcoder.api.service.login.LoginHandlerBase;
 import com.topcoder.common.config.AmazonProperty;
 import com.topcoder.common.dao.ECSiteAccountDAO;
-import com.topcoder.common.model.AuthStatusType;
 import com.topcoder.common.model.CrawlerContext;
 import com.topcoder.common.model.ECCookie;
 import com.topcoder.common.model.ECCookies;
 import com.topcoder.common.model.LoginRequest;
 import com.topcoder.common.model.LoginResponse;
 import com.topcoder.common.repository.ECSiteAccountRepository;
+import com.topcoder.common.repository.UserRepository;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.module.amazon.crawler.AmazonAuthenticationCrawler;
 import com.topcoder.scraper.module.amazon.crawler.AmazonAuthenticationCrawlerResult;
 import com.topcoder.scraper.service.WebpageService;
 
 @Component
-public class AmazonLoginHandler implements LoginHandler {
+public class AmazonLoginHandler extends LoginHandlerBase {
 
-  /**
-   * ec site account repository
-   */
-  @Autowired
-  ECSiteAccountRepository ecSiteAccountRepository;
+  private final AmazonProperty amazonProperty;
 
-
-  @Autowired
-  AmazonProperty amazonProperty;
-
-  @Autowired
-  private ApplicationContext applicationContext;
+  private final ApplicationContext applicationContext;
 
   /**
    * save Crawler context
@@ -53,7 +44,14 @@ public class AmazonLoginHandler implements LoginHandler {
   
   private static final Logger LOGGER = LoggerFactory.getLogger(AmazonLoginHandler.class);
 
-
+  @Autowired
+  public AmazonLoginHandler(ECSiteAccountRepository ecSiteAccountRepository,
+      UserRepository userRepository, AmazonProperty amazonProperty, ApplicationContext applicationContext) {
+    super(ecSiteAccountRepository, userRepository);
+    this.amazonProperty = amazonProperty;
+    this.applicationContext = applicationContext;
+  }
+  
   @Override
   public String getECSite() {
     return "amazon";
@@ -85,16 +83,12 @@ public class AmazonLoginHandler implements LoginHandler {
         return new LoginResponse(ecSiteAccountDAO.getLoginEmail(), null, null,
           context.getCrawler().getAuthStep(), result.getReason());
       } else {
-        ecSiteAccountDAO.setAuthStatus(AuthStatusType.FAILED);
-        ecSiteAccountDAO.setAuthFailReason(result.getReason());
-        ecSiteAccountRepository.save(ecSiteAccountDAO);
+        saveFailedResult(ecSiteAccountDAO, result.getReason());
         return new LoginResponse(ecSiteAccountDAO.getLoginEmail(), result.getCodeType(), result.getImg(),
           context.getCrawler().getAuthStep(), result.getReason());
       }
     } catch (Exception e) { // here is fatal error, cannot continue
-      ecSiteAccountDAO.setAuthStatus(AuthStatusType.FAILED);
-      ecSiteAccountDAO.setAuthFailReason(e.getMessage());
-      ecSiteAccountRepository.save(ecSiteAccountDAO);
+      saveFailedResult(ecSiteAccountDAO, e.getMessage());
       throw new ApiException(e.getMessage());
     }
   }
@@ -111,9 +105,7 @@ public class AmazonLoginHandler implements LoginHandler {
 
     CrawlerContext context = crawlerContextMap.get(request.getSiteId());
     if (context == null || !context.getUuid().equals(request.getUuid())) { // context error
-      ecSiteAccountDAO.setAuthStatus(AuthStatusType.FAILED);
-      ecSiteAccountDAO.setAuthFailReason("crawler context error");
-      ecSiteAccountRepository.save(ecSiteAccountDAO);
+      saveFailedResult(ecSiteAccountDAO, "crawler context error");
       throw new BadRequestException(ecSiteAccountDAO.getAuthFailReason());
     }
 
@@ -123,9 +115,6 @@ public class AmazonLoginHandler implements LoginHandler {
           request.getPassword(), request.getCode(), false);
 
       if (result.isSuccess()) { // succeed , update status and save cookies
-
-        ecSiteAccountDAO.setAuthStatus(AuthStatusType.SUCCESS);
-        ecSiteAccountDAO.setAuthFailReason(null);
         List<ECCookie> ecCookies = new LinkedList<>();
         for (Cookie cookie : context.getWebClient().getWebClient().getCookieManager().getCookies()) {
           ECCookie ecCookie = new ECCookie();
@@ -139,14 +128,12 @@ public class AmazonLoginHandler implements LoginHandler {
           ecCookies.add(ecCookie);
         }
         ecSiteAccountDAO.setEcCookies(new ECCookies(ecCookies).toJSONString());
-        ecSiteAccountRepository.save(ecSiteAccountDAO);
+        saveSuccessResult(ecSiteAccountDAO);
 
         return new LoginResponse(ecSiteAccountDAO.getLoginEmail(), result.getCodeType(), result.getImg(),
           context.getCrawler().getAuthStep(), result.getReason());
       } else { // login failed
-        ecSiteAccountDAO.setAuthStatus(AuthStatusType.FAILED);
-        ecSiteAccountDAO.setAuthFailReason(result.getReason());
-        ecSiteAccountRepository.save(ecSiteAccountDAO);
+        saveFailedResult(ecSiteAccountDAO, result.getReason());
         if (result.isNeedContinue()) {
           return new LoginResponse(ecSiteAccountDAO.getLoginEmail(), result.getCodeType(), result.getImg(),
             context.getCrawler().getAuthStep(), result.getReason());
@@ -156,9 +143,7 @@ public class AmazonLoginHandler implements LoginHandler {
       }
     } catch (Exception e) {
       e.printStackTrace();
-      ecSiteAccountDAO.setAuthStatus(AuthStatusType.FAILED);
-      ecSiteAccountDAO.setAuthFailReason(e.getMessage());
-      ecSiteAccountRepository.save(ecSiteAccountDAO);
+      saveFailedResult(ecSiteAccountDAO, e.getMessage());
       throw new ApiException(e.getMessage());
     }
   }

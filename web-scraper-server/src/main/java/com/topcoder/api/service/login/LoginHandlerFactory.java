@@ -13,7 +13,7 @@ public class LoginHandlerFactory {
   private final Map<String, LoginHandler> handlers = new HashMap<>();
   
   @Autowired
-  public LoginHandlerFactory(List<LoginHandler> loginHandlers) {
+  public LoginHandlerFactory(List<LoginHandlerBase> loginHandlers) {
     if (loginHandlers != null) {
       loginHandlers.forEach(h -> {
         handlers.put(h.getECSite(), h);

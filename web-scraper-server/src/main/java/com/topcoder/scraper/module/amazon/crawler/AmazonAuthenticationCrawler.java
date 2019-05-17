@@ -408,6 +408,41 @@ public class AmazonAuthenticationCrawler {
         }
       }
     }
+    
+    // verification code input
+    final HtmlTextInput codeInput        = finalPage.querySelector(property.getCrawling().getLoginPage().getVerificationCodeInput());
+    final HtmlSubmitInput sendCode       = finalPage.querySelector(property.getCrawling().getLoginPage().getVerificationCodeSubmit());
+    final HtmlSubmitInput mfaLoginButton = finalPage.querySelector(property.getCrawling().getLoginPage().getMfaLoginButton());
+
+    int count = 0;
+    SubmitResult codeAuthResult = null;
+    while (count++ < VERIFY_TRIAL_COUNT_MAX && (codeAuthResult == null || !codeAuthResult.isSuccess())) {
+      if (codeInput != null && sendCode != null) {
+        String code = readCodeFromFile("verification-code");
+        codeInput.type(code);
+        finalPage = webClient.click(sendCode);
+        path = webpageService.save("enter-verification-code", siteName, finalPage.getWebResponse().getContentAsString());
+
+        if (finalPage.querySelector(property.getCrawling().getLoginPage().getVerificationCodeSubmit()) != null) {
+          codeAuthResult = new SubmitResult(false, finalPage, path);
+        } else {
+          codeAuthResult = new SubmitResult(true, finalPage, path);
+        }
+      }
+      else if (mfaLoginButton != null) {
+        String code = readCodeFromFile("mfa-code");
+        codeAuthResult = this.fillMFACodeNeeded(webClient, finalPage, code);
+      }
+      else {
+        String code = readCodeFromFile("verification-code");
+        codeAuthResult = this.fillVerificationCodeNeeded(webClient, finalPage, code);
+      }
+    }
+    if (codeAuthResult == null) {
+      return new AmazonAuthenticationCrawlerResult(false, null);
+    }
+    return new AmazonAuthenticationCrawlerResult(codeAuthResult.isSuccess(), codeAuthResult.getHtmlPath());
+/*    
     // Check Login Successfully > Verification Code Needed
     HtmlRadioButtonInput smsInputCheck = finalPage.querySelector("input[type='radio'][name='option']");
     if (smsInputCheck != null) {
@@ -421,6 +456,7 @@ public class AmazonAuthenticationCrawler {
       }
     }
     return new AmazonAuthenticationCrawlerResult(true, path);
+*/
   }
 
 
@@ -455,7 +491,7 @@ public class AmazonAuthenticationCrawler {
     webpageService.saveImage("captcha-1st", "png", siteName, htmlImg);
 
     // Fill in captcha
-    String captchaStr = readCodeFromFile();
+    String captchaStr = readCodeFromFile("captcha code");
     HtmlTextInput captchaInput = page.querySelector(property.getCrawling().getLoginPage().getCaptchaInput1st());
     captchaInput.type(captchaStr);
 
@@ -522,7 +558,7 @@ public class AmazonAuthenticationCrawler {
     passwordInput.type(password);
 
     // Fill in captcha
-    String captchaStr = readCodeFromFile();
+    String captchaStr = readCodeFromFile("captcha code");
     HtmlTextInput captchaInput = page.querySelector(property.getCrawling().getLoginPage().getCaptchaInput2nd());
     captchaInput.type(captchaStr);
 
@@ -577,7 +613,7 @@ public class AmazonAuthenticationCrawler {
   private SubmitResult fillVerificationCodeNeeded(TrafficWebClient webClient, HtmlPage page, String code) throws IOException {
 
     // Continue Submit form
-    HtmlSubmitInput continueSubmitInput1 = page.querySelector("input#continue");
+    HtmlSubmitInput continueSubmitInput1 = page.querySelector(property.getCrawling().getLoginPage().getContinueInput());
     HtmlPage page1 = webClient.click(continueSubmitInput1);
 
     // Fill in Verification Code
@@ -604,53 +640,12 @@ public class AmazonAuthenticationCrawler {
     }
   }
 
-  private SubmitResult handleVerificationCodeNeeded(TrafficWebClient webClient, HtmlPage page, int trialCount) throws IOException {
-    LOGGER.info("Handle Verification Code Needed. Trial Count: " + trialCount);
-
-    // Continue Submit form
-    HtmlSubmitInput continueSubmitInput1 = page.querySelector("input#continue");
-    HtmlPage page1 = webClient.click(continueSubmitInput1);
-
-    // Save page
-    String path1 = webpageService.save("login-verify-sms", siteName, page1.getWebResponse().getContentAsString());
-
-    // Fill in Verification Code
-    String codeStr = readCodeFromFile();
-    HtmlTextInput codeInput = page1.querySelector("input[type='text'][name='code']");
-    codeInput.type(codeStr);
-
-    // Submit form
-    // TODO: select correct selector and delete others
-    HtmlSubmitInput continueSubmitInput2 = page1.querySelector("#a-autoid-0 > span > input");
-    if (continueSubmitInput2 == null) continueSubmitInput2 = page1.querySelector("span#a-autoid-0 > span > input");
-    if (continueSubmitInput2 == null) continueSubmitInput2 = page1.querySelector("input[type='submit']");
-    HtmlPage page2 = webClient.click(continueSubmitInput2);
-
-    // Save page
-    String path2 = webpageService.save("login-verify-submit", siteName, page2.getWebResponse().getContentAsString());
-
-    // code input check
-    HtmlTextInput codeInputCheck = page2.querySelector("input[type='text'][name='code']");
-    if (codeInputCheck == null) {
-      // success case
-      return new SubmitResult(true, page2, path2);
-    } else {
-      // failure case
-      if (trialCount >= VERIFY_TRIAL_COUNT_MAX) {
-        // retry out
-        return new SubmitResult(false, page2, path2);
-      }
-      // retry
-      return handleVerificationCodeNeeded(webClient, page2, trialCount + 1);
-    }
-  }
-
-  private String readCodeFromFile() throws IOException {
+  private String readCodeFromFile(String prompt) throws IOException {
     File codeInputFile = new File(CODE_PATH);
     int waitCount = CODE_WAIT_COUNT_MAX;
 
     while (!codeInputFile.exists() && waitCount > 0) {
-      LOGGER.info("Please write code in " + CODE_PATH + ". sleep " + CODE_WAIT_MILLI_SEC + " milliseconds, count:" + waitCount);
+      LOGGER.info("Please write " + prompt + " in " + CODE_PATH + ". sleep " + CODE_WAIT_MILLI_SEC + " milliseconds, count:" + waitCount);
       // Open CODE file and see CODE characters.
       // $ echo '<code_characters>' > ./code-input.txt
       try {

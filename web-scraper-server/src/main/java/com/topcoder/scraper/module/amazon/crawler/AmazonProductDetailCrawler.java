@@ -52,6 +52,7 @@ public class AmazonProductDetailCrawler {
    */
   public AmazonProductDetailCrawlerResult fetchProductInfo(TrafficWebClient webClient, String productCode, boolean saveHtml) throws IOException {
 
+    System.out.println("Fetching product info for " + productCode);
     String productUrl = property.getProductUrl() + productCode;
     LOGGER.info("Product url " + productUrl);
 

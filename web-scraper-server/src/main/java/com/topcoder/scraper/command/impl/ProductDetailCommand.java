@@ -22,7 +22,7 @@ public class ProductDetailCommand extends AbstractCommand<ProductDetailModule> {
   public ProductDetailCommand(List<ProductDetailModule> modules) {
     super(modules);
   }
-
+  
   /**
    * run fetch product detail from specific module
    * @param module module to be run

@@ -142,7 +142,7 @@ public class AmazonChangeDetectionInitModule extends ChangeDetectionInitModule {
    * process product info crawler result
    * @param crawlerResult the crawler result
    */
-  private void processProductInfo(AmazonProductDetailCrawlerResult crawlerResult) {
+  public void processProductInfo(AmazonProductDetailCrawlerResult crawlerResult) {
     ProductInfo productInfo = crawlerResult.getProductInfo();
     saveNormalData(productInfo.toJson(), productInfo.getCode(), Consts.PRODUCT_DETAIL_PAGE_NAME);
   }

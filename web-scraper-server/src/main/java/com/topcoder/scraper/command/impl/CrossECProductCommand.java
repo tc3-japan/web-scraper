@@ -1,9 +1,17 @@
 package com.topcoder.scraper.command.impl;
 
+import com.topcoder.common.config.AmazonProperty;
 import com.topcoder.common.dao.ProductDAO;
 import com.topcoder.common.dao.ProductGroupDAO;
+import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.repository.ProductGroupRepository;
 import com.topcoder.common.repository.ProductRepository;
+import com.topcoder.common.traffic.TrafficWebClient;
+import com.topcoder.scraper.module.amazon.crawler.AmazonProductDetailCrawler;
+import com.topcoder.scraper.module.amazon.crawler.AmazonProductDetailCrawlerResult;
+import com.topcoder.scraper.service.ProductService;
+import com.topcoder.scraper.service.WebpageService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +19,8 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
-import java.sql.Date;
+import java.util.Date;
+import java.io.IOException;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -19,8 +28,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This will group product information of all products where group_status is null or uninitialized,
- * to the appropriate product_group table.
+ * This will group product information of all products where group_status is
+ * null or uninitialized, to the appropriate product_group table.
  */
 @Component
 @Transactional
@@ -31,6 +40,18 @@ public class CrossECProductCommand {
 
   @Autowired
   ProductGroupRepository productGroupRepository;
+
+  //////////
+  @Autowired
+  AmazonProperty property; // No idea where this comes from
+  @Autowired
+  WebpageService webpageService;
+  @Autowired
+  ProductService productService;
+  // private final ProductRepository productRepository;
+
+  // AmazonChangeDetectionInitModule initMod;
+  //////////
 
   private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
@@ -49,23 +70,74 @@ public class CrossECProductCommand {
       }
     });
 
-    productDAOMap.forEach((key, productDAOS)->{
+    productDAOMap.forEach((key, productDAOS) -> {
       logger.info("start group " + key + " with item count = " + productDAOS.size());
       if (productDAOS.size() <= 1) {
         logger.info("skip group " + key + " , because of item count < 2");
         // Find this product on other EC Site
-          //Just make your own super simple scraper. Get:
-          /*
-<div class="s-result-list sg-row">
-        <div data-asin="OIEJAFOIJ" data-index="0" << This
-          */
-        // Scrape and save to DB *don't need to worry about access time; available immediately
-          //Just import and call AmazonProductDetailCrawlerResult fetchProductInfo(TrafficWebClient webClient, String productCode, boolean saveHtml)
-          //for the ASIN codes of the product discovered
-          //*See AmazonProductDetail.java #50ish for example of calling
-          //Modify (*add) fetchProductDetail -> fetchProductDetailIfSameModelNo in AmazonProductDetail.java
+        // Just make your own super simple scraper. Get:
+        /*
+         * <div class="s-result-list sg-row"> <div data-asin="OIEJAFOIJ" data-index="0"
+         * << This
+         */
+        // Scrape and save to DB *don't need to worry about access time; available
+        // immediately
+        // Just import and call AmazonProductDetailCrawlerResult
+        // fetchProductInfo(TrafficWebClient webClient, String productCode, boolean
+        // saveHtml)
+        // for the ASIN codes of the product discovered
+        // *See AmazonProductDetail.java #50ish for example of calling
+        // Modify (*add) fetchProductDetail -> fetchProductDetailIfSameModelNo in
+        // AmazonProductDetail.java
         // Append to list... *that we're looping over
 
+        // ********* For now, assume ASIN (hardcode) and continue. Matsudasan will
+        // provide example code to scrape
+
+        TrafficWebClient twc = new TrafficWebClient(0, false);
+        String siteName = "amazon";
+
+        // Search for related objects on Amazon
+        String asin = "B07H4FQ7P5";
+        AmazonProductDetailCrawler crawler = new AmazonProductDetailCrawler(siteName, property, webpageService);
+        try {
+          AmazonProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(twc, asin, false);
+          System.out.println("");
+          System.out.println("");
+          System.out.println(asin);
+          // System.out.println(initMod);
+          System.out.println(">>> crawlerResult: " + crawlerResult);
+          System.out.println("");
+          System.out.println("");
+          ProductInfo productInfo = crawlerResult.getProductInfo();
+
+          // Save ProductDAO, if product is not in DB
+          ProductDAO existingProductDao = productRepository.findByProductCode(productInfo.getCode());
+          if (existingProductDao == null) {
+            ProductDAO productDao = new ProductDAO(siteName, productInfo);
+            productRepository.save(productDao);
+            int productId = productDao.getId();
+            for (int i = 0; i < productInfo.getCategoryList().size(); i++) {
+              String category = productInfo.getCategoryList().get(i);
+              Integer rank = productInfo.getRankingList().get(i);
+              productService.addCategoryRanking(productId, category, rank);
+            }
+          } else {
+            existingProductDao.setUpdateAt(new Date());
+            productRepository.save(existingProductDao);
+            int productId = existingProductDao.getId();
+            for (int i = 0; i < productInfo.getCategoryList().size(); i++) {
+              String category = productInfo.getCategoryList().get(i);
+              Integer rank = productInfo.getRankingList().get(i);
+              productService.addCategoryRanking(productId, category, rank);
+            }
+          }
+
+        } catch (IOException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        
         return;
       }
       ProductGroupDAO groupDAO = productGroupRepository.getByModelNo(key);

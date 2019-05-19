@@ -100,3 +100,12 @@ amazon:
       name:             "#productTitle"
       salesRank:        "#SalesRank"
       productInfoTable: "#productDetails_detailBullets_sections1"
+      modelNosLabels:
+        -               "div.wrapper.JPlocale > div.column.col1 > div > div.content.pdClearfix > div > div > table > tbody > tr:nth-child(8) > td.label"
+        -               "#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(3) > b"
+        -               "#prodDetails > div.wrapper.JPlocale > div.column.col1 > div > div.content.pdClearfix > div > div > table > tbody > tr:nth-child(2) > td.label"
+      modelNosValues:
+        -               "div.wrapper.JPlocale > div.column.col1 > div > div.content.pdClearfix > div > div > table > tbody > tr:nth-child(8) > td.value"
+        -               "#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(3)"
+        -               "#prodDetails > div.wrapper.JPlocale > div.column.col1 > div > div.content.pdClearfix > div > div > table > tbody > tr:nth-child(2) > td.value"
+        

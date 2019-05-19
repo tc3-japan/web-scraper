@@ -49,6 +49,9 @@ public class ProductInfo {
 
   @JsonProperty("rankings")
   private List<Integer> rankingList = new ArrayList<>();
+  
+  @JsonProperty("moedel_no")
+  private String modelNo;;
 
   public ProductInfo() {
   }
@@ -90,6 +93,10 @@ public class ProductInfo {
   public List<Integer> getRankingList() {
     return rankingList;
   }
+  
+  public String getModelNo() {
+	  return modelNo;
+  }
 
   public void setName(String name) {
     this.name = name;
@@ -117,6 +124,10 @@ public class ProductInfo {
 
   public void setRankingList(List<Integer> rankingList) {
     this.rankingList = rankingList;
+  }
+  
+  public void setModelNo(String modelNo) {
+	    this.modelNo = modelNo;
   }
 
   public void addCategoryRanking(String category, int ranking) {

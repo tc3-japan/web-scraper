@@ -66,6 +66,9 @@ public class KojimaProductDetailCrawler {
     DomNode prodPriceNode = productDetailPage.querySelector("td.price > span");
     String prodPrice = prodPriceNode != null ? prodPriceNode.asText().trim() : null;
     
+    DomNode modelNoNode = productDetailPage.querySelector("#item_detail > div > div.item_detail_box > table > tbody > tr:nth-child(6) > td");
+    String modelNo= modelNoNode != null ? prodPriceNode.asText().trim() : null;
+    
     LOGGER.info("Product name from Purchase hitosry: [" + productName + "]");
     LOGGER.info("Product name from Product page    : [" + prodName    + "] matched: " + (productName.equals(prodName)));
     
@@ -74,6 +77,7 @@ public class KojimaProductDetailCrawler {
     productInfo.setDistributor(vendorName);
     productInfo.setName(prodName);
     productInfo.setPrice(prodPrice.replaceAll(",", "")); // TODO
+    productInfo.setModelNo(modelNo);
     //productInfo.setQuantity(1);
     
     String savedPath = null;

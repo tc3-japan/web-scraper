@@ -59,6 +59,11 @@ public class DBProductService implements ProductService {
       product.setProductDistributor(productInfo.getDistributor());
       info.setDistributor(productInfo.getDistributor());
     }
+    
+    if (productInfo.getModelNo() != null) {
+        product.setModelNo(productInfo.getModelNo());
+        info.setModelNo(productInfo.getModelNo());
+      }
 
     product.setProductInfo(info);
     product.setUpdateAt(new Date());

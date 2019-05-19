@@ -9,7 +9,7 @@ spring:
     hibernate:
       ddl-auto: validate
   datasource:
-    url: jdbc:mysql://localhost:3306/web_scraper
+    url: jdbc:mysql://192.168.99.100:3306/web_scraper
     username: root
     password: mypassword
 
@@ -100,3 +100,13 @@ amazon:
       name:             "#productTitle"
       salesRank:        "#SalesRank"
       productInfoTable: "#productDetails_detailBullets_sections1"
+      modelNosLabel:
+        -               "div.wrapper.JPlocale > div.column.col1 > div > div.content.pdClearfix > div > div > table > tbody > tr:nth-child(8) > td.label"
+        -               "#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(3) > b"
+        -               "#prodDetails > div.wrapper.JPlocale > div.column.col1 > div > div.content.pdClearfix > div > div > table > tbody > tr:nth-child(2) > td.label"
+      modelNosLabel:
+        -               "div.wrapper.JPlocale > div.column.col1 > div > div.content.pdClearfix > div > div > table > tbody > tr:nth-child(8) > td.value"
+        -               "#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(3)"
+        -               "#prodDetails > div.wrapper.JPlocale > div.column.col1 > div > div.content.pdClearfix > div > div > table > tbody > tr:nth-child(2) > td.value"     
+        
+      

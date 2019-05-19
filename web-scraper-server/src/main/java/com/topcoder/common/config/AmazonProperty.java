@@ -275,6 +275,8 @@ public class AmazonProperty {
     private String salesRank;
     private List<String> prices;
     private String name;
+    private List<String> modelNoLabels;
+    private List<String> modelNoValues;
 
     public String getProductInfoTable() {
       return productInfoTable;
@@ -291,6 +293,14 @@ public class AmazonProperty {
     public String getName() {
       return name;
     }
+    
+    public List<String> getModelNoLabels() {
+    	return modelNoLabels;
+    }
+    
+    public List<String> getModelNoValues() {
+    	return modelNoValues;
+    }
 
     public void setProductInfoTable(String productInfoTable) {
       this.productInfoTable = productInfoTable;
@@ -306,6 +316,14 @@ public class AmazonProperty {
 
     public void setName(String name) {
       this.name = name;
+    }
+    
+    public void setModelNoLabels(List<String> modelNoLabels) {
+    	this.modelNoLabels = modelNoLabels;
+    }
+    
+    public void setModelNoValues(List<String> modelNoValues) {
+    	this.modelNoValues = modelNoValues;
     }
   }
 

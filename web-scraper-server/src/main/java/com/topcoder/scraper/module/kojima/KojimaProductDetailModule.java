@@ -72,4 +72,19 @@ public class KojimaProductDetailModule extends ProductDetailModule {
     */
     productService.updateFetchInfoStatus(productId, "updated");
   }
+
+  @Override
+  public ProductDAO crossEcProduct(String modelNo) throws IOException {
+	  KojimaProductDetailCrawler crawler = new KojimaProductDetailCrawler(getECName(), webpageService);
+	  KojimaProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, modelNo, false);
+	  ProductInfo productInfo = crawlerResult != null ? crawlerResult.getProductInfo() : null;
+	    
+	  if (productInfo == null) {
+	    LOGGER.warn("Unable to obtain a cross ec product information about: " + modelNo);
+	    return null;
+	  }
+	  
+	  productService.saveProduct(getECName(), productInfo);
+	  return new ProductDAO(getECName(), productInfo);
+  }
 }

@@ -82,4 +82,22 @@ public class DBProductService implements ProductService {
   public List<ProductDAO> getAllFetchInfoStatusIsNull(String ecSite) {
     return this.productRepository.findByFetchInfoStatusAndECSite(ecSite);
   }
+  
+  @Override
+  @Transactional
+  public void saveProduct(String site, ProductInfo productInfo) {
+	ProductDAO existingProductDao = null;
+	if (productInfo.getCode() != null) {
+	  existingProductDao = productRepository.findByProductCode(productInfo.getCode());
+	} else {
+	  existingProductDao = productRepository.findByECSiteAndProductName(site, productInfo.getName());
+	}
+	if (existingProductDao == null) {
+	  ProductDAO productDao = new ProductDAO(site, productInfo);
+	  productRepository.save(productDao);
+	} else {
+	  existingProductDao.setUpdateAt(new Date());
+	  productRepository.save(existingProductDao);
+	}
+  }
 }

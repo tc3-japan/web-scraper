@@ -83,4 +83,9 @@ public class AmazonProductDetailModule extends ProductDetailModule {
 
     productService.updateFetchInfoStatus(productId, "updated");
   }
+
+  @Override
+  public ProductDAO crossEcProduct(String modelNo) throws IOException {
+	  return null;
+  }
 }

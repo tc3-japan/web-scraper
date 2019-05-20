@@ -55,11 +55,6 @@ public class AmazonProductDetailCrawler {
     LOGGER.info("Product url " + productUrl);
 
     HtmlPage productPage = webClient.getPage(productUrl);
-    /* TODO: Pending
-    if (AmazonPurchaseHistoryListCrawler.isSessionExpired(productPage)) {
-      throw new SessionExpiredException("Session has been expired.");
-    }
-    */
     ProductInfo productInfo = new ProductInfo();
     fetchProductInfo(productPage, productInfo, productCode);
     fetchCategoryRanking(productPage, productInfo, productCode);

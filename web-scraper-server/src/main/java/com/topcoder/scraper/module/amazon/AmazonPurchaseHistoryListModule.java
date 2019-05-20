@@ -1,9 +1,16 @@
 package com.topcoder.scraper.module.amazon;
 
-import com.gargoylesoftware.htmlunit.WebClient;
+import java.util.List;
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.topcoder.api.service.login.amazon.AmazonLoginHandler;
 import com.topcoder.common.config.AmazonProperty;
 import com.topcoder.common.dao.ECSiteAccountDAO;
-import com.topcoder.common.model.AuthStatusType;
 import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.common.repository.ECSiteAccountRepository;
 import com.topcoder.common.traffic.TrafficWebClient;
@@ -13,13 +20,6 @@ import com.topcoder.scraper.module.amazon.crawler.AmazonPurchaseHistoryListCrawl
 import com.topcoder.scraper.module.amazon.crawler.AmazonPurchaseHistoryListCrawlerResult;
 import com.topcoder.scraper.service.PurchaseHistoryService;
 import com.topcoder.scraper.service.WebpageService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.util.List;
-import java.util.Optional;
 
 /**
  * Amazon implementation of PurchaseHistoryListModule
@@ -33,17 +33,20 @@ public class AmazonPurchaseHistoryListModule extends PurchaseHistoryListModule {
   private final PurchaseHistoryService purchaseHistoryService;
   private final WebpageService webpageService;
   private final ECSiteAccountRepository ecSiteAccountRepository;
+  private final AmazonLoginHandler loginHandler;
 
   @Autowired
   public AmazonPurchaseHistoryListModule(
     AmazonProperty property,
     PurchaseHistoryService purchaseHistoryService,
     ECSiteAccountRepository ecSiteAccountRepository,
-    WebpageService webpageService) {
+    WebpageService webpageService,
+    AmazonLoginHandler loginHandler) {
     this.property = property;
     this.purchaseHistoryService = purchaseHistoryService;
     this.webpageService = webpageService;
     this.ecSiteAccountRepository = ecSiteAccountRepository;
+    this.loginHandler = loginHandler;
   }
 
   @Override
@@ -84,10 +87,7 @@ public class AmazonPurchaseHistoryListModule extends PurchaseHistoryListModule {
         purchaseHistoryService.save(getECName(), list);
         LOGGER.info("succeed fetch purchaseHistory for ecSite id = " + ecSiteAccountDAO.getId());
       } catch (Exception e) { // here catch all exception and did not throw it
-        ecSiteAccountDAO.setAuthStatus(AuthStatusType.FAILED);
-        //ecSiteAccountDAO.setAuthFailReason("Cookie expires"); // if error here, i think the only reason is cookie expires
-        ecSiteAccountDAO.setAuthFailReason(e.getMessage());
-        ecSiteAccountRepository.save(ecSiteAccountDAO);
+        loginHandler.saveFailedResult(ecSiteAccountDAO, e.getMessage());
         LOGGER.error("failed to PurchaseHistory for ecSite id = " + ecSiteAccountDAO.getId());
         e.printStackTrace();
       }

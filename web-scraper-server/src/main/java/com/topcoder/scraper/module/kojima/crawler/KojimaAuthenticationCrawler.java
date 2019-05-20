@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.gargoylesoftware.htmlunit.ElementNotFoundException;
 import com.gargoylesoftware.htmlunit.html.HtmlCheckBoxInput;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlImageInput;
@@ -34,9 +35,14 @@ public class KojimaAuthenticationCrawler {
     webClient.getWebClient().getCookieManager().clearCookies();
     
     HtmlPage loginPage = webClient.getPage("https://www.kojima.net/ec/member/CSfLogin.jsp");
-    
+
+    webpageService.save("kojima-login", siteName, loginPage.getWebResponse().getContentAsString());
+
     HtmlForm loginForm = loginPage.getFormByName("MemberForm");
-    //TODO: if loginForm is null
+    
+    if (loginForm == null) {
+      throw new RuntimeException("The form is not found in the login page. The site might be changed.");
+    }
     
     HtmlTextInput memberIdInput = loginForm.getInputByName("MEM_ID");
     HtmlPasswordInput passwordInput = loginForm.getInputByName("PWD");
@@ -48,10 +54,14 @@ public class KojimaAuthenticationCrawler {
     passwordInput.type(password);
     rememberInput.type("on");
     HtmlPage afterLoginPage = webClient.click(loginButtonInput);
+
+    webpageService.save("kojima-after-login", siteName, afterLoginPage.getWebResponse().getContentAsString());
     
-    String path = webpageService.save("kojima-login", siteName, afterLoginPage.getWebResponse().getContentAsString());
-    
-    return true;
+    try {
+      loginForm = afterLoginPage.getFormByName("MemberForm");
+      return loginForm == null;
+    } catch (ElementNotFoundException e) {
+      return true;
+    }
   }
-  
 }

@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.topcoder.api.service.login.kojima.KojimaLoginHandler;
 import com.topcoder.common.dao.ECSiteAccountDAO;
 import com.topcoder.common.model.AuthStatusType;
 import com.topcoder.common.model.PurchaseHistory;
@@ -29,15 +30,18 @@ public class KojimaPurchaseHistoryListModule extends PurchaseHistoryListModule {
   private final PurchaseHistoryService purchaseHistoryService;
   private final WebpageService webpageService;
   private final ECSiteAccountRepository ecSiteAccountRepository;
+  private final KojimaLoginHandler loginHandler;
 
   @Autowired
   public KojimaPurchaseHistoryListModule(
     PurchaseHistoryService purchaseHistoryService,
     ECSiteAccountRepository ecSiteAccountRepository,
-    WebpageService webpageService) {
+    WebpageService webpageService,
+    KojimaLoginHandler loginHandler) {
     this.purchaseHistoryService = purchaseHistoryService;
     this.webpageService = webpageService;
     this.ecSiteAccountRepository = ecSiteAccountRepository;
+    this.loginHandler = loginHandler;
   }
 
   @Override
@@ -77,10 +81,7 @@ public class KojimaPurchaseHistoryListModule extends PurchaseHistoryListModule {
         }
         LOGGER.info("succeed fetch purchaseHistory for ecSite id = " + ecSiteAccountDAO.getId());
       } catch (Exception e) { // here catch all exception and did not throw it
-        ecSiteAccountDAO.setAuthStatus(AuthStatusType.FAILED);
-        //ecSiteAccountDAO.setAuthFailReason("Cookie expires"); // if error here, i think the only reason is cookie expires
-        ecSiteAccountDAO.setAuthFailReason(e.getMessage());
-        ecSiteAccountRepository.save(ecSiteAccountDAO);
+        this.loginHandler.saveFailedResult(ecSiteAccountDAO, e.getMessage());
         LOGGER.error("failed to PurchaseHistory for ecSite id = " + ecSiteAccountDAO.getId());
         e.printStackTrace();
       }

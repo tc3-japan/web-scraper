@@ -64,11 +64,9 @@ public class AmazonPurchaseHistoryListCrawler {
 
     HtmlPage page = webClient.getPage(property.getHistoryUrl());
 
-    /* TODO: Pending
     if (AmazonPurchaseHistoryListCrawler.isSessionExpired(page)) {
       throw new SessionExpiredException("Session has been expired.");
     }
-    */
     webpageService.save("order-home", siteName, page.getWebResponse().getContentAsString());    
     while (true) {
       if (page == null || !parsePurchaseHistory(list, page, lastPurchaseHistory, saveHtml, pathList)) {

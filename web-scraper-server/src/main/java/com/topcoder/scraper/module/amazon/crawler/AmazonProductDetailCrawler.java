@@ -121,12 +121,13 @@ public class AmazonProductDetailCrawler {
     HtmlElement modelNoValueElement  = null;
     List<String> modelNoLabels = property.getCrawling().getProductDetailPage().getModelNoLabels();
     List<String> modelNoValies = property.getCrawling().getProductDetailPage().getModelNoValues();
-    for(int i = 0 ; i < modelNoLabels.size() - 1 ; i++) {
+    for(int i = 0 ; i < modelNoLabels.size(); i++) {
       modelLabelElement = productPage.querySelector(modelNoLabels.get(i));
       modelNoValueElement = productPage.querySelector(modelNoValies.get(i));
+
       if (modelLabelElement != null 
     		  && modelNoValueElement != null 
-    		  &&  getTextContent(nameElement).equals(ModelNoType.getType(i).getValue())) {
+    		  &&  getTextContent(modelLabelElement).equals(ModelNoType.getType(i).getValue())) {
     	  LOGGER.info("model no is found by selector: " + modelNoValueElement);
     	  String modelNo = getTextContentWithoutDuplicatedSpaces(modelNoValueElement);
     	  info.setModelNo(getNumberAsStringFrom(modelNo));

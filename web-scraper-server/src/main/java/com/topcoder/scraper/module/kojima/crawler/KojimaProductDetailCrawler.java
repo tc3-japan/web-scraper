@@ -1,6 +1,7 @@
 package com.topcoder.scraper.module.kojima.crawler;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +45,11 @@ public class KojimaProductDetailCrawler {
 	LOGGER.info("Model no" + modelNo);
 	
     KojimaProductDetailCrawlerResult result = searchProductInfoByAnyWords(webClient,modelNo,saveHtml);
+
+    if(Objects.isNull(result)) {
+    	LOGGER.info("Can not find Product with Model No : [" + modelNo + "]");
+    	return null;
+    }
     
     LOGGER.info("Product name from Registered Model No : [" + modelNo + "]");
     LOGGER.info("Product name from Product page    : [" + result.getProductInfo().getModelNo()+ "] matched: " + (modelNo.equals(result.getProductInfo().getModelNo())));

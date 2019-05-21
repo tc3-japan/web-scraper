@@ -117,6 +117,7 @@ public class ProductDAO {
     this.productDistributor = productInfo.getDistributor();
     this.productInfo = new ProductInfo(productInfo.getCode(), productInfo.getName(), productInfo.getPrice(), null, productInfo.getDistributor());
     this.updateAt = new Date();
+    this.modelNo = productInfo.getModelNo();
   }
 
   public ProductDAO(String ecSite, String productCode, String productName, String unitPrice, String productDistributor, ProductInfo productInfo, String fetchInfoStatus, Date updateAt) {
@@ -199,6 +200,10 @@ public class ProductDAO {
   public void setRankings(List<RankingDAO> rankings) {
     this.rankings = rankings;
   }
+  
+  public void setModelNo(String modelNo) {
+    this.modelNo = modelNo;
+  }
 
   public int getId() {
     return id;
@@ -242,10 +247,6 @@ public class ProductDAO {
 
   public String getModelNo() {
     return modelNo;
-  }
-
-  public void setModelNo(String modelNo) {
-    this.modelNo = modelNo;
   }
 
   public String getGroupStatus() {

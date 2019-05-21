@@ -96,6 +96,8 @@ public class CrossECProductCommand {
         logger.info("skip group " + key + " , because of item count < 2");
         return;
       }
+      productDAOS.addAll(groupingCandidateProjectDAOs);
+      
       ProductGroupDAO groupDAO = productGroupRepository.getByModelNo(key);
       if (groupDAO == null) {
         groupDAO = new ProductGroupDAO();

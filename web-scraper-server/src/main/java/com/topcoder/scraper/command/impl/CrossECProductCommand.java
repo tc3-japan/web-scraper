@@ -1,5 +1,6 @@
 package com.topcoder.scraper.command.impl;
 
+import com.gargoylesoftware.htmlunit.Page;
 import com.topcoder.common.config.AmazonProperty;
 import com.topcoder.common.dao.ProductDAO;
 import com.topcoder.common.dao.ProductGroupDAO;
@@ -75,13 +76,14 @@ public class CrossECProductCommand {
       if (productDAOS.size() <= 1) {
         logger.info("skip group " + key + " , because of item count < 2");
         // Find this product on other EC Site
-        // Just make your own super simple scraper. Get:
+        // Get:
         /*
          * <div class="s-result-list sg-row"> <div data-asin="OIEJAFOIJ" data-index="0"
          * << This
          */
         // Scrape and save to DB *don't need to worry about access time; available
         // immediately
+        // Check that katabans ===
         // Just import and call AmazonProductDetailCrawlerResult
         // fetchProductInfo(TrafficWebClient webClient, String productCode, boolean
         // saveHtml)
@@ -91,11 +93,22 @@ public class CrossECProductCommand {
         // AmazonProductDetail.java
         // Append to list... *that we're looping over
 
-        // ********* For now, assume ASIN (hardcode) and continue. Matsudasan will
-        // provide example code to scrape
-
         TrafficWebClient twc = new TrafficWebClient(0, false);
         String siteName = "amazon";
+        String kataban = "74301900"; //tea candle lantern
+        Page page = null;
+        try {
+          page = twc.getPage("https://www.amazon.co.jp/s?k=" + kataban);
+        } catch (IOException e1) {
+          // TODO Auto-generated catch block
+          e1.printStackTrace();
+        }
+        System.out.println();
+        System.out.println(">>>>>>> " + page);
+        System.out.println();
+
+        // ********* For now, assume ASIN (hardcode) and continue. Matsudasan will
+        // provide example code to scrape
 
         // Search for related objects on Amazon
         String asin = "B07H4FQ7P5";

@@ -88,7 +88,7 @@ public class KojimaProductDetailCrawler {
 	String prodPrice = prodPriceNode != null ? prodPriceNode.asText().trim() : null;
 	  
 	DomNode modelNoNode = productDetailPage.querySelector("#item_detail > div > div.item_detail_box > table > tbody > tr:nth-child(6) > td");
-	String modelNo= modelNoNode != null ? modelNoNode.asText().replaceAll("[^0-9a-zA-Z]", "").trim() : null;
+	String modelNo= modelNoNode != null ? modelNoNode.asText().replaceAll("[^0-9a-zA-Z\\-]", "").trim() : null;
 	  
 	ProductInfo productInfo = new ProductInfo();
 	productInfo.setCode(stkNo); // GOODS_STK_NO (GOODS_NO?)

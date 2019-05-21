@@ -126,11 +126,11 @@ public class AmazonProductDetailCrawler {
       modelNoValueElement = productPage.querySelector(modelNoValies.get(i));
 
       if (modelLabelElement != null 
-    		  && modelNoValueElement != null 
-    		  &&  getTextContent(modelLabelElement).equals(ModelNoType.getType(i).getValue())) {
+    		  && modelNoValueElement != null ) {
+//    		  &&  getTextContent(modelLabelElement).equals(ModelNoType.getType(i).getValue())) { TODO label validation
     	  LOGGER.info("model no is found by selector: " + modelNoValueElement);
-    	  String modelNo = getTextContentWithoutDuplicatedSpaces(modelNoValueElement);
-    	  info.setModelNo(getNumberAsStringFrom(modelNo));
+    	  String modelNo = getTextContentWithoutDuplicatedSpaces(modelNoValueElement).replaceAll("[^0-9a-zA-Z\\-]", "").trim();
+    	  info.setModelNo(modelNo);
       }
     }
   }

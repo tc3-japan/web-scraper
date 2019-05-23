@@ -16,4 +16,11 @@ public class Consts {
 
   public static final String AMAZON_CHECK_TARGET_KEYS_PASSWORDS = "AMAZON_CHECK_TARGET_KEYS_PASSWORDS";
   public static final String KOJIMA_CHECK_TARGET_KEYS_PASSWORDS = "KOJIMA_CHECK_TARGET_KEYS_PASSWORDS";
+  
+  public static final String AMAZON_PRODUCT_DETAIL_MODEL_NO_PRODUCT = "製品型番";
+  public static final String AMAZON_PRODUCT_DETAIL_MODEL_NO_MAKER = "メーカー型番";
+  public static final String AMAZON_PRODUCT_DETAIL_MODEL_NO_MODEL = "モデル";
+  
+  public static final String EC_SITE_AMAZON = "amazon";
+  public static final String EC_SITE_KOJIMA = "kojima";
 }

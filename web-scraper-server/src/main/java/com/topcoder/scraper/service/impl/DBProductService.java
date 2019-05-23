@@ -59,6 +59,11 @@ public class DBProductService implements ProductService {
       product.setProductDistributor(productInfo.getDistributor());
       info.setDistributor(productInfo.getDistributor());
     }
+    
+    if (productInfo.getModelNo() != null) {
+        product.setModelNo(productInfo.getModelNo());
+        info.setModelNo(productInfo.getModelNo());
+    }
 
     product.setProductInfo(info);
     product.setUpdateAt(new Date());
@@ -76,5 +81,23 @@ public class DBProductService implements ProductService {
   @Override
   public List<ProductDAO> getAllFetchInfoStatusIsNull(String ecSite) {
     return this.productRepository.findByFetchInfoStatusAndECSite(ecSite);
+  }
+  
+  @Override
+  @Transactional
+  public void saveProduct(String site, ProductInfo productInfo) {
+	ProductDAO existingProductDao = null;
+	if (productInfo.getCode() != null) {
+	  existingProductDao = productRepository.findByProductCode(productInfo.getCode());
+	} else {
+	  existingProductDao = productRepository.findByECSiteAndProductName(site, productInfo.getName());
+	}
+	if (existingProductDao == null) {
+	  ProductDAO productDao = new ProductDAO(site, productInfo);
+	  productRepository.save(productDao);
+	} else {
+	  existingProductDao.setUpdateAt(new Date());
+	  productRepository.save(existingProductDao);
+	}
   }
 }

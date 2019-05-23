@@ -2,6 +2,7 @@ package com.topcoder.scraper.module.kojima;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,5 +72,19 @@ public class KojimaProductDetailModule extends ProductDetailModule {
     }
     */
     productService.updateFetchInfoStatus(productId, "updated");
+  }
+
+  @Override
+  public ProductDAO crossEcProduct(String modelNo) throws IOException {
+	  KojimaProductDetailCrawler crawler = new KojimaProductDetailCrawler(getECName(), webpageService);
+	  KojimaProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfoWithModelNo(webClient, modelNo, false);
+	  ProductInfo productInfo = Objects.isNull(crawlerResult) ? null : crawlerResult.getProductInfo();
+	    
+	  if (Objects.isNull(productInfo)) {
+	    LOGGER.warn("Unable to obtain a cross ec product information about: " + modelNo);
+	    return null;
+	  }
+	  
+	  return new ProductDAO(getECName(), productInfo);
   }
 }

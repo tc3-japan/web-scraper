@@ -15,4 +15,6 @@ public interface ProductService {
   void updateFetchInfoStatus(int productId, String fetchInfoStatus);
 
   List<ProductDAO> getAllFetchInfoStatusIsNull(String ecSite);
+  
+  void saveProduct(String site, ProductInfo productInfo);
 }

@@ -46,29 +46,29 @@ import static com.topcoder.common.util.HtmlUtils.getTextContentWithoutDuplicated
 public class CrossECProductCommand {
 
   @Autowired
-  ProductRepository productRepository;
+  private ProductRepository productRepository;
 
   @Autowired
-  ProductGroupRepository productGroupRepository;
+  private ProductGroupRepository productGroupRepository;
 
   @Autowired
-  AmazonProperty property; // No idea where this comes from
+  private AmazonProperty property; // No idea where this comes from
 
   @Autowired
-  WebpageService webpageService;
+  private WebpageService webpageService;
 
   @Autowired
-  ProductService productService;
+  private ProductService productService;
 
   private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
   private String searchAmazonForAsinByModelNo(String modelNo, TrafficWebClient twc) {
+    System.out.println("Entering searchAmazonForAsinByModelNo");
     String asin = null;
-    String siteName = "amazon";
     HtmlPage page = null;
     try {
       page = twc.getPage("https://www.amazon.co.jp/s?k=" + modelNo);
-      // HtmlElement el = page.querySelector("div.s-result-item:nth-child(1)");
+      //HtmlElement el = page.querySelector("div.s-result-item:nth-child(1)");
       // //Works for most queries
       HtmlElement el = page.querySelector("div.s-result-item:nth-child(2)"); // Works for ambiguous queries, ie
                                                                              // https://www.amazon.co.jp/s?k=ES-W111-SC
@@ -78,18 +78,17 @@ public class CrossECProductCommand {
 
       // TODO: Fix below code (compare and confirm katabans before proceeding)
       // See Work/Proj06 for how to get kataban
-      // String productUrl = property.getProductUrl() + asin;
-      // HtmlPage productPage = twc.getPage(productUrl);
+      //String productUrl = property.getProductUrl() + asin;
+      //HtmlPage productPage = twc.getPage(productUrl);
+      //HtmlElement el2 = productPage.querySelector("#productDetailsDiv > ul:nth-child(1) > li:nth-child(1) > b:nth-child(1)");
       // HtmlElement el2 = productPage.querySelector("#productDetailsDiv >
       // ul:nth-child(1) > li:nth-child(1) > b:nth-child(1)");
-      // HtmlElement el2 = productPage.querySelector("#productDetailsDiv >
-      // ul:nth-child(1) > li:nth-child(1) > b:nth-child(1)");
-      // String resultKataban = el2.getAttribute("#text");
-      // System.out.println("searchKataban>>>>>>> " + kataban);
-      // System.out.println("resultKataban>>>>>>> " + resultKataban);
+      //String resultKataban = el2.getAttribute("#text");
+      //System.out.println("searchKataban>>>>>>> " + kataban);
+      //System.out.println("resultKataban>>>>>>> " + resultKataban);
       ////
     } catch (IOException e1) {
-      // TODO Auto-generated catch block
+      System.out.println("Could not find item " + asin);
       e1.printStackTrace();
     }
     return asin;
@@ -98,17 +97,13 @@ public class CrossECProductCommand {
 
 
   private void scrapeAmazonItem(String asin, TrafficWebClient twc) {
+    System.out.println("Entering scrapeAmazonItem");
     String siteName = "amazon";
     AmazonProductDetailCrawler crawler = new AmazonProductDetailCrawler(siteName, property, webpageService);
     try {
       AmazonProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(twc, asin, false);
-      System.out.println("");
-      System.out.println("");
-      System.out.println(asin);
-      // System.out.println(initMod);
-      System.out.println(">>> crawlerResult: " + crawlerResult);
-      System.out.println("");
-      System.out.println("");
+      System.out.println("crawling item by asin: " + asin);
+      System.out.println("crawlerResult: " + crawlerResult);
       ProductInfo productInfo = crawlerResult.getProductInfo();
 
       // Save ProductDAO, if product is not in DB
@@ -139,30 +134,8 @@ public class CrossECProductCommand {
     }
   }
 
-  // Find this product on other EC Site
-  // Get:
-  /*
-   * <div class="s-result-list sg-row"> <div data-asin="OIEJAFOIJ" data-index="0"
-   * << This
-   */
-  // Scrape and save to DB *don't need to worry about access time; available
-  // immediately
-  // Check that katabans ===
-  // Just import and call AmazonProductDetailCrawlerResult
-  // fetchProductInfo(TrafficWebClient webClient, String productCode, boolean
-  // saveHtml)
-  // for the ASIN codes of the product discovered
-  // *See AmazonProductDetail.java #50ish for example of calling
-  // Modify (*add) fetchProductDetail -> fetchProductDetailIfSameModelNo in
-  // AmazonProductDetail.java
-  // Append to list... *that we're looping over
-
-  /*
-   * While grouping by kataban, for each orphan: Search amz by kataban to get ASIN
-   * if result, confirm katabans match scrape and save to DB At the end, group one
-   * more time but do not search orphans
-   */
-  public void run(ApplicationArguments arguments) {
+  private Map<String, List<ProductDAO>> mapDaos() {
+    System.out.println("Entering mapDaos");
     List<ProductDAO> productDAOList = productRepository.findByGroupStatusIsNullOrProductGroupIdIsNull();
     logger.info("found " + productDAOList.size() + " un grouped product");
     Map<String, List<ProductDAO>> productDAOMap = new HashMap<>(); // Map (Match) Products by Model No. between EC Sites
@@ -174,12 +147,18 @@ public class CrossECProductCommand {
         }
         productDAOS.add(productDAO);
         productDAOMap.put(productDAO.getModelNo(), productDAOS);
-      }
+      } else {System.out.println("productDAO.getModelNo() is null!");}
     });
+    System.out.println("productDAOMap.size: " + productDAOMap.size());
+    return productDAOMap;
+  }
 
+  private void processDaoMap(Map<String, List<ProductDAO>> productDAOMap, boolean scrapeNonMatches) {
+    System.out.println("Entering processDaoMap");
     productDAOMap.forEach((key, productDAOS) -> {
       logger.info("start group " + key + " with item count = " + productDAOS.size());
-      if (productDAOS.size() <= 1) { // No Matches in Database. Let's search alternative EC sites for them.
+      if (productDAOS.size() <= 1 && scrapeNonMatches == true) { // No Matches in Database. Let's search alternative EC sites for them.
+        System.out.println("Scraping matches for productDAO");
         // logger.info("skip group " + key + " , because of item count < 2");
         TrafficWebClient twc = new TrafficWebClient(0, false);
 
@@ -196,8 +175,9 @@ public class CrossECProductCommand {
         }
 
         return;
-      }
+      } else { System.out.println("Skipping scraping for productDAO @ processDaoMap"); }
 
+      System.out.println("Saving results");
       // Save results
       ProductGroupDAO groupDAO = productGroupRepository.getByModelNo(key);
       if (groupDAO == null) {
@@ -216,5 +196,35 @@ public class CrossECProductCommand {
         productRepository.save(product);
       });
     });
+  }
+
+  /*
+   * While grouping by kataban, for each orphan: Search amz by kataban to get ASIN
+   * if result, confirm katabans match scrape and save to DB At the end, group one
+   * more time but do not search orphans
+   */
+  public void run(ApplicationArguments arguments) {
+
+    Map<String, List<ProductDAO>> productDAOMap = mapDaos();
+    /*
+    System.out.println("Entering mapDaos");
+    List<ProductDAO> productDAOList = productRepository.findByGroupStatusIsNullOrProductGroupIdIsNull();
+    logger.info("found " + productDAOList.size() + " un grouped product");
+    Map<String, List<ProductDAO>> productDAOMap = new HashMap<>(); // Map (Match) Products by Model No. between EC Sites
+    productDAOList.forEach(productDAO -> {
+      if (productDAO.getModelNo() != null) {
+        List<ProductDAO> productDAOS = productDAOMap.get(productDAO.getModelNo());
+        if (productDAOS == null) {
+          productDAOS = new LinkedList<>();
+        }
+        productDAOS.add(productDAO);
+        productDAOMap.put(productDAO.getModelNo(), productDAOS);
+      } else {System.out.println("productDAO.getModelNo() is null!");}
+    });
+    */
+    System.out.println("productDAOMap.size: " + productDAOMap.size());
+    processDaoMap(productDAOMap, true);
+    processDaoMap(productDAOMap, false);
+
   }
 }

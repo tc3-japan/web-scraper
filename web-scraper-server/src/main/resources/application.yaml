@@ -26,6 +26,7 @@ amazon:
   url: https://www.amazon.co.jp/
   historyUrl: https://www.amazon.co.jp/gp/your-account/order-history?opt=ab&digitalOrders=1&unifiedOrders=1&returnTo=&orderFilter=
   productUrl: https://www.amazon.co.jp/gp/product/
+  searchUrl:  https://www.amazon.co.jp/s?k=
 
   crawling:
     # Front page button
@@ -92,6 +93,12 @@ amazon:
       #nextPage:    "//*[@id=\"ordersContainer\"]/div[@class=\"a-row\"]/div/ul/li[@class=\"a-last\"]/a"
 
 
+    # Searh produ page
+    SearchProductPage:
+      productSelector:      "#search > div.sg-row > div.sg-col-20-of-24.sg-col-28-of-32.sg-col-16-of-20.sg-col.s-right-column.sg-col-32-of-36.sg-col-8-of-12.sg-col-12-of-16.sg-col-24-of-28 > div > span:nth-child(4) > div.s-result-list.sg-row > div:nth-child("
+      adProductClass:       "AdHolder" 
+      productCodeAttribute: "data-asin"  
+    
     # Product detail page
     productDetailPage:
       prices:
@@ -102,10 +109,23 @@ amazon:
       productInfoTable: "#productDetails_detailBullets_sections1"
       modelNoLabels:
         -               "div.wrapper.JPlocale > div.column.col1 > div > div.content.pdClearfix > div > div > table > tbody > tr:nth-child(8) > td.label"
-        -               "#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(3) > b"
         -               "#prodDetails > div.wrapper.JPlocale > div.column.col1 > div > div.content.pdClearfix > div > div > table > tbody > tr:nth-child(2) > td.label"
+        -               "#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(3) > b"
+        -               "#detail_bullets_id > table > tbody > tr > td > div > ul > li:nth-child(2) > b"
+        -               "#prodDetails > div.wrapper.JPlocale > div.column.col1 > div > div.content.pdClearfix > div > div > table > tbody > tr:nth-child(2) > td.label"
+        -               "#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(2) > b"
+      modelNoLabelValues:
+        -               "製品型番"
+        -               "製品型番"
+        -               "製品型番"
+        -               "メーカー型番"
+        -               "モデル"
+        -               "製造元リファレンス"
       modelNoValues:
         -               "div.wrapper.JPlocale > div.column.col1 > div > div.content.pdClearfix > div > div > table > tbody > tr:nth-child(8) > td.value"
-        -               "#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(3)"
         -               "#prodDetails > div.wrapper.JPlocale > div.column.col1 > div > div.content.pdClearfix > div > div > table > tbody > tr:nth-child(2) > td.value"
+        -               "#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(3)"
+        -               "#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(2)"
+        -               "#prodDetails > div.wrapper.JPlocale > div.column.col1 > div > div.content.pdClearfix > div > div > table > tbody > tr:nth-child(2) > td.value"
+        -               "#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(2)"
         

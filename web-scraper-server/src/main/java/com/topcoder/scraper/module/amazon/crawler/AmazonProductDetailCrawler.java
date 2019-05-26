@@ -5,7 +5,6 @@ import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.topcoder.common.config.AmazonProperty;
-import com.topcoder.common.model.ModelNoType;
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.exception.SessionExpiredException;
@@ -115,17 +114,20 @@ public class AmazonProductDetailCrawler {
     HtmlElement modelLabelElement  = null;
     HtmlElement modelNoValueElement  = null;
     List<String> modelNoLabels = property.getCrawling().getProductDetailPage().getModelNoLabels();
+    List<String> modelNoLabelValues = property.getCrawling().getProductDetailPage().getModelNoLabelValues();
     List<String> modelNoValies = property.getCrawling().getProductDetailPage().getModelNoValues();
-    for(int i = 0 ; i < modelNoLabels.size(); i++) {
+    for(int i = 0 ; i < modelNoLabels.size() ; i++) {
       modelLabelElement = productPage.querySelector(modelNoLabels.get(i));
       modelNoValueElement = productPage.querySelector(modelNoValies.get(i));
 
       if (modelLabelElement != null 
-    		  && modelNoValueElement != null ) {
-//    		  &&  getTextContent(modelLabelElement).equals(ModelNoType.getType(i).getValue())) { TODO label validation
+    		  && modelNoValueElement != null
+    		  &&  getTextContent(modelLabelElement).equals(modelNoLabelValues.get(i))) {
+    	  
     	  LOGGER.info("model no is found by selector: " + modelNoValueElement);
     	  String modelNo = getTextContentWithoutDuplicatedSpaces(modelNoValueElement).replaceAll("[^0-9a-zA-Z\\-]", "").trim();
     	  info.setModelNo(modelNo);
+    	  break;
       }
     }
   }

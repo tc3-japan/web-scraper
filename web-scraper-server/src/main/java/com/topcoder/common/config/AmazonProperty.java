@@ -17,6 +17,7 @@ public class AmazonProperty {
   private String url;
   private String historyUrl;
   private String productUrl;
+  private String searchUrl;
 
   public static class LoginPage {
 
@@ -269,6 +270,36 @@ public class AmazonProperty {
       this.nextPage = nextPage;
     }
   }
+  
+  public static class SearchProductPage {
+	  private String productSelector;
+	  private String adProductClass;
+	  private String productCodeAttribute;
+	  
+	  public String getProductSelector() {
+		  return this.productSelector;
+	  }
+	  
+	  public String getAdProductClass() {
+		  return this.adProductClass;
+	  }
+	  
+	  public String getProductCodeAttribute() {
+		  return this.productCodeAttribute;
+	  }
+	  
+	  public void setProductSelector(String productSelector) {
+		  this.productSelector = productSelector;
+	  }
+	  
+	  public void setAdProductClass(String adProductClass) {
+		  this.adProductClass = adProductClass;
+	  }
+	  
+	  public void setproductCodeAttribute(String productCodeAttribute) {
+		  this.productCodeAttribute = productCodeAttribute;
+	  }
+  }
 
   public static class ProductDetailPage {
     private String productInfoTable;
@@ -335,6 +366,7 @@ public class AmazonProperty {
     private HomePage homePage;
     private PurchaseHistoryListPage purchaseHistoryListPage;
     private ProductDetailPage productDetailPage;
+    private SearchProductPage searchProductPage;
 
     public String getLoginButton() {
       return loginButton;
@@ -354,6 +386,10 @@ public class AmazonProperty {
 
     public ProductDetailPage getProductDetailPage() {
       return productDetailPage;
+    }
+    
+    public SearchProductPage getSearchProductPage() {
+      return searchProductPage;
     }
 
 
@@ -375,6 +411,10 @@ public class AmazonProperty {
 
     public void setProductDetailPage(ProductDetailPage productDetailPage) {
       this.productDetailPage = productDetailPage;
+    }
+    
+    public void setSearchProductPage(SearchProductPage searchProductPage) {
+    	this.searchProductPage = searchProductPage;
     }
   }
 
@@ -403,6 +443,10 @@ public class AmazonProperty {
   public String getHistoryUrl() {
     return historyUrl;
   }
+  
+  public String getSearchUrl() {
+	return this.searchUrl;
+  }
 
   public void setCrawling(CrawlingProperty crawling) {
     this.crawling = crawling;
@@ -426,5 +470,9 @@ public class AmazonProperty {
 
   public void setProductUrl(String productUrl) {
     this.productUrl = productUrl;
+  }
+  
+  public void setSearchUrl(String searchUrl) {
+	this.searchUrl= searchUrl;
   }
 }

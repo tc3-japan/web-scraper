@@ -36,16 +36,16 @@ import com.topcoder.scraper.module.kojima.KojimaProductDetailModule;
 public class CrossECProductCommand {
 
   @Autowired
-  ProductRepository productRepository;
+  private ProductRepository productRepository;
 
   @Autowired
-  ProductGroupRepository productGroupRepository;
+  private ProductGroupRepository productGroupRepository;
   
   @Autowired
-  AmazonProductDetailModule amazonProductDetailModule;
+  private AmazonProductDetailModule amazonProductDetailModule;
   
   @Autowired
-  KojimaProductDetailModule kojimaProductDetailModule;
+  private  KojimaProductDetailModule kojimaProductDetailModule;
 
   private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
@@ -76,18 +76,23 @@ public class CrossECProductCommand {
       }
       
       if (!isAmazonExist) {
-		  //TODO
-		  // search product & insert product mst
-		  // set result on productDaos
-		  // add groupingCandidateProjectDAOs
+    	  try {
+   		  logger.info("start cross ec product at amazon for model no = %s",key);
+    	  ProductDAO result = amazonProductDetailModule.crossEcProduct(key);
+    	  if(Objects.nonNull(result)) groupingCandidateProjectDAOs.add(result);
+    	  } catch (IOException e) {
+    			logger.error("Fail to cross ec product from amazon", e);
+    		    throw new CrossECProductException();
+    	  } 
 	  }
       
       if (!isKojimaExist) {
     	  try {
+          logger.info("start cross ec product at kojima for model no = %s",key);
     	  ProductDAO result = kojimaProductDetailModule.crossEcProduct(key);
     	  if(Objects.nonNull(result)) groupingCandidateProjectDAOs.add(result);
     	  } catch (IOException e) {
-    			logger.error("Fail to cross ec product", e);
+    			logger.error("Fail to cross ec product from kojima", e);
     		    throw new CrossECProductException();
     	  } 
 	  }

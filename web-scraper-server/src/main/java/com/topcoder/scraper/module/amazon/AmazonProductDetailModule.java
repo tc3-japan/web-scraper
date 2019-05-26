@@ -95,7 +95,7 @@ public class AmazonProductDetailModule extends ProductDetailModule {
 	  AmazonProductDetailCrawlerResult crawlerResult = crawler.serarchProductAndFetchProductInfoByModelNo(webClient, modelNo, false);
 	  ProductInfo productInfo = Objects.isNull(crawlerResult) ? null : crawlerResult.getProductInfo();
 	    
-	  if (Objects.isNull(productInfo)) {
+	  if (Objects.isNull(productInfo) || productInfo.getModelNo() == null) {
 	    LOGGER.warn("Unable to obtain a cross ec product information about: " + modelNo);
 	    return null;
 	  }

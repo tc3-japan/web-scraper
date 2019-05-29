@@ -46,7 +46,7 @@ public class KojimaProductDetailCrawler {
 	
     KojimaProductDetailCrawlerResult result = searchProductInfoByAnyWords(webClient,modelNo,saveHtml);
 
-    if(Objects.isNull(result)) {
+    if(Objects.isNull(result) || result.getProductInfo().getModelNo() == null) {
     	LOGGER.info("Can not find Product with Model No : [" + modelNo + "]");
     	return null;
     }

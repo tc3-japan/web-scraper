@@ -8,10 +8,14 @@ import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.module.ProductDetailModule;
 import com.topcoder.scraper.module.amazon.crawler.AmazonProductDetailCrawler;
 import com.topcoder.scraper.module.amazon.crawler.AmazonProductDetailCrawlerResult;
+import com.topcoder.scraper.module.kojima.crawler.KojimaProductDetailCrawler;
+import com.topcoder.scraper.module.kojima.crawler.KojimaProductDetailCrawlerResult;
 import com.topcoder.scraper.service.ProductService;
 import com.topcoder.scraper.service.WebpageService;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,6 +90,16 @@ public class AmazonProductDetailModule extends ProductDetailModule {
 
   @Override
   public ProductDAO crossEcProduct(String modelNo) throws IOException {
-	  return null;
+	  
+	  AmazonProductDetailCrawler crawler = new AmazonProductDetailCrawler(getECName(), property, webpageService);
+	  AmazonProductDetailCrawlerResult crawlerResult = crawler.serarchProductAndFetchProductInfoByModelNo(webClient, modelNo, false);
+	  ProductInfo productInfo = Objects.isNull(crawlerResult) ? null : crawlerResult.getProductInfo();
+	    
+	  if (Objects.isNull(productInfo) || productInfo.getModelNo() == null) {
+	    LOGGER.warn("Unable to obtain a cross ec product information about: " + modelNo);
+	    return null;
+	  }
+	  
+	  return new ProductDAO(getECName(), productInfo);
   }
 }

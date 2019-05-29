@@ -5,7 +5,6 @@ import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.topcoder.common.config.AmazonProperty;
-import com.topcoder.common.model.ModelNoType;
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.exception.SessionExpiredException;
@@ -115,17 +114,20 @@ public class AmazonProductDetailCrawler {
     HtmlElement modelLabelElement  = null;
     HtmlElement modelNoValueElement  = null;
     List<String> modelNoLabels = property.getCrawling().getProductDetailPage().getModelNoLabels();
+    List<String> modelNoLabelValues = property.getCrawling().getProductDetailPage().getModelNoLabelValues();
     List<String> modelNoValies = property.getCrawling().getProductDetailPage().getModelNoValues();
-    for(int i = 0 ; i < modelNoLabels.size(); i++) {
+    for(int i = 0 ; i < modelNoLabels.size() ; i++) {
       modelLabelElement = productPage.querySelector(modelNoLabels.get(i));
       modelNoValueElement = productPage.querySelector(modelNoValies.get(i));
 
       if (modelLabelElement != null 
-    		  && modelNoValueElement != null ) {
-//    		  &&  getTextContent(modelLabelElement).equals(ModelNoType.getType(i).getValue())) { TODO label validation
+    		  && modelNoValueElement != null
+    		  &&  getTextContent(modelLabelElement).equals(modelNoLabelValues.get(i))) {
+    	  
     	  LOGGER.info("model no is found by selector: " + modelNoValueElement);
     	  String modelNo = getTextContentWithoutDuplicatedSpaces(modelNoValueElement).replaceAll("[^0-9a-zA-Z\\-]", "").trim();
     	  info.setModelNo(modelNo);
+    	  break;
       }
     }
   }
@@ -209,5 +211,72 @@ public class AmazonProductDetailCrawler {
     LOGGER.info(String.format("Could not find category rankings for product %s:%s",
       this.siteName, productCode));
     return new ArrayList<>();
+  }
+  
+  /**
+  *
+  * Search and Fetch product information
+  * @param webClient the web client
+  * @param modelNo the mode no
+  * @param saveHtml true if product html page will be saved
+  * @return AmazonProductDetailCrawlerResult
+  * @throws IOException
+  */
+  public AmazonProductDetailCrawlerResult serarchProductAndFetchProductInfoByModelNo(TrafficWebClient webClient, String modelNo, boolean saveHtml) throws IOException  {
+	  
+	  String productCode = searchProduct(webClient,modelNo);
+	  
+	  if (productCode == null) {
+	      LOGGER.info(String.format("Could not find name info for model no %s",modelNo));
+	      return null;
+	    }
+	  
+	  return fetchProductInfo(webClient, productCode, saveHtml);
+  }
+  
+  /**
+  *
+  * Search product
+  * @param webClient the web client
+  * @param  search word
+  * @return String asin no(product code)
+  * @throws IOException
+  */
+  private String searchProduct(TrafficWebClient webClient, String searchWord) throws IOException {
+	  
+	  String productCode = null;
+	  String searchUrl = property.getSearchUrl() + searchWord;
+	  LOGGER.info("Product url " + searchUrl);
+	  
+	  HtmlPage productPage = webClient.getPage(searchUrl);
+	  
+	  //10 times try
+	  for(int index = 0; index < 10 ; index++) {
+		  String searchResultSelector = property.getCrawling().getSearchProductPage().getProductSelector() + index + ")";
+		  HtmlElement element = productPage.querySelector(searchResultSelector);
+		  
+		  if (element == null) {
+			  continue;
+		  } 
+		  
+		  //skip ad product
+		  if(element.getAttribute("class").contains(property.getCrawling().getSearchProductPage().getAdProductClass())) {
+			  LOGGER.info(String.format("Skip ad product with search word = %s",searchWord));
+			  continue;
+		  }
+		  
+		  //get asin no
+		  productCode = element.getAttribute(property.getCrawling().getSearchProductPage().getProductCodeAttribute());
+
+		  if(productCode == null) {
+			  continue;
+		  }
+		  
+		  LOGGER.info(String.format("Product is found with search word = %s, product code is %s", searchWord, productCode));
+		  return productCode;
+	  }
+	  
+	  LOGGER.info(String.format("Could not find product with search word = %s",searchWord));
+	  return null;
   }
 }

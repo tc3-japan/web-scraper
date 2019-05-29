@@ -30,7 +30,7 @@
           <div class="cell f3">{{ trans('productName') }}</div>
           <div class="cell">{{ trans('price') }}</div>
           <div class="cell">
-            <button @click="onGroupButtonEvt()">{{ trans('groupVerb') }}</button>
+            <button @click="onGroupButtonEvt()">{{ trans('groupButton') }}</button>
           </div>
           <div class="cell"></div>
           <div class="cell last">{{ trans('confirmationStatus') }}</div>
@@ -54,7 +54,7 @@
           <div class="cell"><input type="checkbox" v-if="item.groupId || !item.productGroupId" v-model="item.checked"/>
           </div>
           <div class="cell">
-            <button v-if="item.groupId" @click="onUngroup(item.groupId)">Ungroup</button>
+            <button v-if="item.groupId" @click="onUngroup(item.groupId)">{{ trans('ungroupButton') }}</button>
           </div>
           <div class="cell last"><input type="checkbox" v-if="item.groupId"
                                         @change="updateGroup(item,'confirmationStatus')"
@@ -67,7 +67,7 @@
 
     <div class="dialog-root" v-if="showSelectGroup">
       <div class="dialog">
-        <div class="title">You can select or rename the Grouping Model No.</div>
+        <div class="title">{{ trans('groupDialogMessage') }}</div>
 
         <div class="content">
           <div class="group" v-for="key in Object.keys(groups)">
@@ -79,10 +79,10 @@
             <span><input @focus="selectGroup='__new_group'" v-model="createGroupName"/></span>
           </div>
           <div class="buttons">
-            <button @click="showSelectGroup=false">Cancel</button>
+            <button @click="showSelectGroup=false">{{ trans('cancelButton') }}</button>
             <button @click="onGroup()"
                     :disabled="!selectGroup || (selectGroup==='__new_group' && createGroupName.trim().length === 0)">
-              Group
+              {{ trans('groupButton') }}
             </button>
           </div>
         </div>

@@ -23,9 +23,12 @@
 		"modelNo" : "Model No.",
 		"groupingMethod" : "Grouping Method",
 		"ecSite" : "EC Site",
-		"groupVerb" : "Group",
+		"groupButton" : "Group",
+		"ungroupButton" : "Ungroup",
+		"cancelButton" : "Cancel",
 		"productName" : "Product Name (Orig. Model Number)",
-		"price" : "Price"
+		"price" : "Price",
+		"groupDialogMessage" : "You can select or rename the Grouping Model No."
 	},
 	"ja" : {
 		"title" : "ECサイトホームページ",
@@ -51,8 +54,11 @@
 		"modelNo" : "型番",
 		"groupingMethod" : "グルーピング方法",
 		"ecSite" : "ECサイト",
-		"groupVerb" : "グループする",
+		"groupButton" : "グループ化",
+		"ungroupButton" : "グループ解除",
+		"cancelButton" : "取消",
 		"productName" : "商品名 (元型番)",
-		"price" : "値段"
+		"price" : "価格",
+		"groupDialogMessage" : "型番を選択するか、あるいは入力してください。"
 	}
 }

@@ -1,14 +1,14 @@
 <template>
   <div class="root">
-    <div class="title">Product Group</div>
+    <div class="title">{{ trans('productGroupTitle') }}</div>
 
     <div class="filter">
-      <div class="row keyword"><span class="label">keyword :</span><input v-model="filter.searchKeyword"/></div>
-      <div class="row confirm-status"><span class="label">Confirmation status :</span>
-        Confirmed<input type="checkbox" v-model="filterConfirmed"/>
-        Unconfirmed<input type="checkbox" v-model="filterUnconfirmed"/>
+      <div class="row keyword"><span class="label">{{ trans('keyword') }}:</span><input v-model="filter.searchKeyword"/></div>
+      <div class="row confirm-status"><span class="label">{{ trans('confirmationStatus') }}:</span>
+        {{ trans('confirmed') }}<input type="checkbox" v-model="filterConfirmed"/>
+        {{ trans('unconfirmed') }}<input type="checkbox" v-model="filterUnconfirmed"/>
 
-        <button @click="fetchData()">Search Product</button>
+        <button @click="fetchData()">{{ trans('searchProduct') }}</button>
       </div>
     </div>
     <div class="paging">
@@ -23,17 +23,17 @@
     <div class="table">
       <div class="thead">
         <div class="row">
-          <div class="cell">Group Id</div>
-          <div class="cell">Model No.</div>
-          <div class="cell">Grouping Method</div>
-          <div class="cell">Ec Site</div>
-          <div class="cell f3">Product Name ( Origin Model No. )</div>
-          <div class="cell">Price</div>
+          <div class="cell">{{ trans('groupId') }}</div>
+          <div class="cell">{{ trans('modelNo') }}</div>
+          <div class="cell">{{ trans('groupingMethod') }}</div>
+          <div class="cell">{{ trans('ecSite') }}</div>
+          <div class="cell f3">{{ trans('productName') }}</div>
+          <div class="cell">{{ trans('price') }}</div>
           <div class="cell">
-            <button @click="onGroupButtonEvt()">Group</button>
+            <button @click="onGroupButtonEvt()">{{ trans('groupVerb') }}</button>
           </div>
           <div class="cell"></div>
-          <div class="cell last">Confirmation Status</div>
+          <div class="cell last">{{ trans('confirmationStatus') }}</div>
         </div>
       </div>
       <div class="tbody">

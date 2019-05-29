@@ -11,7 +11,21 @@
 		"loginInitializing" : "Login initializing. Please wait...",
 		"mfaPlease" : "Please input the MFA code.",
 		"verifyPlease" : "Please input the verification code you recieved via SMS or Email.",
-		"capchaPlease" : "Please input the characters in the image below."
+		"capchaPlease" : "Please input the characters in the image below.",
+		"5ProductGroups" : "5. Product Groups",
+		"productGroupTitle" : "Product Group",
+		"keyword" : "Keyword",
+		"confirmationStatus" : "Confirmation Status",
+		"confirmed" : "Confirmed",
+		"unconfirmed" : "Unconfirmed",
+		"searchProduct" : "Search Product",
+		"groupId" : "Group ID",
+		"modelNo" : "Model No.",
+		"groupingMethod" : "Grouping Method",
+		"ecSite" : "EC Site",
+		"groupVerb" : "Group",
+		"productName" : "Product Name (Orig. Model Number)",
+		"price" : "Price"
 	},
 	"ja" : {
 		"title" : "ECサイトホームページ",
@@ -25,6 +39,20 @@
 		"loginInitializing" : "ログインしています。しばらくお待ち下さい。",
 		"mfaPlease" : "MFAコードを入力してください。",
 		"verifyPlease" : "SMS/Emailに送ったベVerificationコードを入力してください。",
-		"capchaPlease" : "CAPTCHAに表示されている文字を入れてください。"
+		"capchaPlease" : "CAPTCHAに表示されている文字を入れてください。",
+		"5ProductGroups" : "5. 商品グループ",
+		"productGroupTitle" : "商品グループ",
+		"keyword" : "キーワード",
+		"confirmationStatus" : "確認ステータス",
+		"confirmed" : "確認済み",
+		"unconfirmed" : "未確認",
+		"searchProduct" : "商品検索",
+		"groupId" : "グループID",
+		"modelNo" : "型番",
+		"groupingMethod" : "グルーピング方法",
+		"ecSite" : "ECサイト",
+		"groupVerb" : "グループする",
+		"productName" : "商品名 (元型番)",
+		"price" : "値段"
 	}
 }

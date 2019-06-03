@@ -74,7 +74,7 @@ public class AmazonProductDetailModule extends ProductDetailModule {
    * @throws IOException webclient exception
    */
   private void fetchProductDetail(AmazonProductDetailCrawler crawler, int productId, String productCode) throws IOException {
-    AmazonProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productCode, false);
+    AmazonProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productCode, true);
     ProductInfo productInfo = crawlerResult.getProductInfo();
 
     // save updated information
@@ -92,7 +92,7 @@ public class AmazonProductDetailModule extends ProductDetailModule {
   public ProductDAO crossEcProduct(String modelNo) throws IOException {
 	  
 	  AmazonProductDetailCrawler crawler = new AmazonProductDetailCrawler(getECName(), property, webpageService);
-	  AmazonProductDetailCrawlerResult crawlerResult = crawler.serarchProductAndFetchProductInfoByModelNo(webClient, modelNo, false);
+    AmazonProductDetailCrawlerResult crawlerResult = crawler.serarchProductAndFetchProductInfoByModelNo(webClient, modelNo, true);
 	  ProductInfo productInfo = Objects.isNull(crawlerResult) ? null : crawlerResult.getProductInfo();
 	    
 	  if (Objects.isNull(productInfo) || productInfo.getModelNo() == null) {

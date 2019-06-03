@@ -112,12 +112,14 @@ amazon:
         -               "#prodDetails > div.wrapper.JPlocale > div.column.col1 > div > div.content.pdClearfix > div > div > table > tbody > tr:nth-child(2) > td.label"
         -               "#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(3) > b"
         -               "#detail_bullets_id > table > tbody > tr > td > div > ul > li:nth-child(2) > b"
+        -               "#detail_bullets_id > table > tbody > tr > td > div > ul > li:nth-child(3) > b"
         -               "#prodDetails > div.wrapper.JPlocale > div.column.col1 > div > div.content.pdClearfix > div > div > table > tbody > tr:nth-child(2) > td.label"
         -               "#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(2) > b"
       modelNoLabelValues:
         -               "製品型番"
         -               "製品型番"
         -               "製品型番"
+        -               "メーカー型番"
         -               "メーカー型番"
         -               "モデル"
         -               "製造元リファレンス"
@@ -126,6 +128,7 @@ amazon:
         -               "#prodDetails > div.wrapper.JPlocale > div.column.col1 > div > div.content.pdClearfix > div > div > table > tbody > tr:nth-child(2) > td.value"
         -               "#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(3)"
         -               "#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(2)"
+        -               "#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(3)"
         -               "#prodDetails > div.wrapper.JPlocale > div.column.col1 > div > div.content.pdClearfix > div > div > table > tbody > tr:nth-child(2) > td.value"
         -               "#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(2)"
         

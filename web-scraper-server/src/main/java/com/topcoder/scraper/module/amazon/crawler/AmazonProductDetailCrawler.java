@@ -113,16 +113,16 @@ public class AmazonProductDetailCrawler {
     //update model_no
     HtmlElement modelLabelElement  = null;
     HtmlElement modelNoValueElement  = null;
-    List<String> modelNoLabels = property.getCrawling().getProductDetailPage().getModelNoLabels();
+    List<String> modelNoLabels      = property.getCrawling().getProductDetailPage().getModelNoLabels();
     List<String> modelNoLabelValues = property.getCrawling().getProductDetailPage().getModelNoLabelValues();
-    List<String> modelNoValies = property.getCrawling().getProductDetailPage().getModelNoValues();
+    List<String> modelNoValues      = property.getCrawling().getProductDetailPage().getModelNoValues();
     for(int i = 0 ; i < modelNoLabels.size() ; i++) {
-      modelLabelElement = productPage.querySelector(modelNoLabels.get(i));
-      modelNoValueElement = productPage.querySelector(modelNoValies.get(i));
+      modelLabelElement   = productPage.querySelector(modelNoLabels.get(i));
+      modelNoValueElement = productPage.querySelector(modelNoValues.get(i));
 
       if (modelLabelElement != null 
-    		  && modelNoValueElement != null
-    		  &&  getTextContent(modelLabelElement).equals(modelNoLabelValues.get(i))) {
+          && modelNoValueElement != null
+          && getTextContent(modelLabelElement).replaceAll("[:：]", "").equals(modelNoLabelValues.get(i))) {
     	  
     	  LOGGER.info("model no is found by selector: " + modelNoValueElement);
     	  String modelNo = getTextContentWithoutDuplicatedSpaces(modelNoValueElement).replaceAll("[^0-9a-zA-Z\\-]", "").trim();

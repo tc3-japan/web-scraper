@@ -1,5 +1,6 @@
 package com.topcoder.common.dao;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.topcoder.scraper.converter.JpaConverterPurchaseInfoJson;
 import com.topcoder.common.model.ProductInfo;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -102,6 +103,8 @@ public class ProductDAO {
   @Column(name = "product_group_id")
   private Integer productGroupId;
 
+  // TODO: consider whether to include @JsonIgnore in production
+  @JsonIgnore
   @OneToMany(
     mappedBy = "product",
     cascade = CascadeType.ALL,

@@ -42,6 +42,9 @@ public class DBProductService implements ProductService {
   public void updateProduct(int productId, ProductInfo productInfo) {
     ProductDAO product = productRepository.findOne(productId);
     ProductInfo info = product.getProductInfo();
+    if (info == null) {
+      info = new ProductInfo();
+    };
 
     if (productInfo.getCode() != null) {
       product.setProductCode(productInfo.getCode());

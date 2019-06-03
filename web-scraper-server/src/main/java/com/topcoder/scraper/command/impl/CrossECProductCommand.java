@@ -84,7 +84,7 @@ public class CrossECProductCommand {
     			logger.error("Fail to cross ec product from amazon", e);
     		    throw new CrossECProductException();
     	  } 
-	  }
+      }
       
       if (!isKojimaExist) {
     	  try {
@@ -95,7 +95,7 @@ public class CrossECProductCommand {
     			logger.error("Fail to cross ec product from kojima", e);
     		    throw new CrossECProductException();
     	  } 
-	  }
+      }
       
       if (groupingCandidateProjectDAOs.size() <= 1) {
         logger.info("skip group " + key + " , because of item count < 2");

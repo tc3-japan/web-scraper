@@ -13,6 +13,7 @@ import com.topcoder.common.repository.TacticEventRepository;
 import com.topcoder.common.util.Common;
 import com.topcoder.common.util.SpringTool;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,6 +72,7 @@ public class TrafficWebClient {
    */
   private RequestEventRepository requestEventRepository;
 
+  private TacticEventDAO tacticEventDAO;
   /**
    * create new Traffic web client
    *
@@ -94,8 +96,16 @@ public class TrafficWebClient {
 
     tacticEventRepository = SpringTool.getApplicationContext().getBean(TacticEventRepository.class);
     requestEventRepository = SpringTool.getApplicationContext().getBean(RequestEventRepository.class);
+
+    beforeTraffic();
   }
 
+  /**
+   * process like saving traffic record to database when called at last of traffic.
+   */
+  public void finishTraffic() {
+    afterTraffic(true);
+  }
 
   /**
    * get getTrafficProperty from spring context
@@ -139,7 +149,18 @@ public class TrafficWebClient {
    * @throws IOException if failed
    */
   public <P extends Page> P click(HtmlElement htmlElement) throws IOException {
-    return doRequest(htmlElement::click, "Click htmlElement : " + htmlElement.getNodeName());
+    String content = "Click htmlElement : " + htmlElement.getNodeName() + " tag";
+    if (StringUtils.isNotEmpty(htmlElement.getAttribute("id"))) {
+      content += ", attr(id)=" + htmlElement.getAttribute("id");
+    }
+    if (StringUtils.isNotEmpty(htmlElement.getAttribute("href"))) {
+      content += ", attr(href)=" + htmlElement.getAttribute("href");
+    }
+    if (htmlElement.getEnclosingForm() != null && StringUtils.isNotEmpty(htmlElement.getEnclosingForm().getActionAttribute())) {
+      content += ", form-action=" + htmlElement.getEnclosingForm().getActionAttribute();
+    }
+
+    return doRequest(htmlElement::click, content);
   }
 
   /**
@@ -151,13 +172,11 @@ public class TrafficWebClient {
    * @throws IOException if error happened
    */
   private <P extends Page> P doRequest(Request request, String content) throws IOException {
-    TacticEventDAO tacticEventDAO = beforeTraffic(content);
     try {
-      P p = doRequestUnderController(request, tacticEventDAO, false);
-      afterTraffic(tacticEventDAO, true);
+      P p = doRequestUnderController(request, content, false);
       return p;
     } catch (Exception e) {
-      afterTraffic(tacticEventDAO, false);
+      afterTraffic(false);
       throw new IOException(e);
     }
   }
@@ -166,17 +185,17 @@ public class TrafficWebClient {
    * do request under controller
    *
    * @param request        the request
-   * @param tacticEventDAO the tacticEventDAO object
+   * @param content        request content
    * @param <P>            the page
    * @return the new page
    * @throws IOException if error happened
    */
   private <P extends Page> P doRequestUnderController(
       Request request,
-      TacticEventDAO tacticEventDAO,
+      String content,
       boolean skipWait
   ) throws Exception {
-    RequestEventDAO eventDAO = beforeRequest(tacticEventDAO, skipWait);
+    RequestEventDAO eventDAO = beforeRequest(content, skipWait);
     try {
       P p = request.invoke();
       afterRequest(eventDAO, true);
@@ -185,7 +204,7 @@ public class TrafficWebClient {
       logger.error(e.getMessage());
       afterRequest(eventDAO, false);
       if (whenRequestFailed()) {
-        return doRequestUnderController(request, tacticEventDAO, true);
+        return doRequestUnderController(request, content, true);
       } else {
         throw e;
       }
@@ -224,49 +243,48 @@ public class TrafficWebClient {
    *
    * @return the db record
    */
-  private TacticEventDAO beforeTraffic(String content) {
+  private void beforeTraffic() {
     if (isNeedSkip()) {
-      return null;
+      return;
     }
     Tactic tactic = getTactic();
     this.retryCount = Common.getValueOrDefault(tactic.getRetryTrailCount(), 0);
     TacticEventDAO tacticEventDAO = new TacticEventDAO();
-    tacticEventDAO.setContents(content);
+    tacticEventDAO.setContents(tactic.toString());
     tacticEventDAO.setCreateAt(Date.from(Instant.now()));
     tacticEventRepository.save(tacticEventDAO);
-    return tacticEventDAO;
+    this.tacticEventDAO = tacticEventDAO;
   }
 
   /**
    * after Traffic, save time and status
    *
-   * @param tacticEventDAO Traffic event dao
    * @param succeed        the result
    */
-  private void afterTraffic(TacticEventDAO tacticEventDAO, boolean succeed) {
+  private void afterTraffic(boolean succeed) {
     if (isNeedSkip()) {
       return;
     }
-    tacticEventDAO.setFinishAt(Date.from(Instant.now()));
-    tacticEventDAO.setStatus(succeed ? TacticEventStatus.SUCCESS : TacticEventStatus.FAILED);
-    tacticEventRepository.save(tacticEventDAO);
+    this.tacticEventDAO.setFinishAt(Date.from(Instant.now()));
+    this.tacticEventDAO.setStatus(succeed ? TacticEventStatus.SUCCESS : TacticEventStatus.FAILED);
+    tacticEventRepository.save(this.tacticEventDAO);
   }
 
   /**
    * be request, set agent, proxy, and sleep some times
    *
-   * @param tacticEventDAO the tactic Event DAO
    * @param skipWait       is need skip wait
    * @return the request event dao
    */
-  private RequestEventDAO beforeRequest(TacticEventDAO tacticEventDAO, boolean skipWait) {
+  private RequestEventDAO beforeRequest(String content, boolean skipWait) {
     if (isNeedSkip()) {
       return null;
     }
 
     RequestEventDAO requestEventDAO = new RequestEventDAO();
     requestEventDAO.setCreateAt(Date.from(Instant.now()));
-    requestEventDAO.setTacticEventId(tacticEventDAO.getId());
+    requestEventDAO.setContents(content);
+    requestEventDAO.setTacticEventId(this.tacticEventDAO.getId());
     requestEventRepository.save(requestEventDAO);
 
     Tactic tactic = getTactic();

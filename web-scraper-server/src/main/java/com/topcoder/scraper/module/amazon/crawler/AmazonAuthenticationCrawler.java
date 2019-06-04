@@ -327,6 +327,7 @@ public class AmazonAuthenticationCrawler {
                                                         String username,
                                                         String password) throws IOException {
 
+    // TODO: consider whether we don't need below code
     webClient.getWebClient().getCookieManager().clearCookies();
 
 

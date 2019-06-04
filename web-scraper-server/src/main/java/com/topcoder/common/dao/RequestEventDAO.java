@@ -1,5 +1,6 @@
 package com.topcoder.common.dao;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -16,12 +17,12 @@ public class RequestEventDAO {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;
 
-
   /**
-   * the tactic event id
+   * contents
    */
-  @Column(name = "tactic_event_id")
-  private int tacticEventId;
+  @JsonIgnore
+  @Column(name = "contents", columnDefinition = "MEDIUMTEXT")
+  private String contents;
 
   /**
    * the status
@@ -44,4 +45,9 @@ public class RequestEventDAO {
   @Column(name = "finish_at")
   private Date finishAt;
 
+  /**
+   * the tactic event id
+   */
+  @Column(name = "tactic_event_id")
+  private int tacticEventId;
 }

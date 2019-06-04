@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import com.topcoder.common.traffic.TrafficWebClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +72,7 @@ public class KojimaChangeDetectionCheckModule extends AmazonChangeDetectionCheck
             String username = usernameList.get(i);
             String password = passwordList.get(i);
 
+            TrafficWebClient webClient = new TrafficWebClient(0, false);
             KojimaAuthenticationCrawler authenticationCrawler = new KojimaAuthenticationCrawler(getECName(), webpageService);
             if (!authenticationCrawler.authenticate(webClient, username, password)) {
               LOGGER.error(String.format("Failed to login %s with username %s. Skip.", getECName(), username));
@@ -79,6 +81,7 @@ public class KojimaChangeDetectionCheckModule extends AmazonChangeDetectionCheck
 
             KojimaPurchaseHistoryListCrawler purchaseHistoryListCrawler = new KojimaPurchaseHistoryListCrawler(getECName(), webpageService);
             KojimaPurchaseHistoryListCrawlerResult crawlerResult = purchaseHistoryListCrawler.fetchPurchaseHistoryList(webClient, null, true);
+            webClient.finishTraffic();
             
             processPurchaseHistory(crawlerResult, username, checkSiteDefinition);
           }
@@ -86,7 +89,10 @@ public class KojimaChangeDetectionCheckModule extends AmazonChangeDetectionCheck
         } else if (monitorTargetCheckPage.getPageName().equalsIgnoreCase(Consts.PRODUCT_DETAIL_PAGE_NAME)) {
           KojimaProductDetailCrawler crawler = new KojimaProductDetailCrawler(getECName(), webpageService);
           for (String productCode : monitorTargetCheckPage.getCheckTargetKeys()) {
+            TrafficWebClient webClient = new TrafficWebClient(0, false);
             AmazonProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productCode, true);
+            webClient.finishTraffic();
+
             processProductInfo(crawlerResult, checkSiteDefinition);
           }
 

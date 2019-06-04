@@ -23,13 +23,11 @@ public class KojimaProductDetailModule extends ProductDetailModule {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(KojimaProductDetailModule.class);
 
-  private final TrafficWebClient webClient;
   private final ProductService productService;
   private final WebpageService webpageService;
 
   @Autowired
   public KojimaProductDetailModule(ProductService productService, WebpageService webpageService) {
-    this.webClient = new TrafficWebClient(0, false);
     this.productService = productService;
     this.webpageService = webpageService;
   }
@@ -54,7 +52,10 @@ public class KojimaProductDetailModule extends ProductDetailModule {
   }
 
   private void fetchProductDetail(KojimaProductDetailCrawler crawler, int productId, String productName) throws IOException {
+    TrafficWebClient webClient = new TrafficWebClient(0, false);
+
     KojimaProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productName, false);
+    webClient.finishTraffic();
     ProductInfo productInfo = crawlerResult != null ? crawlerResult.getProductInfo() : null;
     
     if (productInfo == null) {
@@ -76,8 +77,11 @@ public class KojimaProductDetailModule extends ProductDetailModule {
 
   @Override
   public ProductDAO crossEcProduct(String modelNo) throws IOException {
+    TrafficWebClient webClient = new TrafficWebClient(0, false);
+
 	  KojimaProductDetailCrawler crawler = new KojimaProductDetailCrawler(getECName(), webpageService);
 	  KojimaProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfoWithModelNo(webClient, modelNo, false);
+	  webClient.finishTraffic();
 	  ProductInfo productInfo = Objects.isNull(crawlerResult) ? null : crawlerResult.getProductInfo();
 	    
 	  if (Objects.isNull(productInfo)) {

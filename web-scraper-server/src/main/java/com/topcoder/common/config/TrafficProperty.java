@@ -77,6 +77,18 @@ public class TrafficProperty {
       }
       return requestHeaders.getUserAgent().get(index);
     }
+
+    public String toString(){
+      StringBuffer str = new StringBuffer();
+      str.append("users_range: "             + usersRange            + "\n");
+      str.append("request_headers: "         + requestHeaders        + "\n");
+      str.append("request_interval: "        + requestInterval       + "\n");
+      str.append("request_interval_random: " + requestIntervalRandom + "\n");
+      str.append("proxy_server: "            + proxyServer           + "\n");
+      str.append("retry_interval: "          + retryInterval         + "\n");
+      str.append("retry_trail_count: "       + retryTrailCount       + "\n");
+      return str.toString();
+    }
   }
 
   /**

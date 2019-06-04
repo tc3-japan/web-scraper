@@ -1,6 +1,5 @@
 package com.topcoder.scraper.module.amazon;
 
-import com.gargoylesoftware.htmlunit.WebClient;
 import com.topcoder.common.config.AmazonProperty;
 import com.topcoder.common.dao.ProductDAO;
 import com.topcoder.common.model.ProductInfo;
@@ -8,18 +7,16 @@ import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.module.ProductDetailModule;
 import com.topcoder.scraper.module.amazon.crawler.AmazonProductDetailCrawler;
 import com.topcoder.scraper.module.amazon.crawler.AmazonProductDetailCrawlerResult;
-import com.topcoder.scraper.module.kojima.crawler.KojimaProductDetailCrawler;
-import com.topcoder.scraper.module.kojima.crawler.KojimaProductDetailCrawlerResult;
 import com.topcoder.scraper.service.ProductService;
 import com.topcoder.scraper.service.WebpageService;
-import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Amazon implementation of ProductDetailModule
@@ -30,7 +27,6 @@ public class AmazonProductDetailModule extends ProductDetailModule {
   private static final Logger LOGGER = LoggerFactory.getLogger(AmazonProductDetailModule.class);
 
   private final AmazonProperty property;
-  private final TrafficWebClient webClient;
   private final ProductService productService;
   private final WebpageService webpageService;
 
@@ -40,7 +36,6 @@ public class AmazonProductDetailModule extends ProductDetailModule {
     ProductService productService,
     WebpageService webpageService) {
     this.property = property;
-    this.webClient = new TrafficWebClient(0, false);
     this.productService = productService;
     this.webpageService = webpageService;
   }
@@ -74,7 +69,11 @@ public class AmazonProductDetailModule extends ProductDetailModule {
    * @throws IOException webclient exception
    */
   private void fetchProductDetail(AmazonProductDetailCrawler crawler, int productId, String productCode) throws IOException {
+    TrafficWebClient webClient = new TrafficWebClient(0, false);
+
     AmazonProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productCode, true);
+    webClient.finishTraffic();
+
     ProductInfo productInfo = crawlerResult.getProductInfo();
 
     // save updated information
@@ -90,16 +89,19 @@ public class AmazonProductDetailModule extends ProductDetailModule {
 
   @Override
   public ProductDAO crossEcProduct(String modelNo) throws IOException {
-	  
+    TrafficWebClient webClient = new TrafficWebClient(0, false);
+
 	  AmazonProductDetailCrawler crawler = new AmazonProductDetailCrawler(getECName(), property, webpageService);
     AmazonProductDetailCrawlerResult crawlerResult = crawler.serarchProductAndFetchProductInfoByModelNo(webClient, modelNo, true);
-	  ProductInfo productInfo = Objects.isNull(crawlerResult) ? null : crawlerResult.getProductInfo();
+    webClient.finishTraffic();
+
+    ProductInfo productInfo = Objects.isNull(crawlerResult) ? null : crawlerResult.getProductInfo();
 	    
 	  if (Objects.isNull(productInfo) || productInfo.getModelNo() == null) {
 	    LOGGER.warn("Unable to obtain a cross ec product information about: " + modelNo);
 	    return null;
 	  }
-	  
+
 	  return new ProductDAO(getECName(), productInfo);
   }
 }

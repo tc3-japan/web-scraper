@@ -73,6 +73,8 @@ public class KojimaPurchaseHistoryListModule extends PurchaseHistoryListModule {
 
         KojimaPurchaseHistoryListCrawler crawler = new KojimaPurchaseHistoryListCrawler(getECName(), webpageService);
         KojimaPurchaseHistoryListCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClient, lastPurchaseHistory.orElse(null), true);
+        webClient.finishTraffic();
+
         List<PurchaseHistory> list = crawlerResult.getPurchaseHistoryList();
 
         if (list != null && list.size() > 0) {

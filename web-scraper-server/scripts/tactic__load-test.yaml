@@ -1,0 +1,31 @@
+default_tactic:
+  request_headers:
+    user-agent:
+      - "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.101 Safari/537.01"
+      - "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.101 Safari/537.02"
+  request_interval: 3
+  request_interval_random: true
+  #proxy_server: http://127.0.0.1:1087
+  retry_interval: 1
+  retry_trail_count: 10
+tactics:
+  - users_range: 1-1
+    request_headers:
+      user-agent:
+        - "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.111 Safari/537.11"
+        - "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.112 Safari/537.12"
+    request_interval: 3
+    request_interval_random: true
+    #proxy_server: http://127.0.0.1:1087
+    retry_interval: 1
+    retry_trail_count: 10
+  - users_range: 2-3
+    request_headers:
+      user-agent:
+        - "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.21"
+        - "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.122 Safari/537.22"
+    request_interval: 3
+    request_interval_random: true
+    #proxy_server: http://127.0.0.1:1087
+    retry_interval: 1
+    retry_trail_count: 10

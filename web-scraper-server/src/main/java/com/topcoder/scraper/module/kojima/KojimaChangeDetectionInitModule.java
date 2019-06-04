@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import com.topcoder.common.traffic.TrafficWebClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +63,7 @@ public class KojimaChangeDetectionInitModule extends AmazonChangeDetectionInitMo
 
             LOGGER.info("init ...");
             KojimaAuthenticationCrawler authenticationCrawler = new KojimaAuthenticationCrawler(getECName(), webpageService);
+            TrafficWebClient webClient = new TrafficWebClient(0, false);
             if (!authenticationCrawler.authenticate(webClient, username, password)) {
               LOGGER.error(String.format("Failed to login %s with username %s. Skip.", getECName(), username));
               continue;
@@ -69,13 +71,18 @@ public class KojimaChangeDetectionInitModule extends AmazonChangeDetectionInitMo
 
             KojimaPurchaseHistoryListCrawler purchaseHistoryListCrawler = new KojimaPurchaseHistoryListCrawler(getECName(), webpageService);
             KojimaPurchaseHistoryListCrawlerResult crawlerResult = purchaseHistoryListCrawler.fetchPurchaseHistoryList(webClient, null, false);
+            webClient.finishTraffic();
+
             processPurchaseHistory(crawlerResult, username);
           }
 
         } else if (monitorTargetCheckPage.getPageName().equalsIgnoreCase(Consts.PRODUCT_DETAIL_PAGE_NAME)) {
           KojimaProductDetailCrawler crawler = new KojimaProductDetailCrawler(getECName(), webpageService);
           for (String productCode : monitorTargetCheckPage.getCheckTargetKeys()) {
+            TrafficWebClient webClient = new TrafficWebClient(0, false);
             KojimaProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productCode, false);
+            webClient.finishTraffic();
+
             processProductInfo(crawlerResult);
           }
 

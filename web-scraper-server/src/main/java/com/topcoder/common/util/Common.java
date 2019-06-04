@@ -46,7 +46,10 @@ public class Common {
       return false;
     }
 
+    logger.info("Cookie Information: ");
     for (ECCookie ecCookie : ecCookies.getCookies()) {
+      logger.info("* Cookie: " + ecCookie.getName() + "," + ecCookie.getValue()+ "," + ecCookie.getExpires() +": Restore");
+
       webClient.getCookieManager().addCookie(new Cookie(
               ecCookie.getDomain(), ecCookie.getName(), ecCookie.getValue(), ecCookie.getPath(), ecCookie.getExpires(),
               ecCookie.isSecure(), ecCookie.isHttpOnly()

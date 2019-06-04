@@ -81,6 +81,7 @@ public class AmazonPurchaseHistoryListModule extends PurchaseHistoryListModule {
         AmazonPurchaseHistoryListCrawler crawler = new AmazonPurchaseHistoryListCrawler(getECName(), property, webpageService);
 
         AmazonPurchaseHistoryListCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClient, lastPurchaseHistory.orElse(null), true);
+        webClient.finishTraffic();
         List<PurchaseHistory> list = crawlerResult.getPurchaseHistoryList();
 
         list.forEach(purchaseHistory -> purchaseHistory.setEcSiteAccountId(ecSiteAccountDAO.getId()));

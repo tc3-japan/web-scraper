@@ -1,15 +1,5 @@
 package com.topcoder.scraper.module.amazon;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.topcoder.common.config.AmazonProperty;
 import com.topcoder.common.config.MonitorTargetDefinitionProperty;
 import com.topcoder.common.dao.NormalDataDAO;
@@ -26,6 +16,15 @@ import com.topcoder.scraper.module.amazon.crawler.AmazonProductDetailCrawlerResu
 import com.topcoder.scraper.module.amazon.crawler.AmazonPurchaseHistoryListCrawler;
 import com.topcoder.scraper.module.amazon.crawler.AmazonPurchaseHistoryListCrawlerResult;
 import com.topcoder.scraper.service.WebpageService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Amazon implementation for ChangeDetectionInitModule
@@ -37,7 +36,6 @@ public class AmazonChangeDetectionInitModule extends ChangeDetectionInitModule {
 
   private final AmazonProperty property;
   protected final MonitorTargetDefinitionProperty monitorTargetDefinitionProperty;
-  protected final TrafficWebClient webClient;
   protected final WebpageService webpageService;
   protected final NormalDataRepository repository;
 
@@ -50,7 +48,6 @@ public class AmazonChangeDetectionInitModule extends ChangeDetectionInitModule {
   ) {
     this.property = property;
     this.monitorTargetDefinitionProperty = monitorTargetDefinitionProperty;
-    this.webClient = new TrafficWebClient(0, false);
     this.webpageService = webpageService;
     this.repository = repository;
   }
@@ -85,6 +82,7 @@ public class AmazonChangeDetectionInitModule extends ChangeDetectionInitModule {
             String password = passwordList.get(i);
 
             LOGGER.info("init ...");
+            TrafficWebClient webClient = new TrafficWebClient(0, false);
             AmazonAuthenticationCrawler authenticationCrawler = new AmazonAuthenticationCrawler(getECName(), property, webpageService);
             AmazonAuthenticationCrawlerResult loginResult = authenticationCrawler.authenticate(webClient, username, password);
             if (!loginResult.isSuccess()) {
@@ -94,13 +92,16 @@ public class AmazonChangeDetectionInitModule extends ChangeDetectionInitModule {
 
             AmazonPurchaseHistoryListCrawler purchaseHistoryListCrawler = new AmazonPurchaseHistoryListCrawler(getECName(), property, webpageService);
             AmazonPurchaseHistoryListCrawlerResult crawlerResult = purchaseHistoryListCrawler.fetchPurchaseHistoryList(webClient, null, false);
+            webClient.finishTraffic();
             processPurchaseHistory(crawlerResult, username);
           }
 
         } else if (monitorTargetCheckPage.getPageName().equalsIgnoreCase(Consts.PRODUCT_DETAIL_PAGE_NAME)) {
           AmazonProductDetailCrawler crawler = new AmazonProductDetailCrawler(getECName(), property, webpageService);
           for (String productCode : monitorTargetCheckPage.getCheckTargetKeys()) {
+            TrafficWebClient webClient = new TrafficWebClient(0, false);
             AmazonProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productCode, false);
+            webClient.finishTraffic();
             processProductInfo(crawlerResult);
           }
 

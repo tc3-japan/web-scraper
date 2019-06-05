@@ -32,3 +32,8 @@ input.txt
 ._.DS_Store
 **/.DS_Store
 **/._.DS_Store
+
+# Cache/other
+web-scraper-server/.st*
+web-scraper-server/hs*
+.attac*

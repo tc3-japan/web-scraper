@@ -208,7 +208,7 @@ public class AmazonPurchaseHistoryListCrawler {
     } catch (ParseException e) {
     }
 
-    PurchaseHistory ph = new PurchaseHistory(property.getUsername(), orderNumber, orderDate, total, productInfoList, deliveryStatus);
+    PurchaseHistory ph = new PurchaseHistory(null, orderNumber, orderDate, total, productInfoList, deliveryStatus);
 
     // check if order is new one.
     boolean isNewOrder = true;

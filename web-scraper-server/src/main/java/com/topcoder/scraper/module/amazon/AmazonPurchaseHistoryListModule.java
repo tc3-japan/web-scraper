@@ -3,6 +3,8 @@ package com.topcoder.scraper.module.amazon;
 import java.util.List;
 import java.util.Optional;
 
+import com.topcoder.common.dao.PurchaseHistoryDAO;
+import com.topcoder.common.util.CipherUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,7 +86,7 @@ public class AmazonPurchaseHistoryListModule extends PurchaseHistoryListModule {
         webClient.finishTraffic();
         List<PurchaseHistory> list = crawlerResult.getPurchaseHistoryList();
 
-        list.forEach(purchaseHistory -> purchaseHistory.setEcSiteAccountId(ecSiteAccountDAO.getId()));
+        list.forEach(purchaseHistory -> purchaseHistory.setUserId(CipherUtils.md5(Integer.toString(ecSiteAccountDAO.getId()))));
         purchaseHistoryService.save(getECName(), list);
         LOGGER.info("succeed fetch purchaseHistory for ecSite id = " + ecSiteAccountDAO.getId());
       } catch (Exception e) { // here catch all exception and did not throw it

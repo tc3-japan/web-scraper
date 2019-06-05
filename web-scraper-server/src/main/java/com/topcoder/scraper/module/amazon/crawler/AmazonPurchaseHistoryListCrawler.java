@@ -211,9 +211,7 @@ public class AmazonPurchaseHistoryListCrawler {
     } catch (ParseException e) {
     }
 
-    String userId = Integer.toString(ecSiteAccountDAO.getId());
-    System.out.println("\n\n\n*******userID: " + userId);
-    PurchaseHistory ph = new PurchaseHistory(userId, orderNumber, orderDate, total, productInfoList, deliveryStatus);
+    PurchaseHistory ph = new PurchaseHistory(null, orderNumber, orderDate, total, productInfoList, deliveryStatus);
 
     // check if order is new one.
     boolean isNewOrder = true;

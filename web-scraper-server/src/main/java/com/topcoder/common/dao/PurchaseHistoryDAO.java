@@ -44,14 +44,6 @@ public class PurchaseHistoryDAO {
 
 
   /**
-   * ecSiteAccount Dao id
-   */
-  @Getter
-  @Setter
-  @Column(name = "ec_site_account_id")
-  private Integer ecSiteAccountId;
-
-  /**
    * Order number
    */
   @Column(name = "order_no")
@@ -100,7 +92,6 @@ public class PurchaseHistoryDAO {
     this.orderDate = purchaseHistory.getOrderDate();
     this.totalAmount = purchaseHistory.getTotalAmount();
     this.deliveryStatus = purchaseHistory.getDeliveryStatus();
-    this.ecSiteAccountId = purchaseHistory.getEcSiteAccountId();
     this.updateAt = new Date();
   }
 

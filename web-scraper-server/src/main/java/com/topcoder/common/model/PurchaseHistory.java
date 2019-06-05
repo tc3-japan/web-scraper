@@ -5,8 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Getter;
-import lombok.Setter;
+import com.topcoder.common.util.CipherUtils;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -56,13 +55,6 @@ public class PurchaseHistory {
   @JsonProperty("delivery_status")
   private String deliveryStatus;
 
-  /**
-   * ecSiteAccount Dao id
-   */
-  @Getter
-  @Setter
-  private Integer ecSiteAccountId;
-
   public PurchaseHistory() {
   }
 
@@ -100,7 +92,7 @@ public class PurchaseHistory {
   }
 
   public void setUserId(String userId) {
-    this.userId = userId;
+    this.userId = CipherUtils.md5(userId);
   }
 
   public void setOrderNumber(String orderNumber) {

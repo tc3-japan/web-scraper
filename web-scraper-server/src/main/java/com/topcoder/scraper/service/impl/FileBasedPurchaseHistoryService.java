@@ -55,17 +55,6 @@ public class FileBasedPurchaseHistoryService implements PurchaseHistoryService {
     }
     return histories;
   }
-
-  @Override
-  public Optional<PurchaseHistory> fetchLast(String site) {
-    return listAll(site).stream().max((o1, o2) -> {
-      if (o1 != null && o2 != null) {
-        return o1.getOrderDate().compareTo(o2.getOrderDate());
-      } else {
-        return -1;
-      }
-    });
-  }
   
   @Override
   public Optional<PurchaseHistory> fetchLast(int siteId) {

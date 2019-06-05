@@ -8,6 +8,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlSelect;
 import com.topcoder.common.config.AmazonProperty;
+import com.topcoder.common.dao.ECSiteAccountDAO;
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.common.traffic.TrafficWebClient;
@@ -16,6 +17,7 @@ import com.topcoder.scraper.service.WebpageService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -38,7 +40,8 @@ public class AmazonPurchaseHistoryListCrawler {
   private final String siteName;
   private final AmazonProperty property;
   private final WebpageService webpageService;
-
+  @Autowired
+  private ECSiteAccountDAO ecSiteAccountDAO;
   // TODO : delete, this is for PoC Code that limits the count to go to next page to 3
   private int nextPageCount;
 
@@ -208,7 +211,9 @@ public class AmazonPurchaseHistoryListCrawler {
     } catch (ParseException e) {
     }
 
-    PurchaseHistory ph = new PurchaseHistory(property.getUsername(), orderNumber, orderDate, total, productInfoList, deliveryStatus);
+    String userId = Integer.toString(ecSiteAccountDAO.getId());
+    System.out.println("\n\n\n*******userID: " + userId);
+    PurchaseHistory ph = new PurchaseHistory(userId, orderNumber, orderDate, total, productInfoList, deliveryStatus);
 
     // check if order is new one.
     boolean isNewOrder = true;

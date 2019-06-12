@@ -25,7 +25,7 @@ public class PurchaseHistoryCheckResultDetail {
    * Represents check result for user id (email / telephone)
    */
   @JsonIgnore
-  private String userId;
+  private String accountId;
 
   /**
    * Represents check result for order number
@@ -59,8 +59,8 @@ public class PurchaseHistoryCheckResultDetail {
   public PurchaseHistoryCheckResultDetail() {
   }
 
-  public PurchaseHistoryCheckResultDetail(String userId, String orderNumber, String orderDate, String totalAmount, String deliveryStatus) {
-    this.userId = userId;
+  public PurchaseHistoryCheckResultDetail(String accountId, String orderNumber, String orderDate, String totalAmount, String deliveryStatus) {
+    this.accountId = accountId;
     this.orderNumber = orderNumber;
     this.orderDate = orderDate;
     this.totalAmount = totalAmount;
@@ -71,8 +71,8 @@ public class PurchaseHistoryCheckResultDetail {
     this.ok = ok;
   }
 
-  public void setUserId(String userId) {
-    this.userId = userId;
+  public void setAccountId(String accountId) {
+    this.accountId = accountId;
   }
 
   public void setOrderNumber(String orderNumber) {
@@ -99,8 +99,8 @@ public class PurchaseHistoryCheckResultDetail {
     return ok;
   }
 
-  public String getUserId() {
-    return userId;
+  public String getAccountId() {
+    return accountId;
   }
 
   public String getOrderNumber() {

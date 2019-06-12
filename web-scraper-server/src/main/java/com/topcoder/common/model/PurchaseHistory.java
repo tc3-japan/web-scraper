@@ -5,8 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Getter;
-import lombok.Setter;
+import com.topcoder.common.util.CipherUtils;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -20,10 +19,10 @@ public class PurchaseHistory {
 
   private final static ObjectMapper OB = new ObjectMapper();
   /**
-   * Represents user id (email / telephone)
+   * Represents EC Site Account id
    */
   @JsonIgnore
-  private String userId;
+  private String accountId;
 
   /**
    * Represents order number
@@ -56,18 +55,11 @@ public class PurchaseHistory {
   @JsonProperty("delivery_status")
   private String deliveryStatus;
 
-  /**
-   * ecSiteAccount Dao id
-   */
-  @Getter
-  @Setter
-  private Integer ecSiteAccountId;
-
   public PurchaseHistory() {
   }
 
-  public PurchaseHistory(String userId, String orderNumber, Date orderDate, String totalAmount, List<ProductInfo> products, String deliveryStatus) {
-    this.userId = userId;
+  public PurchaseHistory(String accountId, String orderNumber, Date orderDate, String totalAmount, List<ProductInfo> products, String deliveryStatus) {
+    this.accountId = accountId;
     this.orderNumber = orderNumber;
     this.orderDate = orderDate;
     this.totalAmount = totalAmount;
@@ -75,8 +67,8 @@ public class PurchaseHistory {
     this.deliveryStatus = deliveryStatus;
   }
 
-  public String getUserId() {
-    return userId;
+  public String getAccountId() {
+    return accountId;
   }
 
   public String getOrderNumber() {
@@ -99,8 +91,8 @@ public class PurchaseHistory {
     return deliveryStatus;
   }
 
-  public void setUserId(String userId) {
-    this.userId = userId;
+  public void setAccountId(String accountId) {
+    this.accountId = CipherUtils.md5(accountId);
   }
 
   public void setOrderNumber(String orderNumber) {

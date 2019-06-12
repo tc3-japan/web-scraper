@@ -9,6 +9,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
@@ -78,4 +79,14 @@ public class CipherUtils {
     }
   }
 
+  public static String md5(String source) {
+    try {
+      MessageDigest md5 = MessageDigest.getInstance("MD5");
+      byte[] md5Byte = md5.digest(source.getBytes());
+      return new String(md5Byte);
+    } catch(NoSuchAlgorithmException e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
 }

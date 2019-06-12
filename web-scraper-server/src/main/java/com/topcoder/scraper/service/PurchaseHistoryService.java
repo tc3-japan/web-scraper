@@ -16,8 +16,6 @@ public interface PurchaseHistoryService {
    */
   void save(String site, List<PurchaseHistory> list);
   List<PurchaseHistory> listAll(String site);
-
-  Optional<PurchaseHistory> fetchLast(String site);
   
   Optional<PurchaseHistory> fetchLast(int siteId);
 }

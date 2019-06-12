@@ -2,8 +2,6 @@ package com.topcoder.common.dao;
 
 import com.topcoder.scraper.converter.JpaConverterPurchaseHistoryJson;
 import com.topcoder.common.model.PurchaseHistory;
-import lombok.Getter;
-import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -37,19 +35,11 @@ public class PurchaseHistoryDAO {
   private String ecSite;
 
   /**
-   * UserDAO id (email / telephone)
+   * EC Site Account id (email / telephone)
    */
-  @Column(name = "user_id", length = 64)
-  private String userId;
+  @Column(name = "account_id", length = 64)
+  private String accountId;
 
-
-  /**
-   * ecSiteAccount Dao id
-   */
-  @Getter
-  @Setter
-  @Column(name = "ec_site_account_id")
-  private Integer ecSiteAccountId;
 
   /**
    * Order number
@@ -95,12 +85,11 @@ public class PurchaseHistoryDAO {
   public PurchaseHistoryDAO(String ecSite, PurchaseHistory purchaseHistory) {
     this.ecSite = ecSite;
     this.purchaseHistory = purchaseHistory;
-    this.userId = purchaseHistory.getUserId();
+    this.accountId = purchaseHistory.getAccountId();
     this.orderNo = purchaseHistory.getOrderNumber();
     this.orderDate = purchaseHistory.getOrderDate();
     this.totalAmount = purchaseHistory.getTotalAmount();
     this.deliveryStatus = purchaseHistory.getDeliveryStatus();
-    this.ecSiteAccountId = purchaseHistory.getEcSiteAccountId();
     this.updateAt = new Date();
   }
 
@@ -119,8 +108,8 @@ public class PurchaseHistoryDAO {
     this.ecSite = ecSite;
   }
 
-  public void setUserId(String userId) {
-    this.userId = userId;
+  public void setAccountId(String accountId) {
+    this.accountId = accountId;
   }
 
   public void setOrderNo(String orderNo) {
@@ -147,8 +136,8 @@ public class PurchaseHistoryDAO {
     return ecSite;
   }
 
-  public String getUserId() {
-    return userId;
+  public String getAccountId() {
+    return accountId;
   }
 
   public String getOrderNo() {

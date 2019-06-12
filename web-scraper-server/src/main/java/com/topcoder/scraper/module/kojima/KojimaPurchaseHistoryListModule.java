@@ -1,17 +1,7 @@
 package com.topcoder.scraper.module.kojima;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.topcoder.api.service.login.kojima.KojimaLoginHandler;
 import com.topcoder.common.dao.ECSiteAccountDAO;
-import com.topcoder.common.model.AuthStatusType;
 import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.common.repository.ECSiteAccountRepository;
 import com.topcoder.common.traffic.TrafficWebClient;
@@ -21,6 +11,14 @@ import com.topcoder.scraper.module.kojima.crawler.KojimaPurchaseHistoryListCrawl
 import com.topcoder.scraper.module.kojima.crawler.KojimaPurchaseHistoryListCrawlerResult;
 import com.topcoder.scraper.service.PurchaseHistoryService;
 import com.topcoder.scraper.service.WebpageService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 
 @Component
 public class KojimaPurchaseHistoryListModule extends PurchaseHistoryListModule {
@@ -78,7 +76,7 @@ public class KojimaPurchaseHistoryListModule extends PurchaseHistoryListModule {
         List<PurchaseHistory> list = crawlerResult.getPurchaseHistoryList();
 
         if (list != null && list.size() > 0) {
-          list.forEach(purchaseHistory -> purchaseHistory.setEcSiteAccountId(ecSiteAccountDAO.getId()));
+          list.forEach(purchaseHistory -> purchaseHistory.setAccountId(Integer.toString(ecSiteAccountDAO.getId())));
           purchaseHistoryService.save(getECName(), list);
         }
         LOGGER.info("succeed fetch purchaseHistory for ecSite id = " + ecSiteAccountDAO.getId());

@@ -19,7 +19,3 @@ CREATE TABLE ec_site_account (
   update_at TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES user(id)
 );
-
-ALTER TABLE purchase_history
-  ADD COLUMN ec_site_account_id int,
-  ADD FOREIGN KEY (ec_site_account_id) REFERENCES ec_site_account(id);

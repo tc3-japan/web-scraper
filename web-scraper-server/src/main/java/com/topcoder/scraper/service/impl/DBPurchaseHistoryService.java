@@ -8,6 +8,7 @@ import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.common.repository.ProductRepository;
 import com.topcoder.common.repository.PurchaseHistoryRepository;
 import com.topcoder.common.repository.PurchaseProductRepository;
+import com.topcoder.common.util.CipherUtils;
 import com.topcoder.scraper.service.PurchaseHistoryService;
 import java.util.ArrayList;
 import java.util.Date;
@@ -68,21 +69,11 @@ public class DBPurchaseHistoryService implements PurchaseHistoryService {
 
     return results;
   }
-
-  @Override
-  public Optional<PurchaseHistory> fetchLast(String site) {
-    return listAll(site).stream().max((o1, o2) -> {
-      if (o1 != null && o2 != null && o1.getOrderDate() != null && o2.getOrderDate() != null) {
-        return o1.getOrderDate().compareTo(o2.getOrderDate());
-      } else {
-        return -1;
-      }
-    });
-  }
   
   @Override
-  public Optional<PurchaseHistory> fetchLast(int siteId) {
-    List<PurchaseHistoryDAO> histories = historyRepository.getPurchaseHistoriesBySiteIdOrderByOrderDateDesc(siteId);
+  public Optional<PurchaseHistory> fetchLast(int accountId) {
+    List<PurchaseHistoryDAO> histories = historyRepository.getPurchaseHistoriesByAccountIdOrderByOrderDateDesc(CipherUtils.md5(Integer.toString(accountId)));
     return Optional.ofNullable(histories != null && histories.size() > 0 ? histories.get(0).getPurchaseHistory() : null);
   }
+  
 }

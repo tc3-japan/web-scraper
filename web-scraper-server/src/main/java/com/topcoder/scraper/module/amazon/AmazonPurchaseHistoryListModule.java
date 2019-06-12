@@ -1,13 +1,5 @@
 package com.topcoder.scraper.module.amazon;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.topcoder.api.service.login.amazon.AmazonLoginHandler;
 import com.topcoder.common.config.AmazonProperty;
 import com.topcoder.common.dao.ECSiteAccountDAO;
@@ -20,6 +12,13 @@ import com.topcoder.scraper.module.amazon.crawler.AmazonPurchaseHistoryListCrawl
 import com.topcoder.scraper.module.amazon.crawler.AmazonPurchaseHistoryListCrawlerResult;
 import com.topcoder.scraper.service.PurchaseHistoryService;
 import com.topcoder.scraper.service.WebpageService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Amazon implementation of PurchaseHistoryListModule
@@ -84,7 +83,7 @@ public class AmazonPurchaseHistoryListModule extends PurchaseHistoryListModule {
         webClient.finishTraffic();
         List<PurchaseHistory> list = crawlerResult.getPurchaseHistoryList();
 
-        list.forEach(purchaseHistory -> purchaseHistory.setEcSiteAccountId(ecSiteAccountDAO.getId()));
+        list.forEach(purchaseHistory -> purchaseHistory.setAccountId(Integer.toString(ecSiteAccountDAO.getId())));
         purchaseHistoryService.save(getECName(), list);
         LOGGER.info("succeed fetch purchaseHistory for ecSite id = " + ecSiteAccountDAO.getId());
       } catch (Exception e) { // here catch all exception and did not throw it

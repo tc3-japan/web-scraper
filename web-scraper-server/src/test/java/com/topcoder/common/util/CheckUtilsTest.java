@@ -143,7 +143,7 @@ public class CheckUtilsTest {
 
     PurchaseHistoryCheckResultDetail result = resultList.get(0);
 
-    assertNull(result.getUserId());
+    assertNull(result.getAccountId());
     assertEquals("NG(NOT-EQUAL, COMPLETE, FAILURE)", result.getDeliveryStatus());
     assertEquals("OK", result.getOrderDate());
     assertEquals("OK", result.getOrderNumber());
@@ -173,7 +173,7 @@ public class CheckUtilsTest {
 
     PurchaseHistoryCheckResultDetail result = resultList.get(0);
 
-    assertNull(result.getUserId());
+    assertNull(result.getAccountId());
     
     assertNotNull(result.getOrderDate());
     assertTrue("result.getOrderDate().length() should be >= 2", result.getOrderDate().length() >= 2);
@@ -207,7 +207,7 @@ public class CheckUtilsTest {
 
     PurchaseHistoryCheckResultDetail result = resultList.get(0);
 
-    assertNull(result.getUserId());
+    assertNull(result.getAccountId());
     assertEquals("NG(NOT-EQUAL, $100, $200)", result.getTotalAmount());
     assertEquals("OK", result.getOrderNumber());
     assertEquals("OK", result.getDeliveryStatus());
@@ -241,7 +241,7 @@ public class CheckUtilsTest {
 
     PurchaseHistoryCheckResultDetail result = resultList.get(0);
 
-    assertNull(result.getUserId());
+    assertNull(result.getAccountId());
     assertEquals("OK", result.getTotalAmount());
     assertEquals("OK", result.getOrderNumber());
     assertEquals("OK", result.getDeliveryStatus());

@@ -12,6 +12,6 @@ import com.topcoder.common.dao.PurchaseHistoryDAO;
 @Repository
 public interface PurchaseHistoryRepository extends CrudRepository<PurchaseHistoryDAO, Integer> {
   
-  @Query("select h from PurchaseHistoryDAO h where h.ecSiteAccountId = :siteId order by h.orderDate desc")
-  public List<PurchaseHistoryDAO> getPurchaseHistoriesBySiteIdOrderByOrderDateDesc(@Param("siteId") int siteId); 
+  @Query("select h from PurchaseHistoryDAO h where h.accountId = :accountId order by h.orderDate desc")
+  public List<PurchaseHistoryDAO> getPurchaseHistoriesByAccountIdOrderByOrderDateDesc(@Param("accountId") String accountId);
 }

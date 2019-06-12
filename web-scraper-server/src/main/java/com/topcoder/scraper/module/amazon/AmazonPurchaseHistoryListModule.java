@@ -83,7 +83,7 @@ public class AmazonPurchaseHistoryListModule extends PurchaseHistoryListModule {
         webClient.finishTraffic();
         List<PurchaseHistory> list = crawlerResult.getPurchaseHistoryList();
 
-        list.forEach(purchaseHistory -> purchaseHistory.setUserId(Integer.toString(ecSiteAccountDAO.getId())));
+        list.forEach(purchaseHistory -> purchaseHistory.setAccountId(Integer.toString(ecSiteAccountDAO.getId())));
         purchaseHistoryService.save(getECName(), list);
         LOGGER.info("succeed fetch purchaseHistory for ecSite id = " + ecSiteAccountDAO.getId());
       } catch (Exception e) { // here catch all exception and did not throw it

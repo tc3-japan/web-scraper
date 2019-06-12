@@ -71,8 +71,8 @@ public class DBPurchaseHistoryService implements PurchaseHistoryService {
   }
   
   @Override
-  public Optional<PurchaseHistory> fetchLast(int userId) {
-    List<PurchaseHistoryDAO> histories = historyRepository.getPurchaseHistoriesByUserIdOrderByOrderDateDesc(CipherUtils.md5(Integer.toString(userId)));
+  public Optional<PurchaseHistory> fetchLast(int accountId) {
+    List<PurchaseHistoryDAO> histories = historyRepository.getPurchaseHistoriesByAccountIdOrderByOrderDateDesc(CipherUtils.md5(Integer.toString(accountId)));
     return Optional.ofNullable(histories != null && histories.size() > 0 ? histories.get(0).getPurchaseHistory() : null);
   }
   

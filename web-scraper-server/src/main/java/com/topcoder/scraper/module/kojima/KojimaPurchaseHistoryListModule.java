@@ -76,7 +76,7 @@ public class KojimaPurchaseHistoryListModule extends PurchaseHistoryListModule {
         List<PurchaseHistory> list = crawlerResult.getPurchaseHistoryList();
 
         if (list != null && list.size() > 0) {
-          list.forEach(purchaseHistory -> purchaseHistory.setUserId(Integer.toString(ecSiteAccountDAO.getId())));
+          list.forEach(purchaseHistory -> purchaseHistory.setAccountId(Integer.toString(ecSiteAccountDAO.getId())));
           purchaseHistoryService.save(getECName(), list);
         }
         LOGGER.info("succeed fetch purchaseHistory for ecSite id = " + ecSiteAccountDAO.getId());

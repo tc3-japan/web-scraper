@@ -3,7 +3,10 @@ package com.topcoder.scraper.module.yahoo.crawler;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
+import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import com.gargoylesoftware.htmlunit.html.HtmlImageInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.exception.SessionExpiredException;
@@ -52,7 +55,8 @@ public class YahooProductDetailCrawler {
     System.out.println("Pretending to fetch product info!");
     System.out.println("Pretending to fetch product info!");
     System.out.println("Pretending to fetch product info!");
-
+    String productName = productCode;
+    YahooProductDetailCrawlerResult result = searchProductInfoByAnyWords(webClient,productName,saveHtml);
     ProductInfo productInfo=null;
     String savedPath = null;
     /*
@@ -71,6 +75,29 @@ public class YahooProductDetailCrawler {
     productInfo.setCode(productCode);*/
 
     return new YahooProductDetailCrawlerResult(productInfo, savedPath);
+  }
+
+
+  private YahooProductDetailCrawlerResult searchProductInfoByAnyWords(TrafficWebClient webClient, String searchWords, boolean saveHtml) throws IOException {
+    //HtmlPage topPage = webClient.getPage("https://www.kojima.net/ec/top/CSfTop.jsp");
+    //HtmlForm searchForm = topPage.getFormByName("search_form");
+    //HtmlTextInput searchInput = searchForm.getInputByName("q");
+
+    //商品コード：20181207182312-01602
+    
+    HtmlPage topPage = webClient.getPage("https://shopping.yahoo.co.jp/?sc_e=ytmh");
+    HtmlForm searchForm = topPage.getFormByName("search_form");
+    HtmlTextInput searchInput = searchForm.getInputByName("q");
+
+    searchInput.type(searchWords);
+    HtmlImageInput searchButtonInput = topPage.querySelector("#btnSearch");
+    HtmlPage searchResultPage = webClient.click(searchButtonInput);
+    webpageService.save("kojima-search-result", siteName, searchResultPage.getWebResponse().getContentAsString());
+
+
+    ProductInfo productInfo = null;
+    String htmlPath = null;
+    return new YahooProductDetailCrawlerResult(productInfo, htmlPath);
   }
 
   /**

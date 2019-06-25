@@ -57,10 +57,12 @@ public class YahooProductDetailModule extends ProductDetailModule {
 
     List<ProductDAO> products = this.productService.getAllFetchInfoStatusIsNull(getECName());
     YahooProductDetailCrawler crawler = new YahooProductDetailCrawler(getECName(), webpageService);
+    System.out.println("\n>>>Products length is "+products.size());
 
     products.forEach(product -> {
       try {
         fetchProductDetail(crawler, product.getId(), product.getProductCode());
+        System.out.println("\n>>>Product Code is "+product.getProductCode());
       } catch (IOException | IllegalStateException e) {
         LOGGER.error(String.format("Fail to fetch product %s, please try again.", product.getProductCode()));
       }
@@ -110,7 +112,7 @@ public class YahooProductDetailModule extends ProductDetailModule {
     ProductInfo productInfo = Objects.isNull(crawlerResult) ? null : crawlerResult.getProductInfo();
 	    
 	  if (Objects.isNull(productInfo) || productInfo.getModelNo() == null) {
-	    LOGGER.warn("Unable to obtain a cross ec product information about: " + modelNo);
+	    LOGGER.warn("Unable to obtain cross ec product information for: " + modelNo);
 	    return null;
 	  }
 

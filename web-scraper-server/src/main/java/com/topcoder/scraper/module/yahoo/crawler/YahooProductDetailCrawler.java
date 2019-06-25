@@ -50,125 +50,45 @@ public class YahooProductDetailCrawler {
    */
   public YahooProductDetailCrawlerResult fetchProductInfo(TrafficWebClient webClient, String productCode, boolean saveHtml) throws IOException {
     
-    System.out.println("Pretending to fetch product info!");
-    System.out.println("Pretending to fetch product info!");
-    System.out.println("Pretending to fetch product info!");
-    System.out.println("Pretending to fetch product info!");
-    System.out.println("Pretending to fetch product info!");
+    System.out.println("Getting product info by Product Code!");
+
     String productName = productCode;
-    YahooProductDetailCrawlerResult result = searchProductInfoByAnyWords(webClient,productName,saveHtml);
-    ProductInfo productInfo=null;
-    String savedPath = null;
-    /*
-    LOGGER.info("Product url " + productUrl);
+    YahooProductDetailCrawlerResult result = getProductInfoByCode(webClient,productName,saveHtml);
 
-    HtmlPage productPage = webClient.getPage(productUrl);
-    ProductInfo productInfo = new ProductInfo();
-    fetchProductInfo(productPage, productInfo, productCode);
-    fetchCategoryRanking(productPage, productInfo, productCode);
-
-    String savedPath = null;
-    if (saveHtml) {
-      savedPath = webpageService.save("product", siteName, productPage.getWebResponse().getContentAsString());
-    }
-
-    productInfo.setCode(productCode);*/
-
-    return new YahooProductDetailCrawlerResult(productInfo, savedPath);
+    return result; 
   }
 
 
-  private YahooProductDetailCrawlerResult searchProductInfoByAnyWords(TrafficWebClient webClient, String searchWords, boolean saveHtml) throws IOException {
-    //HtmlPage topPage = webClient.getPage("https://www.kojima.net/ec/top/CSfTop.jsp");
-    //HtmlForm searchForm = topPage.getFormByName("search_form");
-    //HtmlTextInput searchInput = searchForm.getInputByName("q");
+  private YahooProductDetailCrawlerResult getProductInfoByCode(TrafficWebClient webClient, String searchWords, boolean saveHtml) throws IOException {
 
-    //商品コード：20181207182312-01602
-    
-    HtmlPage topPage = webClient.getPage("https://shopping.yahoo.co.jp/?sc_e=ytmh");
-    HtmlForm searchForm = topPage.getFormByName("search_form");
-    HtmlTextInput searchInput = searchForm.getInputByName("q");
+    String htmlPath = "https://store.shopping.yahoo.co.jp/"+searchWords;
+    System.out.println("\n>>>> searching for "+htmlPath);
+    HtmlPage page = webClient.getPage(htmlPath);
 
-    searchInput.type(searchWords);
-    HtmlImageInput searchButtonInput = topPage.querySelector("#btnSearch");
-    HtmlPage searchResultPage = webClient.click(searchButtonInput);
-    webpageService.save("kojima-search-result", siteName, searchResultPage.getWebResponse().getContentAsString());
+    webpageService.save("yahoo-search-result", siteName, page.getWebResponse().getContentAsString());
 
+    String shouhinCode = page.querySelector("#abuserpt > p:nth-child(3)").asText(); //???
+    System.out.println("\n>>>> shouhinCode:"+shouhinCode);
+    String prodName = page.querySelector("div.elTitle > h2:nth-child(1)").asText();
+    System.out.println("\n>>>> productName:"+prodName);
+    String vendorName = page.querySelector("dt.elStore > a:nth-child(1)").asText();
+    System.out.println("\n>>>> vendorName:"+vendorName);
+    String prodPrice = page.querySelector(".elNum").asText();
+    System.out.println("\n>>>> price:"+prodPrice);
+    String modelNo = null;
+  
+    ProductInfo productInfo = new ProductInfo();
+    productInfo.setCode(shouhinCode);
+    productInfo.setDistributor(vendorName);
+    productInfo.setName(prodName);
+    productInfo.setPrice(prodPrice.replaceAll(",", "")); // TODO ??
+    productInfo.setModelNo(modelNo);
 
-    ProductInfo productInfo = null;
-    String htmlPath = null;
+    productInfo = null;
     return new YahooProductDetailCrawlerResult(productInfo, htmlPath);
   }
+  
 
-  /**
-   * Update product information
-   * @param productPage the product detail page
-   * @param info the product info to be updated
-   * @param productCode the product code
-   */
-  private void fetchProductInfo(HtmlPage productPage, ProductInfo info, String productCode) {
-    System.out.println("Pretending to fetch product info!");
-    System.out.println("Pretending to fetch product info!");
-    System.out.println("Pretending to fetch product info!");
-    System.out.println("Pretending to fetch product info!");
-    System.out.println("Pretending to fetch product info!");
-    /*
-    // update price
-    // Pair includes element and it's selector string.
-    Pair<HtmlElement, String> priceElementPair = findFirstElementInSelectors(productPage, property.getCrawling().getProductDetailPage().getPrices());
-    if (priceElementPair == null) {
-      LOGGER.info(String.format("Could not find price info for product %s:%s",
-        this.siteName, productCode));
-    } else {
-      HtmlElement priceElement  = priceElementPair.getFirst();
-      String      priceSelector = priceElementPair.getSecond();
-      LOGGER.info("Price's found by selector: " + priceSelector);
-
-      String price = getTextContentWithoutDuplicatedSpaces(priceElement);
-
-      // special case handle, for example
-      // https://www.amazon.com/gp/product/B016KBVBCS
-      // current value of price is $ 75 55
-      String[] priceArray = price.split(" ");
-      if (priceArray.length == 3) {
-        price = String.format("%s%s.%s", priceArray[0], priceArray[1], priceArray[2]);
-      }
-      
-      info.setPrice(getNumberAsStringFrom(price));
-    }
-
-    // update name
-    HtmlElement nameElement = productPage.querySelector(property.getCrawling().getProductDetailPage().getName());
-    if (nameElement == null) {
-      LOGGER.info(String.format("Could not find name info for product %s:%s",
-        this.siteName, productCode));
-    } else {
-      String name = getTextContent(nameElement);
-      info.setName(name);
-    }
-    
-    //update model_no
-    HtmlElement modelLabelElement  = null;
-    HtmlElement modelNoValueElement  = null;
-    List<String> modelNoLabels      = property.getCrawling().getProductDetailPage().getModelNoLabels();
-    List<String> modelNoLabelValues = property.getCrawling().getProductDetailPage().getModelNoLabelValues();
-    List<String> modelNoValues      = property.getCrawling().getProductDetailPage().getModelNoValues();
-    for(int i = 0 ; i < modelNoLabels.size() ; i++) {
-      modelLabelElement   = productPage.querySelector(modelNoLabels.get(i));
-      modelNoValueElement = productPage.querySelector(modelNoValues.get(i));
-
-      if (modelLabelElement != null 
-          && modelNoValueElement != null
-          && getTextContent(modelLabelElement).replaceAll("[:：]", "").equals(modelNoLabelValues.get(i))) {
-    	  
-    	  LOGGER.info("model no is found by selector: " + modelNoValueElement);
-    	  String modelNo = getTextContentWithoutDuplicatedSpaces(modelNoValueElement).replaceAll("[^0-9a-zA-Z\\-]", "").trim();
-    	  info.setModelNo(modelNo);
-    	  break;
-      }
-    }
-    */
-  }
   /**
    * Find category ranking and save in database
    * @param productPage the product detail page

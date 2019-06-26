@@ -72,19 +72,19 @@ public class YahooProductDetailModule extends ProductDetailModule {
 
     TrafficWebClient webClient = new TrafficWebClient(0, false);
     YahooProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productCode, true);
-
     webClient.finishTraffic();
     ProductInfo productInfo = crawlerResult.getProductInfo();
 
-    // save updated information
-    productService.updateProduct(productId, productInfo);
-    for (int i = 0; i < productInfo.getCategoryList().size(); i++) {
-      String category = productInfo.getCategoryList().get(i);
-      Integer rank = productInfo.getRankingList().get(i);
+    if(productInfo != null) {
+      // save updated information
+      productService.updateProduct(productId, productInfo);
+      for (int i = 0; i < productInfo.getCategoryList().size(); i++) {
+        String category = productInfo.getCategoryList().get(i);
+        Integer rank = productInfo.getRankingList().get(i);
       productService.addCategoryRanking(productId, category, rank);
+      }
+      productService.updateFetchInfoStatus(productId, "updated");
     }
-
-    productService.updateFetchInfoStatus(productId, "updated");
   }
 
   @Override

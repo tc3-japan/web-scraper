@@ -48,19 +48,23 @@ public class YahooProductDetailCrawler {
     String htmlPath = "https://store.shopping.yahoo.co.jp/"+searchWords;
     HtmlPage page = webClient.getPage(htmlPath);
     webpageService.save("yahoo-search-result", siteName, page.getWebResponse().getContentAsString());
+    ProductInfo productInfo = null;
 
-    String shouhinCode = page.querySelector("#abuserpt > p:nth-child(3)").asText();
-    String prodName = page.querySelector("div.elTitle > h2:nth-child(1)").asText();
-    String vendorName = page.querySelector("dt.elStore > a:nth-child(1)").asText();
-    String prodPrice = page.querySelector(".elNum").asText();
-    String modelNo = null; //TODO: Scrape/find kataban (modelNo)
-  
-    ProductInfo productInfo = new ProductInfo();
-    productInfo.setCode(shouhinCode);
-    productInfo.setDistributor(vendorName);
-    productInfo.setName(prodName);
-    productInfo.setPrice(prodPrice.replaceAll(",", "")); // TODO: ???
-    productInfo.setModelNo(modelNo);
+    try {
+      String shouhinCode = page.querySelector("#abuserpt > p:nth-child(3)").asText();
+      String prodName = page.querySelector("div.elTitle > h2:nth-child(1)").asText();
+      String vendorName = page.querySelector("dt.elStore > a:nth-child(1)").asText();
+      String prodPrice = page.querySelector(".elNum").asText();
+      String modelNo = null; //TODO: Scrape/find kataban (modelNo)
+      productInfo = new ProductInfo();
+      productInfo.setCode(shouhinCode);
+      productInfo.setDistributor(vendorName);
+      productInfo.setName(prodName);
+      productInfo.setPrice(prodPrice.replaceAll(",", "")); // TODO: ???
+      productInfo.setModelNo(modelNo);
+    } catch(Exception e) {
+      System.out.println();
+    }
 
     return new YahooProductDetailCrawlerResult(productInfo, htmlPath);
   }

@@ -1,6 +1,5 @@
 package com.topcoder.scraper.module.yahoo;
 
-//import com.topcoder.common.config.AmazonProperty;
 import com.topcoder.common.dao.ProductDAO;
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.traffic.TrafficWebClient;
@@ -48,21 +47,13 @@ public class YahooProductDetailModule extends ProductDetailModule {
 
   @Override
   public void fetchProductDetailList() {
-    System.out.println("TEST");
-    System.out.println("TEST");
-    System.out.println("TEST");
-    System.out.println("TEST");
-    System.out.println("TEST");
-    System.out.println("TEST");
 
     List<ProductDAO> products = this.productService.getAllFetchInfoStatusIsNull(getECName());
     YahooProductDetailCrawler crawler = new YahooProductDetailCrawler(getECName(), webpageService);
-    System.out.println("\n>>>Products length is "+products.size());
 
     products.forEach(product -> {
       try {
         fetchProductDetail(crawler, product.getId(), product.getProductCode());
-        System.out.println("\n>>>Product Code is "+product.getProductCode());
       } catch (IOException | IllegalStateException e) {
         LOGGER.error(String.format("Fail to fetch product %s, please try again.", product.getProductCode()));
       }
@@ -81,12 +72,8 @@ public class YahooProductDetailModule extends ProductDetailModule {
 
     TrafficWebClient webClient = new TrafficWebClient(0, false);
     YahooProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productCode, true);
-    /*
-    TrafficWebClient webClient = new TrafficWebClient(0, false);
 
-    YahooProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productCode, true);
     webClient.finishTraffic();
-
     ProductInfo productInfo = crawlerResult.getProductInfo();
 
     // save updated information
@@ -98,7 +85,6 @@ public class YahooProductDetailModule extends ProductDetailModule {
     }
 
     productService.updateFetchInfoStatus(productId, "updated");
-    */
   }
 
   @Override

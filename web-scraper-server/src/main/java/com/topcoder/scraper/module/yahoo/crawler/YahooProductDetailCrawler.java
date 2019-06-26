@@ -43,9 +43,9 @@ public class YahooProductDetailCrawler {
     return result; 
   }
 
-  private YahooProductDetailCrawlerResult getProductInfoByCode(TrafficWebClient webClient, String searchWords, boolean saveHtml) throws IOException {
+  private YahooProductDetailCrawlerResult getProductInfoByCode(TrafficWebClient webClient, String code, boolean saveHtml) throws IOException {
 
-    String htmlPath = "https://store.shopping.yahoo.co.jp/"+searchWords;
+    String htmlPath = "https://store.shopping.yahoo.co.jp/"+code;
     HtmlPage page = webClient.getPage(htmlPath);
     webpageService.save("yahoo-search-result", siteName, page.getWebResponse().getContentAsString());
     ProductInfo productInfo = null;
@@ -63,7 +63,7 @@ public class YahooProductDetailCrawler {
       productInfo.setPrice(prodPrice.replaceAll(",", "")); // TODO: ???
       productInfo.setModelNo(modelNo);
     } catch(Exception e) {
-      System.out.println();
+      LOGGER.info("Could not scrape item info for product " + code + " : " + e.getMessage());
     }
 
     return new YahooProductDetailCrawlerResult(productInfo, htmlPath);
@@ -109,7 +109,7 @@ public class YahooProductDetailCrawler {
    * @return list of category string
    */
   private List<String> fetchCategoryInfoList(HtmlPage page, String productCode) {
-    System.out.println("/nPretending to fetch info list! Returning empty array!"); //TODO: Something here!
+    System.out.println("\nPretending to fetch info list! Returning empty array!"); //TODO: Something here!
 
     return new ArrayList<>(); //TODO: Implement
   }
@@ -142,7 +142,7 @@ public class YahooProductDetailCrawler {
   * @throws IOException
   */
   private String searchProduct(TrafficWebClient webClient, String searchWord) throws IOException {
-    System.out.println("/nPretending to fetch searchProduct! Returning null!"); //TODO: Implement
+    System.out.println("\nPretending to fetch searchProduct! Returning null!"); //TODO: Implement
 	  return null; //TODO: Implement
   }
 }

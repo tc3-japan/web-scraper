@@ -44,7 +44,6 @@ public class YahooProductDetailModule extends ProductDetailModule {
     return "yahoo";
   }
 
-
   @Override
   public void fetchProductDetailList() {
 
@@ -104,4 +103,5 @@ public class YahooProductDetailModule extends ProductDetailModule {
 
 	  return new ProductDAO(getECName(), productInfo);
   }
+  
 }

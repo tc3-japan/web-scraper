@@ -51,7 +51,7 @@ public class YahooPurchaseHistoryListCrawler {
       page = gotoNextPage(page, webClient);
     }
 
-    return new KojimaPurchaseHistoryListCrawlerResult(list, pathList);
+    return new YahooPurchaseHistoryListCrawlerResult(list, pathList);
   }
   
   private boolean parsePurchaseHistory(List<PurchaseHistory> list, HtmlPage page, PurchaseHistory last, boolean saveHtml, List<String> pathList) {

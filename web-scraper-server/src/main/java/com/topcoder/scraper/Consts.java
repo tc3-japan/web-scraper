@@ -19,4 +19,6 @@ public class Consts {
   
   public static final String EC_SITE_AMAZON = "amazon";
   public static final String EC_SITE_KOJIMA = "kojima";
+
+  public static final Integer NO_RANKING = -1;
 }

@@ -1,5 +1,5 @@
 package com.topcoder.scraper.module.yahoo.crawler;
-
+import com.topcoder.scraper.Consts;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.traffic.TrafficWebClient;
@@ -55,12 +55,29 @@ public class YahooProductDetailCrawler {
       String vendorName = page.querySelector("dt.elStore > a:nth-child(1)").asText().trim();
       String prodPrice = page.querySelector(".elNum").asText().trim();
       String modelNo = null; //TODO: Scrape/find kataban (modelNo)
+
+      List<String> categoryList = new ArrayList<String>();
+      String categoryDataRaw = page.querySelector("ol.elList").asText().trim();
+      if(categoryDataRaw.length() > 0) {
+        String categoryData = categoryDataRaw.replaceAll("1. ", "").replaceAll("\n", "").replaceAll("[0-9]","").replaceAll("\\.", " >").trim();
+        categoryList.add(categoryData);
+        System.out.println(">>>> cat data:::: "+categoryData);
+      }
       productInfo = new ProductInfo();
       productInfo.setCode(shouhinCode);
       productInfo.setDistributor(vendorName);
       productInfo.setName(prodName);
       productInfo.setPrice(prodPrice.replaceAll(",", "")); // TODO: ???
       productInfo.setModelNo(modelNo);
+      if(categoryList.size() > 0) {
+        productInfo.setCategoryList(categoryList);
+        ArrayList<Integer> rankings = new ArrayList<Integer>();
+        for(int i = 0; i < categoryList.size(); i++) {
+          rankings.add(Consts.NO_RANKING);
+        }
+        productInfo.setRankingList(rankings);
+
+      }
     } catch(Exception e) {
       LOGGER.info("Could not scrape item info for product " + code + " : " + e.getMessage());
     }

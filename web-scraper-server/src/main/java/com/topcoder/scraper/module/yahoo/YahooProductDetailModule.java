@@ -5,7 +5,7 @@ import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.module.ProductDetailModule;
 import com.topcoder.scraper.module.yahoo.crawler.YahooProductDetailCrawler;
-import com.topcoder.scraper.module.yahoo .crawler.YahooProductDetailCrawlerResult;
+import com.topcoder.scraper.module.yahoo.crawler.YahooProductDetailCrawlerResult;
 import com.topcoder.scraper.service.ProductService;
 import com.topcoder.scraper.service.WebpageService;
 import org.slf4j.Logger;
@@ -25,16 +25,12 @@ public class YahooProductDetailModule extends ProductDetailModule {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(YahooProductDetailModule.class);
 
-  //private final AmazonProperty property;
+  //private final YahooProperty property;
   private final ProductService productService;
   private final WebpageService webpageService;
 
   @Autowired
-  public YahooProductDetailModule(
-    //AmazonProperty property,
-    ProductService productService,
-    WebpageService webpageService) {
-    //this.property = property;
+  public YahooProductDetailModule(ProductService productService, WebpageService webpageService) {
     this.productService = productService;
     this.webpageService = webpageService;
   }
@@ -80,7 +76,7 @@ public class YahooProductDetailModule extends ProductDetailModule {
       for (int i = 0; i < productInfo.getCategoryList().size(); i++) {
         String category = productInfo.getCategoryList().get(i);
         Integer rank = productInfo.getRankingList().get(i);
-      productService.addCategoryRanking(productId, category, rank);
+        productService.addCategoryRanking(productId, category, rank);
       }
       productService.updateFetchInfoStatus(productId, "updated");
     }
@@ -90,18 +86,18 @@ public class YahooProductDetailModule extends ProductDetailModule {
   public ProductDAO crossEcProduct(String modelNo) throws IOException {
     TrafficWebClient webClient = new TrafficWebClient(0, false);
 
-	  YahooProductDetailCrawler crawler = new YahooProductDetailCrawler(getECName(), webpageService);
+    YahooProductDetailCrawler crawler = new YahooProductDetailCrawler(getECName(), webpageService);
     YahooProductDetailCrawlerResult crawlerResult = crawler.searchProductAndFetchProductInfoByModelNo(webClient, modelNo, true);
     webClient.finishTraffic();
 
     ProductInfo productInfo = Objects.isNull(crawlerResult) ? null : crawlerResult.getProductInfo();
-	    
-	  if (Objects.isNull(productInfo) || productInfo.getModelNo() == null) {
-	    LOGGER.warn("Unable to obtain cross ec product information for: " + modelNo);
-	    return null;
-	  }
 
-	  return new ProductDAO(getECName(), productInfo);
+    if (Objects.isNull(productInfo) || productInfo.getModelNo() == null) {
+      LOGGER.warn("Unable to obtain cross ec product information for: " + modelNo);
+      return null;
+    }
+
+    return new ProductDAO(getECName(), productInfo);
   }
-  
+
 }

@@ -4,11 +4,12 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.service.WebpageService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Crawl yahoo product detail page
@@ -19,9 +20,7 @@ public class YahooProductDetailCrawler {
   private String siteName;
   private final WebpageService webpageService;
 
-  public YahooProductDetailCrawler(
-    String siteName,
-    WebpageService webpageService) {
+  public YahooProductDetailCrawler(String siteName, WebpageService webpageService) {
     this.siteName = siteName;
     this.webpageService = webpageService;
   }
@@ -40,7 +39,7 @@ public class YahooProductDetailCrawler {
     String productName = productCode;
     YahooProductDetailCrawlerResult result = getProductInfoByCode(webClient,productName,saveHtml);
 
-    return result; 
+    return result;
   }
 
   private YahooProductDetailCrawlerResult getProductInfoByCode(TrafficWebClient webClient, String code, boolean saveHtml) throws IOException {
@@ -51,10 +50,10 @@ public class YahooProductDetailCrawler {
     ProductInfo productInfo = null;
 
     try {
-      String shouhinCode = page.querySelector("#abuserpt > p:nth-child(3)").asText();
-      String prodName = page.querySelector("div.elTitle > h2:nth-child(1)").asText();
-      String vendorName = page.querySelector("dt.elStore > a:nth-child(1)").asText();
-      String prodPrice = page.querySelector(".elNum").asText();
+      String shouhinCode = page.querySelector("#abuserpt > p:nth-child(3)").asText().trim();
+      String prodName = page.querySelector("div.elTitle > h2:nth-child(1)").asText().trim();
+      String vendorName = page.querySelector("dt.elStore > a:nth-child(1)").asText().trim();
+      String prodPrice = page.querySelector(".elNum").asText().trim();
       String modelNo = null; //TODO: Scrape/find kataban (modelNo)
       productInfo = new ProductInfo();
       productInfo.setCode(shouhinCode);
@@ -113,36 +112,36 @@ public class YahooProductDetailCrawler {
 
     return new ArrayList<>(); //TODO: Implement
   }
-  
+
   /**
-  *
-  * Search and Fetch product information
-  * @param webClient the web client
-  * @param modelNo the mode no
-  * @param saveHtml true if product html page will be saved
-  * @return YahooProductDetailCrawlerResult
-  * @throws IOException
-  */
+   *
+   * Search and Fetch product information
+   * @param webClient the web client
+   * @param modelNo the mode no
+   * @param saveHtml true if product html page will be saved
+   * @return YahooProductDetailCrawlerResult
+   * @throws IOException
+   */
   public YahooProductDetailCrawlerResult searchProductAndFetchProductInfoByModelNo(TrafficWebClient webClient, String modelNo, boolean saveHtml) throws IOException  {
-	  
-	  String productCode = searchProduct(webClient,modelNo);
-	  if (productCode == null) {
-	      LOGGER.info(String.format("Could not find name info for model no %s",modelNo));
-	      return null;
-	    }
-	  return fetchProductInfo(webClient, productCode, saveHtml);
+
+    String productCode = searchProduct(webClient,modelNo);
+    if (productCode == null) {
+      LOGGER.info(String.format("Could not find name info for model no %s",modelNo));
+      return null;
+    }
+    return fetchProductInfo(webClient, productCode, saveHtml);
   }
-  
+
   /**
-  *
-  * Search product
-  * @param webClient the web client
-  * @param  search word
-  * @return String asin no(product code)
-  * @throws IOException
-  */
+   *
+   * Search product
+   * @param webClient the web client
+   * @param  searchWord
+   * @return String asin no(product code)
+   * @throws IOException
+   */
   private String searchProduct(TrafficWebClient webClient, String searchWord) throws IOException {
     System.out.println("\nPretending to fetch searchProduct! Returning null!"); //TODO: Implement
-	  return null; //TODO: Implement
+    return null; //TODO: Implement
   }
 }

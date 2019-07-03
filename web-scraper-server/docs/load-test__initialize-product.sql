@@ -5,7 +5,3 @@ SET SQL_SAFE_UPDATES = 0;
 delete from web_scraper.product_category_ranking;
 delete from web_scraper.product_category;
 update web_scraper.product set fetch_info_status = null;
-
--- initialize data for all batches using TrafficWebClient
-delete from web_scraper.request_event;
-delete from web_scraper.tactic_event;

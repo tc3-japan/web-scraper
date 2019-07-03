@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 /**
@@ -281,12 +282,6 @@ public class TrafficWebClient {
       return null;
     }
 
-    RequestEventDAO requestEventDAO = new RequestEventDAO();
-    requestEventDAO.setCreateAt(Date.from(Instant.now()));
-    requestEventDAO.setContents(content);
-    requestEventDAO.setTacticEventId(this.tacticEventDAO.getId());
-    requestEventRepository.save(requestEventDAO);
-
     Tactic tactic = getTactic();
     if (tactic.getProxyServer() != null) {
       ProxyConfig proxyConfig = new ProxyConfig();
@@ -330,6 +325,13 @@ public class TrafficWebClient {
       }
     }
 
+    RequestEventDAO requestEventDAO = new RequestEventDAO();
+    requestEventDAO.setCreateAt(Date.from(ZonedDateTime.now().toInstant()));
+
+    requestEventDAO.setContents(content);
+    requestEventDAO.setTacticEventId(this.tacticEventDAO.getId());
+    requestEventRepository.save(requestEventDAO);
+
     return requestEventDAO;
   }
 
@@ -367,7 +369,7 @@ public class TrafficWebClient {
     if (isNeedSkip()) {
       return;
     }
-    requestEventDAO.setFinishAt(Date.from(Instant.now()));
+    requestEventDAO.setFinishAt(Date.from(ZonedDateTime.now().toInstant()));
     requestEventDAO.setStatus(succeed ? TacticEventStatus.SUCCESS : TacticEventStatus.FAILED);
     requestEventRepository.save(requestEventDAO);
   }

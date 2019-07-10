@@ -26,7 +26,7 @@ public class TrafficProperty {
    */
   @Data
   public static class RequestHeader {
-    private List<String> userAgent;
+    private List<String> userAgents;
   }
 
   /**
@@ -64,18 +64,20 @@ public class TrafficProperty {
     /**
      * get the user agent by user id
      *
-     * @param id the user id
+     * @param id the user id, 0 is magic number for user-free request sent from batch like product.
      * @return the agent
      */
     public String getUserAgent(int id) {
+      int index = 0;
+      List<String> userAgents = requestHeaders.getUserAgents();
+      // for user-free request
       if (getUsersRange() == null) {
-        return requestHeaders.getUserAgent().size() > 0 ? requestHeaders.getUserAgent().get(0) : null;
+        index = (int)Math.floor(Math.random() * userAgents.size());
+        return index >= 0 ? userAgents.get(index) : null;
       }
-      int index = getIndexInRange(id);
-      if (requestHeaders.getUserAgent().size() <= index) {
-        return null;
-      }
-      return requestHeaders.getUserAgent().get(index);
+      // for user-related request
+      index = getIndexInRange(id) % userAgents.size();
+      return requestHeaders.getUserAgents().get(index);
     }
 
     public String toString(){

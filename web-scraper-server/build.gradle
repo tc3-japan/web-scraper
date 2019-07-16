@@ -39,6 +39,10 @@ dependencies {
   compile("org.projectlombok:lombok:1.18.6")
 
 
+  // https://mvnrepository.com/artifact/org.springframework.data/spring-data-solr
+  compile group: 'org.springframework.data', name: 'spring-data-solr', version: '4.0.9.RELEASE'
+
+
   compile("net.sourceforge.htmlunit:htmlunit:${versions.htmlunit}")
   compile("com.google.code.gson:gson:${versions.gson}")
   compile("com.fasterxml.jackson.core:jackson-databind:${versions.jackson}")
@@ -50,6 +54,7 @@ dependencies {
 
   testCompile("org.springframework.boot:spring-boot-starter-test:${versions.springBoot}")
 }
+
 
 task wrapper(type: Wrapper) {
   gradleVersion = '3.5'

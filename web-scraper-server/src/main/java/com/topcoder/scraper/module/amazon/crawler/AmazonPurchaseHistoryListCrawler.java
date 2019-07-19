@@ -50,6 +50,8 @@ public class AmazonPurchaseHistoryListCrawler {
     this.property = property;
     this.webpageService = webpageService;
     this.nextPageCount = 0;
+
+    //TODO: Add temporary Login? Call login handler
   }
 
   /**

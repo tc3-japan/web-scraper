@@ -11,9 +11,11 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.topcoder.api.service.login.yahoo.YahooLoginHandler;
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.common.traffic.TrafficWebClient;
@@ -28,9 +30,10 @@ public class YahooPurchaseHistoryListCrawler {
   private final String siteName;
   private final WebpageService webpageService;
   
+
   public YahooPurchaseHistoryListCrawler(String siteName, WebpageService webpageService) {
     this.siteName = siteName;
-    this.webpageService = webpageService;
+    this.webpageService = webpageService;     
   }
 
   public YahooPurchaseHistoryListCrawlerResult fetchPurchaseHistoryList(TrafficWebClient webClient, PurchaseHistory lastPurchaseHistory, boolean saveHtml) throws IOException {
@@ -38,12 +41,15 @@ public class YahooPurchaseHistoryListCrawler {
     List<String> pathList = new LinkedList<>();
     LOGGER.info("goto Order History Page");
 
-    HtmlPage page = webClient.getPage("https://www.kojima.net/ec/member/CMmOrderHistory.jsp");
+    //TODO: LOGIN page: https://login.yahoo.co.jp/config/login?.src=shp&lg=jp&.intl=jp&.done=https%3A%2F%2Fshopping.yahoo.co.jp%2F%3Fsc_e%3Dytmh
+    //TODO: Purchase History Page: https://odhistory.shopping.yahoo.co.jp/cgi-bin/history-list?sc_i=shp_pc_top_MHD_order_history
+    //HtmlPage page = webClient.getPage("https://www.kojima.net/ec/member/CMmOrderHistory.jsp");
+    HtmlPage page = webClient.getPage("https://odhistory.shopping.yahoo.co.jp/cgi-bin/history-list?sc_i=shp_pc_top_MHD_order_history");
     if (page.getBaseURI().contains("?autoLogin")) {
-      throw new SessionExpiredException("Session has been expired.");      
+      throw new SessionExpiredException("Session has been expired.");     //TODO: Is this relevent? 
     }
     
-    webpageService.save("kojima-purchase-history", siteName, page.getWebResponse().getContentAsString());
+    webpageService.save("yahoo-purchase-history", siteName, page.getWebResponse().getContentAsString());
     while (true) {
       if (page == null || !parsePurchaseHistory(list, page, lastPurchaseHistory, saveHtml, pathList)) {
         break;
@@ -51,13 +57,14 @@ public class YahooPurchaseHistoryListCrawler {
       page = gotoNextPage(page, webClient);
     }
 
-    return new KojimaPurchaseHistoryListCrawlerResult(list, pathList);
+    return new YahooPurchaseHistoryListCrawlerResult(list, pathList);
   }
   
   private boolean parsePurchaseHistory(List<PurchaseHistory> list, HtmlPage page, PurchaseHistory last, boolean saveHtml, List<String> pathList) {
 
     LOGGER.debug("Parsing page url " + page.getUrl().toString());
-    
+    System.out.println("\n\n\n>>>> Fakely parsing purchase history\n\n\n");
+    /*
     //member-orderhistorydetails
     List<DomNode> orders = page.querySelectorAll(".member-orderhistorydetails > tbody");
     
@@ -86,6 +93,7 @@ public class YahooPurchaseHistoryListCrawler {
       
       list.add(history);
     }
+    */
     return false;
   }
   

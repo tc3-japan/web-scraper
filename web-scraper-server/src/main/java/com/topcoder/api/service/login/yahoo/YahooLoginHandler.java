@@ -53,8 +53,11 @@ public class YahooLoginHandler extends LoginHandlerBase {
   public LoginResponse login(int userId, LoginRequest request) throws ApiException {
     
     ECSiteAccountDAO ecSiteAccountDAO = ecSiteAccountRepository.findOne(request.getSiteId());
+    //TODO.property: Use application.yaml instead -- or don't use this at all. It's just for testing
     ecSiteAccountDAO.setPassword(request.getPassword());
     ecSiteAccountDAO.setLoginEmail(request.getEmail());
+
+    System.out.println("\n\n\n>>>>>> Logging into Yahoo with account " + ecSiteAccountDAO.getLoginEmail() + "\n\n\n");
     ecSiteAccountRepository.save(ecSiteAccountDAO); // save it first
 
     YahooAuthenticationCrawler crawler = new YahooAuthenticationCrawler("yahoo", applicationContext.getBean(WebpageService.class));

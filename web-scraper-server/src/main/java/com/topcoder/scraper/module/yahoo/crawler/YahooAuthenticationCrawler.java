@@ -84,8 +84,9 @@ public class YahooAuthenticationCrawler {
       loginSuccess = true;
     } else {
       System.out.println("Failed to login");
+      loginSuccess = false;
     }
 
-    return false; //TODO: Detect if login failed
+    return loginSuccess; //TODO: Detect if login failed
   }
 }

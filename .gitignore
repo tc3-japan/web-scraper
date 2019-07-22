@@ -12,6 +12,7 @@ web-scraper-docker/.idea/
 
 # Output
 web-scraper-server/logs/
+web-scraper-server/logs
 web-scraper-server/build/
 web-scraper-docker/local-data/
 web-scraper-docker/scraper/build/libs/web-scraper-server-*.jar

@@ -1,7 +1,11 @@
 package com.topcoder.common.traffic;
 
 
-import com.gargoylesoftware.htmlunit.*;
+import com.gargoylesoftware.htmlunit.BrowserVersion;
+import com.gargoylesoftware.htmlunit.Page;
+import com.gargoylesoftware.htmlunit.ProxyConfig;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.topcoder.common.config.TrafficProperty;
 import com.topcoder.common.config.TrafficProperty.Tactic;
@@ -283,18 +287,29 @@ public class TrafficWebClient {
     }
 
     Tactic tactic = getTactic();
-    if (tactic.getProxyServer() != null) {
+    // proxy settings
+    if (tactic.getProxyServerByUserId(userId) != null) {
       ProxyConfig proxyConfig = new ProxyConfig();
       try {
-        URL url = new URL(tactic.getProxyServer());
+        String urlStr   = tactic.getProxyServerByUserId(userId);
+        String proxyMsg = "proxy = " + urlStr;
+
+        // create proxy info and set it to web client
+        if (urlStr.startsWith("sock")) { // adhoc code: java.net.URL doesn't correspond to socks protocol
+          proxyConfig.setSocksProxy(true);
+          urlStr = urlStr.replaceAll("sock.*://", "http://");
+        }
+        URL url = new URL(urlStr);
         proxyConfig.setProxyPort(url.getPort());
-        proxyConfig.setSocksProxy(url.getProtocol().contains("sock"));
         proxyConfig.setProxyHost(url.getHost());
         webClient.getOptions().setProxyConfig(proxyConfig);
-        logger.info("proxy = " + url.toString() + " for this request");
+
+        // traffic record to database
+        content = content + ", " + proxyMsg;
+        logger.info(proxyMsg + " for this request");
       } catch (MalformedURLException e) {
         e.printStackTrace();
-        logger.error("proxy server parse error, url = " + tactic.getProxyServer());
+        logger.error("proxy server parse error, url = " + tactic.getProxyServerByUserId(userId));
       }
     }
 

@@ -103,7 +103,10 @@ default_tactic:
       - "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.101 Safari/537.99"
   request_interval: 3
   request_interval_random: true
-  #proxy_server: http://127.0.0.1:1087
+  #proxy_servers:
+  #- http://127.0.0.1:1087
+  #- socks5://127.0.0.1:1087
+  #proxy_servers_random: true
   retry_interval: 1
   retry_trail_count: 10
 tactics:
@@ -114,7 +117,10 @@ tactics:
         - "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.112 Safari/537.12"
     request_interval: 3
     request_interval_random: true
-    #proxy_server: http://127.0.0.1:1087
+    #proxy_servers:
+    #  - http://127.0.0.1:1087
+    #  - socks5://127.0.0.1:1087
+    #proxy_servers_random: true
     retry_interval: 1
     retry_trail_count: 10
   - users_range: 2-3
@@ -124,6 +130,9 @@ tactics:
         - "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.122 Safari/537.22"
     request_interval: 3
     request_interval_random: true
-    #proxy_server: http://127.0.0.1:1087
+    #proxy_servers:
+    #  - http://127.0.0.1:1087
+    #  - socks5://127.0.0.1:1087
+    #proxy_servers_random: true
     retry_interval: 1
     retry_trail_count: 10

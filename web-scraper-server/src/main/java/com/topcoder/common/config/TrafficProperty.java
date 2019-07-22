@@ -34,13 +34,16 @@ public class TrafficProperty {
    */
   @Data
   public static class Tactic {
-    private String usersRange;
+    private String        usersRange;
     private RequestHeader requestHeaders;
-    private Integer requestInterval;
-    private Boolean requestIntervalRandom;
-    private String proxyServer;
-    private Integer retryInterval;
-    private Integer retryTrailCount;
+    private Integer       requestInterval;
+    private Boolean       requestIntervalRandom;
+    private List<String>  proxyServers;
+    private Boolean       proxyServersRandom;
+    private Integer       retryInterval;
+    private Integer       retryTrailCount;
+
+    private static int proxyServersIndex = 0;
 
     /**
      * check the user id is in range
@@ -77,7 +80,32 @@ public class TrafficProperty {
       }
       // for user-related request
       index = getIndexInRange(id) % userAgents.size();
-      return requestHeaders.getUserAgents().get(index);
+      return userAgents.get(index);
+    }
+
+    /**
+     * get the proxy server by user id
+     *
+     * @param id the user id, 0 is magic number for user-free request sent from batch like product.
+     * @return the proxy
+     */
+    public String getProxyServerByUserId(int id) {
+      int index = 0;
+      List<String> proxyServers = getProxyServers();
+      if (proxyServers == null) return null;
+      // for user-free request
+      if (getUsersRange() == null) {
+        if (getProxyServersRandom()) {
+          index = (int) Math.floor(Math.random() * proxyServers.size());
+        } else {
+          index = proxyServersIndex % proxyServers.size();
+          proxyServersIndex++;
+        }
+        return index >= 0 ? proxyServers.get(index) : null;
+      }
+      // for user-related request
+      index = getIndexInRange(id) % proxyServers.size();
+      return proxyServers.get(index);
     }
 
     public String toString(){
@@ -86,7 +114,8 @@ public class TrafficProperty {
       str.append("request_headers: "         + requestHeaders        + "\n");
       str.append("request_interval: "        + requestInterval       + "\n");
       str.append("request_interval_random: " + requestIntervalRandom + "\n");
-      str.append("proxy_server: "            + proxyServer           + "\n");
+      str.append("proxy_servers: "           + proxyServers          + "\n");
+      str.append("proxy_servers_random: "    + proxyServersRandom    + "\n");
       str.append("retry_interval: "          + retryInterval         + "\n");
       str.append("retry_trail_count: "       + retryTrailCount       + "\n");
       return str.toString();

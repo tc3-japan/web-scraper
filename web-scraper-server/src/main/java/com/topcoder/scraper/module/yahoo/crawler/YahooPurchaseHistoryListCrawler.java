@@ -6,14 +6,19 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.DomNode;
+import com.gargoylesoftware.htmlunit.html.HtmlLink;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.topcoder.api.service.login.yahoo.YahooLoginHandler;
 import com.topcoder.common.model.ProductInfo;
@@ -29,7 +34,6 @@ public class YahooPurchaseHistoryListCrawler {
   private static final Pattern PAT_ORDER_NO = Pattern.compile("([\\d]{13})", Pattern.DOTALL);
   private final String siteName;
   private final WebpageService webpageService;
-  
 
   public YahooPurchaseHistoryListCrawler(String siteName, WebpageService webpageService) {
     this.siteName = siteName;
@@ -48,10 +52,10 @@ public class YahooPurchaseHistoryListCrawler {
     if (page.getBaseURI().contains("?autoLogin")) {
       throw new SessionExpiredException("Session has been expired.");     //TODO: Is this relevent? 
     }
-    
+
     webpageService.save("yahoo-purchase-history", siteName, page.getWebResponse().getContentAsString());
     while (true) {
-      if (page == null || !parsePurchaseHistory(list, page, lastPurchaseHistory, saveHtml, pathList)) {
+      if (page == null || !parsePurchaseHistory(list, page, webClient, webpageService, lastPurchaseHistory, saveHtml, pathList)) {
         break;
       }
       page = gotoNextPage(page, webClient);
@@ -60,40 +64,79 @@ public class YahooPurchaseHistoryListCrawler {
     return new YahooPurchaseHistoryListCrawlerResult(list, pathList);
   }
   
-  private boolean parsePurchaseHistory(List<PurchaseHistory> list, HtmlPage page, PurchaseHistory last, boolean saveHtml, List<String> pathList) {
+  private boolean parsePurchaseHistory(List<PurchaseHistory> list, HtmlPage page, TrafficWebClient webClient, WebpageService webpageService, PurchaseHistory last, boolean saveHtml, List<String> pathList) {
 
     LOGGER.debug("Parsing page url " + page.getUrl().toString());
     System.out.println("\n\n\n>>>> Fakely parsing purchase history\n\n\n");
-    /*
-    //member-orderhistorydetails
-    List<DomNode> orders = page.querySelectorAll(".member-orderhistorydetails > tbody");
     
-    for (DomNode orderNode : orders) {
-      DomNode itemNoNode = orderNode.querySelector(".itemnumber");
-      String nodeText = itemNoNode.asText();
-      String orderNumber = extract(nodeText, PAT_ORDER_NO);
-      LOGGER.info("ORDER NO: " + orderNumber);
+    //member-orderhistorydetails
+    //List<DomNode> orders = page.querySelectorAll(".member-orderhistorydetails > tbody");
 
-      Date orderDate = extractDate(nodeText);
-      LOGGER.info("ORDER DATE: " + orderDate);
-      
-      DomNode itemTotalAmountNode = orderNode.querySelector(".totalamountmoney");
-      Integer totalAmount = itemTotalAmountNode != null ? extractInt(itemTotalAmountNode.asText()) : null;
-      LOGGER.info("TOTAL: " + totalAmount);
-            
-      PurchaseHistory history = new PurchaseHistory(null, orderNumber, orderDate, totalAmount != null ? totalAmount.toString() : null, null, null);
-      if (!isNew(history, last)) {
-        LOGGER.info("SKIPPING: " + orderNumber);
-        continue;        
+    List<DomNode> orders = new ArrayList<DomNode>();
+    boolean nullIndexFound = false;
+    int index = 1;
+    
+    while (!nullIndexFound) {
+      DomNode result = page.querySelector(".elMain > ul:nth-child(1) > li:nth-child(" + Integer.toString(index) + ")");
+      System.out.println(result);
+      if (result!=null) {
+        orders.add(result);
+      } else {
+        nullIndexFound = true;
       }
-      
-      List<DomNode> orderLines = orderNode.querySelectorAll("tr");
-      List<ProductInfo> productInfoList = orderLines.stream().map(this::parseProduct).filter(p -> p.getName() != null).collect(Collectors.toList());
-      history.setProducts(productInfoList);
-      
-      list.add(history);
+      index++;
     }
-    */
+    
+    if (orders!=null) {
+      for (DomNode orderNode : orders) {
+        System.out.println("*******");
+      
+        DomNode itemNoNode = orderNode.querySelector("div:nth-child(2) > ul:nth-child(1) > li:nth-child(1) > ul:nth-child(1) > li:nth-child(2) > dl:nth-child(1) > dd:nth-child(2)");
+        //String nodeText = itemNoNode.asText();
+        String orderNumber = itemNoNode.asText(); //extract(nodeText, PAT_ORDER_NO);
+        LOGGER.info("ORDER NO: " + orderNumber);
+
+        String itemDate = orderNode.querySelector("div:nth-child(1) > p:nth-child(1) > span:nth-child(1)").asText();
+        Date orderDate = extractDate(itemDate);
+        LOGGER.info("ORDER DATE: " + orderDate);
+      
+        //Follow the link to 
+
+        DomElement orderInfoPage = orderNode.querySelector("div:nth-child(2) > ul:nth-child(1) > li:nth-child(1) > ul:nth-child(3) > li:nth-child(1) > a:nth-child(1) > span:nth-child(1)");
+        HtmlPage detailPage = null;
+        try{
+          HtmlPage needToLoginPage = webClient.click(orderInfoPage); //go get price>
+          //webpageService.save("yahoo-login-initial", siteName, loginPage.getWebResponse().getContentAsString());
+          //webpageService.save("yahoo-purchase-history-detail-login", "yahoo", detailLoginPage.getWebResponse().getContentAsString());
+          HtmlPage passwordPage = webClient.click(needToLoginPage.querySelector("p.elButton:nth-child(3) > a:nth-child(1) > span:nth-child(1)"));
+          webpageService.save("yahoo-type-password-page", "yahoo", passwordPage.getWebResponse().getContentAsString());
+
+          //TODO: Type password
+          //TODO: See this page file:///home/----/web-scraper/web-scraper-server/logs/yahoo/yahoo-purchase-history-detail-page-2019-07-23T19-19-43.586.html
+
+        } catch (Exception e) {}
+        
+
+        //DomNode itemTotalAmountNode = orderNode.querySelector(".totalamountmoney");
+        //Integer totalAmount = itemTotalAmountNode != null ? extractInt(itemTotalAmountNode.asText()) : null;
+        //LOGGER.info("TOTAL: " + totalAmount);
+        Integer totalAmount = 999999999; //TODO: Get real amount!
+
+        PurchaseHistory history = new PurchaseHistory(null, orderNumber, orderDate, totalAmount != null ? totalAmount.toString() : null, null, null);
+        if (!isNew(history, last)) {
+          LOGGER.info("SKIPPING: " + orderNumber);
+          continue;        
+        }
+      
+        List<DomNode> orderLines = orderNode.querySelectorAll("tr");
+        List<ProductInfo> productInfoList = orderLines.stream().map(this::parseProduct).filter(p -> p.getName() != null).collect(Collectors.toList());
+        history.setProducts(productInfoList);
+      
+        list.add(history);
+       
+      }
+    }
+    
     return false;
   }
   
@@ -133,8 +176,8 @@ public class YahooPurchaseHistoryListCrawler {
   }
   
   
-  private static final Pattern PAT_DATE = Pattern.compile("(20[\\d]{2}/[\\d]{2}/[\\d]{2} [\\d]{2}:[\\d]{2}:[\\d]{2})", Pattern.DOTALL);
-  private static final String FORMAT_DATE = "yyyy/MM/dd HH:mm:ss";
+  //private static final Pattern PAT_DATE = Pattern.compile("(20[\\d]{2}/[\\d]{2}/[\\d]{2} [\\d]{2}:[\\d]{2}:[\\d]{2})", Pattern.DOTALL);
+  //private static final String FORMAT_DATE = "yyyy/MM/dd HH:mm:ss";
   
   private String normalizeProductName(String productName) {
     if (productName == null) {
@@ -144,9 +187,9 @@ public class YahooPurchaseHistoryListCrawler {
   }
   
   private Date extractDate(String text) {
-    String dateStr = extract(text, PAT_DATE);
+    String dateStr = text;//extract(text, PAT_DATE);
     try {
-      return DateUtils.fromString(dateStr, FORMAT_DATE);
+      return DateUtils.fromString(dateStr);
     } catch (ParseException e) {
       LOGGER.error(String.format("Failed to parse the input '%s'. Error: %s", dateStr, e.getMessage()));
       e.printStackTrace();

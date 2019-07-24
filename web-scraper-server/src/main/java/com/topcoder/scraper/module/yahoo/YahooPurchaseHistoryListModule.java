@@ -69,7 +69,7 @@ public class YahooPurchaseHistoryListModule extends PurchaseHistoryListModule {
       try {
         Optional<PurchaseHistory> lastPurchaseHistory = purchaseHistoryService.fetchLast(ecSiteAccountDAO.getId());
 
-        YahooPurchaseHistoryListCrawler crawler = new YahooPurchaseHistoryListCrawler(getECName(), webpageService);
+        YahooPurchaseHistoryListCrawler crawler = new YahooPurchaseHistoryListCrawler(getECName(), webpageService, ecSiteAccountDAO);
         YahooPurchaseHistoryListCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClient, lastPurchaseHistory.orElse(null), true);
         webClient.finishTraffic();
 

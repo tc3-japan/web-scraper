@@ -42,7 +42,8 @@ public class YahooAuthenticationCrawler {
     webpageService.save("yahoo-login-initial", siteName, loginPage.getWebResponse().getContentAsString());
     HtmlPage passwordPage = webClient.click(nextButton);
 
-    if(passwordPage!=null) {} else {} //else use login page because username was already remembered and you were at password login page not user email login page}
+    //TODO: We don't need to account for this condition after all? Page should stay the same if null button is clicked?
+    //if(passwordPage!=null) {} else {} //else use login page because username was already remembered and you were at password login page not user email login page}
     HtmlPasswordInput passwordInput = passwordPage.querySelector("#passwd");
     HtmlCheckBoxInput rememberInput = passwordPage.querySelector("#persistent");
     HtmlButton loginButtonInput = passwordPage.querySelector("#btnSubmit");

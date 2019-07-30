@@ -34,11 +34,22 @@ public class YahooPurchaseHistoryListCrawler {
   private final WebpageService webpageService;
   private ECSiteAccountDAO ecSiteAccountDAO;
 
+  //for testing only
+  private String testEmail;
+  private String testPassword;
+
   public YahooPurchaseHistoryListCrawler(String siteName, WebpageService webpageService,
       ECSiteAccountDAO ecSiteAccountDAO) {
     this.siteName = siteName;
     this.webpageService = webpageService;
     this.ecSiteAccountDAO = ecSiteAccountDAO;
+  }
+
+  public YahooPurchaseHistoryListCrawler(String siteName, WebpageService webpageService, String testEmail, String testPassword) {
+    this.siteName = siteName;
+    this.webpageService = webpageService;
+    this.testEmail = testEmail;
+    this.testPassword = testPassword;
   }
 
   public YahooPurchaseHistoryListCrawlerResult fetchPurchaseHistoryList(TrafficWebClient webClient,
@@ -114,8 +125,16 @@ public class YahooPurchaseHistoryListCrawler {
             HtmlPage loginPage = webClient.click(needToLoginPage.querySelector("p.elButton:nth-child(3) > a:nth-child(1) > span:nth-child(1)"));
             webpageService.save("yahoo-type-login-page", "yahoo", loginPage.getWebResponse().getContentAsString());
 
-            String username = ecSiteAccountDAO.getLoginEmail();
-            String password = ecSiteAccountDAO.getPassword();
+            String username;
+            String password;
+
+            if (ecSiteAccountDAO != null) {
+              username = ecSiteAccountDAO.getLoginEmail();
+              password = ecSiteAccountDAO.getPassword();
+            } else {
+              username = testEmail;
+              password = testPassword;
+            }
 
             // Warning: Username comes on first page unless autologin / remember me
             HtmlTextInput memberIdInput = loginPage.querySelector("#username");
@@ -123,7 +142,8 @@ public class YahooPurchaseHistoryListCrawler {
             HtmlButton nextButton = loginPage.querySelector("#btnNext");
             HtmlPage passwordPage2 = webClient.click(nextButton);
 
-            if (passwordPage2 != null) { //TODO
+
+            if (passwordPage2 != null) { //TODO: This may not be necessary after all?
             } else {} // else use login page because username was already remembered and you were at
               // password login page not user email login page
             HtmlPasswordInput passwordInput = passwordPage2.querySelector("#passwd");

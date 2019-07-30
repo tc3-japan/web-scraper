@@ -1,7 +1,7 @@
-package com.topcoder.scraper.module.kojima;
+package com.topcoder.scraper.module.yahoo;
 
+import java.io.Console;
 import java.io.IOException;
-//import java.sql.Date;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -27,17 +27,17 @@ import com.topcoder.common.repository.CheckResultRepository;
 import com.topcoder.common.repository.NormalDataRepository;
 import com.topcoder.scraper.Consts;
 import com.topcoder.scraper.module.ChangeDetectionCheckModule;
-import com.topcoder.scraper.module.kojima.crawler.KojimaAuthenticationCrawler;
-import com.topcoder.scraper.module.kojima.crawler.KojimaProductDetailCrawler;
-import com.topcoder.scraper.module.kojima.crawler.KojimaProductDetailCrawlerResult;
-import com.topcoder.scraper.module.kojima.crawler.KojimaPurchaseHistoryListCrawler;
-import com.topcoder.scraper.module.kojima.crawler.KojimaPurchaseHistoryListCrawlerResult;
+import com.topcoder.scraper.module.yahoo.crawler.YahooAuthenticationCrawler;
+import com.topcoder.scraper.module.yahoo.crawler.YahooProductDetailCrawler;
+import com.topcoder.scraper.module.yahoo.crawler.YahooProductDetailCrawlerResult;
+import com.topcoder.scraper.module.yahoo.crawler.YahooPurchaseHistoryListCrawler;
+import com.topcoder.scraper.module.yahoo.crawler.YahooPurchaseHistoryListCrawlerResult;
 import com.topcoder.scraper.service.WebpageService;
 
 @Component
-public class KojimaChangeDetectionCheckModule extends ChangeDetectionCheckModule {
+public class YahooChangeDetectionCheckModule extends ChangeDetectionCheckModule {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(KojimaChangeDetectionCheckModule.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(YahooChangeDetectionCheckModule.class);
   MonitorTargetDefinitionProperty monitorTargetDefinitionProperty;
   CheckItemsDefinitionProperty checkItemsDefinitionProperty;
   WebpageService webpageService;
@@ -45,7 +45,7 @@ public class KojimaChangeDetectionCheckModule extends ChangeDetectionCheckModule
   NormalDataRepository normalDataRepository;
 
   @Autowired
-  public KojimaChangeDetectionCheckModule(
+  public YahooChangeDetectionCheckModule(
       MonitorTargetDefinitionProperty monitorTargetDefinitionProperty,
       CheckItemsDefinitionProperty checkItemsDefinitionProperty,
       WebpageService webpageService,
@@ -60,7 +60,7 @@ public class KojimaChangeDetectionCheckModule extends ChangeDetectionCheckModule
 
   @Override
   public String getECName() {
-    return "kojima";
+    return "yahoo";
   }
 
   @Override
@@ -75,10 +75,10 @@ public class KojimaChangeDetectionCheckModule extends ChangeDetectionCheckModule
         if (monitorTargetCheckPage.getPageName().equalsIgnoreCase(Consts.PURCHASE_HISTORY_LIST_PAGE_NAME)) {
           List<String> usernameList = monitorTargetCheckPage.getCheckTargetKeys();
 
-          String passwordListString = System.getenv(Consts.KOJIMA_CHECK_TARGET_KEYS_PASSWORDS);
+          String passwordListString = System.getenv(Consts.YAHOO_CHECK_TARGET_KEYS_PASSWORDS);
           if (passwordListString == null) {
-            LOGGER.error("Please set environment variable KOJIMA_CHECK_TARGET_KEYS_PASSWORDS first");
-            throw new RuntimeException("environment variable KOJIMA_CHECK_TARGET_KEYS_PASSWORDS not set");
+            LOGGER.error("Please set environment variable YAHOO_CHECK_TARGET_KEYS_PASSWORDS first");
+            throw new RuntimeException("environment variable YAHOO_CHECK_TARGET_KEYS_PASSWORDS not set");
           }
           List<String> passwordList = Arrays.asList(passwordListString.split(","));
 
@@ -87,24 +87,33 @@ public class KojimaChangeDetectionCheckModule extends ChangeDetectionCheckModule
             String password = passwordList.get(i);
 
             TrafficWebClient webClient = new TrafficWebClient(0, false);
-            KojimaAuthenticationCrawler authenticationCrawler = new KojimaAuthenticationCrawler(getECName(), webpageService);
+            YahooAuthenticationCrawler authenticationCrawler = new YahooAuthenticationCrawler(getECName(), webpageService);
             if (!authenticationCrawler.authenticate(webClient, username, password)) {
               LOGGER.error(String.format("Failed to login %s with username %s. Skip.", getECName(), username));
               continue;
             }
 
-            KojimaPurchaseHistoryListCrawler purchaseHistoryListCrawler = new KojimaPurchaseHistoryListCrawler(getECName(), webpageService);
-            KojimaPurchaseHistoryListCrawlerResult crawlerResult = purchaseHistoryListCrawler.fetchPurchaseHistoryList(webClient, null, true);
+            //TODO: Alternatively, read from config?
+            Console console = System.console();
+            System.out.println("");
+            System.out.println("Enter Yahoo Account Email for testing");
+            String email = console.readLine();
+            System.out.println("Enter Yahoo Account Password for testing");
+            char[] pwChars = console.readPassword();
+            String pw = new String(pwChars);
+
+            YahooPurchaseHistoryListCrawler purchaseHistoryListCrawler = new YahooPurchaseHistoryListCrawler(getECName(), webpageService, email, pw);
+            YahooPurchaseHistoryListCrawlerResult crawlerResult = purchaseHistoryListCrawler.fetchPurchaseHistoryList(webClient, null, true);
             webClient.finishTraffic();
             
             processPurchaseHistory(crawlerResult, username, checkSiteDefinition);
           }
 
         } else if (monitorTargetCheckPage.getPageName().equalsIgnoreCase(Consts.PRODUCT_DETAIL_PAGE_NAME)) {
-          KojimaProductDetailCrawler crawler = new KojimaProductDetailCrawler(getECName(), webpageService);
+          YahooProductDetailCrawler crawler = new YahooProductDetailCrawler(getECName(), webpageService);
           for (String productCode : monitorTargetCheckPage.getCheckTargetKeys()) {
             TrafficWebClient webClient = new TrafficWebClient(0, false);
-            KojimaProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productCode, true);
+            YahooProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productCode, true);
             webClient.finishTraffic();
 
             processProductInfo(crawlerResult, checkSiteDefinition);
@@ -118,12 +127,12 @@ public class KojimaChangeDetectionCheckModule extends ChangeDetectionCheckModule
   }
 
 
-  /**
+    /**
    * Process purchase history crawler result
    * @param crawlerResult the crawler result
    * @param pageKey the page key
    */
-  protected void processPurchaseHistory(KojimaPurchaseHistoryListCrawlerResult crawlerResult, String pageKey, CheckItemsDefinitionProperty.CheckItemsCheckSite checkSiteDefinition) {
+  protected void processPurchaseHistory(YahooPurchaseHistoryListCrawlerResult crawlerResult, String pageKey, CheckItemsDefinitionProperty.CheckItemsCheckSite checkSiteDefinition) {
     List<PurchaseHistory> purchaseHistoryList = crawlerResult.getPurchaseHistoryList();
 
     CheckItemsDefinitionProperty.CheckItemsCheckPage checkItemsCheckPage = checkSiteDefinition.getCheckPageDefinition(Consts.PURCHASE_HISTORY_LIST_PAGE_NAME);
@@ -158,7 +167,7 @@ public class KojimaChangeDetectionCheckModule extends ChangeDetectionCheckModule
    * Process product info crawler result
    * @param crawlerResult the crawler result
    */
-  protected void processProductInfo(KojimaProductDetailCrawlerResult crawlerResult, CheckItemsDefinitionProperty.CheckItemsCheckSite checkSiteDefinition) {
+  protected void processProductInfo(YahooProductDetailCrawlerResult crawlerResult, CheckItemsDefinitionProperty.CheckItemsCheckSite checkSiteDefinition) {
     ProductInfo productInfo = crawlerResult.getProductInfo();
     
     CheckItemsDefinitionProperty.CheckItemsCheckPage checkItemsCheckPage = checkSiteDefinition.getCheckPageDefinition(Consts.PRODUCT_DETAIL_PAGE_NAME);
@@ -184,7 +193,7 @@ public class KojimaChangeDetectionCheckModule extends ChangeDetectionCheckModule
     webpageService.save("notification", getECName(), notification.toString());
   };
 
-    /**
+      /**
    * Save check result in database
    * @param passed true if result is passed
    * @param checkResultDetail check result detail as string
@@ -205,5 +214,5 @@ public class KojimaChangeDetectionCheckModule extends ChangeDetectionCheckModule
     dao.setTotalCheckStatus(passed ? "OK" : "NG");
     checkResultRepository.save(dao);
   }
-
+  
 }

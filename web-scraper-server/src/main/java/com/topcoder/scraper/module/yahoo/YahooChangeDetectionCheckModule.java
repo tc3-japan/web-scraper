@@ -93,16 +93,7 @@ public class YahooChangeDetectionCheckModule extends ChangeDetectionCheckModule 
               continue;
             }
 
-            //TODO: Alternatively, read from config?
-            Console console = System.console();
-            System.out.println("");
-            System.out.println("Enter Yahoo Account Email for testing");
-            String email = console.readLine();
-            System.out.println("Enter Yahoo Account Password for testing");
-            char[] pwChars = console.readPassword();
-            String pw = new String(pwChars);
-
-            YahooPurchaseHistoryListCrawler purchaseHistoryListCrawler = new YahooPurchaseHistoryListCrawler(getECName(), webpageService, email, pw);
+            YahooPurchaseHistoryListCrawler purchaseHistoryListCrawler = new YahooPurchaseHistoryListCrawler(getECName(), webpageService, username, password);
             YahooPurchaseHistoryListCrawlerResult crawlerResult = purchaseHistoryListCrawler.fetchPurchaseHistoryList(webClient, null, true);
             webClient.finishTraffic();
             

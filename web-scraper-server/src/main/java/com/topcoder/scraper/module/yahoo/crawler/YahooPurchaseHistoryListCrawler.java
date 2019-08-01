@@ -32,24 +32,26 @@ public class YahooPurchaseHistoryListCrawler {
   //private static final Pattern PAT_ORDER_NO = Pattern.compile("([\\d]{13})", Pattern.DOTALL); //TODO: Do we need this? What is it for?
   private final String siteName;
   private final WebpageService webpageService;
-  private ECSiteAccountDAO ecSiteAccountDAO;
+  //private ECSiteAccountDAO ecSiteAccountDAO;
 
   //for testing only
-  private String testEmail;
-  private String testPassword;
+  private String username; //Actually email?
+  private String password;
 
   public YahooPurchaseHistoryListCrawler(String siteName, WebpageService webpageService,
       ECSiteAccountDAO ecSiteAccountDAO) {
     this.siteName = siteName;
     this.webpageService = webpageService;
-    this.ecSiteAccountDAO = ecSiteAccountDAO;
+    //this.ecSiteAccountDAO = ecSiteAccountDAO;
+    this.username = ecSiteAccountDAO.getLoginEmail();
+    this.password = ecSiteAccountDAO.getPassword();
   }
 
-  public YahooPurchaseHistoryListCrawler(String siteName, WebpageService webpageService, String testEmail, String testPassword) {
+  public YahooPurchaseHistoryListCrawler(String siteName, WebpageService webpageService, String username, String password) {
     this.siteName = siteName;
     this.webpageService = webpageService;
-    this.testEmail = testEmail;
-    this.testPassword = testPassword;
+    this.username = username;
+    this.password = password;
   }
 
   public YahooPurchaseHistoryListCrawlerResult fetchPurchaseHistoryList(TrafficWebClient webClient,
@@ -124,17 +126,6 @@ public class YahooPurchaseHistoryListCrawler {
             HtmlPage needToLoginPage = webClient.click(orderInfoLink); // go get price>
             HtmlPage loginPage = webClient.click(needToLoginPage.querySelector("p.elButton:nth-child(3) > a:nth-child(1) > span:nth-child(1)"));
             webpageService.save("yahoo-type-login-page", "yahoo", loginPage.getWebResponse().getContentAsString());
-
-            String username;
-            String password;
-
-            if (ecSiteAccountDAO != null) {
-              username = ecSiteAccountDAO.getLoginEmail();
-              password = ecSiteAccountDAO.getPassword();
-            } else {
-              username = testEmail;
-              password = testPassword;
-            }
 
             // Warning: Username comes on first page unless autologin / remember me
             HtmlTextInput memberIdInput = loginPage.querySelector("#username");

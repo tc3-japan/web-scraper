@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import com.gargoylesoftware.htmlunit.ElementNotFoundException;
 import com.gargoylesoftware.htmlunit.html.HtmlCheckBoxInput;
+import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlImageInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
@@ -46,12 +47,16 @@ public class KojimaAuthenticationCrawler {
     
     HtmlTextInput memberIdInput = loginForm.getInputByName("MEM_ID");
     HtmlPasswordInput passwordInput = loginForm.getInputByName("PWD");
-    HtmlCheckBoxInput rememberInput = loginForm.getInputByName("REM");
-    HtmlImageInput loginButtonInput = loginPage.querySelector("div.member-login>div.member-login-inner>input.imgover");
-    
-    
+    HtmlElement rememberInput = loginForm.getInputByName("REM");
+    HtmlElement loginButtonInput = loginPage.querySelector("div.member-login>div.member-login-inner>input.imgover");
+    if (loginButtonInput == null) loginButtonInput = loginPage.querySelector(".login_box01 > p:nth-child(4) > button:nth-child(1)");
+    System.out.println();
+    System.out.println("memberIdInput: " + memberIdInput);
+    System.out.println("passwordInput: " + passwordInput);
+    System.out.println("loginButtonInput: " + loginButtonInput);
+
     memberIdInput.type(username);
-    passwordInput.type(password);
+    passwordInput.type(password); 
     rememberInput.type("on");
     HtmlPage afterLoginPage = webClient.click(loginButtonInput);
 

@@ -24,17 +24,19 @@ public class AppRunner implements ApplicationRunner {
   private final ChangeDetectionCheckCommand changeDetectionCheckCommand;
   private final UserEncoderCommand userEncoderCommand;
   private final CrossECProductCommand crossECProductCommand;
+  private final DemoCommand demoCommand;
 
   @Autowired
   public AppRunner(PurchaseHistoryListCommand purchaseHistoryListCommand, ProductDetailCommand productDetailCommand,
                    ChangeDetectionInitCommand changeDetectionInitCommand, ChangeDetectionCheckCommand changeDetectionCheckCommand,
-                   UserEncoderCommand userEncoderCommand, CrossECProductCommand crossECProductCommand) {
+                   UserEncoderCommand userEncoderCommand, CrossECProductCommand crossECProductCommand, DemoCommand demoCommand) {
     this.purchaseHistoryListCommand  = purchaseHistoryListCommand;
     this.productDetailCommand        = productDetailCommand;
     this.changeDetectionInitCommand  = changeDetectionInitCommand;
     this.changeDetectionCheckCommand = changeDetectionCheckCommand;
     this.userEncoderCommand          = userEncoderCommand;
     this.crossECProductCommand       = crossECProductCommand;
+    this.demoCommand                 = demoCommand;
   }
 
   /**
@@ -62,6 +64,8 @@ public class AppRunner implements ApplicationRunner {
       userEncoderCommand.run(args);
     } else if(batches.contains("cross_ec_product")){
       crossECProductCommand.run(args);
+    } else if(batches.contains("demo")){
+      demoCommand.run(args);
     }else {
       usage();
     }

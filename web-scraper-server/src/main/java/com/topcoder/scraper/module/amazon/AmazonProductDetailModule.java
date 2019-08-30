@@ -7,6 +7,8 @@ import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.module.ProductDetailModule;
 import com.topcoder.scraper.module.amazon.crawler.AmazonProductDetailCrawler;
 import com.topcoder.scraper.module.amazon.crawler.AmazonProductDetailCrawlerResult;
+import com.topcoder.scraper.module.general.ProductDetailCrawler;
+import com.topcoder.scraper.module.general.ProductDetailCrawlerResult;
 import com.topcoder.scraper.service.ProductService;
 import com.topcoder.scraper.service.WebpageService;
 import org.slf4j.Logger;
@@ -49,7 +51,9 @@ public class AmazonProductDetailModule extends ProductDetailModule {
   @Override
   public void fetchProductDetailList() {
     List<ProductDAO> products = this.productService.getAllFetchInfoStatusIsNull(getECName());
-    AmazonProductDetailCrawler crawler = new AmazonProductDetailCrawler(getECName(), property, webpageService);
+    // fixme
+    //AmazonProductDetailCrawler crawler = new AmazonProductDetailCrawler(getECName(), property, webpageService);
+    ProductDetailCrawler crawler = new ProductDetailCrawler(getECName(), webpageService);
 
     products.forEach(product -> {
       try {
@@ -68,10 +72,14 @@ public class AmazonProductDetailModule extends ProductDetailModule {
    * @param productCode the product code
    * @throws IOException webclient exception
    */
-  private void fetchProductDetail(AmazonProductDetailCrawler crawler, int productId, String productCode) throws IOException {
+  // fixme
+  //private void fetchProductDetail(AmazonProductDetailCrawler crawler, int productId, String productCode) throws IOException {
+  private void fetchProductDetail(ProductDetailCrawler crawler, int productId, String productCode) throws IOException {
     TrafficWebClient webClient = new TrafficWebClient(0, false);
 
-    AmazonProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productCode, true);
+    // fixme
+    //AmazonProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productCode, true);
+    ProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productCode);
     webClient.finishTraffic();
 
     ProductInfo productInfo = crawlerResult.getProductInfo();

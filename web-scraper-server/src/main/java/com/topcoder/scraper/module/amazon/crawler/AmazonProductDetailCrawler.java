@@ -1,23 +1,22 @@
 package com.topcoder.scraper.module.amazon.crawler;
 
-import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.topcoder.common.config.AmazonProperty;
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.traffic.TrafficWebClient;
-import com.topcoder.scraper.exception.SessionExpiredException;
 import com.topcoder.scraper.service.WebpageService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.util.Pair;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.util.Pair;
 
 import static com.topcoder.common.util.HtmlUtils.*;
 

@@ -79,5 +79,13 @@ public class HtmlUtils {
     }
     return Integer.valueOf(intText.replaceAll(",", ""));
   }
- 
+
+  // TODO: delete (code for experiment)
+  public static String foo(String[] args) {
+    String ret = "";
+    for(String arg : args) {
+      ret += " " + arg;
+    }
+    return ret;
+  }
 }

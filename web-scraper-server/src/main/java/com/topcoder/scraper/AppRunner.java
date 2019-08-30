@@ -25,11 +25,13 @@ public class AppRunner implements ApplicationRunner {
   private final UserEncoderCommand userEncoderCommand;
   private final CrossECProductCommand crossECProductCommand;
   private final DemoCommand demoCommand;
+  private final GroovyDemoCommand groovyDemoCommand;
 
   @Autowired
   public AppRunner(PurchaseHistoryListCommand purchaseHistoryListCommand, ProductDetailCommand productDetailCommand,
                    ChangeDetectionInitCommand changeDetectionInitCommand, ChangeDetectionCheckCommand changeDetectionCheckCommand,
-                   UserEncoderCommand userEncoderCommand, CrossECProductCommand crossECProductCommand, DemoCommand demoCommand) {
+                   UserEncoderCommand userEncoderCommand, CrossECProductCommand crossECProductCommand,
+                   DemoCommand demoCommand, GroovyDemoCommand groovyDemoCommand) {
     this.purchaseHistoryListCommand  = purchaseHistoryListCommand;
     this.productDetailCommand        = productDetailCommand;
     this.changeDetectionInitCommand  = changeDetectionInitCommand;
@@ -37,6 +39,7 @@ public class AppRunner implements ApplicationRunner {
     this.userEncoderCommand          = userEncoderCommand;
     this.crossECProductCommand       = crossECProductCommand;
     this.demoCommand                 = demoCommand;
+    this.groovyDemoCommand           = groovyDemoCommand;
   }
 
   /**
@@ -66,6 +69,8 @@ public class AppRunner implements ApplicationRunner {
       crossECProductCommand.run(args);
     } else if(batches.contains("demo")){
       demoCommand.run(args);
+    } else if(batches.contains("groovy_demo")){
+      groovyDemoCommand.run(args);
     }else {
       usage();
     }

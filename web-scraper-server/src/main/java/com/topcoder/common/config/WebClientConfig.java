@@ -17,7 +17,7 @@ public class WebClientConfig {
     WebClient webClient = new WebClient(BrowserVersion.CHROME);
     webClient.getOptions().setThrowExceptionOnScriptError(false);
     webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
-    webClient.getOptions().setJavaScriptEnabled(false);
+    webClient.getOptions().setJavaScriptEnabled(true);
 
     return webClient;
   }

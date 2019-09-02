@@ -19,6 +19,8 @@ import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.common.util.DateUtils;
 import com.topcoder.scraper.exception.SessionExpiredException;
+import com.topcoder.scraper.module.PurchaseHistoryListCrawlerResult;
+import com.topcoder.scraper.module.navpage.NavigablePurchaseHistoryPage;
 import com.topcoder.scraper.service.WebpageService;
 
 public class KojimaPurchaseHistoryListCrawler {
@@ -33,7 +35,7 @@ public class KojimaPurchaseHistoryListCrawler {
     this.webpageService = webpageService;
   }
 
-  public KojimaPurchaseHistoryListCrawlerResult fetchPurchaseHistoryList(TrafficWebClient webClient, PurchaseHistory lastPurchaseHistory, boolean saveHtml) throws IOException {
+  public PurchaseHistoryListCrawlerResult fetchPurchaseHistoryList(TrafficWebClient webClient, PurchaseHistory lastPurchaseHistory, boolean saveHtml) throws IOException {
     List<PurchaseHistory> list = new LinkedList<>();
     List<String> pathList = new LinkedList<>();
     LOGGER.info("goto Order History Page");
@@ -45,23 +47,28 @@ public class KojimaPurchaseHistoryListCrawler {
     
     webpageService.save("kojima-purchase-history", siteName, page.getWebResponse().getContentAsString());
     while (true) {
-      if (page == null || !parsePurchaseHistory(list, page, lastPurchaseHistory, saveHtml, pathList)) {
+      if (page == null || !parsePurchaseHistory(webClient, list, page, lastPurchaseHistory, saveHtml, pathList)) {
         break;
       }
       page = gotoNextPage(page, webClient);
     }
 
-    return new KojimaPurchaseHistoryListCrawlerResult(list, pathList);
+    return new PurchaseHistoryListCrawlerResult(list, pathList);
   }
   
-  private boolean parsePurchaseHistory(List<PurchaseHistory> list, HtmlPage page, PurchaseHistory last, boolean saveHtml, List<String> pathList) {
+  private boolean parsePurchaseHistory(TrafficWebClient webClient, List<PurchaseHistory> list, HtmlPage page, PurchaseHistory last, boolean saveHtml, List<String> pathList) {
 
     LOGGER.debug("Parsing page url " + page.getUrl().toString());
     
+
+
     //member-orderhistorydetails
     List<DomNode> orders = page.querySelectorAll(".member-orderhistorydetails > tbody");
     
     for (DomNode orderNode : orders) {
+      PurchaseHistory purchaseHistory = new PurchaseHistory();
+      NavigablePurchaseHistoryPage historyPage = new NavigablePurchaseHistoryPage(page, webClient, purchaseHistory);/// One purchase History? A list? 
+
       DomNode itemNoNode = orderNode.querySelector(".itemnumber");
       String nodeText = itemNoNode.asText();
       String orderNumber = extract(nodeText, PAT_ORDER_NO);

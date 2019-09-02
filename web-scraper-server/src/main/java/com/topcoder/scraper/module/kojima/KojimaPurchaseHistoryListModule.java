@@ -8,7 +8,7 @@ import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.common.util.Common;
 import com.topcoder.scraper.module.PurchaseHistoryListModule;
 import com.topcoder.scraper.module.kojima.crawler.KojimaPurchaseHistoryListCrawler;
-import com.topcoder.scraper.module.kojima.crawler.KojimaPurchaseHistoryListCrawlerResult;
+import com.topcoder.scraper.module.PurchaseHistoryListCrawlerResult;
 import com.topcoder.scraper.service.PurchaseHistoryService;
 import com.topcoder.scraper.service.WebpageService;
 import org.slf4j.Logger;
@@ -70,7 +70,7 @@ public class KojimaPurchaseHistoryListModule extends PurchaseHistoryListModule {
         Optional<PurchaseHistory> lastPurchaseHistory = purchaseHistoryService.fetchLast(ecSiteAccountDAO.getId());
 
         KojimaPurchaseHistoryListCrawler crawler = new KojimaPurchaseHistoryListCrawler(getECName(), webpageService);
-        KojimaPurchaseHistoryListCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClient, lastPurchaseHistory.orElse(null), true);
+        PurchaseHistoryListCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClient, lastPurchaseHistory.orElse(null), true);
         webClient.finishTraffic();
 
         List<PurchaseHistory> list = crawlerResult.getPurchaseHistoryList();

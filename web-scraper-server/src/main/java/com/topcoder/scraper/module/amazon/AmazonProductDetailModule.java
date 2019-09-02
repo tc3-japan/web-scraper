@@ -6,7 +6,7 @@ import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.module.ProductDetailModule;
 import com.topcoder.scraper.module.amazon.crawler.AmazonProductDetailCrawler;
-import com.topcoder.scraper.module.amazon.crawler.AmazonProductDetailCrawlerResult;
+
 import com.topcoder.scraper.module.general.ProductDetailCrawler;
 import com.topcoder.scraper.module.general.ProductDetailCrawlerResult;
 import com.topcoder.scraper.service.ProductService;
@@ -100,7 +100,7 @@ public class AmazonProductDetailModule extends ProductDetailModule {
     TrafficWebClient webClient = new TrafficWebClient(0, false);
 
 	  AmazonProductDetailCrawler crawler = new AmazonProductDetailCrawler(getECName(), property, webpageService);
-    AmazonProductDetailCrawlerResult crawlerResult = crawler.serarchProductAndFetchProductInfoByModelNo(webClient, modelNo, true);
+    ProductDetailCrawlerResult crawlerResult = crawler.serarchProductAndFetchProductInfoByModelNo(webClient, modelNo, true);
     webClient.finishTraffic();
 
     ProductInfo productInfo = Objects.isNull(crawlerResult) ? null : crawlerResult.getProductInfo();

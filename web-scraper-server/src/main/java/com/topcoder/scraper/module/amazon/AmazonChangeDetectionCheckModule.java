@@ -19,9 +19,9 @@ import com.topcoder.scraper.module.ChangeDetectionCheckModule;
 import com.topcoder.scraper.module.amazon.crawler.AmazonAuthenticationCrawler;
 import com.topcoder.scraper.module.amazon.crawler.AmazonAuthenticationCrawlerResult;
 import com.topcoder.scraper.module.amazon.crawler.AmazonProductDetailCrawler;
-import com.topcoder.scraper.module.amazon.crawler.AmazonProductDetailCrawlerResult;
+import com.topcoder.scraper.module.general.ProductDetailCrawlerResult;
 import com.topcoder.scraper.module.amazon.crawler.AmazonPurchaseHistoryListCrawler;
-import com.topcoder.scraper.module.amazon.crawler.AmazonPurchaseHistoryListCrawlerResult;
+import com.topcoder.scraper.module.PurchaseHistoryListCrawlerResult;
 import com.topcoder.scraper.service.WebpageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -104,7 +104,7 @@ public class AmazonChangeDetectionCheckModule extends ChangeDetectionCheckModule
             }
 
             AmazonPurchaseHistoryListCrawler purchaseHistoryListCrawler = new AmazonPurchaseHistoryListCrawler(getECName(), property, webpageService);
-            AmazonPurchaseHistoryListCrawlerResult crawlerResult = purchaseHistoryListCrawler.fetchPurchaseHistoryList(webClient, null, true);
+            PurchaseHistoryListCrawlerResult crawlerResult = purchaseHistoryListCrawler.fetchPurchaseHistoryList(webClient, null, true);
             webClient.finishTraffic();
 
             processPurchaseHistory(crawlerResult, username, checkSiteDefinition);
@@ -114,7 +114,7 @@ public class AmazonChangeDetectionCheckModule extends ChangeDetectionCheckModule
           AmazonProductDetailCrawler crawler = new AmazonProductDetailCrawler(getECName(), property, webpageService);
           for (String productCode : monitorTargetCheckPage.getCheckTargetKeys()) {
             TrafficWebClient webClient = new TrafficWebClient(0, false);
-            AmazonProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productCode, true);
+            ProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productCode, true);
             webClient.finishTraffic();
             processProductInfo(crawlerResult, checkSiteDefinition);
           }
@@ -133,7 +133,7 @@ public class AmazonChangeDetectionCheckModule extends ChangeDetectionCheckModule
    * @param crawlerResult the crawler result
    * @param pageKey the page key
    */
-  protected void processPurchaseHistory(AmazonPurchaseHistoryListCrawlerResult crawlerResult, String pageKey, CheckItemsDefinitionProperty.CheckItemsCheckSite checkSiteDefinition) {
+  protected void processPurchaseHistory(PurchaseHistoryListCrawlerResult crawlerResult, String pageKey, CheckItemsDefinitionProperty.CheckItemsCheckSite checkSiteDefinition) {
     List<PurchaseHistory> purchaseHistoryList = crawlerResult.getPurchaseHistoryList();
 
     CheckItemsDefinitionProperty.CheckItemsCheckPage checkItemsCheckPage = checkSiteDefinition.getCheckPageDefinition(Consts.PURCHASE_HISTORY_LIST_PAGE_NAME);
@@ -168,7 +168,7 @@ public class AmazonChangeDetectionCheckModule extends ChangeDetectionCheckModule
    * Process product info crawler result
    * @param crawlerResult the crawler result
    */
-  protected void processProductInfo(AmazonProductDetailCrawlerResult crawlerResult, CheckItemsDefinitionProperty.CheckItemsCheckSite checkSiteDefinition) {
+  protected void processProductInfo(ProductDetailCrawlerResult crawlerResult, CheckItemsDefinitionProperty.CheckItemsCheckSite checkSiteDefinition) {
     ProductInfo productInfo = crawlerResult.getProductInfo();
     
     CheckItemsDefinitionProperty.CheckItemsCheckPage checkItemsCheckPage = checkSiteDefinition.getCheckPageDefinition(Consts.PRODUCT_DETAIL_PAGE_NAME);

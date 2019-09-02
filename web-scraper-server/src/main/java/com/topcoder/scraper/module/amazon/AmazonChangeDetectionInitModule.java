@@ -12,9 +12,9 @@ import com.topcoder.scraper.module.ChangeDetectionInitModule;
 import com.topcoder.scraper.module.amazon.crawler.AmazonAuthenticationCrawler;
 import com.topcoder.scraper.module.amazon.crawler.AmazonAuthenticationCrawlerResult;
 import com.topcoder.scraper.module.amazon.crawler.AmazonProductDetailCrawler;
-import com.topcoder.scraper.module.amazon.crawler.AmazonProductDetailCrawlerResult;
+import com.topcoder.scraper.module.general.ProductDetailCrawlerResult;
 import com.topcoder.scraper.module.amazon.crawler.AmazonPurchaseHistoryListCrawler;
-import com.topcoder.scraper.module.amazon.crawler.AmazonPurchaseHistoryListCrawlerResult;
+import com.topcoder.scraper.module.PurchaseHistoryListCrawlerResult;
 import com.topcoder.scraper.service.WebpageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,7 +91,7 @@ public class AmazonChangeDetectionInitModule extends ChangeDetectionInitModule {
             }
 
             AmazonPurchaseHistoryListCrawler purchaseHistoryListCrawler = new AmazonPurchaseHistoryListCrawler(getECName(), property, webpageService);
-            AmazonPurchaseHistoryListCrawlerResult crawlerResult = purchaseHistoryListCrawler.fetchPurchaseHistoryList(webClient, null, false);
+            PurchaseHistoryListCrawlerResult crawlerResult = purchaseHistoryListCrawler.fetchPurchaseHistoryList(webClient, null, false);
             webClient.finishTraffic();
             processPurchaseHistory(crawlerResult, username);
           }
@@ -100,7 +100,7 @@ public class AmazonChangeDetectionInitModule extends ChangeDetectionInitModule {
           AmazonProductDetailCrawler crawler = new AmazonProductDetailCrawler(getECName(), property, webpageService);
           for (String productCode : monitorTargetCheckPage.getCheckTargetKeys()) {
             TrafficWebClient webClient = new TrafficWebClient(0, false);
-            AmazonProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productCode, false);
+            ProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productCode, false);
             webClient.finishTraffic();
             processProductInfo(crawlerResult);
           }
@@ -138,7 +138,7 @@ public class AmazonChangeDetectionInitModule extends ChangeDetectionInitModule {
    * @param crawlerResult the crawler result
    * @param pageKey the page key
    */
-  protected void processPurchaseHistory(AmazonPurchaseHistoryListCrawlerResult crawlerResult, String pageKey) {
+  protected void processPurchaseHistory(PurchaseHistoryListCrawlerResult crawlerResult, String pageKey) {
     List<PurchaseHistory> purchaseHistoryList = crawlerResult.getPurchaseHistoryList();
     saveNormalData(PurchaseHistory.toArrayJson(purchaseHistoryList), pageKey, Consts.PURCHASE_HISTORY_LIST_PAGE_NAME);
   }
@@ -147,7 +147,7 @@ public class AmazonChangeDetectionInitModule extends ChangeDetectionInitModule {
    * process product info crawler result
    * @param crawlerResult the crawler result
    */
-  protected void processProductInfo(AmazonProductDetailCrawlerResult crawlerResult) {
+  protected void processProductInfo(ProductDetailCrawlerResult crawlerResult) {
     ProductInfo productInfo = crawlerResult.getProductInfo();
     saveNormalData(productInfo.toJson(), productInfo.getCode(), Consts.PRODUCT_DETAIL_PAGE_NAME);
   }

@@ -9,7 +9,7 @@ import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.common.util.Common;
 import com.topcoder.scraper.module.PurchaseHistoryListModule;
 import com.topcoder.scraper.module.amazon.crawler.AmazonPurchaseHistoryListCrawler;
-import com.topcoder.scraper.module.amazon.crawler.AmazonPurchaseHistoryListCrawlerResult;
+import com.topcoder.scraper.module.PurchaseHistoryListCrawlerResult;
 import com.topcoder.scraper.service.PurchaseHistoryService;
 import com.topcoder.scraper.service.WebpageService;
 import org.slf4j.Logger;
@@ -79,12 +79,14 @@ public class AmazonPurchaseHistoryListModule extends PurchaseHistoryListModule {
       try {
         AmazonPurchaseHistoryListCrawler crawler = new AmazonPurchaseHistoryListCrawler(getECName(), property, webpageService);
 
-        AmazonPurchaseHistoryListCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClient, lastPurchaseHistory.orElse(null), true);
+        PurchaseHistoryListCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClient, lastPurchaseHistory.orElse(null), true);
         webClient.finishTraffic();
         List<PurchaseHistory> list = crawlerResult.getPurchaseHistoryList();
 
-        list.forEach(purchaseHistory -> purchaseHistory.setAccountId(Integer.toString(ecSiteAccountDAO.getId())));
-        purchaseHistoryService.save(getECName(), list);
+        if (list != null && list.size() > 0) {
+          list.forEach(purchaseHistory -> purchaseHistory.setAccountId(Integer.toString(ecSiteAccountDAO.getId())));
+          purchaseHistoryService.save(getECName(), list);
+        }
         LOGGER.info("succeed fetch purchaseHistory for ecSite id = " + ecSiteAccountDAO.getId());
       } catch (Exception e) { // here catch all exception and did not throw it
         loginHandler.saveFailedResult(ecSiteAccountDAO, e.getMessage());

@@ -6,7 +6,7 @@ import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.module.ProductDetailModule;
 import com.topcoder.scraper.module.amazon.crawler.AmazonProductDetailCrawler;
-import com.topcoder.scraper.module.amazon.crawler.AmazonProductDetailCrawlerResult;
+import com.topcoder.scraper.module.ProductDetailCrawlerResult;
 import com.topcoder.scraper.service.ProductService;
 import com.topcoder.scraper.service.WebpageService;
 import org.slf4j.Logger;
@@ -71,7 +71,7 @@ public class AmazonProductDetailModule extends ProductDetailModule {
   private void fetchProductDetail(AmazonProductDetailCrawler crawler, int productId, String productCode) throws IOException {
     TrafficWebClient webClient = new TrafficWebClient(0, false);
 
-    AmazonProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productCode, true);
+    ProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productCode, true);
     webClient.finishTraffic();
 
     ProductInfo productInfo = crawlerResult.getProductInfo();
@@ -92,7 +92,7 @@ public class AmazonProductDetailModule extends ProductDetailModule {
     TrafficWebClient webClient = new TrafficWebClient(0, false);
 
 	  AmazonProductDetailCrawler crawler = new AmazonProductDetailCrawler(getECName(), property, webpageService);
-    AmazonProductDetailCrawlerResult crawlerResult = crawler.serarchProductAndFetchProductInfoByModelNo(webClient, modelNo, true);
+    ProductDetailCrawlerResult crawlerResult = crawler.serarchProductAndFetchProductInfoByModelNo(webClient, modelNo, true);
     webClient.finishTraffic();
 
     ProductInfo productInfo = Objects.isNull(crawlerResult) ? null : crawlerResult.getProductInfo();

@@ -8,6 +8,7 @@ import com.topcoder.common.config.AmazonProperty;
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.exception.SessionExpiredException;
+import com.topcoder.scraper.module.ProductDetailCrawlerResult;
 import com.topcoder.scraper.service.WebpageService;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -46,10 +47,10 @@ public class AmazonProductDetailCrawler {
    * @param webClient the web client
    * @param productCode the product code
    * @param saveHtml true if product html page will be saved
-   * @return AmazonProductDetailCrawlerResult
+   * @return ProductDetailCrawlerResult
    * @throws IOException
    */
-  public AmazonProductDetailCrawlerResult fetchProductInfo(TrafficWebClient webClient, String productCode, boolean saveHtml) throws IOException {
+  public ProductDetailCrawlerResult fetchProductInfo(TrafficWebClient webClient, String productCode, boolean saveHtml) throws IOException {
 
     String productUrl = property.getProductUrl() + productCode;
     LOGGER.info("Product url " + productUrl);
@@ -65,7 +66,7 @@ public class AmazonProductDetailCrawler {
     }
 
     productInfo.setCode(productCode);
-    return new AmazonProductDetailCrawlerResult(productInfo, savedPath);
+    return new ProductDetailCrawlerResult(productInfo, savedPath);
   }
 
   /**
@@ -219,10 +220,10 @@ public class AmazonProductDetailCrawler {
   * @param webClient the web client
   * @param modelNo the mode no
   * @param saveHtml true if product html page will be saved
-  * @return AmazonProductDetailCrawlerResult
+  * @return ProductDetailCrawlerResult
   * @throws IOException
   */
-  public AmazonProductDetailCrawlerResult serarchProductAndFetchProductInfoByModelNo(TrafficWebClient webClient, String modelNo, boolean saveHtml) throws IOException  {
+  public ProductDetailCrawlerResult serarchProductAndFetchProductInfoByModelNo(TrafficWebClient webClient, String modelNo, boolean saveHtml) throws IOException  {
 	  
 	  String productCode = searchProduct(webClient,modelNo);
 	  
@@ -257,7 +258,7 @@ public class AmazonProductDetailCrawler {
 		  
 		  if (element == null) {
 			  continue;
-		  } 
+		  }
 		  
 		  //skip ad product
 		  if(element.getAttribute("class").contains(property.getCrawling().getSearchProductPage().getAdProductClass())) {

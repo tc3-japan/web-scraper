@@ -1,5 +1,4 @@
 package com.topcoder.scraper.module;
-
 /**
  * Basic module interface
  */

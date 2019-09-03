@@ -1,4 +1,4 @@
-package com.topcoder.scraper.module.amazon.crawler;
+package com.topcoder.scraper.module;
 
 import com.topcoder.common.model.PurchaseHistory;
 import java.util.List;
@@ -6,11 +6,11 @@ import java.util.List;
 /**
  * Result for AmazonPurchaseHistoryListCrawler
  */
-public class AmazonPurchaseHistoryListCrawlerResult {
+public class PurchaseHistoryListCrawlerResult {
   private List<PurchaseHistory> purchaseHistoryList;
   private List<String> htmlPathList;
 
-  public AmazonPurchaseHistoryListCrawlerResult(List<PurchaseHistory> purchaseHistoryList, List<String> htmlPathList) {
+  public PurchaseHistoryListCrawlerResult(List<PurchaseHistory> purchaseHistoryList, List<String> htmlPathList) {
     this.purchaseHistoryList = purchaseHistoryList;
     this.htmlPathList = htmlPathList;
   }

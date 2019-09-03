@@ -6,6 +6,7 @@ import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.ProxyConfig;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebRequest;
+import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.topcoder.common.config.TrafficProperty;
 import com.topcoder.common.config.TrafficProperty.Tactic;
@@ -97,8 +98,8 @@ public class TrafficWebClient {
     } else {
       webClient = new WebClient();
     }
-    webClient.getOptions().setJavaScriptEnabled(false);
-
+    //webClient.getOptions().setJavaScriptEnabled(false);
+    webClient.getOptions().setJavaScriptEnabled(true);
     tacticEventRepository = SpringTool.getApplicationContext().getBean(TacticEventRepository.class);
     requestEventRepository = SpringTool.getApplicationContext().getBean(RequestEventRepository.class);
 
@@ -167,6 +168,28 @@ public class TrafficWebClient {
 
     return doRequest(htmlElement::click, content);
   }
+
+
+  /**
+   * when page html element clicked
+   *
+   * @param domElement the html element
+   * @param <P>         the page
+   * @return the new page
+   * @throws IOException if failed
+   */
+  public <P extends Page> P click(DomElement domElement) throws IOException {
+    String content = "Click domElement : " + domElement.getNodeName() + " tag";
+    if (StringUtils.isNotEmpty(domElement.getAttribute("id"))) {
+      content += ", attr(id)=" + domElement.getAttribute("id");
+    }
+    if (StringUtils.isNotEmpty(domElement.getAttribute("href"))) {
+      content += ", attr(href)=" + domElement.getAttribute("href");
+    }
+
+    return doRequest(domElement::click, content);
+  }
+
 
   /**
    * do request

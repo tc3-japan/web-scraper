@@ -1,5 +1,6 @@
-package com.topcoder.scraper.module.kojima;
+package com.topcoder.scraper.module.yahoo;
 
+import java.io.Console;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
@@ -18,23 +19,23 @@ import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.common.repository.NormalDataRepository;
 import com.topcoder.scraper.Consts;
 import com.topcoder.scraper.module.ChangeDetectionInitModule;
-import com.topcoder.scraper.module.kojima.crawler.KojimaAuthenticationCrawler;
-import com.topcoder.scraper.module.kojima.crawler.KojimaProductDetailCrawler;
+import com.topcoder.scraper.module.yahoo.crawler.YahooAuthenticationCrawler;
+import com.topcoder.scraper.module.yahoo.crawler.YahooProductDetailCrawler;
 import com.topcoder.scraper.module.ProductDetailCrawlerResult;
-import com.topcoder.scraper.module.kojima.crawler.KojimaPurchaseHistoryListCrawler;
+import com.topcoder.scraper.module.yahoo.crawler.YahooPurchaseHistoryListCrawler;
 import com.topcoder.scraper.module.PurchaseHistoryListCrawlerResult;
 import com.topcoder.scraper.service.WebpageService;
 
 @Component
-public class KojimaChangeDetectionInitModule extends ChangeDetectionInitModule {
+public class YahooChangeDetectionInitModule extends ChangeDetectionInitModule {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(KojimaChangeDetectionInitModule.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(YahooChangeDetectionInitModule.class);
   MonitorTargetDefinitionProperty monitorTargetDefinitionProperty;
   WebpageService webpageService;
   NormalDataRepository repository;
 
   @Autowired
-  public KojimaChangeDetectionInitModule(
+  public YahooChangeDetectionInitModule(
       MonitorTargetDefinitionProperty monitorTargetDefinitionProperty,
       WebpageService webpageService,
       NormalDataRepository repository) {
@@ -45,7 +46,7 @@ public class KojimaChangeDetectionInitModule extends ChangeDetectionInitModule {
 
   @Override
   public String getECName() {
-    return "kojima";
+    return "yahoo";
   }
 
   @Override
@@ -58,10 +59,10 @@ public class KojimaChangeDetectionInitModule extends ChangeDetectionInitModule {
         if (monitorTargetCheckPage.getPageName().equalsIgnoreCase(Consts.PURCHASE_HISTORY_LIST_PAGE_NAME)) {
           List<String> usernameList = monitorTargetCheckPage.getCheckTargetKeys();
 
-          String passwordListString = System.getenv(Consts.KOJIMA_CHECK_TARGET_KEYS_PASSWORDS);
+          String passwordListString = System.getenv(Consts.YAHOO_CHECK_TARGET_KEYS_PASSWORDS);
           if (passwordListString == null) {
-            LOGGER.error("Please set environment variable KOJIMA_CHECK_TARGET_KEYS_PASSWORDS first");
-            throw new RuntimeException("environment variable KOJIMA_CHECK_TARGET_KEYS_PASSWORDS not set");
+            LOGGER.error("Please set environment variable YAHOO_CHECK_TARGET_KEYS_PASSWORDS first"); //TODO: GENERALIZE!
+            throw new RuntimeException("environment variable YAHOO_CHECK_TARGET_KEYS_PASSWORDS not set"); //TODO: GENERALIZE!
           }
           List<String> passwordList = Arrays.asList(passwordListString.split(","));
 
@@ -70,14 +71,14 @@ public class KojimaChangeDetectionInitModule extends ChangeDetectionInitModule {
             String password = passwordList.get(i);
 
             LOGGER.info("init ...");
-            KojimaAuthenticationCrawler authenticationCrawler = new KojimaAuthenticationCrawler(getECName(), webpageService);
+            YahooAuthenticationCrawler authenticationCrawler = new YahooAuthenticationCrawler(getECName(), webpageService);
             TrafficWebClient webClient = new TrafficWebClient(0, false);
             if (!authenticationCrawler.authenticate(webClient, username, password)) {
               LOGGER.error(String.format("Failed to login %s with username %s. Skip.", getECName(), username));
               continue;
             }
 
-            KojimaPurchaseHistoryListCrawler purchaseHistoryListCrawler = new KojimaPurchaseHistoryListCrawler(getECName(), webpageService);
+            YahooPurchaseHistoryListCrawler purchaseHistoryListCrawler = new YahooPurchaseHistoryListCrawler(getECName(), webpageService, username, password);
             PurchaseHistoryListCrawlerResult crawlerResult = purchaseHistoryListCrawler.fetchPurchaseHistoryList(webClient, null, false);
             webClient.finishTraffic();
 
@@ -85,7 +86,7 @@ public class KojimaChangeDetectionInitModule extends ChangeDetectionInitModule {
           }
 
         } else if (monitorTargetCheckPage.getPageName().equalsIgnoreCase(Consts.PRODUCT_DETAIL_PAGE_NAME)) {
-          KojimaProductDetailCrawler crawler = new KojimaProductDetailCrawler(getECName(), webpageService);
+          YahooProductDetailCrawler crawler = new YahooProductDetailCrawler(getECName(), webpageService);
           for (String productCode : monitorTargetCheckPage.getCheckTargetKeys()) {
             TrafficWebClient webClient = new TrafficWebClient(0, false);
             ProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productCode, false);
@@ -101,18 +102,6 @@ public class KojimaChangeDetectionInitModule extends ChangeDetectionInitModule {
       }
     }
   }
-
-
-
-  //TODO: FINISH, CLEAN, AND TEST THE CODE BELOW!
-
-  //private void processProductInfo(ProductDetailCrawlerResult crawlerResult) {
-  //}
-
-  //private void processPurchaseHistory(PurchaseHistoryListCrawlerResult crawlerResult, String username) {
-  //}
-
-
 
   /**
    * process purchase history crawler result

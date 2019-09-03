@@ -1,14 +1,13 @@
-package com.topcoder.scraper.module.amazon;
+package com.topcoder.scraper.module.yahoo;
 
-import com.topcoder.api.service.login.amazon.AmazonLoginHandler;
-import com.topcoder.common.config.AmazonProperty;
+import com.topcoder.api.service.login.yahoo.YahooLoginHandler;
 import com.topcoder.common.dao.ECSiteAccountDAO;
 import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.common.repository.ECSiteAccountRepository;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.common.util.Common;
 import com.topcoder.scraper.module.PurchaseHistoryListModule;
-import com.topcoder.scraper.module.amazon.crawler.AmazonPurchaseHistoryListCrawler;
+import com.topcoder.scraper.module.yahoo.crawler.YahooPurchaseHistoryListCrawler;
 import com.topcoder.scraper.module.PurchaseHistoryListCrawlerResult;
 import com.topcoder.scraper.service.PurchaseHistoryService;
 import com.topcoder.scraper.service.WebpageService;
@@ -17,31 +16,26 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Amazon implementation of PurchaseHistoryListModule
- */
 @Component
-public class AmazonPurchaseHistoryListModule extends PurchaseHistoryListModule {
+public class YahooPurchaseHistoryListModule extends PurchaseHistoryListModule {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(AmazonPurchaseHistoryListModule.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(YahooPurchaseHistoryListModule.class);
 
-  private final AmazonProperty property;
   private final PurchaseHistoryService purchaseHistoryService;
   private final WebpageService webpageService;
   private final ECSiteAccountRepository ecSiteAccountRepository;
-  private final AmazonLoginHandler loginHandler;
+  private final YahooLoginHandler loginHandler;
 
   @Autowired
-  public AmazonPurchaseHistoryListModule(
-    AmazonProperty property,
+  public YahooPurchaseHistoryListModule(
     PurchaseHistoryService purchaseHistoryService,
     ECSiteAccountRepository ecSiteAccountRepository,
     WebpageService webpageService,
-    AmazonLoginHandler loginHandler) {
-    this.property = property;
+    YahooLoginHandler loginHandler) {
     this.purchaseHistoryService = purchaseHistoryService;
     this.webpageService = webpageService;
     this.ecSiteAccountRepository = ecSiteAccountRepository;
@@ -50,18 +44,15 @@ public class AmazonPurchaseHistoryListModule extends PurchaseHistoryListModule {
 
   @Override
   public String getECName() {
-    return "amazon";
+    return "yahoo";
   }
 
-  /**
-   * Implementation of fetchPurchaseHistoryList method
-   */
   @Override
-  public void fetchPurchaseHistoryList() {
-
+  public void fetchPurchaseHistoryList() throws IOException {
+    
     Iterable<ECSiteAccountDAO> accountDAOS = ecSiteAccountRepository.findAllByEcSite(getECName());
     for (ECSiteAccountDAO ecSiteAccountDAO : accountDAOS) {
-      
+
       if (ecSiteAccountDAO.getEcUseFlag() != Boolean.TRUE) {
         LOGGER.info("EC Site [" + ecSiteAccountDAO.getId() + ":" + ecSiteAccountDAO.getEcSite() + "] is not active. Skipped.");
         continue;
@@ -75,9 +66,9 @@ public class AmazonPurchaseHistoryListModule extends PurchaseHistoryListModule {
         LOGGER.error("skip ecSite id = " + ecSiteAccountDAO.getId() + ", restore cookies failed");
         continue;
       }
-
+      
       try {
-        AmazonPurchaseHistoryListCrawler crawler = new AmazonPurchaseHistoryListCrawler(getECName(), property, webpageService);
+        YahooPurchaseHistoryListCrawler crawler = new YahooPurchaseHistoryListCrawler(getECName(), webpageService, ecSiteAccountDAO);
 
         PurchaseHistoryListCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClient, lastPurchaseHistory.orElse(null), true);
         webClient.finishTraffic();
@@ -89,7 +80,7 @@ public class AmazonPurchaseHistoryListModule extends PurchaseHistoryListModule {
         }
         LOGGER.info("succeed fetch purchaseHistory for ecSite id = " + ecSiteAccountDAO.getId());
       } catch (Exception e) { // here catch all exception and did not throw it
-        loginHandler.saveFailedResult(ecSiteAccountDAO, e.getMessage());
+        this.loginHandler.saveFailedResult(ecSiteAccountDAO, e.getMessage());
         LOGGER.error("failed to PurchaseHistory for ecSite id = " + ecSiteAccountDAO.getId());
         e.printStackTrace();
       }

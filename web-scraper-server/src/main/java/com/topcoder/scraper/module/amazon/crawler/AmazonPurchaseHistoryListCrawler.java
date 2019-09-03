@@ -13,6 +13,7 @@ import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.exception.SessionExpiredException;
+import com.topcoder.scraper.module.PurchaseHistoryListCrawlerResult;
 import com.topcoder.scraper.service.WebpageService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -50,6 +51,8 @@ public class AmazonPurchaseHistoryListCrawler {
     this.property = property;
     this.webpageService = webpageService;
     this.nextPageCount = 0;
+
+    //TODO: Add temporary Login? Call login handler
   }
 
   /**
@@ -57,10 +60,10 @@ public class AmazonPurchaseHistoryListCrawler {
    * @param webClient the web client
    * @param lastPurchaseHistory optional, if it's empty, all orders will be fetched
    * @param saveHtml true if product html page will be saved
-   * @return AmazonPurchaseHistoryListCrawlerResult
+   * @return PurchaseHistoryListCrawlerResult
    * @throws IOException
    */
-  public AmazonPurchaseHistoryListCrawlerResult fetchPurchaseHistoryList(TrafficWebClient webClient, PurchaseHistory lastPurchaseHistory, boolean saveHtml) throws IOException {
+  public PurchaseHistoryListCrawlerResult fetchPurchaseHistoryList(TrafficWebClient webClient, PurchaseHistory lastPurchaseHistory, boolean saveHtml) throws IOException {
     List<PurchaseHistory> list = new LinkedList<>();
     List<String> pathList = new LinkedList<>();
     LOGGER.info("goto Order Page");
@@ -79,7 +82,7 @@ public class AmazonPurchaseHistoryListCrawler {
       }
     }
 
-    return new AmazonPurchaseHistoryListCrawlerResult(list, pathList);
+    return new PurchaseHistoryListCrawlerResult(list, pathList);
   }
 
   /**

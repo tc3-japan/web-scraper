@@ -14,7 +14,7 @@ import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.module.ProductDetailModule;
 import com.topcoder.scraper.module.kojima.crawler.KojimaProductDetailCrawler;
-import com.topcoder.scraper.module.kojima.crawler.KojimaProductDetailCrawlerResult;
+import com.topcoder.scraper.module.ProductDetailCrawlerResult;
 import com.topcoder.scraper.service.ProductService;
 import com.topcoder.scraper.service.WebpageService;
 
@@ -54,7 +54,7 @@ public class KojimaProductDetailModule extends ProductDetailModule {
   private void fetchProductDetail(KojimaProductDetailCrawler crawler, int productId, String productName) throws IOException {
     TrafficWebClient webClient = new TrafficWebClient(0, false);
 
-    KojimaProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productName, false);
+    ProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productName, false);
     webClient.finishTraffic();
     ProductInfo productInfo = crawlerResult != null ? crawlerResult.getProductInfo() : null;
     
@@ -80,7 +80,7 @@ public class KojimaProductDetailModule extends ProductDetailModule {
     TrafficWebClient webClient = new TrafficWebClient(0, false);
 
 	  KojimaProductDetailCrawler crawler = new KojimaProductDetailCrawler(getECName(), webpageService);
-	  KojimaProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfoWithModelNo(webClient, modelNo, false);
+	  ProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, modelNo, false);
 	  webClient.finishTraffic();
 	  ProductInfo productInfo = Objects.isNull(crawlerResult) ? null : crawlerResult.getProductInfo();
 	    

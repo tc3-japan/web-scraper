@@ -1,15 +1,15 @@
-package com.topcoder.scraper.module.amazon.crawler;
+package com.topcoder.scraper.module;
 
 import com.topcoder.common.model.ProductInfo;
 
 /**
- * Result from AmazonProductDetailCrawler
+ * Result for *ProductDetailCrawler
  */
-public class AmazonProductDetailCrawlerResult {
+public class ProductDetailCrawlerResult {
   private ProductInfo productInfo;
   private String htmlPath;
 
-  public AmazonProductDetailCrawlerResult(ProductInfo productInfo, String htmlPath) {
+  public ProductDetailCrawlerResult(ProductInfo productInfo, String htmlPath) {
     this.productInfo = productInfo;
     this.htmlPath = htmlPath;
   }

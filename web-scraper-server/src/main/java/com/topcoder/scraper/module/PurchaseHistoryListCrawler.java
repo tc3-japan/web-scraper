@@ -1,4 +1,4 @@
-package com.topcoder.scraper.module.kojima.crawler;
+package com.topcoder.scraper.module;
 
 import static com.topcoder.common.util.HtmlUtils.*;
 import java.io.IOException;
@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.gargoylesoftware.htmlunit.html.DomNode;
+import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.model.PurchaseHistory;
@@ -20,17 +21,16 @@ import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.common.util.DateUtils;
 import com.topcoder.scraper.exception.SessionExpiredException;
 import com.topcoder.scraper.module.PurchaseHistoryListCrawlerResult;
-import com.topcoder.scraper.module.navpage.NavigablePurchaseHistoryPage;
 import com.topcoder.scraper.service.WebpageService;
 
-public class KojimaPurchaseHistoryListCrawler {
+public class PurchaseHistoryListCrawler {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(KojimaPurchaseHistoryListCrawler.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(PurchaseHistoryListCrawler.class);
   private static final Pattern PAT_ORDER_NO = Pattern.compile("([\\d]{13})", Pattern.DOTALL);
-  private final String siteName;
-  private final WebpageService webpageService;
+  protected final String siteName;
+  protected final WebpageService webpageService;
   
-  public KojimaPurchaseHistoryListCrawler(String siteName, WebpageService webpageService) {
+  public PurchaseHistoryListCrawler(String siteName, WebpageService webpageService) {
     this.siteName = siteName;
     this.webpageService = webpageService;
   }
@@ -47,7 +47,7 @@ public class KojimaPurchaseHistoryListCrawler {
     
     webpageService.save("kojima-purchase-history", siteName, page.getWebResponse().getContentAsString());
     while (true) {
-      if (page == null || !parsePurchaseHistory(webClient, list, page, lastPurchaseHistory, saveHtml, pathList)) {
+      if (page == null || !parsePurchaseHistory(list, page, lastPurchaseHistory, saveHtml, pathList)) {
         break;
       }
       page = gotoNextPage(page, webClient);
@@ -56,19 +56,14 @@ public class KojimaPurchaseHistoryListCrawler {
     return new PurchaseHistoryListCrawlerResult(list, pathList);
   }
   
-  private boolean parsePurchaseHistory(TrafficWebClient webClient, List<PurchaseHistory> list, HtmlPage page, PurchaseHistory last, boolean saveHtml, List<String> pathList) {
+  private boolean parsePurchaseHistory(List<PurchaseHistory> list, HtmlPage page, PurchaseHistory last, boolean saveHtml, List<String> pathList) {
 
     LOGGER.debug("Parsing page url " + page.getUrl().toString());
     
-
-
     //member-orderhistorydetails
     List<DomNode> orders = page.querySelectorAll(".member-orderhistorydetails > tbody");
     
     for (DomNode orderNode : orders) {
-      PurchaseHistory purchaseHistory = new PurchaseHistory();
-      NavigablePurchaseHistoryPage historyPage = new NavigablePurchaseHistoryPage(page, webClient, purchaseHistory);/// One purchase History? A list? 
-
       DomNode itemNoNode = orderNode.querySelector(".itemnumber");
       String nodeText = itemNoNode.asText();
       String orderNumber = extract(nodeText, PAT_ORDER_NO);
@@ -96,8 +91,7 @@ public class KojimaPurchaseHistoryListCrawler {
     return false;
   }
   
-  
-  private boolean isNew(PurchaseHistory purchase, PurchaseHistory last) {
+  protected boolean isNew(PurchaseHistory purchase, PurchaseHistory last) {
     Date orderDate = purchase.getOrderDate();
     Date lastOrderDate = last != null ? last.getOrderDate() : null;
     String orderNumber = purchase.getOrderNumber();
@@ -135,14 +129,14 @@ public class KojimaPurchaseHistoryListCrawler {
   private static final Pattern PAT_DATE = Pattern.compile("(20[\\d]{2}/[\\d]{2}/[\\d]{2} [\\d]{2}:[\\d]{2}:[\\d]{2})", Pattern.DOTALL);
   private static final String FORMAT_DATE = "yyyy/MM/dd HH:mm:ss";
   
-  private String normalizeProductName(String productName) {
+  protected String normalizeProductName(String productName) {
     if (productName == null) {
       return productName;
     }
     return productName.trim().replaceAll("　", " ");
   }
   
-  private Date extractDate(String text) {
+  protected Date extractDate(String text) {
     String dateStr = extract(text, PAT_DATE);
     try {
       return DateUtils.fromString(dateStr, FORMAT_DATE);
@@ -152,4 +146,74 @@ public class KojimaPurchaseHistoryListCrawler {
       return null;
     }
   }
+
+  /*
+  protected HtmlPage setPage(TrafficWebClient webClient, String url) {
+		try {
+			productDetailPage = webClient.getPage(url);
+			return productDetailPage;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+  }
+  */
+
+
+  
+	protected String getText(HtmlElement element, String selector) {
+		if (element != null) {
+			DomNode node = element.querySelector(selector);
+			String str = node != null ? node.asText().replaceAll("\\n", " ").trim() : null;
+			return str;
+		} else {
+			LOGGER.error("productDetailPage is null at ProductDetailCrawler.java > getText()");
+			return null;
+		}
+  }
+  
+
+	protected void setDistributor(HtmlElement element, ProductInfo productInfo, String selector) {
+		String str = getText(element, selector);
+		if(str != null) {
+			productInfo.setDistributor(str);
+		}
+	}
+
+	protected void setCode(HtmlElement element, ProductInfo productInfo, String selector) {
+		String code = getText(element, selector);
+		if(code != null) {
+			productInfo.setCode(code);
+		}
+	}
+	protected void setName(HtmlElement element, ProductInfo productInfo, String selector) {
+		String str = getText(element, selector);
+		if(str != null) {
+			productInfo.setName(str);
+		}
+	}
+	protected void setPrice(HtmlElement element, ProductInfo productInfo, String selector) {
+		String str = getText(element, selector);
+		if(str != null) {
+			productInfo.setPrice(str);
+		}
+	}
+	protected void setModelNo(HtmlElement element, ProductInfo productInfo, String selector) {
+		String str = getText(element, selector);
+		str = str.replaceAll("[^0-9a-zA-Z\\-]", "").trim();
+		if(str != null) {
+			productInfo.setModelNo(str);
+		}
+  }
+  
+
+	/*
+	protected void setQuantity(ProductInfo productInfo, String selector) {
+		String str = getText(selector);
+		if(str != null) {
+			productInfo.setQuantity(str);
+		}
+	}
+	*/
+
 }

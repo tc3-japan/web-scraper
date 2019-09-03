@@ -48,6 +48,9 @@ dependencies {
   compile("mysql:mysql-connector-java:${versions.mysqlConnector}")
   compile("org.flywaydb:flyway-core:${versions.flyway}")
 
+  compile group: 'org.codehaus.groovy', name: 'groovy',     version: '2.5.8'
+  compile group: 'org.codehaus.groovy', name: 'groovy-bsf', version: '2.5.8'
+
   testCompile("org.springframework.boot:spring-boot-starter-test:${versions.springBoot}")
 }
 

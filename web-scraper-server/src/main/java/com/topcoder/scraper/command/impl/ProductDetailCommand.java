@@ -21,6 +21,10 @@ public class ProductDetailCommand extends AbstractCommand<ProductDetailModule> {
   @Autowired
   public ProductDetailCommand(List<ProductDetailModule> modules) {
     super(modules);
+    System.out.println("...");
+    System.out.println("...");
+    System.out.println(modules);
+    System.out.println("...");
   }
 
   /**

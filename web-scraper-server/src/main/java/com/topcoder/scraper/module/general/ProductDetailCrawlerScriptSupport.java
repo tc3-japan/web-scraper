@@ -2,7 +2,12 @@ package com.topcoder.scraper.module.general;
 
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.util.HtmlUtils;
+import com.topcoder.scraper.module.navpage.NavigableProductDetailPage;
+import com.topcoder.scraper.service.WebpageService;
+
 import groovy.lang.Closure;
 import groovy.lang.Script;
 import org.slf4j.Logger;
@@ -18,15 +23,86 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+//Make not abstract or static? Edit: Can't!
 public abstract class ProductDetailCrawlerScriptSupport extends Script {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ProductDetailCrawlerScriptSupport.class);
   private static ProductDetailCrawler CRAWLER;
+  private NavigableProductDetailPage detailPage;
+  private WebpageService webpageService;
+  private String siteName;
+  private ProductInfo productInfo; // Not good?
+
+  ProductDetailCrawlerScriptSupport(String siteName, WebpageService webpageService) {
+    this.siteName = siteName;
+    this.webpageService = webpageService;
+  }
 
   static void setCrawler(ProductDetailCrawler crawler) {
     CRAWLER = crawler;
+    //detailPage = new NavigableProductDetailPage();
   }
 
+  //////////////////////////////////////////////////////////////////////
+
+
+  public ProductInfo getProductInfo() {
+    return productInfo;
+  }
+
+  void setPage(String str) { 
+    productInfo = new ProductInfo(); // Not good?
+    detailPage = new NavigableProductDetailPage(str, CRAWLER.webClient, productInfo);
+    System.out.println("");
+    System.out.println("Setting page to: " + str);
+    System.out.println("");
+    detailPage.savePage("testing", siteName, webpageService);
+  }
+
+  void click(String selector) {
+    detailPage.click(selector); //nullcheck?
+    System.out.println("");
+    System.out.println("Clicking: " + selector);
+    System.out.println("");
+  }
+
+  void setCode(String selector) { 
+    System.out.println("");
+    System.out.println("Setting code!");
+    System.out.println("");
+    detailPage.setCode(selector);
+  }
+
+  void setName(String selector) { 
+    System.out.println("");
+    System.out.println("Setting name!");
+    System.out.println("");
+    detailPage.setName(selector);
+  }
+
+  void setDistributor(String selector) { 
+    System.out.println("");
+    System.out.println("Setting distributor! ");
+    System.out.println("");
+    detailPage.setDistributor(selector);
+  }
+
+  void setPrice(String selector) { 
+    System.out.println("");
+    System.out.println("Setting price!");
+    System.out.println("");
+    detailPage.setPrice(selector);
+  }
+
+  void log(String str) { 
+    System.out.println("___LOG___");
+    System.out.println(str);
+    System.out.println("_________");
+  }
+
+
+/*
+  //////////////////////////////////////////////////////////////////////
   // TODO: move to more general class
   void navigatePage(String productUrl) {
     try {
@@ -179,4 +255,5 @@ public abstract class ProductDetailCrawlerScriptSupport extends Script {
   void info(String str) {
     LOGGER.info(str);
   }
+  */
 }

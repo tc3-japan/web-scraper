@@ -42,6 +42,7 @@ public class ProductDetailCrawler {
   public ProductDetailCrawler(
           String siteName,
           WebpageService webpageService) {
+    //super(siteName, webpageService);
     this.siteName = siteName;
     this.webpageService = webpageService;
     // TODO: doc
@@ -101,6 +102,7 @@ public class ProductDetailCrawler {
     this.productInfo.setCode(productCode);
 
     // binding variables for scraping script
+    // >> What is this? Why pass productInfo this way?
     this.scriptBinding.setProperty("productCode", this.productCode);
     this.scriptBinding.setProperty("productInfo", this.productInfo);
 

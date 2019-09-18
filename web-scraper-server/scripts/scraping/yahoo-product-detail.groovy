@@ -1,6 +1,7 @@
 def htmlPath = "https://store.shopping.yahoo.co.jp/"
 setPage(htmlPath + productCode)
-log(" >>> Requesting Page >>> " + htmlPath)
+savePage("test-"+productCode)
+log(" >>> Requesting Page >>> " + htmlPath + productCode)
 
 setCode("#abuserpt > p:nth-child(3)");
 setName("div.elTitle > h2:nth-child(1)");

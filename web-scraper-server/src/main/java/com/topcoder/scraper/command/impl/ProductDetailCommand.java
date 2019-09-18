@@ -23,7 +23,7 @@ public class ProductDetailCommand extends AbstractCommand<ProductDetailModule> {
     super(modules);
     System.out.println("...");
     System.out.println("...");
-    System.out.println(modules);
+    System.out.println("...");
     System.out.println("...");
   }
 

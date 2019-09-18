@@ -1,5 +1,6 @@
 package com.topcoder.scraper.module.general;
 
+import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
@@ -33,10 +34,10 @@ public abstract class ProductDetailCrawlerScriptSupport extends Script {
   private String siteName;
   private ProductInfo productInfo; // Not good?
 
-  ProductDetailCrawlerScriptSupport(String siteName, WebpageService webpageService) {
-    this.siteName = siteName;
-    this.webpageService = webpageService;
-  }
+  //ProductDetailCrawlerScriptSupport(String siteName, WebpageService webpageService) {
+  //  this.siteName = siteName;
+  //  this.webpageService = webpageService;
+  //}
 
   static void setCrawler(ProductDetailCrawler crawler) {
     CRAWLER = crawler;
@@ -52,11 +53,33 @@ public abstract class ProductDetailCrawlerScriptSupport extends Script {
 
   void setPage(String str) { 
     productInfo = new ProductInfo(); // Not good?
-    detailPage = new NavigableProductDetailPage(str, CRAWLER.webClient, productInfo);
     System.out.println("");
     System.out.println("Setting page to: " + str);
+    System.out.println("CrawlerWC: " + CRAWLER.webClient);
+    System.out.println("productInfo: " + productInfo);
     System.out.println("");
-    detailPage.savePage("testing", siteName, webpageService);
+    HtmlPage page = null;
+    try {
+      System.out.println("JS Status: " + CRAWLER.webClient.getWebClient().getOptions().isJavaScriptEnabled());
+      CRAWLER.webClient.getWebClient().getOptions().setJavaScriptEnabled(true);
+      page = CRAWLER.webClient.getPage(str);
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    System.out.println("");
+    System.out.println("Page: " + page);
+    System.out.println("");
+    if(page != null) {
+      detailPage = new NavigableProductDetailPage(page, CRAWLER.webClient, productInfo);
+    } else {
+      System.out.println("Could not set page in ProductDetailScriptSupport.java@setPage()");
+    }
+    //detailPage.savePage("testing", siteName, webpageService);
+  }
+
+  void savePage(String name) {
+    detailPage.savePage(name, "yahoo", CRAWLER.webpageService); //nullcheck?
   }
 
   void click(String selector) {

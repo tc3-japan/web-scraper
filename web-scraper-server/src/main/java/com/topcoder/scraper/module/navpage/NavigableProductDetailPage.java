@@ -108,7 +108,6 @@ public class NavigableProductDetailPage extends NavigablePage {
 		}
     }
     
-    
 	public void setQuantity(String selector) { 
 		String str = getText(selector); 
 		System.out.println("\n Quantity >>>> " + str);

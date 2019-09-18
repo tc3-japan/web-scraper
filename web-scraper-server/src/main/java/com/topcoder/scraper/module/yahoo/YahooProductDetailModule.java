@@ -55,7 +55,7 @@ public class YahooProductDetailModule extends ProductDetailModule {
 
     products.forEach(product -> {
       try {
-        //fixne: need modelno
+        //fixme: need modelno
         fetchProductDetail(crawler, product.getId(), product.getProductCode());
         //fetchProductDetail(crawler, product.getProductCode());
       } catch (IOException | IllegalStateException e) {

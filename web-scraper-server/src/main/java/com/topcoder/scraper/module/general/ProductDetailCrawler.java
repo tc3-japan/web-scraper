@@ -110,8 +110,6 @@ public class ProductDetailCrawler {
 
     this.executeScript();
 
-    // I don't know if productInfo available in groovy is a pointer or a value copy
-    // it may not mutate this.productInfo's state
     return new ProductDetailCrawlerResult(this.productInfo, this.savedPath);
   }
 }

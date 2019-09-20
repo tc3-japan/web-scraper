@@ -12,8 +12,6 @@ import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.service.WebpageService;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 public class NavigablePage {
 
     protected TrafficWebClient webClient;
@@ -110,18 +108,6 @@ public class NavigablePage {
             }
         }
     }
-
-    /*
-     * public void click(DomNode orderNode, DomElement orderInfoLink, WebpageService
-     * webpageService) {
-     * webClient.getWebClient().getOptions().setJavaScriptEnabled(true); try {
-     * HtmlPage result = webClient.click(orderInfoLink); if (result != null) page =
-     * result; savePage("pageClicked", "yahoo", webpageService); //
-     * webpageService.save("pageClicked", "yahoo", //
-     * page.getWebResponse().getContentAsString()); } catch (IOException e) {
-     * System.out.println("Could not navigate to page in NavigablePage.java");
-     * e.printStackTrace(); } }
-     */
 
     protected String getText(String selector) {
         HtmlElement node = page.querySelector(selector);

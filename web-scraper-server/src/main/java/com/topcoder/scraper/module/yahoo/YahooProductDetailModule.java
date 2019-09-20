@@ -5,7 +5,6 @@ import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.module.ProductDetailModule;
 import com.topcoder.scraper.module.general.ProductDetailCrawler;
-//import com.topcoder.scraper.module.yahoo.crawler.YahooProductDetailCrawler;
 import com.topcoder.scraper.module.general.ProductDetailCrawlerResult;
 import com.topcoder.scraper.service.ProductService;
 import com.topcoder.scraper.service.WebpageService;
@@ -49,15 +48,12 @@ public class YahooProductDetailModule extends ProductDetailModule {
   public void fetchProductDetailList() {
 
     List<ProductDAO> products = this.productService.getAllFetchInfoStatusIsNull(getECName());
-    //fixme
-    //YahooProductDetailCrawler crawler = new YahooProductDetailCrawler(getECName(), webpageService);
+
     ProductDetailCrawler crawler = new ProductDetailCrawler(getECName(), webpageService);
 
     products.forEach(product -> {
       try {
-        //fixme: need modelno
         fetchProductDetail(crawler, product.getId(), product.getProductCode());
-        //fetchProductDetail(crawler, product.getProductCode());
       } catch (IOException | IllegalStateException e) {
         LOGGER.error(String.format("Fail to fetch product %s, please try again.", product.getProductCode()));
       }
@@ -95,10 +91,7 @@ public class YahooProductDetailModule extends ProductDetailModule {
   public ProductDAO crossEcProduct(String modelNo) throws IOException {
     TrafficWebClient webClient = new TrafficWebClient(0, false);
 
-    //fixme
-    //YahooProductDetailCrawler crawler = new YahooProductDetailCrawler(getECName(), webpageService);
     ProductDetailCrawler crawler = new ProductDetailCrawler(getECName(), webpageService);
-    //fixme: need modelno
     ProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, modelNo);
     
     webClient.finishTraffic();

@@ -14,7 +14,6 @@ import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.module.ProductDetailModule;
 import com.topcoder.scraper.module.general.ProductDetailCrawler;
-import com.topcoder.scraper.module.kojima.crawler.KojimaProductDetailCrawler;
 import com.topcoder.scraper.module.general.ProductDetailCrawlerResult;
 import com.topcoder.scraper.service.ProductService;
 import com.topcoder.scraper.service.WebpageService;
@@ -41,14 +40,11 @@ public class KojimaProductDetailModule extends ProductDetailModule {
   @Override
   public void fetchProductDetailList() throws IOException {
     List<ProductDAO> products = this.productService.getAllFetchInfoStatusIsNull(getECName());
-    //KojimaProductDetailCrawler crawler = new KojimaProductDetailCrawler(getECName(), webpageService);
     ProductDetailCrawler crawler = new ProductDetailCrawler(getECName(), webpageService);
     
     products.forEach(product -> {
       try {
-        //fixme: need modelno
         fetchProductDetail(crawler, product.getId(), product.getProductCode());
-        //fetchProductDetail(crawler, product.getProductCode());
       } catch (IOException | IllegalStateException e) {
         LOGGER.error(String.format("Fail to fetch product %s, please try again.", product.getProductCode()));
       }
@@ -83,8 +79,6 @@ public class KojimaProductDetailModule extends ProductDetailModule {
   public ProductDAO crossEcProduct(String modelNo) throws IOException {
     TrafficWebClient webClient = new TrafficWebClient(0, false);
 
-    //KojimaProductDetailCrawler crawler = new KojimaProductDetailCrawler(getECName(), webpageService);
-    //ProductDetailCrawlerResult crawler = new ProductDetailCrawler(getECName(), webpageService);
     ProductDetailCrawler crawler = new ProductDetailCrawler(getECName(), webpageService);
 	  ProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, modelNo);
 	  webClient.finishTraffic();

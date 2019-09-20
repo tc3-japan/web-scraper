@@ -96,6 +96,8 @@ public class ProductDetailCrawler {
   public ProductDetailCrawlerResult fetchProductInfo(TrafficWebClient webClient, String productCode) throws IOException {
     LOGGER.info("[fetchProductInfo] in");
 
+    ProductDetailCrawlerScriptSupport.setProductId(productCode);
+
     this.webClient   = webClient;
     this.productCode = productCode;
     this.productInfo = new ProductInfo();

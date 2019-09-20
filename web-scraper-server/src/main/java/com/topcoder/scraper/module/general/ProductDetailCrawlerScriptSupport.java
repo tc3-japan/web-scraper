@@ -32,6 +32,7 @@ public abstract class ProductDetailCrawlerScriptSupport extends Script {
   private NavigableProductDetailPage detailPage;
   private WebpageService webpageService;
   private String siteName;
+  public static String productId = null;
   private ProductInfo productInfo; // Not good?
 
   //ProductDetailCrawlerScriptSupport(String siteName, WebpageService webpageService) {
@@ -46,10 +47,14 @@ public abstract class ProductDetailCrawlerScriptSupport extends Script {
 
   //////////////////////////////////////////////////////////////////////
 
+  static void setProductId(String id) {
+    productId = id;
+  }
 
   public ProductInfo getProductInfo() {
     return productInfo;
   }
+
 
   void setPage(String str) { 
     productInfo = new ProductInfo(); // Not good?
@@ -61,7 +66,7 @@ public abstract class ProductDetailCrawlerScriptSupport extends Script {
     HtmlPage page = null;
     try {
       System.out.println("JS Status: " + CRAWLER.webClient.getWebClient().getOptions().isJavaScriptEnabled());
-      CRAWLER.webClient.getWebClient().getOptions().setJavaScriptEnabled(true);
+      CRAWLER.webClient.getWebClient().getOptions().setJavaScriptEnabled(false); //TODO: TEST ONLY
       page = CRAWLER.webClient.getPage(str);
     } catch (IOException e) {
       // TODO Auto-generated catch block
@@ -78,8 +83,12 @@ public abstract class ProductDetailCrawlerScriptSupport extends Script {
     //detailPage.savePage("testing", siteName, webpageService);
   }
 
-  void savePage(String name) {
-    detailPage.savePage(name, "yahoo", CRAWLER.webpageService); //nullcheck?
+  void setEnableJS(boolean value) {
+    detailPage.setEnableJS(value);
+  }
+
+  void savePage(String name, String siteName) {
+    detailPage.savePage(name, siteName, CRAWLER.webpageService); //nullcheck?
   }
 
   void click(String selector) {
@@ -94,6 +103,10 @@ public abstract class ProductDetailCrawlerScriptSupport extends Script {
     System.out.println("Setting code!");
     System.out.println("");
     detailPage.setCode(selector);
+  }
+
+  void type(String input, String selector) { 
+    detailPage.type(input, selector);
   }
 
   void setName(String selector) { 

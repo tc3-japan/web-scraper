@@ -29,6 +29,11 @@ public class NavigablePage {
         setPage(url); // TODO: Will this work if page is uninitialized?
     }
 
+
+    public void setEnableJS(boolean value) {
+        System.out.println("Setting JavaScript Enabled to " + value);
+        webClient.getWebClient().getOptions().setJavaScriptEnabled(value);
+    }
     /* Get and Set */
 
     public void setPage(String url) {
@@ -122,6 +127,16 @@ public class NavigablePage {
         HtmlElement node = page.querySelector(selector);
         String str = node != null ? node.asText().replaceAll("\\n", " ").trim() : null;
         System.out.println(">>> Got Text >>> " + str + " for " + selector);
+        return str;
+    }
+
+    protected String getValue(String selector) {
+        //HtmlElement node = page.querySelector(selector);
+        //String str = node != null ? node.get
+        //System.out.println(">>> Got Text >>> " + str + " for " + selector);
+        System.out.println("NavigablePage.getValue(Str) -- This method is WIP");
+        //get the value of the selected thing, not the text value, when JSON object is returned
+        String str = null;
         return str;
     }
 

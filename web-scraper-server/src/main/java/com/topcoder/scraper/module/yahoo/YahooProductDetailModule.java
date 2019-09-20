@@ -41,7 +41,7 @@ public class YahooProductDetailModule extends ProductDetailModule {
   }
 
   @Override
-  public String getECName() {
+  public String getECName() { 
     return "yahoo";
   }
 

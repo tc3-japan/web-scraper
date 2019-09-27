@@ -120,6 +120,14 @@ public abstract class ProductDetailCrawlerScriptSupport extends Script {
     detailPage.setPrice(selector);
   }
 
+  void setQuantity(String str) {
+    detailPage.setQuantity(str);
+  }
+
+  void setModelNo(String str) {
+    detailPage.setModelNo(str);
+  }
+
   void log(String str) { 
     System.out.println("___LOG___");
     System.out.println(str);

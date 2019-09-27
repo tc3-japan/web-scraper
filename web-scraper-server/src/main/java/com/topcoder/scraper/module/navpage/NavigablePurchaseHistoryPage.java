@@ -30,7 +30,7 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
 
     public void setAccountId(String selector) {
         String str = getText(selector);
-        System.out.println(" >>> Setting Account ID >>>" + str);
+        //System.out.println(" >>> Setting Account ID >>>" + str);
         if (str != null) {
             purchaseHistory.setAccountId(str);
         }
@@ -38,7 +38,7 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
 
     public void setAccountId(DomNode node, String selector) {
         String str = getText(node, selector);
-        System.out.println(" >>> Setting Account ID >>>" + str);
+        //System.out.println(" >>> Setting Account ID >>>" + str);
         if (str != null) {
             purchaseHistory.setAccountId(str);
         }

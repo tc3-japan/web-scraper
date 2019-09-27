@@ -1,28 +1,15 @@
 package com.topcoder.scraper.module.general;
 
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.DomNode;
-import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.topcoder.common.model.ProductInfo;
-import com.topcoder.common.util.HtmlUtils;
 import com.topcoder.scraper.module.navpage.NavigableProductDetailPage;
 import com.topcoder.scraper.service.WebpageService;
 
-import groovy.lang.Closure;
 import groovy.lang.Script;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.util.Pair;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 //Make not abstract or static? Edit: Can't!
 public abstract class ProductDetailCrawlerScriptSupport extends Script {
@@ -120,12 +107,12 @@ public abstract class ProductDetailCrawlerScriptSupport extends Script {
     detailPage.setPrice(selector);
   }
 
-  void setQuantity(String str) {
-    detailPage.setQuantity(str);
+  void setQuantity(String selector) {
+    detailPage.setQuantity(selector);
   }
 
-  void setModelNo(String str) {
-    detailPage.setModelNo(str);
+  void setModelNo(String selector) {
+    detailPage.setModelNo(selector);
   }
 
   void log(String str) { 

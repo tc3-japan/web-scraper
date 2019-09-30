@@ -75,44 +75,44 @@ public abstract class ProductDetailCrawlerScriptSupport extends Script {
     System.out.println("");
   }
 
-  void setCode(String selector) { 
+  void scrapeCode(String selector) { 
     System.out.println("");
     System.out.println("Setting code!");
     System.out.println("");
-    detailPage.setCode(selector);
+    detailPage.scrapeCode(selector);
   }
 
   void type(String input, String selector) { 
     detailPage.type(input, selector);
   }
 
-  void setName(String selector) { 
+  void scrapeName(String selector) { 
     System.out.println("");
     System.out.println("Setting name!");
     System.out.println("");
-    detailPage.setName(selector);
+    detailPage.scrapeName(selector);
   }
 
-  void setDistributor(String selector) { 
+  void scrapeDistributor(String selector) { 
     System.out.println("");
     System.out.println("Setting distributor! ");
     System.out.println("");
-    detailPage.setDistributor(selector);
+    detailPage.scrapeDistributor(selector);
   }
 
-  void setPrice(String selector) { 
+  void scrapePrice(String selector) { 
     System.out.println("");
     System.out.println("Setting price!");
     System.out.println("");
-    detailPage.setPrice(selector);
+    detailPage.scrapePrice(selector);
   }
 
-  void setQuantity(String selector) {
-    detailPage.setQuantity(selector);
+  void scrapeQuantity(String selector) {
+    detailPage.scrapeQuantity(selector);
   }
 
-  void setModelNo(String selector) {
-    detailPage.setModelNo(selector);
+  void scrapeModelNo(String selector) {
+    detailPage.scrapeModelNo(selector);
   }
 
   void log(String str) { 

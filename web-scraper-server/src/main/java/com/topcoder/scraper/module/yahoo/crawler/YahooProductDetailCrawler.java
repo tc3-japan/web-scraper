@@ -36,10 +36,12 @@ public class YahooProductDetailCrawler extends ProductDetailCrawler {
     System.out.println(" >>> Requesting Page >>> " + htmlPath);
     NavigableProductDetailPage detailPage = new NavigableProductDetailPage(htmlPath, webClient, productInfo);
 
+    /*
     detailPage.setCode("#abuserpt > p:nth-child(3)");
     detailPage.setName("div.elTitle > h2:nth-child(1)");
     detailPage.setDistributor("dt.elStore > a:nth-child(1)");
     detailPage.setPrice(".elNum");
+    */
 
     //setModelNo(productInfo, null); // TODO: Scrape/find kataban (modelNo)
     String savedPath = null;

@@ -4,7 +4,7 @@ setPage(htmlPath + productCode)
 savePage("test-"+productCode, "yahoo")
 log(" >>> Requesting Page >>> " + htmlPath + productCode)
 
-setCode("#abuserpt > p:nth-child(3)");
-setName("div.elTitle > h2:nth-child(1)");
-setDistributor("dt.elStore > a:nth-child(1)");
-setPrice(".elNum");
+scrapeCode("#abuserpt > p:nth-child(3)");
+scrapeName("div.elTitle > h2:nth-child(1)");
+scrapeDistributor("dt.elStore > a:nth-child(1)");
+scrapePrice(".elNum");

@@ -26,7 +26,7 @@ public class NavigableProductDetailPage extends NavigablePage {
         return this.productInfo;
     }
 
-    public void setDistributor(String selector) {
+    public void scrapeDistributor(String selector) {
 		String str = getText(selector);
 		System.out.println("\n Distributor >>>> " + str);
 		if (str != null) {
@@ -34,7 +34,7 @@ public class NavigableProductDetailPage extends NavigablePage {
 		}
 	}
 
-	public void setDistributor(DomNode node, String selector) {
+	public void scrapeDistributor(DomNode node, String selector) {
 		String str = getText(node, selector);
 		System.out.println("\n Distributor >>>> " + str);
 		if (str != null) {
@@ -42,7 +42,7 @@ public class NavigableProductDetailPage extends NavigablePage {
 		}
 	}
 
-	public void setCode(String selector) {
+	public void scrapeCode(String selector) {
 		String code = getText(selector);
 		System.out.println("\n Code >>>> " + code);
 		if (code != null) {
@@ -50,7 +50,7 @@ public class NavigableProductDetailPage extends NavigablePage {
 		}
 	}
 
-	public void setCode(DomNode node, String selector) {
+	public void scrapeCode(DomNode node, String selector) {
 		String code = getText(node, selector);
 		System.out.println("\n Code >>>> " + code);
 		if (code != null) {
@@ -58,7 +58,7 @@ public class NavigableProductDetailPage extends NavigablePage {
 		}
 	}
 
-	public void setName(String selector) {
+	public void scrapeName(String selector) {
 		String str = getText(selector);
 		System.out.println("\n Name >>>> " + str);
 		if (str != null) {
@@ -66,7 +66,7 @@ public class NavigableProductDetailPage extends NavigablePage {
 		}
 	}
 
-	public void setName(DomNode node, String selector) {
+	public void scrapeName(DomNode node, String selector) {
 		String str = getText(node, selector);
 		System.out.println("\n Name >>>> " + str);
 		if (str != null) {
@@ -74,7 +74,7 @@ public class NavigableProductDetailPage extends NavigablePage {
 		}
 	}
 
-	public void setPrice(String selector) {
+	public void scrapePrice(String selector) {
 		String str = getText(selector);
 		System.out.println("\n Price >>>> " + str);
 		if (str != null) {
@@ -82,7 +82,7 @@ public class NavigableProductDetailPage extends NavigablePage {
 		}
 	}
 
-	public void setPrice(DomNode node, String selector) {
+	public void scrapePrice(DomNode node, String selector) {
 		String str = getText(node, selector);
 		System.out.println("\n Price >>>> " + str);
 		if (str != null) {
@@ -90,7 +90,7 @@ public class NavigableProductDetailPage extends NavigablePage {
 		}
 	}
 
-	public void setModelNo(String selector) {
+	public void scrapeModelNo(String selector) {
 		String str = getText(selector);
 		str = str.replaceAll("[^0-9a-zA-Z\\-]", "").trim();
 		System.out.println("Model No >>>> " + str);
@@ -99,7 +99,7 @@ public class NavigableProductDetailPage extends NavigablePage {
 		}
 	}
 	
-	public void setModelNo(DomNode node, String selector) {
+	public void scrapeModelNo(DomNode node, String selector) {
 		String str = getText(node, selector);
 		str = str.replaceAll("[^0-9a-zA-Z\\-]", "").trim();
 		System.out.println("Model No >>>> " + str);
@@ -108,15 +108,17 @@ public class NavigableProductDetailPage extends NavigablePage {
 		}
     }
     
-	public void setQuantity(String selector) { 
+	public void scrapeQuantity(String selector) { 
 		String str = getText(selector); 
 		System.out.println("\n Quantity >>>> " + str);
-        if(str != null) {
-            productInfo.setQuantity(extractInt(str)); 
+		Integer qty = extractInt(str);
+        if(str != null && qty != null) {
+			//productInfo.setQuantity(extractInt(str)); 
+			productInfo.setQuantity(qty);
         }
 	}
 	
-	public void setQuantity(DomNode node, String selector) { 
+	public void scrapeQuantity(DomNode node, String selector) { 
 		String str = getText(node, selector); 
 		System.out.println("\n Quantity >>>> " + str);
         if(str != null) {

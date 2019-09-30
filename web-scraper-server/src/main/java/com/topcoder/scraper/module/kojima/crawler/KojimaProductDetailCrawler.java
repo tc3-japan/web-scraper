@@ -34,6 +34,7 @@ public class KojimaProductDetailCrawler extends ProductDetailCrawler {
 
 	NavigableProductDetailPage detailPage = new NavigableProductDetailPage("https://www.kojima.net/ec/top/CSfTop.jsp", webClient, productInfo);
 
+	/*
 	detailPage.type(productName, "#q");
 	detailPage.click("#btnSearch");
 	detailPage.setName("h1.htxt02");
@@ -41,7 +42,7 @@ public class KojimaProductDetailCrawler extends ProductDetailCrawler {
 	detailPage.setPrice("td.price > span");
 	detailPage.setQuantity(".cart_box > div:nth-child(1) > form:nth-child(1) > input:nth-child(2)");
 	detailPage.setModelNo("#item_detail > div > div.item_detail_box > table > tbody > tr:nth-child(6) > td");
-
+	*/
 
 	//setName(productInfo, "h1.htxt02");
 	//setDistributor(productInfo, "span");

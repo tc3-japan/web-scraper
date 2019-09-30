@@ -8,8 +8,8 @@ import org.slf4j.LoggerFactory;
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.module.navpage.NavigableProductDetailPage;
-import com.topcoder.scraper.module.ProductDetailCrawler;
-import com.topcoder.scraper.module.ProductDetailCrawlerResult;
+import com.topcoder.scraper.module.general.ProductDetailCrawler;
+import com.topcoder.scraper.module.general.ProductDetailCrawlerResult;
 import com.topcoder.scraper.service.WebpageService;
 
 

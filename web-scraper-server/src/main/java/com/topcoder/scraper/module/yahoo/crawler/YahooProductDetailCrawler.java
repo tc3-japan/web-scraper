@@ -3,8 +3,8 @@ package com.topcoder.scraper.module.yahoo.crawler;
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.module.navpage.NavigableProductDetailPage;
-import com.topcoder.scraper.module.ProductDetailCrawler;
-import com.topcoder.scraper.module.ProductDetailCrawlerResult;
+import com.topcoder.scraper.module.general.ProductDetailCrawler;
+import com.topcoder.scraper.module.general.ProductDetailCrawlerResult;
 import com.topcoder.scraper.service.WebpageService;
 import java.io.IOException;
 
@@ -24,11 +24,10 @@ public class YahooProductDetailCrawler extends ProductDetailCrawler {
    * @param webClient   the web client
    * @param productCode the product code
    * @param saveHtml    true if product html page will be saved
-   * @return ProductDetailCrawlerResultk
+   * @return ProductDetailCrawlerResult
    * @throws IOException
    */
 
-  @Override
   public ProductDetailCrawlerResult fetchProductInfo(TrafficWebClient webClient, String productCode, boolean saveHtml)
       throws IOException {
         

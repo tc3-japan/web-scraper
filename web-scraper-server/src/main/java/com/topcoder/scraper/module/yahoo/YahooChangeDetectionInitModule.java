@@ -21,7 +21,7 @@ import com.topcoder.scraper.Consts;
 import com.topcoder.scraper.module.ChangeDetectionInitModule;
 import com.topcoder.scraper.module.yahoo.crawler.YahooAuthenticationCrawler;
 import com.topcoder.scraper.module.yahoo.crawler.YahooProductDetailCrawler;
-import com.topcoder.scraper.module.ProductDetailCrawlerResult;
+import com.topcoder.scraper.module.general.ProductDetailCrawlerResult;
 import com.topcoder.scraper.module.yahoo.crawler.YahooPurchaseHistoryListCrawler;
 import com.topcoder.scraper.module.PurchaseHistoryListCrawlerResult;
 import com.topcoder.scraper.service.WebpageService;
@@ -89,6 +89,7 @@ public class YahooChangeDetectionInitModule extends ChangeDetectionInitModule {
           YahooProductDetailCrawler crawler = new YahooProductDetailCrawler(getECName(), webpageService);
           for (String productCode : monitorTargetCheckPage.getCheckTargetKeys()) {
             TrafficWebClient webClient = new TrafficWebClient(0, false);
+
             ProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productCode, false);
             webClient.finishTraffic();
 

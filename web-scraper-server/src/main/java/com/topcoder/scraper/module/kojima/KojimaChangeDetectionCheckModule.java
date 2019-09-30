@@ -29,7 +29,7 @@ import com.topcoder.scraper.Consts;
 import com.topcoder.scraper.module.ChangeDetectionCheckModule;
 import com.topcoder.scraper.module.kojima.crawler.KojimaAuthenticationCrawler;
 import com.topcoder.scraper.module.kojima.crawler.KojimaProductDetailCrawler;
-import com.topcoder.scraper.module.ProductDetailCrawlerResult;
+import com.topcoder.scraper.module.general.ProductDetailCrawlerResult;
 import com.topcoder.scraper.module.kojima.crawler.KojimaPurchaseHistoryListCrawler;
 import com.topcoder.scraper.module.PurchaseHistoryListCrawlerResult;
 import com.topcoder.scraper.service.WebpageService;

@@ -61,7 +61,9 @@ public abstract class ProductDetailCrawlerScriptSupport extends Script {
   }
 
   void setEnableJS(boolean value) {
-    detailPage.setEnableJS(value);
+    // TODO : reconsider relationship between webClient and page
+    CRAWLER.webClient.getWebClient().getOptions().setJavaScriptEnabled(value);
+    //detailPage.setEnableJS(value);
   }
 
   void savePage(String name, String siteName) {

@@ -48,7 +48,7 @@ public class YahooPurchaseHistoryListModule extends IPurchaseHistoryListModule {
   }
 
   @Override
-  public void fetchPurchaseHistoryList() throws IOException {
+  public void fetchPurchaseHistoryList(List<String> sites) throws IOException {
     
     Iterable<ECSiteAccountDAO> accountDAOS = ecSiteAccountRepository.findAllByEcSite(getECName());
     for (ECSiteAccountDAO ecSiteAccountDAO : accountDAOS) {

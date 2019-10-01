@@ -31,7 +31,7 @@ public class PurchaseHistoryListCommand extends AbstractCommand<IPurchaseHistory
   @Override
   protected void process(IPurchaseHistoryListModule module) {
     try {
-      module.fetchPurchaseHistoryList();
+      module.fetchPurchaseHistoryList(this.sites);
     } catch (IOException e) {
       LOGGER.error("Fail to fetch purchase history list", e);
       throw new FetchPurchaseHistoryListException();

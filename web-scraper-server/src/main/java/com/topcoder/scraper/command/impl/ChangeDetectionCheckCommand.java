@@ -30,7 +30,7 @@ public class ChangeDetectionCheckCommand extends AbstractCommand<IChangeDetectio
   @Override
   protected void process(IChangeDetectionCheckModule module) {
     try {
-      module.check();
+      module.check(this.sites);
     } catch (IOException e) {
       LOGGER.error("Fail to check change detection", e);
       throw new ChangeDetectionException();

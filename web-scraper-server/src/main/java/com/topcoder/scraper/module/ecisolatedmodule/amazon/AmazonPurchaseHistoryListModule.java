@@ -57,7 +57,7 @@ public class AmazonPurchaseHistoryListModule extends IPurchaseHistoryListModule 
    * Implementation of fetchPurchaseHistoryList method
    */
   @Override
-  public void fetchPurchaseHistoryList() {
+  public void fetchPurchaseHistoryList(List<String> sites) {
 
     Iterable<ECSiteAccountDAO> accountDAOS = ecSiteAccountRepository.findAllByEcSite(getECName());
     for (ECSiteAccountDAO ecSiteAccountDAO : accountDAOS) {

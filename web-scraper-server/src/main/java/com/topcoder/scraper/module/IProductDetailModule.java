@@ -13,8 +13,6 @@ public abstract class IProductDetailModule implements IBasicModule {
   /**
    * fetch product detail
    */
-  //public abstract void fetchProductDetailList() throws IOException;
-
   public abstract void fetchProductDetailList(List<String> sites) throws IOException;
 
   /**

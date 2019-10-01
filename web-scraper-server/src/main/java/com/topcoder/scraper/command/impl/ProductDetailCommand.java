@@ -5,6 +5,8 @@ import com.topcoder.scraper.exception.FetchProductDetailException;
 import com.topcoder.scraper.module.IProductDetailModule;
 import java.io.IOException;
 import java.util.List;
+
+import com.topcoder.scraper.module.ecunifiedmodule.GeneralProductDetailModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +32,7 @@ public class ProductDetailCommand extends AbstractCommand<IProductDetailModule> 
   @Override
   protected void process(IProductDetailModule module) {
     try {
-      module.fetchProductDetailList();
+      module.fetchProductDetailList(this.sites);
     } catch (IOException e) {
       LOGGER.error("Fail to fetch product detail list", e);
       throw new FetchProductDetailException();

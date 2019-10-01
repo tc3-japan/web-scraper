@@ -44,11 +44,11 @@ public class GeneralChangeDetectionInitModule extends IChangeDetectionInitModule
 
   @Override
   public String getECName() {
-    return "yahoo";
+    return "general";
   }
 
   @Override
-  public void init() throws IOException {
+  public void init(List<String> sites) throws IOException {
     for(MonitorTargetDefinitionProperty.MonitorTargetCheckSite monitorTargetCheckSite : monitorTargetDefinitionProperty.getCheckSites()) {
       if (!this.getECName().equalsIgnoreCase(monitorTargetCheckSite.getEcSite())) {
         continue;

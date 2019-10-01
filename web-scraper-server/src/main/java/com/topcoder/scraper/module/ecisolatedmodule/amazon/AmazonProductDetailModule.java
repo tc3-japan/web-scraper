@@ -50,6 +50,7 @@ public class AmazonProductDetailModule extends IProductDetailModule {
 
   @Override
   public void fetchProductDetailList(List<String> sites) {
+    // TODO: delete
     LOGGER.info("---fetchProductDetailList------------------------------------------------");
     LOGGER.info("sites:" + sites);
     LOGGER.info("---fetchProductDetailList------------------------------------------------");

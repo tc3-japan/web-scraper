@@ -30,7 +30,7 @@ public class ChangeDetectionInitCommand extends AbstractCommand<IChangeDetection
   @Override
   protected void process(IChangeDetectionInitModule module) {
     try {
-      module.init();
+      module.init(this.sites);
     } catch (IOException e) {
       LOGGER.error("Fail to init check detection", e);
       throw new ChangeDetectionException();

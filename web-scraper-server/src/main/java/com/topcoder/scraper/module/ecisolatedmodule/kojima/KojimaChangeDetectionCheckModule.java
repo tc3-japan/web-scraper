@@ -64,7 +64,7 @@ public class KojimaChangeDetectionCheckModule extends IChangeDetectionCheckModul
   }
 
   @Override
-  public void check() throws IOException {
+  public void check(List<String> sites) throws IOException {
     for (MonitorTargetDefinitionProperty.MonitorTargetCheckSite checkSite : monitorTargetDefinitionProperty.getCheckSites()) {
       if (!this.getECName().equalsIgnoreCase(checkSite.getEcSite())) {
         continue;

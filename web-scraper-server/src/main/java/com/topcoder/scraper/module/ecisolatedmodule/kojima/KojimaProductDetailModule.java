@@ -39,6 +39,7 @@ public class KojimaProductDetailModule extends IProductDetailModule {
 
   @Override
   public void fetchProductDetailList(List<String> sites) throws IOException {
+    // TODO: delete
     LOGGER.info("---fetchProductDetailList------------------------------------------------");
     LOGGER.info("sites:" + sites);
     LOGGER.info("---fetchProductDetailList------------------------------------------------");

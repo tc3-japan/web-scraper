@@ -1,6 +1,6 @@
 package com.topcoder.common.model;
 
-import com.topcoder.scraper.module.AuthStep;
+import com.topcoder.scraper.module.ecunifiedmodule.AuthStep;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

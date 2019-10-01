@@ -21,8 +21,8 @@ import com.topcoder.common.model.LoginResponse;
 import com.topcoder.common.repository.ECSiteAccountRepository;
 import com.topcoder.common.repository.UserRepository;
 import com.topcoder.common.traffic.TrafficWebClient;
-import com.topcoder.scraper.module.AuthStep;
-import com.topcoder.scraper.module.yahoo.crawler.YahooAuthenticationCrawler;
+import com.topcoder.scraper.module.ecunifiedmodule.AuthStep;
+import com.topcoder.scraper.module.ecisolatedmodule.yahoo.crawler.YahooAuthenticationCrawler;
 import com.topcoder.scraper.service.WebpageService;
 
 @Component

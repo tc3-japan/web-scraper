@@ -2,7 +2,7 @@ package com.topcoder.common.model;
 
 import com.topcoder.common.config.AmazonProperty;
 import com.topcoder.common.traffic.TrafficWebClient;
-import com.topcoder.scraper.module.amazon.crawler.AmazonAuthenticationCrawler;
+import com.topcoder.scraper.module.ecisolatedmodule.amazon.crawler.AmazonAuthenticationCrawler;
 import com.topcoder.scraper.service.WebpageService;
 import lombok.Data;
 

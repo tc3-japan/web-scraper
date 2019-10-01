@@ -2,7 +2,7 @@ package com.topcoder.scraper.command.impl;
 
 import com.topcoder.scraper.command.AbstractCommand;
 import com.topcoder.scraper.exception.FetchPurchaseHistoryListException;
-import com.topcoder.scraper.module.PurchaseHistoryListModule;
+import com.topcoder.scraper.module.IPurchaseHistoryListModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +15,12 @@ import java.util.List;
  * Purchase History list command
  */
 @Component
-public class PurchaseHistoryListCommand extends AbstractCommand<PurchaseHistoryListModule> {
+public class PurchaseHistoryListCommand extends AbstractCommand<IPurchaseHistoryListModule> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PurchaseHistoryListCommand.class);
 
   @Autowired
-  public PurchaseHistoryListCommand(List<PurchaseHistoryListModule> modules) {
+  public PurchaseHistoryListCommand(List<IPurchaseHistoryListModule> modules) {
     super(modules);
   }
 
@@ -29,7 +29,7 @@ public class PurchaseHistoryListCommand extends AbstractCommand<PurchaseHistoryL
    * @param module module to be run
    */
   @Override
-  protected void process(PurchaseHistoryListModule module) {
+  protected void process(IPurchaseHistoryListModule module) {
     try {
       module.fetchPurchaseHistoryList();
     } catch (IOException e) {

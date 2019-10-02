@@ -44,7 +44,8 @@ public class GeneralChangeDetectionInitModule extends IChangeDetectionInitModule
 
   @Override
   public String getECName() {
-    return "general";
+    System.out.println("Function 'getECName()' is depricated! Do NOT USE! Returning null!");
+    return null;
   }
 
   @Override

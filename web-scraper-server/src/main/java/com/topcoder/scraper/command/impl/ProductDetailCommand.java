@@ -5,6 +5,7 @@ import com.topcoder.scraper.exception.FetchProductDetailException;
 import com.topcoder.scraper.module.IProductDetailModule;
 import java.io.IOException;
 import java.util.List;
+import com.topcoder.scraper.Consts;
 
 import com.topcoder.scraper.module.ecunifiedmodule.GeneralProductDetailModule;
 import org.slf4j.Logger;
@@ -33,6 +34,11 @@ public class ProductDetailCommand extends AbstractCommand<IProductDetailModule> 
   protected void process(IProductDetailModule module) {
     try {
       module.fetchProductDetailList(this.sites);
+      if (this.sites.size() == 0) {
+        module.fetchProductDetailList(Consts.ALL_SITES);
+      } else {
+        module.fetchProductDetailList(this.sites);
+      }
     } catch (IOException e) {
       LOGGER.error("Fail to fetch product detail list", e);
       throw new FetchProductDetailException();

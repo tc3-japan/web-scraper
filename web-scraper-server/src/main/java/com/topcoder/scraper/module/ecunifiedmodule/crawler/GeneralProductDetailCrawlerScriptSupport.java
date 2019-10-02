@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.List;
 
 //Make not abstract or static? Edit: Can't!
 public abstract class GeneralProductDetailCrawlerScriptSupport extends Script {
@@ -107,6 +108,10 @@ public abstract class GeneralProductDetailCrawlerScriptSupport extends Script {
     System.out.println("Setting price!");
     System.out.println("");
     detailPage.scrapePrice(selector);
+  }
+
+  void scrapePrices(List<String> selectors) {
+    detailPage.scrapePrices(selectors);
   }
 
   void scrapeQuantity(String selector) {

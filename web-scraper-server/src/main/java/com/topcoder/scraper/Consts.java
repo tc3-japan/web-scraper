@@ -1,5 +1,8 @@
 package com.topcoder.scraper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Consts {
   public static final String PURCHASE_HISTORY_LIST_PAGE_NAME = "purchase_history_list";
   public static final String PRODUCT_DETAIL_PAGE_NAME = "product_detail";
@@ -20,8 +23,14 @@ public class Consts {
   
   public static final String EC_SITE_AMAZON = "amazon";
   public static final String EC_SITE_KOJIMA = "kojima";
-
+  public static final String EC_SITE_YAHOO = "yahoo";
   public static final String SCRAPING_SCRIPT_PATH = "SCRAPING_SCRIPT_PATH";
 
-  public static final String EC_SITE_YAHOO = "yahoo";
+  public static final List<String> ALL_SITES = new ArrayList();
+  {
+    ALL_SITES.add(EC_SITE_AMAZON);
+    ALL_SITES.add(EC_SITE_KOJIMA);
+    ALL_SITES.add(EC_SITE_YAHOO);
+  }
+
 }

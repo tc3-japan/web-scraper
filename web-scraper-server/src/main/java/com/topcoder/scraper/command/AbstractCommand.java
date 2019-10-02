@@ -39,7 +39,12 @@ public abstract class AbstractCommand<T extends IBasicModule> {
     if (moduletypes == null || moduletypes.size() == 0 || moduletypes.get(0).equals("unified") ) {
       // TODO: delete
       System.out.println("---unified=general----------------------------------");
-      getModule("general").ifPresent(this::process);
+      // TODO: get real module
+      // TODO: Where/how do I get a full list of sites (data prepared) rather than just what is passed as a parameter?
+      for(String site : sites) {
+        getModule(site).ifPresent(this::process);
+      }
+      if (sites.size()<1) System.out.println("You must enter --site=xxx parameter");
     } else {
       // TODO: delete
       System.out.println("---isolated----------------------------------");

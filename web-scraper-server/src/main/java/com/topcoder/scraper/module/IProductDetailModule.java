@@ -1,10 +1,9 @@
 package com.topcoder.scraper.module;
 
+import com.topcoder.common.dao.ProductDAO;
+
 import java.io.IOException;
 import java.util.List;
-
-import com.topcoder.common.dao.ProductDAO;
-import com.topcoder.scraper.module.IBasicModule;
 
 /**
  * abstract product detail module

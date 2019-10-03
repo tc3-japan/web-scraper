@@ -33,7 +33,7 @@ public class KojimaProductDetailModule extends IProductDetailModule {
   }
   
   @Override
-  public String getECName() {
+  public String getModuleType() {
     return "kojima";
   }
 
@@ -44,8 +44,8 @@ public class KojimaProductDetailModule extends IProductDetailModule {
     LOGGER.info("sites:" + sites);
     LOGGER.info("---fetchProductDetailList------------------------------------------------");
 
-    List<ProductDAO> products = this.productService.getAllFetchInfoStatusIsNull(getECName());
-    GeneralProductDetailCrawler crawler = new GeneralProductDetailCrawler(getECName(), webpageService);
+    List<ProductDAO> products = this.productService.getAllFetchInfoStatusIsNull(getModuleType());
+    GeneralProductDetailCrawler crawler = new GeneralProductDetailCrawler(getModuleType(), webpageService);
     
     products.forEach(product -> {
       try {
@@ -84,7 +84,7 @@ public class KojimaProductDetailModule extends IProductDetailModule {
   public ProductDAO crossEcProduct(String modelNo) throws IOException {
     TrafficWebClient webClient = new TrafficWebClient(0, false);
 
-    GeneralProductDetailCrawler crawler = new GeneralProductDetailCrawler(getECName(), webpageService);
+    GeneralProductDetailCrawler crawler = new GeneralProductDetailCrawler(getModuleType(), webpageService);
 	  GeneralProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, modelNo);
 	  webClient.finishTraffic();
 	  ProductInfo productInfo = Objects.isNull(crawlerResult) ? null : crawlerResult.getProductInfo();
@@ -94,6 +94,6 @@ public class KojimaProductDetailModule extends IProductDetailModule {
 	    return null;
 	  }
 	  
-	  return new ProductDAO(getECName(), productInfo);
+	  return new ProductDAO(getModuleType(), productInfo);
   }
 }

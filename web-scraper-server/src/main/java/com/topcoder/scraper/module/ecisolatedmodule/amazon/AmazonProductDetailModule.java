@@ -43,7 +43,7 @@ public class AmazonProductDetailModule extends IProductDetailModule {
   }
 
   @Override
-  public String getECName() {
+  public String getModuleType() {
     return "amazon";
   }
 
@@ -55,10 +55,10 @@ public class AmazonProductDetailModule extends IProductDetailModule {
     LOGGER.info("sites:" + sites);
     LOGGER.info("---fetchProductDetailList------------------------------------------------");
 
-    List<ProductDAO> products = this.productService.getAllFetchInfoStatusIsNull(getECName());
+    List<ProductDAO> products = this.productService.getAllFetchInfoStatusIsNull(getModuleType());
     // fixme
     //AmazonProductDetailCrawler crawler = new AmazonProductDetailCrawler(getECName(), property, webpageService);
-    GeneralProductDetailCrawler crawler = new GeneralProductDetailCrawler(getECName(), webpageService);
+    GeneralProductDetailCrawler crawler = new GeneralProductDetailCrawler(getModuleType(), webpageService);
 
     products.forEach(product -> {
       try {
@@ -104,7 +104,7 @@ public class AmazonProductDetailModule extends IProductDetailModule {
   public ProductDAO crossEcProduct(String modelNo) throws IOException {
     TrafficWebClient webClient = new TrafficWebClient(0, false);
 
-	  AmazonProductDetailCrawler crawler = new AmazonProductDetailCrawler(getECName(), property, webpageService);
+    AmazonProductDetailCrawler crawler = new AmazonProductDetailCrawler(getModuleType(), property, webpageService);
     GeneralProductDetailCrawlerResult crawlerResult = crawler.serarchProductAndFetchProductInfoByModelNo(webClient, modelNo, true);
     webClient.finishTraffic();
 
@@ -115,6 +115,6 @@ public class AmazonProductDetailModule extends IProductDetailModule {
 	    return null;
 	  }
 
-	  return new ProductDAO(getECName(), productInfo);
+	  return new ProductDAO(getModuleType(), productInfo);
   }
 }

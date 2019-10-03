@@ -44,14 +44,14 @@ public class KojimaChangeDetectionInitModule extends IChangeDetectionInitModule 
   }
 
   @Override
-  public String getECName() {
+  public String getModuleType() {
     return "kojima";
   }
 
   @Override
   public void init(List<String> sites) throws IOException {
     for(MonitorTargetDefinitionProperty.MonitorTargetCheckSite monitorTargetCheckSite : monitorTargetDefinitionProperty.getCheckSites()) {
-      if (!this.getECName().equalsIgnoreCase(monitorTargetCheckSite.getEcSite())) {
+      if (!this.getModuleType().equalsIgnoreCase(monitorTargetCheckSite.getEcSite())) {
         continue;
       }
       for (MonitorTargetDefinitionProperty.MonitorTargetCheckPage monitorTargetCheckPage :monitorTargetCheckSite.getCheckPages()) {
@@ -70,14 +70,14 @@ public class KojimaChangeDetectionInitModule extends IChangeDetectionInitModule 
             String password = passwordList.get(i);
 
             LOGGER.info("init ...");
-            KojimaAuthenticationCrawler authenticationCrawler = new KojimaAuthenticationCrawler(getECName(), webpageService);
+            KojimaAuthenticationCrawler authenticationCrawler = new KojimaAuthenticationCrawler(getModuleType(), webpageService);
             TrafficWebClient webClient = new TrafficWebClient(0, false);
             if (!authenticationCrawler.authenticate(webClient, username, password)) {
-              LOGGER.error(String.format("Failed to login %s with username %s. Skip.", getECName(), username));
+              LOGGER.error(String.format("Failed to login %s with username %s. Skip.", getModuleType(), username));
               continue;
             }
 
-            KojimaPurchaseHistoryListCrawler purchaseHistoryListCrawler = new KojimaPurchaseHistoryListCrawler(getECName(), webpageService);
+            KojimaPurchaseHistoryListCrawler purchaseHistoryListCrawler = new KojimaPurchaseHistoryListCrawler(getModuleType(), webpageService);
             GeneralPurchaseHistoryListCrawlerResult crawlerResult = purchaseHistoryListCrawler.fetchPurchaseHistoryList(webClient, null, false);
             webClient.finishTraffic();
 
@@ -85,7 +85,7 @@ public class KojimaChangeDetectionInitModule extends IChangeDetectionInitModule 
           }
 
         } else if (monitorTargetCheckPage.getPageName().equalsIgnoreCase(Consts.PRODUCT_DETAIL_PAGE_NAME)) {
-          KojimaProductDetailCrawler crawler = new KojimaProductDetailCrawler(getECName(), webpageService);
+          KojimaProductDetailCrawler crawler = new KojimaProductDetailCrawler(getModuleType(), webpageService);
           for (String productCode : monitorTargetCheckPage.getCheckTargetKeys()) {
             TrafficWebClient webClient = new TrafficWebClient(0, false);
             GeneralProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productCode, false);
@@ -140,12 +140,12 @@ public class KojimaChangeDetectionInitModule extends IChangeDetectionInitModule 
    * @param pageKey the page key
    */
   protected void saveNormalData(String normalData, String pageKey, String page) {
-    NormalDataDAO dao = repository.findFirstByEcSiteAndPageAndPageKey(getECName(), page, pageKey);
+    NormalDataDAO dao = repository.findFirstByEcSiteAndPageAndPageKey(getModuleType(), page, pageKey);
     if (dao == null) {
       dao = new NormalDataDAO();
     }
 
-    dao.setEcSite(getECName());
+    dao.setEcSite(getModuleType());
     dao.setNormalData(normalData);
     dao.setDownloadedAt(new Date());
     dao.setPage(page);

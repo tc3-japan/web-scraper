@@ -52,18 +52,17 @@ public class GeneralChangeDetectionCheckModule extends IChangeDetectionCheckModu
   }
 
   @Override
-  public String getECName() {
-    System.out.println("Function 'getECName()' is depricated! Do NOT USE! Returning null!");
-    return null;
+  public String getModuleType() {
+    return "general";
   }
 
   @Override
   public void check(List<String> sites) throws IOException {
     for (MonitorTargetDefinitionProperty.MonitorTargetCheckSite checkSite : monitorTargetDefinitionProperty.getCheckSites()) {
-      if (!this.getECName().equalsIgnoreCase(checkSite.getEcSite())) {
+      if (!this.getModuleType().equalsIgnoreCase(checkSite.getEcSite())) {
         continue;
       }
-      CheckItemsDefinitionProperty.CheckItemsCheckSite checkSiteDefinition = checkItemsDefinitionProperty.getCheckSiteDefinition(getECName());
+      CheckItemsDefinitionProperty.CheckItemsCheckSite checkSiteDefinition = checkItemsDefinitionProperty.getCheckSiteDefinition(getModuleType());
       
       for (MonitorTargetDefinitionProperty.MonitorTargetCheckPage monitorTargetCheckPage : checkSite.getCheckPages()) {
         if (monitorTargetCheckPage.getPageName().equalsIgnoreCase(Consts.PURCHASE_HISTORY_LIST_PAGE_NAME)) {
@@ -81,14 +80,14 @@ public class GeneralChangeDetectionCheckModule extends IChangeDetectionCheckModu
             String password = passwordList.get(i);
 
             TrafficWebClient webClient = new TrafficWebClient(0, false);
-            YahooAuthenticationCrawler authenticationCrawler = new YahooAuthenticationCrawler(getECName(), webpageService);//TODO: GENERALIZE!
+            YahooAuthenticationCrawler authenticationCrawler = new YahooAuthenticationCrawler(getModuleType(), webpageService);//TODO: GENERALIZE!
             if (!authenticationCrawler.authenticate(webClient, username, password)) {
-              LOGGER.error(String.format("Failed to login %s with username %s. Skip.", getECName(), username));
+              LOGGER.error(String.format("Failed to login %s with username %s. Skip.", getModuleType(), username));
               continue;
             }
             
             //TODO: GENERALIZE!
-            YahooPurchaseHistoryListCrawler purchaseHistoryListCrawler = new YahooPurchaseHistoryListCrawler(getECName(), webpageService, username, password);
+            YahooPurchaseHistoryListCrawler purchaseHistoryListCrawler = new YahooPurchaseHistoryListCrawler(getModuleType(), webpageService, username, password);
             GeneralPurchaseHistoryListCrawlerResult crawlerResult = purchaseHistoryListCrawler.fetchPurchaseHistoryList(webClient, null, true);
             webClient.finishTraffic();
             
@@ -96,7 +95,7 @@ public class GeneralChangeDetectionCheckModule extends IChangeDetectionCheckModu
           }
 
         } else if (monitorTargetCheckPage.getPageName().equalsIgnoreCase(Consts.PRODUCT_DETAIL_PAGE_NAME)) {
-          YahooProductDetailCrawler crawler = new YahooProductDetailCrawler(getECName(), webpageService);
+          YahooProductDetailCrawler crawler = new YahooProductDetailCrawler(getModuleType(), webpageService);
           for (String productCode : monitorTargetCheckPage.getCheckTargetKeys()) {
             TrafficWebClient webClient = new TrafficWebClient(0, false);
             GeneralProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productCode, true);
@@ -123,14 +122,14 @@ public class GeneralChangeDetectionCheckModule extends IChangeDetectionCheckModu
 
     CheckItemsDefinitionProperty.CheckItemsCheckPage checkItemsCheckPage = checkSiteDefinition.getCheckPageDefinition(Consts.PURCHASE_HISTORY_LIST_PAGE_NAME);
 
-    NormalDataDAO normalDataDAO = normalDataRepository.findFirstByEcSiteAndPageAndPageKey(getECName(), Consts.PURCHASE_HISTORY_LIST_PAGE_NAME, pageKey);
+    NormalDataDAO normalDataDAO = normalDataRepository.findFirstByEcSiteAndPageAndPageKey(getModuleType(), Consts.PURCHASE_HISTORY_LIST_PAGE_NAME, pageKey);
     if (normalDataDAO == null) {
       // Could not find in database.
       // It's new product.
       LOGGER.warn(
         String.format(
           "Could not find %s (%s) in database, please run change_detection_init first. Skip.",
-          getECName(), pageKey));
+          getModuleType(), pageKey));
       return;
     }
 
@@ -143,10 +142,10 @@ public class GeneralChangeDetectionCheckModule extends IChangeDetectionCheckModu
 
     saveCheckResult(passed, PurchaseHistoryCheckResultDetail.toArrayJson(results), Consts.PURCHASE_HISTORY_LIST_PAGE_NAME, null);
 
-    Notification notification = new Notification(getECName(), Consts.PURCHASE_HISTORY_LIST_PAGE_NAME, pageKey);
+    Notification notification = new Notification(getModuleType(), Consts.PURCHASE_HISTORY_LIST_PAGE_NAME, pageKey);
     notification.setHtmlPaths(crawlerResult.getHtmlPathList());
     notification.setDetectionTime(new Date());
-    webpageService.save("notification", getECName(), notification.toString());
+    webpageService.save("notification", getModuleType(), notification.toString());
   }
 
   /**
@@ -157,7 +156,7 @@ public class GeneralChangeDetectionCheckModule extends IChangeDetectionCheckModu
     ProductInfo productInfo = crawlerResult.getProductInfo();
     
     CheckItemsDefinitionProperty.CheckItemsCheckPage checkItemsCheckPage = checkSiteDefinition.getCheckPageDefinition(Consts.PRODUCT_DETAIL_PAGE_NAME);
-    NormalDataDAO normalDataDAO = normalDataRepository.findFirstByEcSiteAndPageAndPageKey(getECName(), Consts.PRODUCT_DETAIL_PAGE_NAME, productInfo.getCode());
+    NormalDataDAO normalDataDAO = normalDataRepository.findFirstByEcSiteAndPageAndPageKey(getModuleType(), Consts.PRODUCT_DETAIL_PAGE_NAME, productInfo.getCode());
 
     if (normalDataDAO == null) {
       // Could not find in database.
@@ -165,7 +164,7 @@ public class GeneralChangeDetectionCheckModule extends IChangeDetectionCheckModu
       LOGGER.warn(
         String.format(
           "Could not find %s: %s in database, please run change_detection_init first. Skip.",
-          getECName(), productInfo.getCode()));
+          getModuleType(), productInfo.getCode()));
       return;
     }
 
@@ -173,10 +172,10 @@ public class GeneralChangeDetectionCheckModule extends IChangeDetectionCheckModu
     ProductCheckResultDetail result = CheckUtils.checkProductInfo(checkItemsCheckPage, dbProductInfo, productInfo);
     saveCheckResult(result.isOk(), result.toJson(), Consts.PRODUCT_DETAIL_PAGE_NAME, productInfo.getCode());
 
-    Notification notification = new Notification(getECName(), Consts.PRODUCT_DETAIL_PAGE_NAME, productInfo.getCode());
+    Notification notification = new Notification(getModuleType(), Consts.PRODUCT_DETAIL_PAGE_NAME, productInfo.getCode());
     notification.addHtmlPath(crawlerResult.getHtmlPath());
     notification.setDetectionTime(new Date());
-    webpageService.save("notification", getECName(), notification.toString());
+    webpageService.save("notification", getModuleType(), notification.toString());
   };
 
   /**
@@ -187,12 +186,12 @@ public class GeneralChangeDetectionCheckModule extends IChangeDetectionCheckModu
    * @param pageKey the page key
    */
   protected void saveCheckResult(boolean passed, String checkResultDetail, String page, String pageKey) {
-    CheckResultDAO dao = checkResultRepository.findFirstByEcSiteAndPageAndPageKey(getECName(), page, pageKey);
+    CheckResultDAO dao = checkResultRepository.findFirstByEcSiteAndPageAndPageKey(getModuleType(), page, pageKey);
     if (dao == null) {
       dao = new CheckResultDAO();
     }
 
-    dao.setEcSite(getECName());
+    dao.setEcSite(getModuleType());
     dao.setCheckResultDetail(checkResultDetail);
     dao.setCheckedAt(new Date());
     dao.setPage(page);

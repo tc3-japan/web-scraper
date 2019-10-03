@@ -43,15 +43,14 @@ public class GeneralChangeDetectionInitModule extends IChangeDetectionInitModule
   }
 
   @Override
-  public String getECName() {
-    System.out.println("Function 'getECName()' is depricated! Do NOT USE! Returning null!");
-    return null;
+  public String getModuleType() {
+    return "general";
   }
 
   @Override
   public void init(List<String> sites) throws IOException {
     for(MonitorTargetDefinitionProperty.MonitorTargetCheckSite monitorTargetCheckSite : monitorTargetDefinitionProperty.getCheckSites()) {
-      if (!this.getECName().equalsIgnoreCase(monitorTargetCheckSite.getEcSite())) {
+      if (!this.getModuleType().equalsIgnoreCase(monitorTargetCheckSite.getEcSite())) {
         continue;
       }
       for (MonitorTargetDefinitionProperty.MonitorTargetCheckPage monitorTargetCheckPage :monitorTargetCheckSite.getCheckPages()) {
@@ -70,14 +69,14 @@ public class GeneralChangeDetectionInitModule extends IChangeDetectionInitModule
             String password = passwordList.get(i);
 
             LOGGER.info("init ...");
-            YahooAuthenticationCrawler authenticationCrawler = new YahooAuthenticationCrawler(getECName(), webpageService);
+            YahooAuthenticationCrawler authenticationCrawler = new YahooAuthenticationCrawler(getModuleType(), webpageService);
             TrafficWebClient webClient = new TrafficWebClient(0, false);
             if (!authenticationCrawler.authenticate(webClient, username, password)) {
-              LOGGER.error(String.format("Failed to login %s with username %s. Skip.", getECName(), username));
+              LOGGER.error(String.format("Failed to login %s with username %s. Skip.", getModuleType(), username));
               continue;
             }
 
-            YahooPurchaseHistoryListCrawler purchaseHistoryListCrawler = new YahooPurchaseHistoryListCrawler(getECName(), webpageService, username, password);
+            YahooPurchaseHistoryListCrawler purchaseHistoryListCrawler = new YahooPurchaseHistoryListCrawler(getModuleType(), webpageService, username, password);
             GeneralPurchaseHistoryListCrawlerResult crawlerResult = purchaseHistoryListCrawler.fetchPurchaseHistoryList(webClient, null, false);
             webClient.finishTraffic();
 
@@ -85,7 +84,7 @@ public class GeneralChangeDetectionInitModule extends IChangeDetectionInitModule
           }
 
         } else if (monitorTargetCheckPage.getPageName().equalsIgnoreCase(Consts.PRODUCT_DETAIL_PAGE_NAME)) {
-          YahooProductDetailCrawler crawler = new YahooProductDetailCrawler(getECName(), webpageService);
+          YahooProductDetailCrawler crawler = new YahooProductDetailCrawler(getModuleType(), webpageService);
           for (String productCode : monitorTargetCheckPage.getCheckTargetKeys()) {
             TrafficWebClient webClient = new TrafficWebClient(0, false);
 
@@ -129,12 +128,12 @@ public class GeneralChangeDetectionInitModule extends IChangeDetectionInitModule
    * @param pageKey the page key
    */
   protected void saveNormalData(String normalData, String pageKey, String page) {
-    NormalDataDAO dao = repository.findFirstByEcSiteAndPageAndPageKey(getECName(), page, pageKey);
+    NormalDataDAO dao = repository.findFirstByEcSiteAndPageAndPageKey(getModuleType(), page, pageKey);
     if (dao == null) {
       dao = new NormalDataDAO();
     }
 
-    dao.setEcSite(getECName());
+    dao.setEcSite(getModuleType());
     dao.setNormalData(normalData);
     dao.setDownloadedAt(new Date());
     dao.setPage(page);

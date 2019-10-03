@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Yahoo implementation of ProductDetailModule
@@ -92,9 +91,8 @@ public class GeneralProductDetailModule extends IProductDetailModule {
   }
 
   @Override
-  public String getECName() {
-    System.out.println("Function 'getECName()' is depricated! Do NOT USE! Returning null!");
-    return null;
+  public String getModuleType() {
+    return "general";
   }
 
   @Override

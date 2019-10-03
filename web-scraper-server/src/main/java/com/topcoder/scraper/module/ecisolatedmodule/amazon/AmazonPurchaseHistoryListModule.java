@@ -49,7 +49,7 @@ public class AmazonPurchaseHistoryListModule extends IPurchaseHistoryListModule 
   }
 
   @Override
-  public String getECName() {
+  public String getModuleType() {
     return "amazon";
   }
 
@@ -59,7 +59,7 @@ public class AmazonPurchaseHistoryListModule extends IPurchaseHistoryListModule 
   @Override
   public void fetchPurchaseHistoryList(List<String> sites) {
 
-    Iterable<ECSiteAccountDAO> accountDAOS = ecSiteAccountRepository.findAllByEcSite(getECName());
+    Iterable<ECSiteAccountDAO> accountDAOS = ecSiteAccountRepository.findAllByEcSite(getModuleType());
     for (ECSiteAccountDAO ecSiteAccountDAO : accountDAOS) {
       
       if (ecSiteAccountDAO.getEcUseFlag() != Boolean.TRUE) {
@@ -77,7 +77,7 @@ public class AmazonPurchaseHistoryListModule extends IPurchaseHistoryListModule 
       }
 
       try {
-        AmazonPurchaseHistoryListCrawler crawler = new AmazonPurchaseHistoryListCrawler(getECName(), property, webpageService);
+        AmazonPurchaseHistoryListCrawler crawler = new AmazonPurchaseHistoryListCrawler(getModuleType(), property, webpageService);
 
         GeneralPurchaseHistoryListCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClient, lastPurchaseHistory.orElse(null), true);
         webClient.finishTraffic();
@@ -85,7 +85,7 @@ public class AmazonPurchaseHistoryListModule extends IPurchaseHistoryListModule 
 
         if (list != null && list.size() > 0) {
           list.forEach(purchaseHistory -> purchaseHistory.setAccountId(Integer.toString(ecSiteAccountDAO.getId())));
-          purchaseHistoryService.save(getECName(), list);
+          purchaseHistoryService.save(getModuleType(), list);
         }
         LOGGER.info("succeed fetch purchaseHistory for ecSite id = " + ecSiteAccountDAO.getId());
       } catch (Exception e) { // here catch all exception and did not throw it

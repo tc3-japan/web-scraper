@@ -40,7 +40,7 @@ public class YahooProductDetailModule extends IProductDetailModule {
   }
 
   @Override
-  public String getECName() { 
+  public String getModuleType() {
     return "yahoo";
   }
 
@@ -51,9 +51,9 @@ public class YahooProductDetailModule extends IProductDetailModule {
     LOGGER.info("sites:" + sites);
     LOGGER.info("---fetchProductDetailList------------------------------------------------");
 
-    List<ProductDAO> products = this.productService.getAllFetchInfoStatusIsNull(getECName());
+    List<ProductDAO> products = this.productService.getAllFetchInfoStatusIsNull(getModuleType());
 
-    GeneralProductDetailCrawler crawler = new GeneralProductDetailCrawler(getECName(), webpageService);
+    GeneralProductDetailCrawler crawler = new GeneralProductDetailCrawler(getModuleType(), webpageService);
 
     products.forEach(product -> {
       try {
@@ -95,7 +95,7 @@ public class YahooProductDetailModule extends IProductDetailModule {
   public ProductDAO crossEcProduct(String modelNo) throws IOException {
     TrafficWebClient webClient = new TrafficWebClient(0, false);
 
-    GeneralProductDetailCrawler crawler = new GeneralProductDetailCrawler(getECName(), webpageService);
+    GeneralProductDetailCrawler crawler = new GeneralProductDetailCrawler(getModuleType(), webpageService);
     GeneralProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, modelNo);
     
     webClient.finishTraffic();
@@ -107,7 +107,7 @@ public class YahooProductDetailModule extends IProductDetailModule {
 	    return null;
 	  }
 
-	  return new ProductDAO(getECName(), productInfo);
+	  return new ProductDAO(getModuleType(), productInfo);
   }
   
 }

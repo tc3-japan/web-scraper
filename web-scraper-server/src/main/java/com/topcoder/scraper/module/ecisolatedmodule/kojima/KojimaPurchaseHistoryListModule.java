@@ -43,14 +43,14 @@ public class KojimaPurchaseHistoryListModule extends IPurchaseHistoryListModule 
   }
 
   @Override
-  public String getECName() {
+  public String getModuleType() {
     return "kojima";
   }
 
   @Override
   public void fetchPurchaseHistoryList(List<String> sites) throws IOException {
     
-    Iterable<ECSiteAccountDAO> accountDAOS = ecSiteAccountRepository.findAllByEcSite(getECName());
+    Iterable<ECSiteAccountDAO> accountDAOS = ecSiteAccountRepository.findAllByEcSite(getModuleType());
     for (ECSiteAccountDAO ecSiteAccountDAO : accountDAOS) {
 
       if (ecSiteAccountDAO.getEcUseFlag() != Boolean.TRUE) {
@@ -69,7 +69,7 @@ public class KojimaPurchaseHistoryListModule extends IPurchaseHistoryListModule 
       try {
         Optional<PurchaseHistory> lastPurchaseHistory = purchaseHistoryService.fetchLast(ecSiteAccountDAO.getId());
 
-        KojimaPurchaseHistoryListCrawler crawler = new KojimaPurchaseHistoryListCrawler(getECName(), webpageService);
+        KojimaPurchaseHistoryListCrawler crawler = new KojimaPurchaseHistoryListCrawler(getModuleType(), webpageService);
         GeneralPurchaseHistoryListCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClient, lastPurchaseHistory.orElse(null), true);
         webClient.finishTraffic();
 
@@ -77,7 +77,7 @@ public class KojimaPurchaseHistoryListModule extends IPurchaseHistoryListModule 
 
         if (list != null && list.size() > 0) {
           list.forEach(purchaseHistory -> purchaseHistory.setAccountId(Integer.toString(ecSiteAccountDAO.getId())));
-          purchaseHistoryService.save(getECName(), list);
+          purchaseHistoryService.save(getModuleType(), list);
         }
         LOGGER.info("succeed fetch purchaseHistory for ecSite id = " + ecSiteAccountDAO.getId());
       } catch (Exception e) { // here catch all exception and did not throw it

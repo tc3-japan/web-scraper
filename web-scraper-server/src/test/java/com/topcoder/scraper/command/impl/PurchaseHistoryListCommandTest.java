@@ -36,18 +36,18 @@ public class PurchaseHistoryListCommandTest {
 
   @Before
   public void setUp() {
-    when(IPurchaseHistoryListModule1.getECName()).thenReturn("test");
-    when(IPurchaseHistoryListModule2.getECName()).thenReturn("test2");
+    when(IPurchaseHistoryListModule1.getModuleType()).thenReturn("test");
+    when(IPurchaseHistoryListModule2.getModuleType()).thenReturn("test2");
   }
 
   @Test
   public void testCallModuleOnceForFirstModule() throws IOException {
     when(args.getOptionValues("site")).thenReturn(Collections.singletonList("test"));
     purchaseHistoryListCommand.run(args);
-    verify(IPurchaseHistoryListModule1, times(1)).getECName();
+    verify(IPurchaseHistoryListModule1, times(1)).getModuleType();
     verify(IPurchaseHistoryListModule1, times(1)).fetchPurchaseHistoryList();
     // not called because of find first module named test
-    verify(IPurchaseHistoryListModule2, times(0)).getECName();
+    verify(IPurchaseHistoryListModule2, times(0)).getModuleType();
     verify(IPurchaseHistoryListModule2, times(0)).fetchPurchaseHistoryList();
   }
 
@@ -55,9 +55,9 @@ public class PurchaseHistoryListCommandTest {
   public void testCallModuleOnceForSecondModule() throws IOException {
     when(args.getOptionValues("site")).thenReturn(Collections.singletonList("test2"));
     purchaseHistoryListCommand.run(args);
-    verify(IPurchaseHistoryListModule1, times(1)).getECName();
+    verify(IPurchaseHistoryListModule1, times(1)).getModuleType();
     verify(IPurchaseHistoryListModule1, times(0)).fetchPurchaseHistoryList();
-    verify(IPurchaseHistoryListModule2, times(1)).getECName();
+    verify(IPurchaseHistoryListModule2, times(1)).getModuleType();
     verify(IPurchaseHistoryListModule2, times(1)).fetchPurchaseHistoryList();
   }
 
@@ -65,9 +65,9 @@ public class PurchaseHistoryListCommandTest {
   public void testCallAllModules() throws IOException {
     when(args.getOptionValues("site")).thenReturn(null);
     purchaseHistoryListCommand.run(args);
-    verify(IPurchaseHistoryListModule1, times(0)).getECName();
+    verify(IPurchaseHistoryListModule1, times(0)).getModuleType();
     verify(IPurchaseHistoryListModule1, times(1)).fetchPurchaseHistoryList();
-    verify(IPurchaseHistoryListModule2, times(0)).getECName();
+    verify(IPurchaseHistoryListModule2, times(0)).getModuleType();
     verify(IPurchaseHistoryListModule2, times(1)).fetchPurchaseHistoryList();
   }
 }

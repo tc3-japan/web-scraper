@@ -44,15 +44,14 @@ public class GeneralPurchaseHistoryListModule extends IPurchaseHistoryListModule
   }
 
   @Override
-  public String getECName() {
-    System.out.println("Function 'getECName()' is depricated! Do NOT USE! Returning null!");
-    return null;
+  public String getModuleType() {
+    return "general";
   }
 
   @Override
   public void fetchPurchaseHistoryList(List<String> sites) throws IOException {
     
-    Iterable<ECSiteAccountDAO> accountDAOS = ecSiteAccountRepository.findAllByEcSite(getECName());
+    Iterable<ECSiteAccountDAO> accountDAOS = ecSiteAccountRepository.findAllByEcSite(getModuleType());
     for (ECSiteAccountDAO ecSiteAccountDAO : accountDAOS) {
 
       if (ecSiteAccountDAO.getEcUseFlag() != Boolean.TRUE) {
@@ -70,7 +69,7 @@ public class GeneralPurchaseHistoryListModule extends IPurchaseHistoryListModule
       }
       
       try {
-        YahooPurchaseHistoryListCrawler crawler = new YahooPurchaseHistoryListCrawler(getECName(), webpageService, ecSiteAccountDAO);
+        YahooPurchaseHistoryListCrawler crawler = new YahooPurchaseHistoryListCrawler(getModuleType(), webpageService, ecSiteAccountDAO);
 
         GeneralPurchaseHistoryListCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClient, lastPurchaseHistory.orElse(null), true);
         webClient.finishTraffic();
@@ -78,7 +77,7 @@ public class GeneralPurchaseHistoryListModule extends IPurchaseHistoryListModule
 
         if (list != null && list.size() > 0) {
           list.forEach(purchaseHistory -> purchaseHistory.setAccountId(Integer.toString(ecSiteAccountDAO.getId())));
-          purchaseHistoryService.save(getECName(), list);
+          purchaseHistoryService.save(getModuleType(), list);
         }
         LOGGER.info("succeed fetch purchaseHistory for ecSite id = " + ecSiteAccountDAO.getId());
       } catch (Exception e) { // here catch all exception and did not throw it

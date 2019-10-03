@@ -7,6 +7,6 @@ public interface IBasicModule {
    * get site name
    * @return site name
    */
-  String getECName();
+  String getModuleType();
 
 }

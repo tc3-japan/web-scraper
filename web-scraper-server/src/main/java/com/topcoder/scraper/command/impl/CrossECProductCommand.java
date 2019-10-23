@@ -23,9 +23,8 @@ import com.topcoder.common.model.ECSite;
 import com.topcoder.common.repository.ProductGroupRepository;
 import com.topcoder.common.repository.ProductRepository;
 import com.topcoder.scraper.exception.CrossECProductException;
-import com.topcoder.scraper.exception.FetchProductDetailException;
-import com.topcoder.scraper.module.amazon.AmazonProductDetailModule;
-import com.topcoder.scraper.module.kojima.KojimaProductDetailModule;
+import com.topcoder.scraper.module.ecisolatedmodule.amazon.AmazonProductDetailModule;
+import com.topcoder.scraper.module.ecisolatedmodule.kojima.KojimaProductDetailModule;
 
 /**
  * This will group product information of all products where group_status is null or uninitialized,
@@ -45,7 +44,7 @@ public class CrossECProductCommand {
   private AmazonProductDetailModule amazonProductDetailModule;
   
   @Autowired
-  private  KojimaProductDetailModule kojimaProductDetailModule;
+  private KojimaProductDetailModule kojimaProductDetailModule;
 
   private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 

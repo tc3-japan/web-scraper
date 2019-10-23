@@ -77,7 +77,7 @@ public class AppRunner implements ApplicationRunner {
   }
 
   private void usage() {
-    LOGGER.info("\njava -jar web-scraper.jar --batch=[purchase_history|product] --site=amazon\n    --batch is required.\n    --site is optional.");
+    LOGGER.info("\njava -jar web-scraper.jar --batch=[purchase_history|product] --site=amazon --module=unified\n    --batch is required.\n    --site is optional.\\n    --module is optional.");
   }
 
 }

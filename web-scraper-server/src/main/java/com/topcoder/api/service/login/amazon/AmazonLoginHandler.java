@@ -25,8 +25,8 @@ import com.topcoder.common.model.LoginResponse;
 import com.topcoder.common.repository.ECSiteAccountRepository;
 import com.topcoder.common.repository.UserRepository;
 import com.topcoder.common.traffic.TrafficWebClient;
-import com.topcoder.scraper.module.amazon.crawler.AmazonAuthenticationCrawler;
-import com.topcoder.scraper.module.amazon.crawler.AmazonAuthenticationCrawlerResult;
+import com.topcoder.scraper.module.ecisolatedmodule.amazon.crawler.AmazonAuthenticationCrawler;
+import com.topcoder.scraper.module.ecisolatedmodule.amazon.crawler.AmazonAuthenticationCrawlerResult;
 import com.topcoder.scraper.service.WebpageService;
 
 @Component

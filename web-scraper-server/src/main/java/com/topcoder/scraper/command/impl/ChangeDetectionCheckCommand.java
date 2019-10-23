@@ -2,7 +2,7 @@ package com.topcoder.scraper.command.impl;
 
 import com.topcoder.scraper.command.AbstractCommand;
 import com.topcoder.scraper.exception.ChangeDetectionException;
-import com.topcoder.scraper.module.ChangeDetectionCheckModule;
+import com.topcoder.scraper.module.IChangeDetectionCheckModule;
 import java.io.IOException;
 import java.util.List;
 import org.slf4j.Logger;
@@ -14,12 +14,12 @@ import org.springframework.stereotype.Component;
  * Change detection check Command
  */
 @Component
-public class ChangeDetectionCheckCommand extends AbstractCommand<ChangeDetectionCheckModule> {
+public class ChangeDetectionCheckCommand extends AbstractCommand<IChangeDetectionCheckModule> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ChangeDetectionCheckCommand.class);
 
   @Autowired
-  public ChangeDetectionCheckCommand(List<ChangeDetectionCheckModule> modules) {
+  public ChangeDetectionCheckCommand(List<IChangeDetectionCheckModule> modules) {
     super(modules);
   }
 
@@ -28,9 +28,9 @@ public class ChangeDetectionCheckCommand extends AbstractCommand<ChangeDetection
    * @param module module to be run
    */
   @Override
-  protected void process(ChangeDetectionCheckModule module) {
+  protected void process(IChangeDetectionCheckModule module) {
     try {
-      module.check();
+      module.check(this.sites);
     } catch (IOException e) {
       LOGGER.error("Fail to check change detection", e);
       throw new ChangeDetectionException();

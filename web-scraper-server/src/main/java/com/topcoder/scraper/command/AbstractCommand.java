@@ -18,6 +18,8 @@ public abstract class AbstractCommand<T extends IBasicModule> {
    */
   private final List<T> modules;
 
+  protected List<String> sites;
+
   protected AbstractCommand(List<T> modules) {
     this.modules = modules;
   }
@@ -31,12 +33,23 @@ public abstract class AbstractCommand<T extends IBasicModule> {
    * @param args arguments from input
    */
   public void run(ApplicationArguments args) {
-    List<String> sites = args.getOptionValues("site");
+    this.sites               = args.getOptionValues("site");
+    List<String> moduletypes = args.getOptionValues("module");
 
-    if (sites != null) {
-      sites.forEach(site -> getModule(site).ifPresent(this::process));
+    if (moduletypes == null || moduletypes.size() == 0 || moduletypes.get(0).equals("unified") ) {
+      // TODO: delete
+      System.out.println("---unified=general----------------------------------");
+      getModule("general").ifPresent(this::process);
+      if (sites.size()<1) System.out.println("You must enter --site=xxx parameter");
     } else {
-      modules.forEach(this::process);
+      // TODO: delete
+      System.out.println("---isolated----------------------------------");
+      System.out.println("---sites:" + sites);
+      if (sites != null) {
+        sites.forEach(site -> getModule(site).ifPresent(this::process));
+      } else {
+        modules.forEach(this::process);
+      }
     }
   }
 
@@ -53,6 +66,6 @@ public abstract class AbstractCommand<T extends IBasicModule> {
    * @return Optional module
    */
   private Optional<T> getModule(String site) {
-    return modules.stream().filter((ec) -> ec.getECName().equalsIgnoreCase(site)).findFirst();
+    return modules.stream().filter((ec) -> ec.getModuleType().equalsIgnoreCase(site)).findFirst();
   }
 }

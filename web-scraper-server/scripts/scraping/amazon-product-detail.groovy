@@ -42,14 +42,16 @@ def modelNoValues = [
 
 
 // Script Main
-info("--------------script begin--------------")
+//info("--------------script begin--------------")
 
 def productUrl = productUrlBase + productCode;
-info("product url: " + productUrl)
-navigatePage(productUrl)
+//info("product url: " + productUrl)
+setPage(productUrl)
 
-scrapePrice(prices)
+scrapePrices(prices)
 scrapeName(name)
+
+/*
 scrapeModelNo(modelNoLabels, modelNoLabelValues, modelNoValues)
 
 categoryInfoList = scrapeCategoryInfoListBySalesRank(salesRank) { props ->
@@ -66,8 +68,8 @@ if (categoryInfoList.size() <= 0) {
         getTextContent(tr_node.querySelector("th")).contains("Rank")
     })
 }
-scrapeCategoryRanking(categoryInfoList)
+//scrapeCategoryRanking(categoryInfoList)
 
-save()
-info("--------------script end--------------")
-
+//save()
+//info("--------------script end--------------")
+*/

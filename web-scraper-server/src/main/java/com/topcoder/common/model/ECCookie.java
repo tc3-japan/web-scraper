@@ -37,6 +37,7 @@ public class ECCookie {
    */
 
   private Date expires;
+  // saved to db as epoch milliseconds (1970/01/01 0:0:0.000 = 0)
   private String path;
   private boolean secure;
   private boolean httpOnly;

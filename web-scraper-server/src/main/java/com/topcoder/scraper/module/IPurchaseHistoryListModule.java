@@ -8,9 +8,9 @@ import java.util.List;
 /**
  * abstract purchase history list module
  */
-public abstract class IPurchaseHistoryListModule implements IBasicModule {
+public interface IPurchaseHistoryListModule extends IBasicModule {
   /**
    * fetch purchase history list
    */
-  public abstract void fetchPurchaseHistoryList(List<String> sites) throws IOException;
+  void fetchPurchaseHistoryList(List<String> sites) throws IOException;
 }

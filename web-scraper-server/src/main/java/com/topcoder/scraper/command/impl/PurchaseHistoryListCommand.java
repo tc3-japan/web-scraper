@@ -1,5 +1,6 @@
 package com.topcoder.scraper.command.impl;
 
+import com.topcoder.scraper.Consts;
 import com.topcoder.scraper.command.AbstractCommand;
 import com.topcoder.scraper.exception.FetchPurchaseHistoryListException;
 import com.topcoder.scraper.module.IPurchaseHistoryListModule;
@@ -31,7 +32,11 @@ public class PurchaseHistoryListCommand extends AbstractCommand<IPurchaseHistory
   @Override
   protected void process(IPurchaseHistoryListModule module) {
     try {
-      module.fetchPurchaseHistoryList(this.sites);
+      if (this.sites.size() == 0) {
+        module.fetchPurchaseHistoryList(Consts.ALL_SITES);
+      } else {
+        module.fetchPurchaseHistoryList(this.sites);
+      }
     } catch (IOException e) {
       LOGGER.error("Fail to fetch purchase history list", e);
       throw new FetchPurchaseHistoryListException();

@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.topcoder.common.util.CipherUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -109,6 +110,13 @@ public class PurchaseHistory {
 
   public void setProducts(List<ProductInfo> products) {
     this.products = products;
+  }
+
+  public void addProduct(ProductInfo product) {
+    if (this.products == null) {
+      this.products = new ArrayList<ProductInfo>();
+    }
+    this.products.add(product);
   }
 
   public void setDeliveryStatus(String deliveryStatus) {

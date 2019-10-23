@@ -1,5 +1,6 @@
 package com.topcoder.scraper.command.impl;
 
+import com.topcoder.scraper.Consts;
 import com.topcoder.scraper.command.AbstractCommand;
 import com.topcoder.scraper.exception.ChangeDetectionException;
 import com.topcoder.scraper.module.IChangeDetectionInitModule;
@@ -30,7 +31,11 @@ public class ChangeDetectionInitCommand extends AbstractCommand<IChangeDetection
   @Override
   protected void process(IChangeDetectionInitModule module) {
     try {
-      module.init(this.sites);
+      if (this.sites.size() == 0) {
+        module.init(Consts.ALL_SITES);
+      } else {
+        module.init(this.sites);
+      }
     } catch (IOException e) {
       LOGGER.error("Fail to init check detection", e);
       throw new ChangeDetectionException();

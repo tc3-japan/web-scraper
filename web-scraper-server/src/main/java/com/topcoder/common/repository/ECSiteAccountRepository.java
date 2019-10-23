@@ -20,4 +20,6 @@ public interface ECSiteAccountRepository extends CrudRepository<ECSiteAccountDAO
   List<ECSiteAccountDAO> findAllByUserId(Integer userId);
   
   List<ECSiteAccountDAO> findAllByEcSite(String ecSite);
+
+  List<ECSiteAccountDAO> findAllByEcSiteAndUserIdIn(String ecSite, List<Integer> userIdList);
 }

@@ -8,11 +8,11 @@ import java.util.List;
 /**
  * abstract change detection check module
  */
-public abstract class IChangeDetectionCheckModule implements IBasicModule {
+public interface IChangeDetectionCheckModule extends IBasicModule {
 
   /**
    * check change detection
    */
-  public abstract void check(List<String> sites) throws IOException;
+  void check(List<String> sites) throws IOException;
 }
 

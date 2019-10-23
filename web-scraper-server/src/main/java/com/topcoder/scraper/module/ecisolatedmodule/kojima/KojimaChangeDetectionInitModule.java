@@ -21,12 +21,12 @@ import com.topcoder.scraper.module.IChangeDetectionInitModule;
 import com.topcoder.scraper.module.ecisolatedmodule.kojima.crawler.KojimaAuthenticationCrawler;
 import com.topcoder.scraper.module.ecisolatedmodule.kojima.crawler.KojimaProductDetailCrawler;
 import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralProductDetailCrawlerResult;
-import com.topcoder.scraper.module.ecisolatedmodule.kojima.crawler.KojimaPurchaseHistoryListCrawler;
+import com.topcoder.scraper.module.ecisolatedmodule.kojima.crawler.OldKojimaPurchaseHistoryListCrawler;
 import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistoryListCrawlerResult;
 import com.topcoder.scraper.service.WebpageService;
 
 @Component
-public class KojimaChangeDetectionInitModule extends IChangeDetectionInitModule {
+public class KojimaChangeDetectionInitModule implements IChangeDetectionInitModule {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(KojimaChangeDetectionInitModule.class);
   MonitorTargetDefinitionProperty monitorTargetDefinitionProperty;
@@ -77,7 +77,7 @@ public class KojimaChangeDetectionInitModule extends IChangeDetectionInitModule 
               continue;
             }
 
-            KojimaPurchaseHistoryListCrawler purchaseHistoryListCrawler = new KojimaPurchaseHistoryListCrawler(getModuleType(), webpageService);
+            OldKojimaPurchaseHistoryListCrawler purchaseHistoryListCrawler = new OldKojimaPurchaseHistoryListCrawler(getModuleType(), webpageService);
             GeneralPurchaseHistoryListCrawlerResult crawlerResult = purchaseHistoryListCrawler.fetchPurchaseHistoryList(webClient, null, false);
             webClient.finishTraffic();
 
@@ -102,17 +102,25 @@ public class KojimaChangeDetectionInitModule extends IChangeDetectionInitModule 
     }
   }
 
+  /**
+   * Save normal data in database
+   * @param normalData normal data as string
+   * @param page the page name
+   * @param pageKey the page key
+   */
+  protected void saveNormalData(String normalData, String pageKey, String page) {
+    NormalDataDAO dao = repository.findFirstByEcSiteAndPageAndPageKey(getModuleType(), page, pageKey);
+    if (dao == null) {
+      dao = new NormalDataDAO();
+    }
 
-
-  //TODO: FINISH, CLEAN, AND TEST THE CODE BELOW!
-
-  //private void processProductInfo(ProductDetailCrawlerResult crawlerResult) {
-  //}
-
-  //private void processPurchaseHistory(PurchaseHistoryListCrawlerResult crawlerResult, String username) {
-  //}
-
-
+    dao.setEcSite(getModuleType());
+    dao.setNormalData(normalData);
+    dao.setDownloadedAt(new Date());
+    dao.setPage(page);
+    dao.setPageKey(pageKey);
+    repository.save(dao);
+  }
 
   /**
    * process purchase history crawler result
@@ -133,23 +141,4 @@ public class KojimaChangeDetectionInitModule extends IChangeDetectionInitModule 
     saveNormalData(productInfo.toJson(), productInfo.getCode(), Consts.PRODUCT_DETAIL_PAGE_NAME);
   }
 
-    /**
-   * Save normal data in database
-   * @param normalData normal data as string
-   * @param page the page name
-   * @param pageKey the page key
-   */
-  protected void saveNormalData(String normalData, String pageKey, String page) {
-    NormalDataDAO dao = repository.findFirstByEcSiteAndPageAndPageKey(getModuleType(), page, pageKey);
-    if (dao == null) {
-      dao = new NormalDataDAO();
-    }
-
-    dao.setEcSite(getModuleType());
-    dao.setNormalData(normalData);
-    dao.setDownloadedAt(new Date());
-    dao.setPage(page);
-    dao.setPageKey(pageKey);
-    repository.save(dao);
-  }
 }

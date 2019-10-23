@@ -30,12 +30,12 @@ import com.topcoder.scraper.module.IChangeDetectionCheckModule;
 import com.topcoder.scraper.module.ecisolatedmodule.kojima.crawler.KojimaAuthenticationCrawler;
 import com.topcoder.scraper.module.ecisolatedmodule.kojima.crawler.KojimaProductDetailCrawler;
 import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralProductDetailCrawlerResult;
-import com.topcoder.scraper.module.ecisolatedmodule.kojima.crawler.KojimaPurchaseHistoryListCrawler;
+import com.topcoder.scraper.module.ecisolatedmodule.kojima.crawler.OldKojimaPurchaseHistoryListCrawler;
 import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistoryListCrawlerResult;
 import com.topcoder.scraper.service.WebpageService;
 
 @Component
-public class KojimaChangeDetectionCheckModule extends IChangeDetectionCheckModule {
+public class KojimaChangeDetectionCheckModule implements IChangeDetectionCheckModule {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(KojimaChangeDetectionCheckModule.class);
   MonitorTargetDefinitionProperty monitorTargetDefinitionProperty;
@@ -93,7 +93,7 @@ public class KojimaChangeDetectionCheckModule extends IChangeDetectionCheckModul
               continue;
             }
 
-            KojimaPurchaseHistoryListCrawler purchaseHistoryListCrawler = new KojimaPurchaseHistoryListCrawler(getModuleType(), webpageService);
+            OldKojimaPurchaseHistoryListCrawler purchaseHistoryListCrawler = new OldKojimaPurchaseHistoryListCrawler(getModuleType(), webpageService);
             GeneralPurchaseHistoryListCrawlerResult crawlerResult = purchaseHistoryListCrawler.fetchPurchaseHistoryList(webClient, null, true);
             webClient.finishTraffic();
             

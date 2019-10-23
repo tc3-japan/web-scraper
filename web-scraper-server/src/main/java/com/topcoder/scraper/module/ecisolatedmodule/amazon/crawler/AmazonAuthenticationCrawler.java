@@ -14,12 +14,14 @@ import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 import com.topcoder.common.config.AmazonProperty;
 import com.topcoder.common.model.CodeType;
 import com.topcoder.common.traffic.TrafficWebClient;
+import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractAuthenticationCrawler;
 import com.topcoder.scraper.module.ecunifiedmodule.AuthStep;
 import com.topcoder.scraper.service.WebpageService;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -29,7 +31,8 @@ import java.io.IOException;
 /**
  * Login amazon
  */
-public class AmazonAuthenticationCrawler {
+@Component
+public class AmazonAuthenticationCrawler extends AbstractAuthenticationCrawler {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AmazonAuthenticationCrawler.class);
 
@@ -85,8 +88,8 @@ public class AmazonAuthenticationCrawler {
   @Setter
   private AuthStep authStep = AuthStep.FIRST;
 
-  public AmazonAuthenticationCrawler(String siteName, AmazonProperty property, WebpageService webpageService) {
-    this.siteName = siteName;
+  public AmazonAuthenticationCrawler(AmazonProperty property, WebpageService webpageService) {
+    this.siteName = "amazon";
     this.property = property;
     this.webpageService = webpageService;
   }
@@ -102,9 +105,10 @@ public class AmazonAuthenticationCrawler {
    * @param init      is only used for login_init ?
    * @throws Exception if any error happened
    */
+  @Override
   public AmazonAuthenticationCrawlerResult authenticate(TrafficWebClient webClient,
                                                         String username,
-                                                        String password, String code, boolean init) throws Exception {
+                                                        String password, String code, boolean init) throws IOException {
     if (homePage == null) {
       webClient.getWebClient().getCookieManager().clearCookies();
       // Fetch homepage
@@ -323,6 +327,7 @@ public class AmazonAuthenticationCrawler {
    * @return AmazonAuthenticationCrawlerResult
    * @throws IOException
    */
+  @Override
   public AmazonAuthenticationCrawlerResult authenticate(TrafficWebClient webClient,
                                                         String username,
                                                         String password) throws IOException {

@@ -1,13 +1,13 @@
 package com.topcoder.scraper.module.ecisolatedmodule.amazon.crawler;
 
 import com.topcoder.common.model.CodeType;
+import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractAuthenticationCrawlerResult;
 import lombok.Data;
 
 /**
  * Result from AmazonAuthenticationCrawler
  */
-@Data
-public class AmazonAuthenticationCrawlerResult {
+public class AmazonAuthenticationCrawlerResult extends AbstractAuthenticationCrawlerResult {
 
   private boolean success;
   private String reason;
@@ -17,16 +17,11 @@ public class AmazonAuthenticationCrawlerResult {
   private boolean needContinue;
 
   public AmazonAuthenticationCrawlerResult(boolean success, String htmlPath) {
-    this.success = success;
-    this.htmlPath = htmlPath;
+    super(success, htmlPath);
   }
 
   public AmazonAuthenticationCrawlerResult(boolean success, String reason, CodeType codeType, String img, boolean needContinue) {
-    this.success = success;
-    this.reason = reason;
-    this.codeType = codeType;
-    this.img = img;
-    this.needContinue = needContinue;
+    super(success, reason, codeType, img, needContinue);
   }
 
   public boolean isSuccess() {

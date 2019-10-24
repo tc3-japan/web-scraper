@@ -25,7 +25,6 @@ public class NavigableAuthenticationPage extends NavigablePage {
         HtmlElement yahooImg = getPage()
                 .querySelector(selector);
         //savePage("yahoo-authenticated", siteName, webpageService);
-
         boolean loginSuccess;
         if (yahooImg != null) {
             System.out.println("Logged in successfully");

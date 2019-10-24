@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.DomNode;
+import com.gargoylesoftware.htmlunit.html.HtmlButton;
 import com.gargoylesoftware.htmlunit.html.HtmlCheckBoxInput;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
@@ -27,7 +28,6 @@ public class NavigablePage {
         setPage(url); // TODO: Will this work if page is uninitialized?
     }
 
-
     public void setEnableJS(boolean value) {
         System.out.println("Setting JavaScript Enabled to " + value);
         webClient.getWebClient().getOptions().setJavaScriptEnabled(value);
@@ -39,7 +39,6 @@ public class NavigablePage {
             page = webClient.getPage(url);
         } catch (IOException e) {
 
-            
             e.printStackTrace();
             System.out.println("Could not set page to " + url + " in NavigablePage.java");
         }
@@ -60,12 +59,25 @@ public class NavigablePage {
 
             HtmlElement element = page.querySelector(selector);
             System.out.println("click() > Selected " + element + " from " + selector);
-
+            HtmlButton button = (HtmlButton)page.querySelector(selector);
+            System.out.println("click() >  button Selected " + button + " from " + selector);
             if (element != null) {
                 try {
                     HtmlPage result = webClient.click(element);
                     if (result != null)
                         page = result;
+                    System.out.println("Setting page to " + result);
+                    // savePage("pageClicked", "yahoo", webPageServiceWired);
+                } catch (IOException e) {
+                    System.out.println("Could not navigate to " + selector + " in NavigablePage.java");
+                    e.printStackTrace();
+                }
+            } else if (button != null) {
+                try {
+                    HtmlPage result = webClient.click(button);
+                    if (result != null)
+                        page = result;
+                    System.out.println("Setting page to " + result);
                     // savePage("pageClicked", "yahoo", webPageServiceWired);
                 } catch (IOException e) {
                     System.out.println("Could not navigate to " + selector + " in NavigablePage.java");
@@ -121,11 +133,12 @@ public class NavigablePage {
     }
 
     protected String getValue(String selector) {
-        //HtmlElement node = page.querySelector(selector);
-        //String str = node != null ? node.get
-        //System.out.println(">>> Got Text >>> " + str + " for " + selector);
+        // HtmlElement node = page.querySelector(selector);
+        // String str = node != null ? node.get
+        // System.out.println(">>> Got Text >>> " + str + " for " + selector);
         System.out.println("NavigablePage.getValue(Str) -- This method is WIP");
-        //get the value of the selected thing, not the text value, when JSON object is returned
+        // get the value of the selected thing, not the text value, when JSON object is
+        // returned
         String str = null;
         return str;
     }

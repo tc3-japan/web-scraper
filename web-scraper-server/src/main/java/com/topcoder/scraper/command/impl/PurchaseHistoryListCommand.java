@@ -30,6 +30,7 @@ public class PurchaseHistoryListCommand extends AbstractCommand<IPurchaseHistory
    */
   @Override
   protected void process(IPurchaseHistoryListModule module) {
+    System.out.println("module = " + module);
     try {
       module.fetchPurchaseHistoryList(this.sites);
     } catch (IOException e) {

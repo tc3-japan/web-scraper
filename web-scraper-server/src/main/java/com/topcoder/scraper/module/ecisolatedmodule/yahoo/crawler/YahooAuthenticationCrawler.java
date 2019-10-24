@@ -2,6 +2,7 @@ package com.topcoder.scraper.module.ecisolatedmodule.yahoo.crawler;
 
 import java.io.IOException;
 
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.lib.navpage.NavigableAuthenticationPage;
 import com.topcoder.scraper.service.WebpageService;
@@ -27,8 +28,12 @@ public class YahooAuthenticationCrawler {
   public boolean authenticate(TrafficWebClient webClient, String username, String password) throws IOException {
     //NOTE: Make sure webClient.getOptions().setJavaScriptEnabled(true); in WebClientConfig.java!
     webClient.getWebClient().getCookieManager().clearCookies();
+    webClient.getWebClient().getOptions().setJavaScriptEnabled(true);
+    //NavigableAuthenticationPage authPage = new NavigableAuthenticationPage("https://login.yahoo.co.jp/config/login", webClient); //TODO: How to set this parameter?
+    HtmlPage page = webClient.getPage("https://login.yahoo.co.jp/config/login");
+    NavigableAuthenticationPage authPage = new NavigableAuthenticationPage(page, webClient);
+//#username
     
-    NavigableAuthenticationPage authPage = new NavigableAuthenticationPage("https://login.yahoo.co.jp/config/login", webClient); //TODO: How to set this parameter?
     authPage.type(username, "#username");
     authPage.savePage("1-yahoo-auth", "yahoo", webpageService);
     authPage.click("#btnNext", webpageService);
@@ -55,7 +60,11 @@ public class YahooAuthenticationCrawler {
       loginSuccess = false;
     }
 */
-    authPage.ConfirmLoginByElementExists("#masthead > h1:nth-child(1) > a:nth-child(1) > img:nth-child(1)");
+//#SearchBoxHead
+    //authPage.ConfirmLoginByElementExists("#masthead > h1:nth-child(1) > a:nth-child(1) > img:nth-child(1)");
+    //authPage.ConfirmLoginByElementExists(".elLogo > a:nth-child(1) > img:nth-child(1)");
+    authPage.ConfirmLoginByElementExists("._3YIqBohnzWyU3NQ8zb-mQI > a:nth-child(1)");
+    
     return authPage.getLoginStatus();
   }
 }

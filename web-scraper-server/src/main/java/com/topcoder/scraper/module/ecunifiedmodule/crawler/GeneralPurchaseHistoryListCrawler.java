@@ -112,9 +112,6 @@ public class GeneralPurchaseHistoryListCrawler extends GeneralPurchaseHistoryLis
     }
     */
 
-    //this.scriptBinding.setProperty("productCode", this.productCode);
-    //this.scriptBinding.setProperty("productInfo", this.productInfo);
-
     this.executeScript();
 
     return new GeneralPurchaseHistoryListCrawlerResult(list, pathList);
@@ -124,7 +121,6 @@ public class GeneralPurchaseHistoryListCrawler extends GeneralPurchaseHistoryLis
 
     LOGGER.debug("Parsing page url " + page.getUrl().toString());
     
-    //member-orderhistorydetails
     List<DomNode> orders = page.querySelectorAll(".member-orderhistorydetails > tbody");
 
     for (DomNode orderNode : orders) {
@@ -239,20 +235,6 @@ public class GeneralPurchaseHistoryListCrawler extends GeneralPurchaseHistoryLis
       return null;
     }
   }
-
-  /*
-  protected HtmlPage setPage(TrafficWebClient webClient, String url) {
-		try {
-			productDetailPage = webClient.getPage(url);
-			return productDetailPage;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}
-  }
-  */
-
-
   
 	protected String getText(HtmlElement element, String selector) {
 		if (element != null) {
@@ -304,15 +286,5 @@ public class GeneralPurchaseHistoryListCrawler extends GeneralPurchaseHistoryLis
     // TODO Auto-generated method stub
     return null;
   }
-  
-
-	/*
-	protected void setQuantity(ProductInfo productInfo, String selector) {
-		String str = getText(selector);
-		if(str != null) {
-			productInfo.setQuantity(str);
-		}
-	}
-	*/
 
 }

@@ -21,7 +21,7 @@ import java.util.Objects;
  * Yahoo implementation of ProductDetailModule
  */
 @Component
-public class YahooProductDetailModule extends IProductDetailModule {
+public class YahooProductDetailModule implements IProductDetailModule {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(YahooProductDetailModule.class);
 

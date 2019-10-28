@@ -26,7 +26,7 @@ import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistor
 import com.topcoder.scraper.service.WebpageService;
 
 @Component
-public class YahooChangeDetectionInitModule extends IChangeDetectionInitModule {
+public class YahooChangeDetectionInitModule implements IChangeDetectionInitModule {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(YahooChangeDetectionInitModule.class);
   MonitorTargetDefinitionProperty monitorTargetDefinitionProperty;

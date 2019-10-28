@@ -25,7 +25,7 @@ import java.util.Date;
 import java.util.List;
 
 @Component
-public class GeneralChangeDetectionInitModule extends IChangeDetectionInitModule {
+public class GeneralChangeDetectionInitModule implements IChangeDetectionInitModule {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(GeneralChangeDetectionInitModule.class);
   MonitorTargetDefinitionProperty monitorTargetDefinitionProperty;

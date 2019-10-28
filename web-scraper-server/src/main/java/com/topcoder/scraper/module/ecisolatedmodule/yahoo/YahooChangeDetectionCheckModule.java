@@ -34,7 +34,7 @@ import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistor
 import com.topcoder.scraper.service.WebpageService;
 
 @Component
-public class YahooChangeDetectionCheckModule extends IChangeDetectionCheckModule {
+public class YahooChangeDetectionCheckModule implements IChangeDetectionCheckModule {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(YahooChangeDetectionCheckModule.class);
   MonitorTargetDefinitionProperty monitorTargetDefinitionProperty;

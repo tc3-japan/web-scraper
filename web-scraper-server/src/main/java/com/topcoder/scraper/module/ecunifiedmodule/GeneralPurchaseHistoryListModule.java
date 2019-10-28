@@ -22,7 +22,7 @@ import java.util.Optional;
 
 // TODO : implement, now this is just copyed from yahoo product detail
 @Component
-public class GeneralPurchaseHistoryListModule extends IPurchaseHistoryListModule {
+public class GeneralPurchaseHistoryListModule implements IPurchaseHistoryListModule {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(GeneralPurchaseHistoryListModule.class);
 

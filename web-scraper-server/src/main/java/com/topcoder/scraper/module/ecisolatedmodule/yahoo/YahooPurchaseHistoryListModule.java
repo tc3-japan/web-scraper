@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-public class YahooPurchaseHistoryListModule extends IPurchaseHistoryListModule {
+public class YahooPurchaseHistoryListModule implements IPurchaseHistoryListModule {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(YahooPurchaseHistoryListModule.class);
 

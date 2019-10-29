@@ -66,7 +66,7 @@ public class GeneralProductDetailCrawler {
     if (StringUtils.isEmpty(scriptPath)) {
       scriptPath = System.getProperty("user.dir") + "/scripts/scraping";
     }
-    scriptPath  += "/" + this.siteName + "-product-detail.groovy";
+    scriptPath  += "/unified/" + this.siteName + "-product-detail.groovy";
 
     LOGGER.info("scriptPath: " + scriptPath);
     return scriptPath;

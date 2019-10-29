@@ -19,7 +19,7 @@ import com.topcoder.scraper.service.ProductService;
 import com.topcoder.scraper.service.WebpageService;
 
 @Component
-public class KojimaProductDetailModule extends IProductDetailModule {
+public class KojimaProductDetailModule implements IProductDetailModule {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(KojimaProductDetailModule.class);
 

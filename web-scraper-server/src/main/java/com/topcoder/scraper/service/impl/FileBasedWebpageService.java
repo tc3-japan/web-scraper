@@ -40,6 +40,15 @@ public class FileBasedWebpageService implements WebpageService {
   }
 
   @Override
+  public String save(String filename, String site, String content, boolean saveFlag) {
+    if (saveFlag) {
+      return this.save(filename, site, content);
+    } else {
+      return null;
+    }
+  }
+
+  @Override
   public String saveImage(String filename, String fileExt, String site, HtmlImage htmlImage) {
     String path = generateImageFilename(filename, fileExt, site);
     try {

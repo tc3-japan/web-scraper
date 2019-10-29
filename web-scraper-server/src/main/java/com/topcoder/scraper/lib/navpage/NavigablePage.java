@@ -45,6 +45,10 @@ public class NavigablePage {
         }
     }
 
+    public void setPage(HtmlPage page) {
+        this.page = page;
+    }
+
     public HtmlPage getPage() {
         return page;
     }

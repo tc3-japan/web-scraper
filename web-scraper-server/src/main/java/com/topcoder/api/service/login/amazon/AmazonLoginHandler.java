@@ -69,9 +69,7 @@ public class AmazonLoginHandler extends LoginHandlerBase {
         amazonProperty,
         applicationContext.getBean(WebpageService.class),
         uuid, null);
-      context.setCrawler(new AmazonAuthenticationCrawler(ecSiteAccountDAO.getEcSite(),
-        context.getProperty(),
-        context.getWebpageService()));
+      context.setCrawler(new AmazonAuthenticationCrawler(context.getProperty(), context.getWebpageService()));
 
       crawlerContextMap.put(siteId, context); // save context
     }

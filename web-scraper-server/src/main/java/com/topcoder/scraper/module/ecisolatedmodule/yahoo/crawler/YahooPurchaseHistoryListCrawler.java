@@ -97,8 +97,9 @@ public class YahooPurchaseHistoryListCrawler extends GeneralPurchaseHistoryListC
         PurchaseHistory purchaseHistory = new PurchaseHistory();
         NavigablePurchaseHistoryPage historyPage = new NavigablePurchaseHistoryPage(page, webClient, purchaseHistory);
 
-        historyPage.setOrderNumber(orderNode, "div:nth-child(2) > ul:nth-child(1) > li:nth-child(1) > ul:nth-child(1) > li:nth-child(2) > dl:nth-child(1) > dd:nth-child(2)");
-        historyPage.setOrderDate(orderNode, "div:nth-child(1) > p:nth-child(1) > span:nth-child(1)");
+        // TODO: fix
+        //historyPage.setOrderNumber(orderNode, "div:nth-child(2) > ul:nth-child(1) > li:nth-child(1) > ul:nth-child(1) > li:nth-child(2) > dl:nth-child(1) > dd:nth-child(2)");
+        //historyPage.setOrderDate(orderNode, "div:nth-child(1) > p:nth-child(1) > span:nth-child(1)");
 
         historyPage.click(orderNode, "div:nth-child(2) > ul:nth-child(1) > li:nth-child(1) > ul:nth-child(3) > li:nth-child(1) > a:nth-child(1) > span:nth-child(1)");
         historyPage.savePage("yahoo-after-click-login", "yahoo", webpageService);
@@ -109,7 +110,8 @@ public class YahooPurchaseHistoryListCrawler extends GeneralPurchaseHistoryListC
         historyPage.typePassword(password, "#passwd"); //or #code
         historyPage.typeCheckbox("off", "#persistent");
         historyPage.click("#btnSubmit", webpageService);
-        historyPage.setPrice("#total > ul:nth-child(2) > li:nth-child(4) > dl:nth-child(1) > dd:nth-child(2)");
+        // TODO: fix
+        //historyPage.setPrice("#total > ul:nth-child(2) > li:nth-child(4) > dl:nth-child(1) > dd:nth-child(2)");
 
         if (!isNew(historyPage.getPurchaseHistory(), last)) {
           LOGGER.info("SKIPPING: " + historyPage.getPurchaseHistory().getOrderNumber());

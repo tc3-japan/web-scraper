@@ -20,7 +20,7 @@ import java.util.List;
  * Yahoo implementation of ProductDetailModule
  */
 @Component
-public class GeneralProductDetailModule extends IProductDetailModule {
+public class GeneralProductDetailModule implements IProductDetailModule {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(GeneralProductDetailModule.class);
 

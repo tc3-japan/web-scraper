@@ -3,9 +3,11 @@ check-sites:
     check-pages:
       - page_name: purchase_history_list
         check_target_keys:
-          - test@gmail.com
+          - 1
+          - 2
       - page_name: product_detail
         check_target_keys:
+          - B002C4KL88
           - B006GQYSC8
   - ec-site: kojima
     check-pages:

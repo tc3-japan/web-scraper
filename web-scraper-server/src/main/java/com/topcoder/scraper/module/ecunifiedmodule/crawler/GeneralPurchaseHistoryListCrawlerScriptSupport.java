@@ -3,9 +3,12 @@ package com.topcoder.scraper.module.ecunifiedmodule.crawler;
 import java.io.IOException;
 import java.util.List;
 
+import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.topcoder.common.model.ProductInfo;
+import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.scraper.lib.navpage.NavigableProductDetailPage;
+import com.topcoder.scraper.lib.navpage.NavigablePurchaseHistoryPage;
 import com.topcoder.scraper.service.WebpageService;
 
 import org.slf4j.Logger;
@@ -18,11 +21,11 @@ public abstract class GeneralPurchaseHistoryListCrawlerScriptSupport extends Scr
 
   private static final Logger LOGGER = LoggerFactory.getLogger(GeneralPurchaseHistoryListCrawlerScriptSupport.class);
   private static GeneralPurchaseHistoryListCrawler CRAWLER;
-  private NavigableProductDetailPage detailPage;
   private WebpageService webpageService;
   private String siteName;
-  private ProductInfo productInfo; // Not good?
   public static String productId = null;
+  public NavigablePurchaseHistoryPage historyPage;
+
 
   static void setCrawler(GeneralPurchaseHistoryListCrawler crawler) {
     CRAWLER = crawler;
@@ -32,12 +35,8 @@ public abstract class GeneralPurchaseHistoryListCrawlerScriptSupport extends Scr
     productId = id;
   }
 
-  public ProductInfo getProductInfo() {
-    return productInfo;
-  }
 
   void setPage(String str) { 
-    productInfo = new ProductInfo(); // Not good?
     System.out.println("");
     System.out.println("Setting page to: " + str);
     System.out.println("");
@@ -54,7 +53,7 @@ public abstract class GeneralPurchaseHistoryListCrawlerScriptSupport extends Scr
     System.out.println("Page: " + page);
     System.out.println("");
     if(page != null) {
-      detailPage = new NavigableProductDetailPage(page, CRAWLER.webClient, productInfo);
+      historyPage = new NavigablePurchaseHistoryPage(page, CRAWLER.webClient, purchaseHistory);
     } else {
       System.out.println("Could not set page in ProductDetailScriptSupport.java@setPage()");
     }
@@ -67,58 +66,50 @@ public abstract class GeneralPurchaseHistoryListCrawlerScriptSupport extends Scr
   }
 
   void savePage(String name, String siteName) {
-    detailPage.savePage(name, siteName, CRAWLER.webpageService); //nullcheck?
+    historyPage.savePage(name, siteName, CRAWLER.webpageService); //nullcheck?
   }
 
   void click(String selector) {
-    detailPage.click(selector); //nullcheck?
+    historyPage.click(selector); //nullcheck?
     System.out.println("");
     System.out.println("Clicking: " + selector);
     System.out.println("");
   }
 
-  void scrapeCode(String selector) { 
-    System.out.println("");
-    System.out.println("Setting code!");
-    System.out.println("");
-    detailPage.scrapeCode(selector);
-  }
-
   void type(String input, String selector) { 
-    detailPage.type(input, selector);
+    historyPage.type(input, selector);
   }
 
-  void scrapeName(String selector) { 
+  void setOrderNumber(DomNode orderNode, String selector, PurchaseHistory purchaseHistory) {
+    historyPage.click(selector); //nullcheck?
     System.out.println("");
-    System.out.println("Setting name!");
+    System.out.println("setting order number: " + selector);
     System.out.println("");
-    detailPage.scrapeName(selector);
+    historyPage.setOrderNumber(orderNode, selector, purchaseHistory);
   }
 
-  void scrapeDistributor(String selector) { 
+  void setOrderDate(DomNode orderNode, String selector, PurchaseHistory purchaseHistory) {
+    historyPage.click(selector); //nullcheck?
     System.out.println("");
-    System.out.println("Setting distributor! ");
+    System.out.println("setting order date: " + selector);
     System.out.println("");
-    detailPage.scrapeDistributor(selector);
+    historyPage.setOrderDate(orderNode, selector, purchaseHistory);
   }
 
-  void scrapePrice(String selector) { 
+  void setOrderNumber(String selector, PurchaseHistory purchaseHistory) {
+    historyPage.click(selector); //nullcheck?
     System.out.println("");
-    System.out.println("Setting price!");
+    System.out.println("setting order number: " + selector);
     System.out.println("");
-    detailPage.scrapePrice(selector);
+    historyPage.setOrderNumber(selector, purchaseHistory);
   }
 
-  void scrapePrices(List<String> selectors) {
-    detailPage.scrapePrices(selectors);
-  }
-
-  void scrapeQuantity(String selector) {
-    detailPage.scrapeQuantity(selector);
-  }
-
-  void scrapeModelNo(String selector) {
-    detailPage.scrapeModelNo(selector);
+  void setOrderDate(String selector, PurchaseHistory purchaseHistory) {
+    historyPage.click(selector); //nullcheck?
+    System.out.println("");
+    System.out.println("setting order date: " + selector);
+    System.out.println("");
+    historyPage.setOrderDate(selector, purchaseHistory);
   }
 
   void log(String str) { 

@@ -25,24 +25,30 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
 
     // TrafficWebClient webClient;
     // HtmlPage page;
+<<<<<<< HEAD
     @Getter@Setter private PurchaseHistory purchaseHistory;
     @Getter@Setter private ProductInfo     productInfo ;
+=======
+    // PurchaseHistory purchaseHistory;
+>>>>>>> updating to merge
 
-    public NavigablePurchaseHistoryPage(HtmlPage page, TrafficWebClient webClient, PurchaseHistory purchaseHistory) {
+    public NavigablePurchaseHistoryPage(HtmlPage page, TrafficWebClient webClient) {
         super(page, webClient);
-        this.purchaseHistory = purchaseHistory;
     }
 
-    public NavigablePurchaseHistoryPage(String url, TrafficWebClient webClient, PurchaseHistory purchaseHistory) {
+    public NavigablePurchaseHistoryPage(String url, TrafficWebClient webClient) {
         super(url, webClient);
-        this.purchaseHistory = purchaseHistory;
     }
 
+<<<<<<< HEAD
     public NavigablePurchaseHistoryPage(TrafficWebClient webClient) {
         super((HtmlPage)null, webClient);
     }
 
     public void scrapeAccountId(String selector) {
+=======
+    public void setAccountId(String selector, PurchaseHistory purchaseHistory) {
+>>>>>>> updating to merge
         String str = getText(selector);
         //LOGGER.info(" >>> Setting Account ID >>>" + str);
         if (str != null) {
@@ -50,7 +56,11 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
         }
     }
 
+<<<<<<< HEAD
     public void scrapeAccountId(DomNode node, String selector) {
+=======
+    public void setAccountId(DomNode node, String selector, PurchaseHistory purchaseHistory) {
+>>>>>>> updating to merge
         String str = getText(node, selector);
         //LOGGER.info(" >>> Setting Account ID >>>" + str);
         if (str != null) {
@@ -58,11 +68,15 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
         }
     }
 
+<<<<<<< HEAD
     public List<DomNode> scrapeDomList(String selector) {
         return page.querySelectorAll(selector);
     }
 
     public void scrapeOrderNumber(String selector) {
+=======
+    public void setOrderNumber(String selector, PurchaseHistory purchaseHistory) {
+>>>>>>> updating to merge
         String str = getText(selector);
         LOGGER.info(" >>> Setting Order Number >>>" + str);
         if (str != null) {
@@ -70,7 +84,11 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
         }
     }
 
+<<<<<<< HEAD
     public void scrapeOrderNumber(DomNode node, String selector) {
+=======
+    public void setOrderNumber(DomNode node, String selector, PurchaseHistory purchaseHistory) {
+>>>>>>> updating to merge
         String str = getText(node, selector);
         LOGGER.info(" >>> Setting Order Number >>>" + str);
         if (str != null) {
@@ -88,7 +106,11 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
         }
     }
 
+<<<<<<< HEAD
     public void scrapeOrderDate(String selector) {
+=======
+    public void setOrderDate(String selector, PurchaseHistory purchaseHistory) {
+>>>>>>> updating to merge
         String str = getText(selector);
         if (str != null) {
             try {
@@ -101,7 +123,11 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
         }
     }
 
+<<<<<<< HEAD
     public void scrapeOrderDate(DomNode node, String selector) {
+=======
+    public void setOrderDate(DomNode node, String selector, PurchaseHistory purchaseHistory) {
+>>>>>>> updating to merge
         String str = getText(node, selector);
         if (str != null) {
             try {
@@ -114,6 +140,7 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
         }
     }
 
+<<<<<<< HEAD
     public void scrapeOrderDateDefault(DomNode node, String selector) {
         String str = getText(node, selector);
         Date date  = extractDateDefault(str);
@@ -220,6 +247,28 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
             return null;
         }
     }
+=======
+    public void setPrice(String selector, PurchaseHistory purchaseHistory) {
+        HtmlElement totalAmountNode = page
+                .querySelector("#total > ul:nth-child(2) > li:nth-child(4) > dl:nth-child(1) > dd:nth-child(2)");
+        if (totalAmountNode != null) {
+            Integer totalAmount = totalAmountNode != null ? extractInt(totalAmountNode.asText()) : null;
+            System.out.println(" >>> Setting Total Amount >>>" + totalAmount);
+            purchaseHistory.setTotalAmount(Integer.toString(totalAmount));
+        }
+    }
+
+    public void setPrice(DomNode node, String selector, PurchaseHistory purchaseHistory) {
+        HtmlElement totalAmountNode = node
+                .querySelector("#total > ul:nth-child(2) > li:nth-child(4) > dl:nth-child(1) > dd:nth-child(2)");
+        if (totalAmountNode != null) {
+            Integer totalAmount = totalAmountNode != null ? extractInt(totalAmountNode.asText()) : null;
+            System.out.println(" >>> Setting Total Amount >>>" + totalAmount);
+            purchaseHistory.setTotalAmount(Integer.toString(totalAmount));
+        }
+    }
+
+>>>>>>> updating to merge
 
     protected Date extractDate(String text) {
         // Pattern PAT_DATE = Pattern.compile("(20[\\d]{2}/[\\d]{2}/[\\d]{2}

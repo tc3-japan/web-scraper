@@ -69,7 +69,7 @@ public abstract class AbstractPurchaseHistoryListCrawler {
     if (StringUtils.isEmpty(scriptPath)) {
       scriptPath = System.getProperty("user.dir") + "/scripts/scraping";
     }
-    scriptPath  += "/" + this.siteName + "-purchase-history-list.groovy";
+    scriptPath  += "/isolated/" + this.siteName + "-purchase-history-list.groovy";
 
     LOGGER.info("[getScriptPath] scriptPath: " + scriptPath);
     return scriptPath;

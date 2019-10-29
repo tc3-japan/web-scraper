@@ -65,7 +65,7 @@ public abstract class AbstractProductDetailCrawler {
     if (StringUtils.isEmpty(scriptPath)) {
       scriptPath = System.getProperty("user.dir") + "/scripts/scraping";
     }
-    scriptPath  += "/" + this.siteName + "-product-detail.groovy";
+    scriptPath  += "/isolated/" + this.siteName + "-product-detail.groovy";
 
     LOGGER.info("scriptPath: " + scriptPath);
     return scriptPath;

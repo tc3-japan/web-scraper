@@ -33,7 +33,7 @@ public class ProductDetailCommand extends AbstractCommand<IProductDetailModule> 
   @Override
   protected void process(IProductDetailModule module) {
     try {
-      if (this.sites.size() == 0) {
+      if (this.sites == null || this.sites.size() == 0) {
         module.fetchProductDetailList(Consts.ALL_SITES);
       } else {
         module.fetchProductDetailList(this.sites);

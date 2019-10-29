@@ -31,7 +31,7 @@ public class ChangeDetectionInitCommand extends AbstractCommand<IChangeDetection
   @Override
   protected void process(IChangeDetectionInitModule module) {
     try {
-      if (this.sites.size() == 0) {
+      if (this.sites == null || this.sites.size() == 0) {
         module.init(Consts.ALL_SITES);
       } else {
         module.init(this.sites);

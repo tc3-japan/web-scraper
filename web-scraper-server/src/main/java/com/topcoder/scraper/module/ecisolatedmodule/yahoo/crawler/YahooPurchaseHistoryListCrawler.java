@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.topcoder.common.dao.ECSiteAccountDAO;
@@ -95,7 +94,7 @@ public class YahooPurchaseHistoryListCrawler extends GeneralPurchaseHistoryListC
                                          // displayed
 
         PurchaseHistory purchaseHistory = new PurchaseHistory();
-        NavigablePurchaseHistoryPage historyPage = new NavigablePurchaseHistoryPage(page, webClient, purchaseHistory);
+        NavigablePurchaseHistoryPage historyPage = new NavigablePurchaseHistoryPage(page, webClient);
 
         // TODO: fix
         //historyPage.setOrderNumber(orderNode, "div:nth-child(2) > ul:nth-child(1) > li:nth-child(1) > ul:nth-child(1) > li:nth-child(2) > dl:nth-child(1) > dd:nth-child(2)");

@@ -32,6 +32,7 @@ public class KojimaAuthenticationCrawler {
     webClient.getWebClient().getCookieManager().clearCookies();
     
     //HtmlPage loginPage = webClient.getPage("https://www.kojima.net/ec/member/CSfLogin.jsp");
+    webClient.getWebClient().getOptions().setJavaScriptEnabled(true);
     NavigableAuthenticationPage authPage = new NavigableAuthenticationPage("https://www.kojima.net/ec/member/CSfLogin.jsp", webClient);
     webpageService.save("kojima-login", siteName, authPage.getPage().getWebResponse().getContentAsString());
 
@@ -44,7 +45,7 @@ public class KojimaAuthenticationCrawler {
     //HtmlTextInput memberIdInput = loginForm.getInputByName("MEM_ID");
     authPage.type(username, "MEM_ID");
     //HtmlPasswordInput passwordInput = loginForm.getInputByName("PWD");
-    authPage.typePassword("PWD", password);
+    authPage.typePassword(password, "#PWD");
 
     //HtmlElement rememberInput = loginForm.getInputByName("REM");
     authPage.type("on", "REM");
@@ -60,7 +61,11 @@ public class KojimaAuthenticationCrawler {
     //rememberInput.type("on");
     
     //HtmlPage afterLoginPage = webClient.click(loginButtonInput);
+    //.login_box01 > p:nth-child(4) > button:nth-child(1)
+    //.login_box01 > p:nth-child(4)
     authPage.click("div.member-login>div.member-login-inner>input.imgover");
+    //authPage.click(".login_box01 > p:nth-child(4) > button:nth-child(1)");
+    //authPage.click(".login_box01 > p:nth-child(4)");
     HtmlPage afterLoginPage = authPage.getPage();
     webpageService.save("kojima-after-login", siteName, afterLoginPage.getWebResponse().getContentAsString());
     

@@ -28,14 +28,12 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
     @Getter@Setter private PurchaseHistory purchaseHistory;
     @Getter@Setter private ProductInfo     productInfo ;
 
-    public NavigablePurchaseHistoryPage(HtmlPage page, TrafficWebClient webClient, PurchaseHistory purchaseHistory) {
+    public NavigablePurchaseHistoryPage(HtmlPage page, TrafficWebClient webClient) {
         super(page, webClient);
-        this.purchaseHistory = purchaseHistory;
     }
 
-    public NavigablePurchaseHistoryPage(String url, TrafficWebClient webClient, PurchaseHistory purchaseHistory) {
+    public NavigablePurchaseHistoryPage(String url, TrafficWebClient webClient) {
         super(url, webClient);
-        this.purchaseHistory = purchaseHistory;
     }
 
     public NavigablePurchaseHistoryPage(TrafficWebClient webClient) {

@@ -53,7 +53,7 @@ public abstract class GeneralPurchaseHistoryListCrawlerScriptSupport extends Scr
     System.out.println("Page: " + page);
     System.out.println("");
     if(page != null) {
-      historyPage = new NavigablePurchaseHistoryPage(page, CRAWLER.webClient, purchaseHistory);
+      historyPage = new NavigablePurchaseHistoryPage(page, CRAWLER.webClient);
     } else {
       System.out.println("Could not set page in ProductDetailScriptSupport.java@setPage()");
     }
@@ -80,36 +80,36 @@ public abstract class GeneralPurchaseHistoryListCrawlerScriptSupport extends Scr
     historyPage.type(input, selector);
   }
 
-  void setOrderNumber(DomNode orderNode, String selector, PurchaseHistory purchaseHistory) {
+  void setOrderNumber(DomNode orderNode, String selector) {
     historyPage.click(selector); //nullcheck?
     System.out.println("");
     System.out.println("setting order number: " + selector);
     System.out.println("");
-    historyPage.setOrderNumber(orderNode, selector, purchaseHistory);
+    historyPage.scrapeOrderNumber(orderNode, selector);
   }
 
-  void setOrderDate(DomNode orderNode, String selector, PurchaseHistory purchaseHistory) {
+  void setOrderDate(DomNode orderNode, String selector) {
     historyPage.click(selector); //nullcheck?
     System.out.println("");
     System.out.println("setting order date: " + selector);
     System.out.println("");
-    historyPage.setOrderDate(orderNode, selector, purchaseHistory);
+    historyPage.scrapeOrderDate(orderNode, selector);
   }
 
-  void setOrderNumber(String selector, PurchaseHistory purchaseHistory) {
+  void setOrderNumber(String selector) {
     historyPage.click(selector); //nullcheck?
     System.out.println("");
     System.out.println("setting order number: " + selector);
     System.out.println("");
-    historyPage.setOrderNumber(selector, purchaseHistory);
+    historyPage.scrapeOrderNumber(selector);
   }
 
-  void setOrderDate(String selector, PurchaseHistory purchaseHistory) {
+  void setOrderDate(String selector) {
     historyPage.click(selector); //nullcheck?
     System.out.println("");
     System.out.println("setting order date: " + selector);
     System.out.println("");
-    historyPage.setOrderDate(selector, purchaseHistory);
+    historyPage.scrapeOrderDate(selector);
   }
 
   void log(String str) { 

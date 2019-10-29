@@ -67,7 +67,8 @@ public class OldKojimaPurchaseHistoryListCrawler {
     
     for (DomNode orderNode : orders) {
       PurchaseHistory purchaseHistory = new PurchaseHistory();
-      NavigablePurchaseHistoryPage historyPage = new NavigablePurchaseHistoryPage(page, webClient, purchaseHistory);/// One purchase History? A list? 
+      NavigablePurchaseHistoryPage historyPage = new NavigablePurchaseHistoryPage(page, webClient);/// One purchase
+                                                                                                   /// History? A list?
 
       DomNode itemNoNode = orderNode.querySelector(".itemnumber");
       String nodeText = itemNoNode.asText();

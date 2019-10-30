@@ -120,7 +120,7 @@ public abstract class AbstractPurchaseHistoryListCrawler {
   }
 
   // TODO: re-consider Closure<HERE>, now temporarily Boolean
-  public AbstractPurchaseHistoryListCrawlerResult processPurchaseHistory(Closure<Boolean> closure) throws IOException {
+  public void processPurchaseHistory(Closure<Boolean> closure) throws IOException {
     LOGGER.info("[processPurchaseHistory] in");
 
     this.webpageService.save(this.siteName + "-purchase-history", this.siteName, this.historyPage.getPage().getWebResponse().getContentAsString(), this.saveHtml);
@@ -138,8 +138,6 @@ public abstract class AbstractPurchaseHistoryListCrawler {
       closure.call();
       this.historyPage.setPage(this.gotoNextPage(this.historyPage.getPage(), webClient));
     }
-
-    return new AbstractPurchaseHistoryListCrawlerResult(this.purchaseHistoryList, this.savedPathList);
   }
 
   public void processOrders(List<DomNode> orderList, Closure<Boolean> closure) {
@@ -192,5 +190,4 @@ public abstract class AbstractPurchaseHistoryListCrawler {
 
     return null;
   }
-
 }

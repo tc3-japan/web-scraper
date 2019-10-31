@@ -21,6 +21,7 @@ import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.common.util.DateUtils;
 import com.topcoder.scraper.Consts;
+import com.topcoder.scraper.lib.navpage.NavigablePurchaseHistoryPage;
 import com.topcoder.scraper.service.WebpageService;
 
 import org.apache.commons.io.FileUtils;
@@ -30,30 +31,46 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import groovy.lang.Binding;
+import groovy.lang.Closure;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
+import lombok.Getter;
+import lombok.Setter;
 
-public class GeneralPurchaseHistoryListCrawler extends GeneralPurchaseHistoryListCrawlerScriptSupport {
+public class GeneralPurchaseHistoryListCrawler {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(GeneralPurchaseHistoryListCrawler.class);
   private static final Pattern PAT_ORDER_NO = Pattern.compile("([\\d]{13})", Pattern.DOTALL);
   protected final String siteName;
   protected final WebpageService webpageService;
   public TrafficWebClient webClient;
+  protected List<String>          savedPathList;
 
   // variables
   private final Binding               scriptBinding;
   private final CompilerConfiguration scriptConfig;
   private GroovyShell                 scriptShell;
   private String                      scriptText = "";
+  protected PurchaseHistory       lastPurchaseHistory;
+  protected boolean               saveHtml;
+  @Getter@Setter protected NavigablePurchaseHistoryPage historyPage;
+  //@Getter@Setter protected TrafficWebClient webClient;
+  //@Getter@Setter protected String           siteName;
+  //@Getter@Setter protected WebpageService   webpageService;
+
+  @Getter@Setter protected PurchaseHistory       currentPurchaseHistory; // OrderInfo (to be refactored)
+  @Getter@Setter protected ProductInfo           currentProduct;
+  @Getter@Setter protected List<PurchaseHistory> purchaseHistoryList;
   
   public GeneralPurchaseHistoryListCrawler(String siteName, WebpageService webpageService) {
     this.siteName = siteName;
     this.webpageService = webpageService;
 
     GeneralPurchaseHistoryListCrawlerScriptSupport.setCrawler(this); //////////??????
+    
     String scriptPath = this.getScriptPath();
     this.scriptText   = this.getScriptText(scriptPath);
+
     Properties configProps = new Properties();
     configProps.setProperty("groovy.script.base", GeneralPurchaseHistoryListCrawlerScriptSupport.class.getName());
     this.scriptConfig  = new org.codehaus.groovy.control.CompilerConfiguration(configProps);
@@ -84,41 +101,44 @@ public class GeneralPurchaseHistoryListCrawler extends GeneralPurchaseHistoryLis
     }
   }
 
+  //protected abstract String getScriptGeneralPurchaseHistoryListCrawlerScriptSupport.class.getName();
+
   private String executeScript() {
     LOGGER.info("[executeScript] in");
     this.scriptShell = new GroovyShell(this.scriptBinding, this.scriptConfig);
     Script script = scriptShell.parse(this.scriptText);
+    script.invokeMethod("setCrawler", this);
     String resStr = (String)script.run();
     return resStr;
   }
 
   public GeneralPurchaseHistoryListCrawlerResult fetchPurchaseHistoryList(TrafficWebClient webClient, PurchaseHistory lastPurchaseHistory, boolean saveHtml) throws IOException {
-    List<PurchaseHistory> list = new LinkedList<>();
-    List<String> pathList = new LinkedList<>();
+    //List<PurchaseHistory> list = new LinkedList<>();
+    //List<String> pathList = new LinkedList<>();
     LOGGER.info("goto Order History Page");
-    this.webClient = webClient;
-    /*
-    HtmlPage page = webClient.getPage("https://www.kojima.net/ec/member/CMmOrderHistory.jsp");
-    if (page.getBaseURI().contains("?autoLogin")) {
-      throw new SessionExpiredException("Session has been expired.");      
-    }
     
-    webpageService.save("kojima-purchase-history", siteName, page.getWebResponse().getContentAsString());
-    while (true) {
-      if (page == null || !parsePurchaseHistory(list, page, lastPurchaseHistory, saveHtml, pathList)) {
-        break;
-      }
-      page = gotoNextPage(page, webClient);
-    }
-    */
+    this.webClient = webClient;
+    this.saveHtml  = saveHtml;
+    this.historyPage = new NavigablePurchaseHistoryPage(this.webClient);
 
+    this.lastPurchaseHistory = lastPurchaseHistory;
+    this.purchaseHistoryList = new LinkedList<>();
+    this.savedPathList       = new LinkedList<>();
+
+    // binding variables for scraping script
+    // TODO: re-consider whether this is necessary
+    this.scriptBinding.setProperty("purchaseHistoryList", this.purchaseHistoryList);
+    
     this.executeScript();
 
-    return new GeneralPurchaseHistoryListCrawlerResult(list, pathList);
+    GeneralPurchaseHistoryListCrawlerResult result = new GeneralPurchaseHistoryListCrawlerResult(this.purchaseHistoryList, this.savedPathList);
+    //GeneralPurchaseHistoryListCrawlerResult resultOriginal = new GeneralPurchaseHistoryListCrawlerResult(list, pathList);
+    return result;
   }
   
+ /*
   private boolean parsePurchaseHistory(List<PurchaseHistory> list, HtmlPage page, PurchaseHistory last, boolean saveHtml, List<String> pathList) {
-
+ 
     LOGGER.debug("Parsing page url " + page.getUrl().toString());
     
     List<DomNode> orders = page.querySelectorAll(".member-orderhistorydetails > tbody");
@@ -148,7 +168,7 @@ public class GeneralPurchaseHistoryListCrawler extends GeneralPurchaseHistoryLis
       
       list.add(history);
     }
-    /*
+
 
     List<DomNode> orders = page.querySelectorAll(".member-orderhistorydetails > tbody");
     for (DomNode orderNode : orders) {
@@ -176,10 +196,63 @@ public class GeneralPurchaseHistoryListCrawler extends GeneralPurchaseHistoryLis
       
       list.add(history);
     }
-    */
+   
     return false;
   }
-  
+    */
+
+  // TODO: re-consider Closure<HERE>, now temporarily Boolean
+  public GeneralPurchaseHistoryListCrawlerResult processPurchaseHistory(Closure<Boolean> closure) throws IOException {
+    LOGGER.info("[processPurchaseHistory] in");
+
+    this.webpageService.save(this.siteName + "-purchase-history", this.siteName, this.historyPage.getPage().getWebResponse().getContentAsString(), this.saveHtml);
+    // TODO : implement
+    /*
+    if (page.getBaseURI().contains("?autoLogin")) {
+      throw new SessionExpiredException("Session has been expired.");      
+    }
+    */
+    
+    while (true) {
+      if (this.historyPage.getPage() == null) {
+        break;
+      }
+      closure.call();
+      this.historyPage.setPage(this.gotoNextPage(this.historyPage.getPage(), webClient));
+    }
+
+    return new GeneralPurchaseHistoryListCrawlerResult(this.purchaseHistoryList, this.savedPathList);
+  }
+
+  public void processOrders(List<DomNode> orderList, Closure<Boolean> closure) {
+    LOGGER.info("[processOrders] in");
+    LOGGER.debug("Parsing page url " + historyPage.getPage().getUrl().toString());
+
+    for (DomNode orderNode : orderList) {
+      this.currentPurchaseHistory = new PurchaseHistory();
+      this.historyPage.setPurchaseHistory(this.currentPurchaseHistory);
+
+      closure.call(orderNode);
+
+      this.purchaseHistoryList.add(this.currentPurchaseHistory);
+    }
+  }
+ 
+  public void processProducts(List<DomNode> productList, Closure<Boolean> closure) {
+    LOGGER.info("[processProducts] in");
+
+    for (DomNode productNode : productList) {
+      this.currentProduct = new ProductInfo();
+      this.historyPage.setProductInfo(this.currentProduct);
+
+      closure.call(productNode);
+
+      if (this.currentProduct.getName() != null) {
+        this.currentPurchaseHistory.addProduct(this.currentProduct);
+      }
+    }
+  }
+
   protected boolean isNew(PurchaseHistory purchase, PurchaseHistory last) {
     Date orderDate = purchase.getOrderDate();
     Date lastOrderDate = last != null ? last.getOrderDate() : null;
@@ -191,7 +264,24 @@ public class GeneralPurchaseHistoryListCrawler extends GeneralPurchaseHistoryLis
     }
     return true;
   }
+
+  public boolean isNew() {
+    LOGGER.info("[isNew] in");
+    PurchaseHistory curr = this.currentPurchaseHistory;
+    PurchaseHistory last = this.lastPurchaseHistory;
+
+    Date currOrderDate = curr.getOrderDate();
+    Date lastOrderDate = last != null ? last.getOrderDate() : null;
+    String currOrderNumber = curr.getOrderNumber();
+    String lastOrderNumber = last != null ? (last.getOrderNumber() != null ? last.getOrderNumber() : "") : "";
+
+    if ((currOrderDate != null && lastOrderDate != null && currOrderDate.compareTo(lastOrderDate) <= 0) || lastOrderNumber.equals(currOrderNumber)) {
+      return false;
+    }
+    return true;
+  }
   
+  /*
   private ProductInfo parseProduct(DomNode orderLineNode) {
 
     DomNode itemNameNode = orderLineNode.querySelector(".itemname");
@@ -209,6 +299,7 @@ public class GeneralPurchaseHistoryListCrawler extends GeneralPurchaseHistoryLis
     LOGGER.info(String.format("parseProduct::{Name:%s, Price:%d, Quantity:%s}", name, price, quantity));
     return new ProductInfo((String)null, name, price != null ? price.toString() : null, quantity, (String)null);
   }
+  */
   
   private HtmlPage gotoNextPage(HtmlPage page, TrafficWebClient webClient) throws IOException {
     return null;
@@ -281,7 +372,7 @@ public class GeneralPurchaseHistoryListCrawler extends GeneralPurchaseHistoryLis
 		}
   }
 
-  @Override
+  //@Override
   public Object run() {
     // TODO Auto-generated method stub
     return null;

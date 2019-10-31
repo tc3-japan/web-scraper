@@ -14,6 +14,7 @@ import com.topcoder.scraper.service.WebpageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import groovy.lang.Closure;
 import groovy.lang.Script;
 
 //Make not abstract or static? Edit: Can't!
@@ -116,6 +117,98 @@ public abstract class GeneralPurchaseHistoryListCrawlerScriptSupport extends Scr
     System.out.println("___LOG___");
     System.out.println(str);
     System.out.println("_________");
+  }
+
+
+  ////////////////// COPIED FROM ABSTRACT PURCHASE HISTORY LIST CRAWLER SS
+
+  void processPurchaseHistory(Closure<Boolean> closure) throws IOException {
+    this.CRAWLER.processPurchaseHistory(closure);
+  }
+
+  void processOrders(List<DomNode> orderList , Closure<Boolean> closure) {
+    this.CRAWLER.processOrders(orderList, closure);
+  }
+
+  void processProducts(List<DomNode> productList , Closure<Boolean> closure) {
+    this.CRAWLER.processProducts(productList, closure);
+  }
+
+  // Crawler method: others --------------------------------------------------------------------------------------------
+
+  boolean isNew() {
+    return this.CRAWLER.isNew();
+  }
+
+  // Scraping wrapper: general -----------------------------------------------------------------------------------------
+
+  List<DomNode> scrapeDomList(String selector) {
+    LOGGER.info("scrape dom list: " + selector);
+    return historyPage.scrapeDomList(selector);
+  }
+
+  // Scraping wrapper: order in purchase history -----------------------------------------------------------------------
+
+  void scrapeOrderNumber(DomNode orderNode, String selector) {
+    LOGGER.info("scrape order number");
+    historyPage.scrapeOrderNumber(orderNode, selector);
+  }
+
+  void scrapeOrderNumberWithRegex(DomNode orderNode, String selector, String regexStr) {
+    LOGGER.info("scrape order number");
+    historyPage.scrapeOrderNumberWithRegex(orderNode, selector, regexStr);
+  }
+
+  void scrapeOrderDate(DomNode orderNode, String selector) {
+    LOGGER.info("scrape order date");
+    historyPage.scrapeOrderDate(orderNode, selector);
+  }
+
+  void scrapeOrderDateDefault(DomNode orderNode, String selector) {
+    LOGGER.info("scrape order date");
+    historyPage.scrapeOrderDateDefault(orderNode, selector);
+  }
+
+  void scrapeTotalAmount(DomNode orderNode, String selector) {
+    LOGGER.info("scrape order date");
+    historyPage.scrapeTotalAmount(orderNode, selector);
+  }
+
+  void scrapeDeliveryStatus(DomNode orderNode, String selector) {
+    LOGGER.info("scrape delivery status");
+    historyPage.scrapeDeliveryStatus(orderNode, selector);
+  }
+
+  // Scraping wrapper: product in order --------------------------------------------------------------------------------
+
+  void scrapeProductCodeFromAnchor(DomNode productNode, String selector, String regexStr) {
+    LOGGER.info("scrape product code");
+    historyPage.scrapeProductCodeFromAnchor(productNode, selector, regexStr);
+  }
+
+  void scrapeProductName(DomNode productNode, String selector) {
+    LOGGER.info("scrape product name");
+    historyPage.scrapeProductName(productNode, selector);
+  }
+
+  void scrapeProductNameFromAnchor(DomNode productNode, String selector) {
+    LOGGER.info("scrape product name");
+    historyPage.scrapeProductNameFromAnchor(productNode, selector);
+  }
+
+  void scrapeUnitPrice(DomNode productNode, String selector) {
+    LOGGER.info("scrape unit price");
+    historyPage.scrapeUnitPrice(productNode, selector);
+  }
+
+  void scrapeProductQuantity(DomNode productNode, String selector) {
+    LOGGER.info("scrape product quantity");
+    historyPage.scrapeProductQuantity(productNode, selector);
+  }
+
+  void scrapeProductDistributor(DomNode productNode, String selector) {
+    LOGGER.info("scrape product distributor");
+    historyPage.scrapeProductDistributor(productNode, selector);
   }
 
 }

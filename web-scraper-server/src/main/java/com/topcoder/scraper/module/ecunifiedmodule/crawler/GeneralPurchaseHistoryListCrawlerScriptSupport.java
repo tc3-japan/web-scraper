@@ -4,10 +4,6 @@ import java.io.IOException;
 import java.util.List;
 
 import com.gargoylesoftware.htmlunit.html.DomNode;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.topcoder.common.model.ProductInfo;
-import com.topcoder.common.model.PurchaseHistory;
-import com.topcoder.scraper.lib.navpage.NavigableProductDetailPage;
 import com.topcoder.scraper.lib.navpage.NavigablePurchaseHistoryPage;
 import com.topcoder.scraper.service.WebpageService;
 
@@ -36,28 +32,10 @@ public abstract class GeneralPurchaseHistoryListCrawlerScriptSupport extends Scr
     productId = id;
   }
 
-
-  void setPage(String str) { 
-    System.out.println("");
-    System.out.println("Setting page to: " + str);
-    System.out.println("");
-    HtmlPage page = null;
-    try {
-      System.out.println("JS Status: " + CRAWLER.webClient.getWebClient().getOptions().isJavaScriptEnabled());
-      CRAWLER.webClient.getWebClient().getOptions().setJavaScriptEnabled(false); //TODO: TEST ONLY
-      page = CRAWLER.webClient.getPage(str);
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    System.out.println("");
-    System.out.println("Page: " + page);
-    System.out.println("");
-    if(page != null) {
-      historyPage = new NavigablePurchaseHistoryPage(page, CRAWLER.webClient);
-    } else {
-      System.out.println("Could not set page in ProductDetailScriptSupport.java@setPage()");
-    }
+  void setPage(String historyUrl) {
+    CRAWLER.webClient.getWebClient().getOptions().setJavaScriptEnabled(false); //TODO: TEST ONLY
+    CRAWLER.getHistoryPage().setPage(historyUrl);
+    historyPage = CRAWLER.getHistoryPage();
   }
 
   void setEnableJS(boolean value) {
@@ -83,6 +61,15 @@ public abstract class GeneralPurchaseHistoryListCrawlerScriptSupport extends Scr
 
   void setOrderNumber(DomNode orderNode, String selector) {
     historyPage.click(selector); //nullcheck?
+    System.out.println("");
+    System.out.println("setting order number: " + selector);
+    System.out.println("");
+    historyPage.scrapeOrderNumber(orderNode, selector);
+  }
+
+  //TODO
+  void setOrderNumberGeneral(DomNode orderNode, String selector) {
+    //historyPage.clickElement(selector); //nullcheck?
     System.out.println("");
     System.out.println("setting order number: " + selector);
     System.out.println("");
@@ -119,10 +106,12 @@ public abstract class GeneralPurchaseHistoryListCrawlerScriptSupport extends Scr
     System.out.println("_________");
   }
 
-
-  ////////////////// COPIED FROM ABSTRACT PURCHASE HISTORY LIST CRAWLER SS
-
   void processPurchaseHistory(Closure<Boolean> closure) throws IOException {
+    System.out.println();
+    System.out.println("Closure: " + closure);
+    System.out.println("CRAWLER: " + CRAWLER);
+
+    
     this.CRAWLER.processPurchaseHistory(closure);
   }
 

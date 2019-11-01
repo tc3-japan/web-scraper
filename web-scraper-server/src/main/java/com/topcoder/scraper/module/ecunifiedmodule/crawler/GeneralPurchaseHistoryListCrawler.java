@@ -205,7 +205,8 @@ public class GeneralPurchaseHistoryListCrawler {
   public GeneralPurchaseHistoryListCrawlerResult processPurchaseHistory(Closure<Boolean> closure) throws IOException {
     LOGGER.info("[processPurchaseHistory] in");
 
-    this.webpageService.save(this.siteName + "-purchase-history", this.siteName, this.historyPage.getPage().getWebResponse().getContentAsString(), this.saveHtml);
+    System.out.println("historyPage: " + historyPage);
+    //this.webpageService.save(this.siteName + "-purchase-history", this.siteName, this.historyPage.getPage().getWebResponse().getContentAsString(), this.saveHtml);
     // TODO : implement
     /*
     if (page.getBaseURI().contains("?autoLogin")) {
@@ -215,6 +216,7 @@ public class GeneralPurchaseHistoryListCrawler {
     
     while (true) {
       if (this.historyPage.getPage() == null) {
+        System.out.println("historyPage is null!");
         break;
       }
       closure.call();

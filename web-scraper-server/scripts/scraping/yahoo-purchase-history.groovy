@@ -8,8 +8,12 @@ savePage("test", "yahoo")
 
 processPurchaseHistory() {
 	orderList = scrapeDomList ".elMain > ul:nth-child(1)"
+	print "orderList loop"
+	//print "ORDER LIST" + orderList
+
 	processOrders(orderList) { orderNode ->
-		print "looping through orderNode" + orderNode
+		//print "looping through orderNode" + orderNode
+		print "orderNode loop"
 		setOrderNumber(orderNode, "div:nth-child(2) > ul:nth-child(1) > li:nth-child(1) > ul:nth-child(1) > li:nth-child(2) > dl:nth-child(1) > dd:nth-child(2)")
 		setOrderDate(orderNode, "div:nth-child(1) > p:nth-child(1) > span:nth-child(1)")
 	

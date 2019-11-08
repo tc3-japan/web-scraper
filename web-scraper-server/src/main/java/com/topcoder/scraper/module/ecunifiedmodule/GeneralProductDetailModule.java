@@ -81,10 +81,15 @@ public class GeneralProductDetailModule implements IProductDetailModule {
     if (productInfo != null) {
       // save updated information
       productService.updateProduct(productId, productInfo);
-      for (int i = 0; i < productInfo.getCategoryList().size(); i++) {
+      for (int i = 0; i < productInfo.getCategoryList().size(); i++) { //ERROR: product info is null
+        System.out.println();
+        System.out.println("WARNING: IGNORING CATEGORY AND RANK FOR TESTING PURPOSES!");
+        System.out.println();
+        /*
         String category = productInfo.getCategoryList().get(i);
         Integer rank = productInfo.getRankingList().get(i);
         productService.addCategoryRanking(productId, category, rank);
+        */
       }
       productService.updateFetchInfoStatus(productId, "updated");
     }

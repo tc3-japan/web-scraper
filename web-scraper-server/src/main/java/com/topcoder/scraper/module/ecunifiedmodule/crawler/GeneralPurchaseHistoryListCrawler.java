@@ -1,7 +1,6 @@
 package com.topcoder.scraper.module.ecunifiedmodule.crawler;
 
 import static com.topcoder.common.util.HtmlUtils.extract;
-import static com.topcoder.common.util.HtmlUtils.extractInt;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +10,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
@@ -54,10 +52,6 @@ public class GeneralPurchaseHistoryListCrawler {
   protected PurchaseHistory       lastPurchaseHistory;
   protected boolean               saveHtml;
   @Getter@Setter protected NavigablePurchaseHistoryPage historyPage;
-  //@Getter@Setter protected TrafficWebClient webClient;
-  //@Getter@Setter protected String           siteName;
-  //@Getter@Setter protected WebpageService   webpageService;
-
   @Getter@Setter protected PurchaseHistory       currentPurchaseHistory; // OrderInfo (to be refactored)
   @Getter@Setter protected ProductInfo           currentProduct;
   @Getter@Setter protected List<PurchaseHistory> purchaseHistoryList;
@@ -66,7 +60,7 @@ public class GeneralPurchaseHistoryListCrawler {
     this.siteName = siteName;
     this.webpageService = webpageService;
 
-    GeneralPurchaseHistoryListCrawlerScriptSupport.setCrawler(this); //////////??????
+    GeneralPurchaseHistoryListCrawlerScriptSupport.setCrawler(this);
     
     String scriptPath = this.getScriptPath();
     this.scriptText   = this.getScriptText(scriptPath);
@@ -136,84 +130,13 @@ public class GeneralPurchaseHistoryListCrawler {
     return result;
   }
   
- /*
-  private boolean parsePurchaseHistory(List<PurchaseHistory> list, HtmlPage page, PurchaseHistory last, boolean saveHtml, List<String> pathList) {
- 
-    LOGGER.debug("Parsing page url " + page.getUrl().toString());
-    
-    List<DomNode> orders = page.querySelectorAll(".member-orderhistorydetails > tbody");
-
-    for (DomNode orderNode : orders) {
-      DomNode itemNoNode = orderNode.querySelector(".itemnumber");
-      String nodeText = itemNoNode.asText();
-      String orderNumber = extract(nodeText, PAT_ORDER_NO);
-      LOGGER.info("ORDER NO: " + orderNumber);
-
-      Date orderDate = extractDate(nodeText);
-      LOGGER.info("ORDER DATE: " + orderDate);
-      
-      DomNode itemTotalAmountNode = orderNode.querySelector(".totalamountmoney");
-      Integer totalAmount = itemTotalAmountNode != null ? extractInt(itemTotalAmountNode.asText()) : null;
-      LOGGER.info("TOTAL: " + totalAmount);
-            
-      PurchaseHistory history = new PurchaseHistory(null, orderNumber, orderDate, totalAmount != null ? totalAmount.toString() : null, null, null);
-      if (!isNew(history, last)) {
-        LOGGER.info("SKIPPING: " + orderNumber);
-        continue;        
-      }
-      
-      List<DomNode> orderLines = orderNode.querySelectorAll("tr");
-      List<ProductInfo> productInfoList = orderLines.stream().map(this::parseProduct).filter(p -> p.getName() != null).collect(Collectors.toList());
-      history.setProducts(productInfoList);
-      
-      list.add(history);
-    }
-
-
-    List<DomNode> orders = page.querySelectorAll(".member-orderhistorydetails > tbody");
-    for (DomNode orderNode : orders) {
-      DomNode itemNoNode = orderNode.querySelector(".itemnumber");
-      String nodeText = itemNoNode.asText();
-      String orderNumber = extract(nodeText, PAT_ORDER_NO);
-      LOGGER.info("ORDER NO: " + orderNumber);
-
-      Date orderDate = extractDate(nodeText);
-      LOGGER.info("ORDER DATE: " + orderDate);
-      
-      DomNode itemTotalAmountNode = orderNode.querySelector(".totalamountmoney");
-      Integer totalAmount = itemTotalAmountNode != null ? extractInt(itemTotalAmountNode.asText()) : null;
-      LOGGER.info("TOTAL: " + totalAmount);
-            
-      PurchaseHistory history = new PurchaseHistory(null, orderNumber, orderDate, totalAmount != null ? totalAmount.toString() : null, null, null);
-      if (!isNew(history, last)) {
-        LOGGER.info("SKIPPING: " + orderNumber);
-        continue;        
-      }
-      
-      List<DomNode> orderLines = orderNode.querySelectorAll("tr");
-      List<ProductInfo> productInfoList = orderLines.stream().map(this::parseProduct).filter(p -> p.getName() != null).collect(Collectors.toList());
-      history.setProducts(productInfoList);
-      
-      list.add(history);
-    }
-   
-    return false;
-  }
-    */
 
   // TODO: re-consider Closure<HERE>, now temporarily Boolean
   public GeneralPurchaseHistoryListCrawlerResult processPurchaseHistory(Closure<Boolean> closure) throws IOException {
     LOGGER.info("[processPurchaseHistory] in");
 
     System.out.println("historyPage: " + historyPage);
-    //this.webpageService.save(this.siteName + "-purchase-history", this.siteName, this.historyPage.getPage().getWebResponse().getContentAsString(), this.saveHtml);
-    // TODO : implement
-    /*
-    if (page.getBaseURI().contains("?autoLogin")) {
-      throw new SessionExpiredException("Session has been expired.");      
-    }
-    */
-    
+    /* THIS IS BUGGED?
     while (true) {
       if (this.historyPage.getPage() == null) {
         System.out.println("historyPage is null!");
@@ -222,7 +145,8 @@ public class GeneralPurchaseHistoryListCrawler {
       closure.call();
       this.historyPage.setPage(this.gotoNextPage(this.historyPage.getPage(), webClient));
     }
-
+    */
+    closure.call();
     return new GeneralPurchaseHistoryListCrawlerResult(this.purchaseHistoryList, this.savedPathList);
   }
 
@@ -283,25 +207,6 @@ public class GeneralPurchaseHistoryListCrawler {
     return true;
   }
   
-  /*
-  private ProductInfo parseProduct(DomNode orderLineNode) {
-
-    DomNode itemNameNode = orderLineNode.querySelector(".itemname");
-    if (itemNameNode == null) {
-      return new ProductInfo();
-    }
-    String name = normalizeProductName(itemNameNode.asText());
-    
-    DomNode itemPriceNode = orderLineNode.querySelector(".itemprice");
-    Integer price = itemPriceNode != null ? extractInt(itemPriceNode.asText()) : null;
-
-    DomNode itemQtyNode = orderLineNode.querySelector(".itemnum");
-    Integer quantity = itemQtyNode != null ? extractInt(itemQtyNode.asText()) : null;
-    
-    LOGGER.info(String.format("parseProduct::{Name:%s, Price:%d, Quantity:%s}", name, price, quantity));
-    return new ProductInfo((String)null, name, price != null ? price.toString() : null, quantity, (String)null);
-  }
-  */
   
   private HtmlPage gotoNextPage(HtmlPage page, TrafficWebClient webClient) throws IOException {
     return null;

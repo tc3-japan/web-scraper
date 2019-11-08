@@ -104,7 +104,6 @@ public class GeneralProductDetailCrawler {
     this.productInfo.setCode(productCode);
 
     // binding variables for scraping script
-    // >> What is this? Why pass productInfo this way?
     this.scriptBinding.setProperty("productCode", this.productCode);
     this.scriptBinding.setProperty("productInfo", this.productInfo);
 

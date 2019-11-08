@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.topcoder.scraper.lib.navpage.NavigablePurchaseHistoryPage;
-import com.topcoder.scraper.service.WebpageService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,8 +17,8 @@ public abstract class GeneralPurchaseHistoryListCrawlerScriptSupport extends Scr
 
   private static final Logger LOGGER = LoggerFactory.getLogger(GeneralPurchaseHistoryListCrawlerScriptSupport.class);
   private static GeneralPurchaseHistoryListCrawler CRAWLER;
-  private WebpageService webpageService;
-  private String siteName;
+  //private WebpageService webpageService;
+  //private String siteName;
   public static String productId = null;
   public NavigablePurchaseHistoryPage historyPage;
 
@@ -60,7 +59,7 @@ public abstract class GeneralPurchaseHistoryListCrawlerScriptSupport extends Scr
   }
 
   void setOrderNumber(DomNode orderNode, String selector) {
-    historyPage.click(selector); //nullcheck?
+    //historyPage.click(selector); //nullcheck? DON'T CLICK
     System.out.println("");
     System.out.println("setting order number: " + selector);
     System.out.println("");
@@ -77,7 +76,7 @@ public abstract class GeneralPurchaseHistoryListCrawlerScriptSupport extends Scr
   }
 
   void setOrderDate(DomNode orderNode, String selector) {
-    historyPage.click(selector); //nullcheck?
+    //historyPage.click(selector); //nullcheck?  DON'T CLICK
     System.out.println("");
     System.out.println("setting order date: " + selector);
     System.out.println("");
@@ -85,7 +84,7 @@ public abstract class GeneralPurchaseHistoryListCrawlerScriptSupport extends Scr
   }
 
   void setOrderNumber(String selector) {
-    historyPage.click(selector); //nullcheck?
+    //historyPage.click(selector); //nullcheck?  DON'T CLICK
     System.out.println("");
     System.out.println("setting order number: " + selector);
     System.out.println("");
@@ -93,7 +92,7 @@ public abstract class GeneralPurchaseHistoryListCrawlerScriptSupport extends Scr
   }
 
   void setOrderDate(String selector) {
-    historyPage.click(selector); //nullcheck?
+    //historyPage.click(selector); //nullcheck?  DON'T CLICK
     System.out.println("");
     System.out.println("setting order date: " + selector);
     System.out.println("");
@@ -112,21 +111,21 @@ public abstract class GeneralPurchaseHistoryListCrawlerScriptSupport extends Scr
     System.out.println("CRAWLER: " + CRAWLER);
 
     
-    this.CRAWLER.processPurchaseHistory(closure);
+    CRAWLER.processPurchaseHistory(closure);
   }
 
   void processOrders(List<DomNode> orderList , Closure<Boolean> closure) {
-    this.CRAWLER.processOrders(orderList, closure);
+    CRAWLER.processOrders(orderList, closure);
   }
 
   void processProducts(List<DomNode> productList , Closure<Boolean> closure) {
-    this.CRAWLER.processProducts(productList, closure);
+    CRAWLER.processProducts(productList, closure);
   }
 
   // Crawler method: others --------------------------------------------------------------------------------------------
 
   boolean isNew() {
-    return this.CRAWLER.isNew();
+    return CRAWLER.isNew();
   }
 
   // Scraping wrapper: general -----------------------------------------------------------------------------------------

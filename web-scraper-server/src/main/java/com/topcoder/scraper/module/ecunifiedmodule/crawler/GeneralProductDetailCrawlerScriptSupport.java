@@ -3,7 +3,6 @@ package com.topcoder.scraper.module.ecunifiedmodule.crawler;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.scraper.lib.navpage.NavigableProductDetailPage;
-import com.topcoder.scraper.service.WebpageService;
 
 import groovy.lang.Script;
 import org.slf4j.Logger;
@@ -15,11 +14,11 @@ import java.util.List;
 //Make not abstract or static? Edit: Can't!
 public abstract class GeneralProductDetailCrawlerScriptSupport extends Script {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(GeneralProductDetailCrawlerScriptSupport.class);
+  //private static final Logger LOGGER = LoggerFactory.getLogger(GeneralProductDetailCrawlerScriptSupport.class);
   private static GeneralProductDetailCrawler CRAWLER;
   private NavigableProductDetailPage detailPage;
-  private WebpageService webpageService;
-  private String siteName;
+  //private WebpageService webpageService;
+  //private String siteName;
   private ProductInfo productInfo; // Not good?
   public static String productId = null;
 

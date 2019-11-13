@@ -27,12 +27,12 @@ public abstract class AbstractPurchaseHistoryListCrawlerScriptSupport extends Sc
     this.crawler.getWebClient().getWebClient().getOptions().setJavaScriptEnabled(value);
   }
 
-  void savePage(String name, String siteName) {
-    this.crawler.getHistoryPage().savePage(name, siteName, this.crawler.getWebpageService()); //nullcheck?
+  void savePage(String name) {
+    this.crawler.getHistoryPage().savePage(name, this.crawler.getSiteName(), this.crawler.getWebpageService()); //nullcheck?
   }
 
   void click(String selector) {
-    this.crawler.getHistoryPage().click(selector); //nullcheck?
+    this.crawler.getHistoryPage().click(selector);
   }
 
   void type(String input, String selector) {

@@ -60,11 +60,11 @@ public class YahooLoginHandler extends LoginHandlerBase {
     System.out.println("\n\n\n>>>>>> Logging into Yahoo with account " + ecSiteAccountDAO.getLoginEmail() + "\n\n\n");
     ecSiteAccountRepository.save(ecSiteAccountDAO); // save it first
 
-    YahooAuthenticationCrawler crawler = new YahooAuthenticationCrawler("yahoo", applicationContext.getBean(WebpageService.class));
+    YahooAuthenticationCrawler crawler = new YahooAuthenticationCrawler(applicationContext.getBean(WebpageService.class));
     TrafficWebClient webClient = new TrafficWebClient(userId, false);
     
     try {
-      boolean result = crawler.authenticate(webClient, request.getEmail(), request.getPassword());
+      boolean result = crawler.authenticate(webClient, request.getEmail(), request.getPassword()).isSuccess();
       if (result) { // succeed , update status and save cookies
         List<ECCookie> ecCookies = new LinkedList<>();
         for (Cookie cookie : webClient.getWebClient().getCookieManager().getCookies()) {

@@ -50,6 +50,8 @@ public abstract class AbstractPurchaseHistoryListCrawler {
   @Getter@Setter protected List<PurchaseHistory> purchaseHistoryList;
 
   public AbstractPurchaseHistoryListCrawler(String siteName, WebpageService webpageService) {
+    LOGGER.info("[constructor] in");
+
     this.siteName       = siteName;
     this.webpageService = webpageService;
 
@@ -88,7 +90,6 @@ public abstract class AbstractPurchaseHistoryListCrawler {
 
   protected abstract String getScriptSupportClassName();
 
-  // helpers
   protected String executeScript() {
     LOGGER.info("[executeScript] in");
     this.scriptShell = new GroovyShell(this.scriptBinding, this.scriptConfig);
@@ -98,7 +99,6 @@ public abstract class AbstractPurchaseHistoryListCrawler {
     return resStr;
   }
 
-  // methods
   public AbstractPurchaseHistoryListCrawlerResult fetchPurchaseHistoryList(TrafficWebClient webClient, PurchaseHistory lastPurchaseHistory, boolean saveHtml) throws IOException {
     LOGGER.info("[fetchPurchaseHistoryList] in");
 
@@ -187,7 +187,6 @@ public abstract class AbstractPurchaseHistoryListCrawler {
 
   protected HtmlPage gotoNextPage(HtmlPage page, TrafficWebClient webClient) throws IOException {
     LOGGER.info("[gotoNextPage] in");
-
     return null;
   }
 }

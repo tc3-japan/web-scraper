@@ -1,121 +1,124 @@
 package com.topcoder.scraper.module.ecunifiedmodule.crawler;
 
-import java.io.IOException;
-import java.util.List;
-
 import com.gargoylesoftware.htmlunit.html.DomNode;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.topcoder.common.model.ProductInfo;
-import com.topcoder.common.model.PurchaseHistory;
-import com.topcoder.scraper.lib.navpage.NavigableProductDetailPage;
-import com.topcoder.scraper.lib.navpage.NavigablePurchaseHistoryPage;
-import com.topcoder.scraper.service.WebpageService;
-
+import groovy.lang.Closure;
+import groovy.lang.Script;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import groovy.lang.Script;
+import java.io.IOException;
+import java.util.List;
 
-//Make not abstract or static? Edit: Can't!
 public abstract class GeneralPurchaseHistoryListCrawlerScriptSupport extends Script {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(GeneralPurchaseHistoryListCrawlerScriptSupport.class);
-  private static GeneralPurchaseHistoryListCrawler CRAWLER;
-  private WebpageService webpageService;
-  private String siteName;
-  public static String productId = null;
-  public NavigablePurchaseHistoryPage historyPage;
 
-
-  static void setCrawler(GeneralPurchaseHistoryListCrawler crawler) {
-    CRAWLER = crawler;
+  protected GeneralPurchaseHistoryListCrawler crawler;
+  void setCrawler(GeneralPurchaseHistoryListCrawler crawler) {
+    this.crawler = crawler;
   }
 
-  static void setProductId(String id) {
-    productId = id;
-  }
-
-
-  void setPage(String str) { 
-    System.out.println("");
-    System.out.println("Setting page to: " + str);
-    System.out.println("");
-    HtmlPage page = null;
-    try {
-      System.out.println("JS Status: " + CRAWLER.webClient.getWebClient().getOptions().isJavaScriptEnabled());
-      CRAWLER.webClient.getWebClient().getOptions().setJavaScriptEnabled(false); //TODO: TEST ONLY
-      page = CRAWLER.webClient.getPage(str);
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    System.out.println("");
-    System.out.println("Page: " + page);
-    System.out.println("");
-    if(page != null) {
-      historyPage = new NavigablePurchaseHistoryPage(page, CRAWLER.webClient);
-    } else {
-      System.out.println("Could not set page in ProductDetailScriptSupport.java@setPage()");
-    }
+  void setPage(String historyUrl) {
+    this.crawler.getWebClient().getWebClient().getOptions().setJavaScriptEnabled(false); //TODO: TEST ONLY
+    this.crawler.getHistoryPage().setPage(historyUrl);
   }
 
   void setEnableJS(boolean value) {
-    // TODO : reconsider relationship between webClient and page
-    CRAWLER.webClient.getWebClient().getOptions().setJavaScriptEnabled(value);
-    //detailPage.setEnableJS(value);
+    this.crawler.getWebClient().getWebClient().getOptions().setJavaScriptEnabled(value);
   }
 
   void savePage(String name, String siteName) {
-    historyPage.savePage(name, siteName, CRAWLER.webpageService); //nullcheck?
+    this.crawler.getHistoryPage().savePage(name, siteName, this.crawler.getWebpageService()); //nullcheck?
   }
 
   void click(String selector) {
-    historyPage.click(selector); //nullcheck?
-    System.out.println("");
-    System.out.println("Clicking: " + selector);
-    System.out.println("");
+    this.crawler.getHistoryPage().click(selector); //nullcheck?
   }
 
   void type(String input, String selector) { 
-    historyPage.type(input, selector);
+    this.crawler.getHistoryPage().type(input, selector);
   }
 
-  void setOrderNumber(DomNode orderNode, String selector) {
-    historyPage.click(selector); //nullcheck?
-    System.out.println("");
-    System.out.println("setting order number: " + selector);
-    System.out.println("");
-    historyPage.scrapeOrderNumber(orderNode, selector);
+  // Crawler method: purchase history structure processor --------------------------------------------------------------
+
+  void processPurchaseHistory(Closure<Boolean> closure) throws IOException {
+    this.crawler.processPurchaseHistory(closure);
   }
 
-  void setOrderDate(DomNode orderNode, String selector) {
-    historyPage.click(selector); //nullcheck?
-    System.out.println("");
-    System.out.println("setting order date: " + selector);
-    System.out.println("");
-    historyPage.scrapeOrderDate(orderNode, selector);
+  void processOrders(List<DomNode> orderList , Closure<Boolean> closure) {
+    this.crawler.processOrders(orderList, closure);
   }
 
-  void setOrderNumber(String selector) {
-    historyPage.click(selector); //nullcheck?
-    System.out.println("");
-    System.out.println("setting order number: " + selector);
-    System.out.println("");
-    historyPage.scrapeOrderNumber(selector);
+  void processProducts(List<DomNode> productList , Closure<Boolean> closure) {
+    this.crawler.processProducts(productList, closure);
   }
 
-  void setOrderDate(String selector) {
-    historyPage.click(selector); //nullcheck?
-    System.out.println("");
-    System.out.println("setting order date: " + selector);
-    System.out.println("");
-    historyPage.scrapeOrderDate(selector);
+  // Crawler method: others --------------------------------------------------------------------------------------------
+
+  boolean isNew() {
+    return this.crawler.isNew();
   }
 
-  void log(String str) { 
-    System.out.println("___LOG___");
-    System.out.println(str);
-    System.out.println("_________");
+  // Scraping wrapper: general -----------------------------------------------------------------------------------------
+
+  List<DomNode> scrapeDomList(String selector) {
+    return this.crawler.getHistoryPage().scrapeDomList(selector);
   }
 
+  // Scraping wrapper: order in purchase history -----------------------------------------------------------------------
+
+  void scrapeOrderNumber(DomNode orderNode, String selector) {
+    this.crawler.getHistoryPage().scrapeOrderNumber(orderNode, selector);
+  }
+
+  void scrapeOrderNumberWithRegex(DomNode orderNode, String selector, String regexStr) {
+    this.crawler.getHistoryPage().scrapeOrderNumberWithRegex(orderNode, selector, regexStr);
+  }
+
+  void scrapeOrderDate(DomNode orderNode, String selector) {
+    this.crawler.getHistoryPage().scrapeOrderDate(orderNode, selector);
+  }
+
+  void scrapeOrderDateDefault(DomNode orderNode, String selector) {
+    this.crawler.getHistoryPage().scrapeOrderDateDefault(orderNode, selector);
+  }
+
+  void scrapeTotalAmount(DomNode orderNode, String selector) {
+    this.crawler.getHistoryPage().scrapeTotalAmount(orderNode, selector);
+  }
+
+  void scrapeDeliveryStatus(DomNode orderNode, String selector) {
+    this.crawler.getHistoryPage().scrapeDeliveryStatus(orderNode, selector);
+  }
+
+  // Scraping wrapper: product in order --------------------------------------------------------------------------------
+
+  void scrapeProductCodeFromAnchor(DomNode productNode, String selector, String regexStr) {
+    this.crawler.getHistoryPage().scrapeProductCodeFromAnchor(productNode, selector, regexStr);
+  }
+
+  void scrapeProductName(DomNode productNode, String selector) {
+    this.crawler.getHistoryPage().scrapeProductName(productNode, selector);
+  }
+
+  void scrapeProductNameFromAnchor(DomNode productNode, String selector) {
+    this.crawler.getHistoryPage().scrapeProductNameFromAnchor(productNode, selector);
+  }
+
+  void scrapeUnitPrice(DomNode productNode, String selector) {
+    this.crawler.getHistoryPage().scrapeUnitPrice(productNode, selector);
+  }
+
+  void scrapeProductQuantity(DomNode productNode, String selector) {
+    this.crawler.getHistoryPage().scrapeProductQuantity(productNode, selector);
+  }
+
+  void scrapeProductDistributor(DomNode productNode, String selector) {
+    this.crawler.getHistoryPage().scrapeProductDistributor(productNode, selector);
+  }
+
+  // Others: logging ---------------------------------------------------------------------------------------------------
+  void log(String str) {
+    LOGGER.info(str);
+  }
 }

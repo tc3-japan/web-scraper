@@ -70,6 +70,6 @@ if (categoryInfoList.size() <= 0) {
 }
 //scrapeCategoryRanking(categoryInfoList)
 
-//save()
+//savePage()
 //info("--------------script end--------------")
 */

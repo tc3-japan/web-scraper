@@ -21,10 +21,10 @@ public class KojimaPurchaseHistoryListModule extends AbstractPurchaseHistoryList
 
   @Autowired
   public KojimaPurchaseHistoryListModule(
-          PurchaseHistoryService purchaseHistoryService,
-          ECSiteAccountRepository ecSiteAccountRepository,
-          WebpageService webpageService,
-          KojimaLoginHandler loginHandler,
+          PurchaseHistoryService           purchaseHistoryService,
+          ECSiteAccountRepository          ecSiteAccountRepository,
+          WebpageService                   webpageService,
+          KojimaLoginHandler               loginHandler,
           KojimaPurchaseHistoryListCrawler crawler
   ) {
     super(purchaseHistoryService, ecSiteAccountRepository, webpageService, loginHandler, crawler);

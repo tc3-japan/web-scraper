@@ -1,4 +1,4 @@
-package com.topcoder.scraper.module.ecunifiedmodule;
+package com.topcoder.scraper.module.ecisolatedmodule.yahoo;
 
 import com.topcoder.common.dao.ProductDAO;
 import com.topcoder.common.model.ProductInfo;
@@ -15,42 +15,45 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Yahoo implementation of ProductDetailModule
  */
 @Component
-public class GeneralProductDetailModule implements IProductDetailModule {
+public class OldYahooProductDetailModule implements IProductDetailModule {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(GeneralProductDetailModule.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(OldYahooProductDetailModule.class);
 
-  // private final AmazonProperty property;
+  //private final AmazonProperty property;
   private final ProductService productService;
   private final WebpageService webpageService;
 
   @Autowired
-  public GeneralProductDetailModule(
-      // AmazonProperty property,
-      ProductService productService, WebpageService webpageService) {
-    // this.property = property;
+  public OldYahooProductDetailModule(
+    //AmazonProperty property,
+    ProductService productService,
+    WebpageService webpageService) {
+    //this.property = property;
     this.productService = productService;
     this.webpageService = webpageService;
   }
 
-
+  @Override
+  public String getModuleType() {
+    return "yahoo";
+  }
 
   @Override
   public void fetchProductDetailList(List<String> sites) {
-
-    for (String site : sites) {
     // TODO: delete
     LOGGER.info("---fetchProductDetailList------------------------------------------------");
     LOGGER.info("sites:" + sites);
     LOGGER.info("---fetchProductDetailList------------------------------------------------");
 
-    List<ProductDAO> products = this.productService.getAllFetchInfoStatusIsNull(site);
+    List<ProductDAO> products = this.productService.getAllFetchInfoStatusIsNull(getModuleType());
 
-    GeneralProductDetailCrawler crawler = new GeneralProductDetailCrawler(site, webpageService);
+    GeneralProductDetailCrawler crawler = new GeneralProductDetailCrawler(getModuleType(), webpageService);
 
     products.forEach(product -> {
       try {
@@ -59,80 +62,52 @@ public class GeneralProductDetailModule implements IProductDetailModule {
         LOGGER.error(String.format("Fail to fetch product %s, please try again.", product.getProductCode()));
       }
     });
-    }
   }
 
   /**
-   * Fetch product information from yahoo and save in database
-   * 
-   * @param crawler     the crawler
-   * @param productId   the product id
+   * Fetch product information from yahoo
+   * and save in database
+   * @param crawler the crawler
+   * @param productId the product id
    * @param productCode the product code
    * @throws IOException webclient exception
    */
-  private void fetchProductDetail(GeneralProductDetailCrawler crawler, int productId, String productCode)
-      throws IOException {
+  private void fetchProductDetail(GeneralProductDetailCrawler crawler, int productId, String productCode) throws IOException {
 
     TrafficWebClient webClient = new TrafficWebClient(0, false);
     GeneralProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productCode);
     webClient.finishTraffic();
     ProductInfo productInfo = crawlerResult.getProductInfo();
 
-    if (productInfo != null) {
+    if(productInfo != null) {
       // save updated information
       productService.updateProduct(productId, productInfo);
-      for (int i = 0; i < productInfo.getCategoryList().size(); i++) { //ERROR: product info is null
-        System.out.println();
-        System.out.println("WARNING: IGNORING CATEGORY AND RANK FOR TESTING PURPOSES!");
-        System.out.println();
-        /*
+      for (int i = 0; i < productInfo.getCategoryList().size(); i++) {
         String category = productInfo.getCategoryList().get(i);
         Integer rank = productInfo.getRankingList().get(i);
-        productService.addCategoryRanking(productId, category, rank);
-        */
+      productService.addCategoryRanking(productId, category, rank);
       }
       productService.updateFetchInfoStatus(productId, "updated");
     }
   }
 
   @Override
-  public String getModuleType() {
-    return "general";
-  }
-
-  @Override
   public ProductDAO crossEcProduct(String modelNo) throws IOException {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  /*
-  @Override
-  //TODO: ADD String site parameter to this function in base class
-  public ProductDAO crossEcProduct(String site, String modelNo) throws IOException {
     TrafficWebClient webClient = new TrafficWebClient(0, false);
 
-    GeneralProductDetailCrawler crawler = new GeneralProductDetailCrawler(site, webpageService);
+    GeneralProductDetailCrawler crawler = new GeneralProductDetailCrawler(getModuleType(), webpageService);
     GeneralProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, modelNo);
-
+    
     webClient.finishTraffic();
 
     ProductInfo productInfo = Objects.isNull(crawlerResult) ? null : crawlerResult.getProductInfo();
+	    
+	  if (Objects.isNull(productInfo) || productInfo.getModelNo() == null) {
+	    LOGGER.warn("Unable to obtain cross ec product information for: " + modelNo);
+	    return null;
+	  }
 
-    if (Objects.isNull(productInfo) || productInfo.getModelNo() == null) {
-      LOGGER.warn("Unable to obtain cross ec product information for: " + modelNo);
-      return null;
-    }
-
-    return new ProductDAO(site, productInfo);
+	  return new ProductDAO(getModuleType(), productInfo);
   }
-
-  @Override
-  public ProductDAO crossEcProduct(String modelNo) throws IOException {
-    // TODO Auto-generated method stub
-    // FAKE CLASS DO NOT USE
-    return null;
-  }
-  */
-
+  
 }

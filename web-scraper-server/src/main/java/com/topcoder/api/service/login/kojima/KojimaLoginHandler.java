@@ -61,7 +61,7 @@ public class KojimaLoginHandler extends LoginHandlerBase {
     TrafficWebClient webClient = new TrafficWebClient(userId, false);
     
     try {
-      boolean result = crawler.authenticate(webClient, request.getEmail(), request.getPassword());
+      boolean result = crawler.authenticate(webClient, request.getEmail(), request.getPassword()).isSuccess();
       if (result) { // succeed , update status and save cookies
         List<ECCookie> ecCookies = new LinkedList<>();
         for (Cookie cookie : webClient.getWebClient().getCookieManager().getCookies()) {

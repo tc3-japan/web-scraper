@@ -1,14 +1,11 @@
 package com.topcoder.scraper.module.ecisolatedmodule.crawler;
 
-import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.traffic.TrafficWebClient;
-import com.topcoder.common.util.HtmlUtils;
 import com.topcoder.scraper.Consts;
 import com.topcoder.scraper.lib.navpage.NavigableProductDetailPage;
 import com.topcoder.scraper.service.WebpageService;
 import groovy.lang.Binding;
-import groovy.lang.Closure;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 import lombok.Getter;
@@ -21,7 +18,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.Properties;
 
 public abstract class AbstractProductDetailCrawler {
@@ -44,6 +40,8 @@ public abstract class AbstractProductDetailCrawler {
   @Getter@Setter protected NavigableProductDetailPage detailPage;
 
   public AbstractProductDetailCrawler(String siteName, WebpageService webpageService) {
+    LOGGER.info("[constructor] in");
+
     this.siteName = siteName;
     this.webpageService = webpageService;
 
@@ -82,7 +80,6 @@ public abstract class AbstractProductDetailCrawler {
 
   protected abstract String getScriptSupportClassName();
 
-  // helpers
   private String executeScript() {
     LOGGER.info("[executeScript] in");
     this.scriptShell = new GroovyShell(this.scriptBinding, this.scriptConfig);
@@ -92,7 +89,6 @@ public abstract class AbstractProductDetailCrawler {
     return resStr;
   }
 
-  // methods
   public AbstractProductDetailCrawlerResult fetchProductInfo(TrafficWebClient webClient, String productCode) throws IOException {
     LOGGER.info("[fetchProductInfo] in");
 
@@ -111,19 +107,4 @@ public abstract class AbstractProductDetailCrawler {
 
     return new AbstractProductDetailCrawlerResult(this.productInfo, this.savedPath);
   }
-
-  void save() {
-    this.savedPath = this.webpageService.save("product", this.siteName, this.detailPage.getPage().getWebResponse().getContentAsString());
-  }
-
-  // Wrapper
-  String getTextContent(HtmlElement element) {
-    return HtmlUtils.getTextContent(element);
-  }
-
-  public abstract void scrapeCategoryRanking(List<String> categoryInfoList);
-
-  public abstract List<String> scrapeCategoryInfoListBySalesRank(String salesRankSelector, Closure<?> setProps);
-
-  public abstract List<String> scrapeCategoryInfoListByProductInfoTable(String productInfoTableSelector, Closure<?> setProps, Closure<Boolean> rankLineTest);
 }

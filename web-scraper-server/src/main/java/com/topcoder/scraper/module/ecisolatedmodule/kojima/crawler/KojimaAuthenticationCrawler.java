@@ -2,6 +2,7 @@ package com.topcoder.scraper.module.ecisolatedmodule.kojima.crawler;
 
 import java.io.IOException;
 
+import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractAuthenticationCrawler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +13,7 @@ import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.lib.navpage.NavigableAuthenticationPage;
 import com.topcoder.scraper.service.WebpageService;
 
-public class KojimaAuthenticationCrawler {
+public class KojimaAuthenticationCrawler extends AbstractAuthenticationCrawler {
 
   private Logger logger = LoggerFactory.getLogger(KojimaAuthenticationCrawler.class.getName());
   
@@ -25,9 +26,15 @@ public class KojimaAuthenticationCrawler {
     this.webpageService = webpageService;
   }
 
+  // TODO : implement
+  @Override
+  public KojimaAuthenticationCrawlerResult authenticate(TrafficWebClient webClient,
+                                                       String username,
+                                                       String password, String code, boolean init) throws IOException {
+    return new KojimaAuthenticationCrawlerResult(false, null);
+  }
 
-
-  public boolean authenticate(TrafficWebClient webClient, String username, String password) throws IOException {
+  public KojimaAuthenticationCrawlerResult authenticate(TrafficWebClient webClient, String username, String password) throws IOException {
     
     webClient.getWebClient().getCookieManager().clearCookies();
     
@@ -71,9 +78,9 @@ public class KojimaAuthenticationCrawler {
     
     try {
       HtmlForm memberForm = afterLoginPage.getFormByName("MemberForm");
-      return memberForm == null;
+      return new KojimaAuthenticationCrawlerResult(memberForm == null, null);
     } catch (ElementNotFoundException e) {
-      return true;
+      return new KojimaAuthenticationCrawlerResult(false, null);
     }
   }
 }

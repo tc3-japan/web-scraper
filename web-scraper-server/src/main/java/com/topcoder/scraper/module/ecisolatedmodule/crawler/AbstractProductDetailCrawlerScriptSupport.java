@@ -30,10 +30,6 @@ public abstract class AbstractProductDetailCrawlerScriptSupport extends Script {
     this.crawler.getDetailPage().savePage(name, this.crawler.getSiteName(), this.crawler.getWebpageService());
   }
 
-  void save() {
-    this.crawler.save();
-  }
-
   void click(String selector) {
     this.crawler.getDetailPage().click(selector);
   }
@@ -44,42 +40,34 @@ public abstract class AbstractProductDetailCrawlerScriptSupport extends Script {
 
   // Scraping wrapper: product in purchase history ---------------------------------------------------------------------
   void scrapeCode(String selector) {
-    LOGGER.info("scrape product code");
     this.crawler.getDetailPage().scrapeCode(selector);
   }
 
   void scrapeName(String selector) {
-    LOGGER.info("scrape product name");
     this.crawler.getDetailPage().scrapeName(selector);
   }
 
   void scrapeDistributor(String selector) {
-    LOGGER.info("scrape product distributor");
     this.crawler.getDetailPage().scrapeDistributor(selector);
   }
 
   void scrapePrice(String selector) {
-    LOGGER.info("scrape product price");
     this.crawler.getDetailPage().scrapePrice(selector);
   }
 
   void scrapePrices(List<String> selectors) {
-    LOGGER.info("scrape product prices");
     this.crawler.getDetailPage().scrapePrices(selectors);
   }
 
   void scrapeQuantity(String selector) {
-    LOGGER.info("scrape product quantity");
     this.crawler.getDetailPage().scrapeQuantity(selector);
   }
 
   void scrapeModelNo(String selector) {
-    LOGGER.info("scrape product model no");
     this.crawler.getDetailPage().scrapeModelNo(selector);
   }
 
   void scrapeModelNo(List<Map<String, String>> modelNoSelectors) {
-    LOGGER.info("scrape product model no");
     this.crawler.getDetailPage().scrapeModelNo(modelNoSelectors);
   }
 

@@ -1,13 +1,15 @@
 package com.topcoder.scraper.module.ecunifiedmodule.crawler;
 
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.Consts;
+import com.topcoder.scraper.lib.navpage.NavigableProductDetailPage;
 import com.topcoder.scraper.service.WebpageService;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.groovy.control.CompilerConfiguration;
@@ -22,39 +24,32 @@ public class GeneralProductDetailCrawler {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(GeneralProductDetailCrawler.class);
 
-  // variables
   private final Binding               scriptBinding;
   private final CompilerConfiguration scriptConfig;
   private GroovyShell                 scriptShell;
   private String                      scriptText = "";
 
-  // TODO : to public and add accessors
-  public final String         siteName;
-  public final WebpageService webpageService;
+  private String savedPath;
 
-  public TrafficWebClient webClient;
-  public String           productCode;
-  public ProductInfo      productInfo;
-  public HtmlPage         productPage;
-  public String           savedPath;
+  @Getter@Setter private WebpageService   webpageService;
+  @Getter@Setter private TrafficWebClient webClient;
+  @Getter@Setter private String           siteName;
 
-  // constructor
-  public GeneralProductDetailCrawler(
-          String siteName,
-          WebpageService webpageService) {
-    //super(siteName, webpageService);
+  @Getter@Setter private String           productCode;
+  @Getter@Setter private ProductInfo      productInfo;
+  @Getter@Setter private NavigableProductDetailPage detailPage;
+
+  public GeneralProductDetailCrawler(String siteName, WebpageService webpageService) {
+    LOGGER.info("[constructor] in");
+
     this.siteName = siteName;
     this.webpageService = webpageService;
-    // TODO: doc
-    GeneralProductDetailCrawlerScriptSupport.setCrawler(this);
 
-    // TODO: doc
     String scriptPath = this.getScriptPath();
     this.scriptText   = this.getScriptText(scriptPath);
 
-    // TODO: doc
     Properties configProps = new Properties();
-    configProps.setProperty("groovy.script.base", GeneralProductDetailCrawlerScriptSupport.class.getName());
+    configProps.setProperty("groovy.script.base", this.getScriptSupportClassName());
     this.scriptConfig  = new org.codehaus.groovy.control.CompilerConfiguration(configProps);
     this.scriptBinding = new Binding();
   }
@@ -83,20 +78,24 @@ public class GeneralProductDetailCrawler {
     }
   }
 
-  // helpers
+  private String getScriptSupportClassName() {
+    return GeneralProductDetailCrawlerScriptSupport.class.getName();
+  }
+
   private String executeScript() {
     LOGGER.info("[executeScript] in");
     this.scriptShell = new GroovyShell(this.scriptBinding, this.scriptConfig);
     Script script = scriptShell.parse(this.scriptText);
+    script.invokeMethod("setCrawler", this);
     String resStr = (String)script.run();
     return resStr;
   }
 
-  // methods
   public GeneralProductDetailCrawlerResult fetchProductInfo(TrafficWebClient webClient, String productCode) throws IOException {
     LOGGER.info("[fetchProductInfo] in");
 
-    GeneralProductDetailCrawlerScriptSupport.setProductId(productCode);
+    this.webClient  = webClient;
+    this.detailPage = new NavigableProductDetailPage(this.webClient);
 
     this.webClient   = webClient;
     this.productCode = productCode;
@@ -104,9 +103,7 @@ public class GeneralProductDetailCrawler {
     this.productInfo.setCode(productCode);
 
     // binding variables for scraping script
-    // >> What is this? Why pass productInfo this way?
     this.scriptBinding.setProperty("productCode", this.productCode);
-    this.scriptBinding.setProperty("productInfo", this.productInfo);
 
     this.executeScript();
 

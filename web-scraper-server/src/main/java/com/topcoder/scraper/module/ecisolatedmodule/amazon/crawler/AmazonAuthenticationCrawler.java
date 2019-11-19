@@ -29,7 +29,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 /**
- * Login amazon
+ * Amazon implementation of AuthenticationCrawler
  */
 @Component
 public class AmazonAuthenticationCrawler extends AbstractAuthenticationCrawler {

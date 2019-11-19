@@ -19,8 +19,8 @@ public class AmazonProductDetailModule extends AbstractProductDetailModule {
 
   @Autowired
   public AmazonProductDetailModule(
-          ProductService productService,
-          WebpageService webpageService,
+          ProductService             productService,
+          WebpageService             webpageService,
           AmazonProductDetailCrawler crawler) {
     super(productService, webpageService, crawler);
   }

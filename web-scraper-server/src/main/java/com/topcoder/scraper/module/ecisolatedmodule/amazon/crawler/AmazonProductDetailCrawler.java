@@ -37,8 +37,8 @@ public class AmazonProductDetailCrawler extends AbstractProductDetailCrawler {
     return AmazonProductDetailCrawlerScriptSupport.class.getName();
   }
 
-  @Override
   public void scrapeCategoryRanking(List<String> categoryInfoList) {
+    LOGGER.info("[scrapeCategoryRanking] in");
 
     if (categoryInfoList.size() <= 0) {
       LOGGER.info(String.format("Could not find category rankings for product %s:%s", this.siteName, this.productCode));
@@ -61,7 +61,6 @@ public class AmazonProductDetailCrawler extends AbstractProductDetailCrawler {
   }
 
   // category ranking is from li#salesrank
-  @Override
   public List<String> scrapeCategoryInfoListBySalesRank(String salesRankSelector, Closure<?> setProps) {
     LOGGER.info("[scrapeCategoryInfoListBySalesRank] in");
     List<String> categoryInfoList = new ArrayList<>();
@@ -92,7 +91,6 @@ public class AmazonProductDetailCrawler extends AbstractProductDetailCrawler {
   }
 
   // category ranking is from product table
-  @Override
   public List<String> scrapeCategoryInfoListByProductInfoTable(String productInfoTableSelector, Closure<?> setProps, Closure<Boolean> rankLineTest) {
     LOGGER.info("[scrapeCategoryInfoListByProductInfoTable] in");
 

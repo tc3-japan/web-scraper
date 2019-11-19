@@ -5,12 +5,18 @@ import java.io.IOException;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.lib.navpage.NavigableAuthenticationPage;
+import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractAuthenticationCrawler;
 import com.topcoder.scraper.service.WebpageService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
-public class YahooAuthenticationCrawler {
+/**
+ * Yahoo implementation of AuthenticationCrawler
+ */
+@Component
+public class YahooAuthenticationCrawler extends AbstractAuthenticationCrawler {
 
   private Logger logger = LoggerFactory.getLogger(YahooAuthenticationCrawler.class.getName());
   
@@ -18,14 +24,21 @@ public class YahooAuthenticationCrawler {
   
   private final WebpageService webpageService;
   
-  public YahooAuthenticationCrawler(String siteName, WebpageService webpageService) {
-    this.siteName = siteName;
+  public YahooAuthenticationCrawler(WebpageService webpageService) {
+    this.siteName = "yahoo";
     this.webpageService = webpageService;
   }
 
+  // TODO : implement
+  @Override
+  public YahooAuthenticationCrawlerResult authenticate(TrafficWebClient webClient,
+                                                       String username,
+                                                       String password, String code, boolean init) throws IOException {
+    return new YahooAuthenticationCrawlerResult(false, null);
+  }
 
-
-  public boolean authenticate(TrafficWebClient webClient, String username, String password) throws IOException {
+  @Override
+  public YahooAuthenticationCrawlerResult authenticate(TrafficWebClient webClient, String username, String password) throws IOException {
     //NOTE: Make sure webClient.getOptions().setJavaScriptEnabled(true); in WebClientConfig.java!
     webClient.getWebClient().getCookieManager().clearCookies();
     webClient.getWebClient().getOptions().setJavaScriptEnabled(true);
@@ -65,6 +78,6 @@ public class YahooAuthenticationCrawler {
     //authPage.ConfirmLoginByElementExists(".elLogo > a:nth-child(1) > img:nth-child(1)");
     authPage.ConfirmLoginByElementExists("._3YIqBohnzWyU3NQ8zb-mQI > a:nth-child(1)");
     
-    return authPage.getLoginStatus();
+    return new YahooAuthenticationCrawlerResult(authPage.getLoginStatus(), null);
   }
 }

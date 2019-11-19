@@ -9,12 +9,12 @@ import lombok.Data;
 @Data
 public class AbstractAuthenticationCrawlerResult {
 
-  private boolean success;
-  private String reason;
-  private CodeType codeType;
-  private String img;
-  private String htmlPath;
-  private boolean needContinue;
+  protected boolean  success;
+  protected String   reason;
+  protected CodeType codeType;
+  protected String   img;
+  protected String   htmlPath;
+  protected boolean  needContinue;
 
   public AbstractAuthenticationCrawlerResult(boolean success, String htmlPath) {
     this.success = success;

@@ -26,90 +26,98 @@ public class NavigableProductDetailPage extends NavigablePage {
 
 	public NavigableProductDetailPage(HtmlPage page, TrafficWebClient webClient, ProductInfo productInfo) {
 		super(page, webClient);
+		LOGGER.info("[constructor] in");
 		this.productInfo = productInfo;
 	}
 
 	public NavigableProductDetailPage(String url, TrafficWebClient webClient, ProductInfo productInfo) {
 		super(url, webClient);
+		LOGGER.info("[constructor] in");
 		this.productInfo = productInfo;
 	}
 
 	public NavigableProductDetailPage(TrafficWebClient webClient) {
 		super((HtmlPage)null, webClient);
-	}
-
-	public ProductInfo getProductInfo() {
-		return this.productInfo;
+		LOGGER.info("[constructor] in");
 	}
 
 	public void scrapeDistributor(String selector) {
+		LOGGER.info("[scrapeDistributor] in");
 		String str = getText(selector);
-		LOGGER.info("\n Distributor >>>> " + str);
+		LOGGER.info("[scrapeDistributor] Distributor >>>> " + str);
 		if (str != null) {
 			productInfo.setDistributor(str);
 		}
 	}
 
 	public void scrapeDistributor(DomNode node, String selector) {
+		LOGGER.info("[scrapeDistributor] in");
 		String str = getText(node, selector);
-		LOGGER.info("\n Distributor >>>> " + str);
+		LOGGER.info("[scrapeDistributor] Distributor >>>> " + str);
 		if (str != null) {
 			productInfo.setDistributor(str);
 		}
 	}
 
 	public void scrapeCode(String selector) {
+		LOGGER.info("[scrapeCode] in");
 		String code = getText(selector);
-		LOGGER.info("\n Code >>>> " + code);
+		LOGGER.info("[scrapeCode] Code >>>> " + code);
 		if (code != null) {
 			productInfo.setCode(code);
 		}
 	}
 
 	public void scrapeCode(DomNode node, String selector) {
+		LOGGER.info("[scrapeCode] in");
 		String code = getText(node, selector);
-		LOGGER.info("\n Code >>>> " + code);
+		LOGGER.info("[scrapeCode] Code >>>> " + code);
 		if (code != null) {
 			productInfo.setCode(code);
 		}
 	}
 
 	public void scrapeName(String selector) {
+		LOGGER.info("[scrapeName] in");
 		String str = getText(selector);
-		LOGGER.info("\n Name >>>> " + str);
+		LOGGER.info("[scrapeName] Name >>>> " + str);
 		if (str != null) {
 			productInfo.setName(str);
 		}
 	}
 
 	public void scrapeName(DomNode node, String selector) {
+		LOGGER.info("[scrapeName] in");
 		String str = getText(node, selector);
-		LOGGER.info("\n Name >>>> " + str);
+		LOGGER.info("[scrapeName] Name >>>> " + str);
 		if (str != null) {
 			productInfo.setName(str);
 		}
 	}
 
 	public void scrapePrice(String selector) {
+		LOGGER.info("[scrapePrice] in");
 		String str = getText(selector);
-		LOGGER.info("\n Price >>>> " + str);
+		LOGGER.info("[scrapePrice] Price >>>> " + str);
 		if (str != null) {
 			productInfo.setPrice(str);
 		}
 	}
 
 	public void scrapePrice(DomNode node, String selector) {
+		LOGGER.info("[scrapePrice] in");
 		String str = getText(node, selector);
-		LOGGER.info("\n Price >>>> " + str);
+		LOGGER.info("[scrapePrice] Price >>>> " + str);
 		if (str != null) {
 			productInfo.setPrice(str);
 		}
 	}
 
 	public void scrapePrices(List<String> selectors) {
+		LOGGER.info("[scrapePrices] in");
 		for (String selector : selectors) {
 			String str = getText(selector);
-			LOGGER.info("\n Price >>>> " + str);
+			LOGGER.info("[scrapePrices] Price >>>> " + str);
 			if (str != null) {
 				productInfo.setPrice(str);
 				return;
@@ -118,24 +126,27 @@ public class NavigableProductDetailPage extends NavigablePage {
 	}
 
 	public void scrapeModelNo(String selector) {
+		LOGGER.info("[scrapeModelNo] in");
 		String str = getText(selector);
 		str = str.replaceAll("[^0-9a-zA-Z\\-]", "").trim();
-		LOGGER.info("Model No >>>> " + str);
+		LOGGER.info("[scrapeModelNo] Model No >>>> " + str);
 		if (str != null) {
 			productInfo.setModelNo(str);
 		}
 	}
 
 	public void scrapeModelNo(DomNode node, String selector) {
+		LOGGER.info("[scrapeModelNo] in");
 		String str = getText(node, selector);
 		str = str.replaceAll("[^0-9a-zA-Z\\-]", "").trim();
-		LOGGER.info("Model No >>>> " + str);
+		LOGGER.info("[scrapeModelNo] Model No >>>> " + str);
 		if (str != null) {
 			productInfo.setModelNo(str);
 		}
 	}
 
 	public void scrapeModelNo(List<String> modelNoLabelNames, List<String> modelNoLabelSelectors, List<String> modelNoValueSelectors) {
+		LOGGER.info("[scrapeModelNo] in");
 		HtmlElement modelNoLabelElement = null;
 		HtmlElement modelNoValueElement = null;
 		for(int i = 0 ; i < modelNoLabelSelectors.size() ; i++) {
@@ -146,7 +157,7 @@ public class NavigableProductDetailPage extends NavigablePage {
 							&& modelNoValueElement != null
 							&& HtmlUtils.getTextContent(modelNoLabelElement).replaceAll("[:：]", "").equals(modelNoLabelNames.get(i))) {
 
-				LOGGER.info(String.format("model no (%s) is found by selector: %s", modelNoLabelNames.get(i), modelNoValueSelectors.get(i)));
+				LOGGER.info(String.format("[scrapeModelNo] model no (%s) is found by selector: %s", modelNoLabelNames.get(i), modelNoValueSelectors.get(i)));
 				String modelNo = HtmlUtils.getTextContentWithoutDuplicatedSpaces(modelNoValueElement).replaceAll("[^0-9a-zA-Z\\-]", "").trim();
 				this.productInfo.setModelNo(modelNo);
 				break;
@@ -158,6 +169,7 @@ public class NavigableProductDetailPage extends NavigablePage {
 	private static final String MODEL_NO_LABEL_SELECTOR_KEY = "label_selector";
 	private static final String MODEL_NO_VALUE_SELECTOR_KEY = "value_selector";
 	public void scrapeModelNo(List<Map<String, String>> modelNoSelectors) {
+		LOGGER.info("[scrapeModelNo] in");
 		HtmlElement modelNoLabelElement = null;
 		HtmlElement modelNoValueElement = null;
 		for(Map<String, String> modelNoSelector : modelNoSelectors) {
@@ -168,7 +180,7 @@ public class NavigableProductDetailPage extends NavigablePage {
 							&& modelNoValueElement != null
 							&& HtmlUtils.getTextContent(modelNoLabelElement).replaceAll("[:：]", "").equals(modelNoSelector.get(MODEL_NO_LABEL_NAME_KEY))) {
 
-				LOGGER.info(String.format("model no (%s) is found by selector: %s", modelNoSelector.get(MODEL_NO_LABEL_NAME_KEY), modelNoSelector.get(MODEL_NO_VALUE_SELECTOR_KEY)));
+				LOGGER.info(String.format("[scrapeModelNo] model no (%s) is found by selector: %s", modelNoSelector.get(MODEL_NO_LABEL_NAME_KEY), modelNoSelector.get(MODEL_NO_VALUE_SELECTOR_KEY)));
 				String modelNo = HtmlUtils.getTextContentWithoutDuplicatedSpaces(modelNoValueElement).replaceAll("[^0-9a-zA-Z\\-]", "").trim();
 				this.productInfo.setModelNo(modelNo);
 				break;
@@ -177,8 +189,9 @@ public class NavigableProductDetailPage extends NavigablePage {
 	}
 
 	public void scrapeQuantity(String selector) {
+		LOGGER.info("[scrapeQuantity] in");
 		String str = getText(selector);
-		LOGGER.info("\n Quantity >>>> " + str);
+		LOGGER.info("[scrapeQuantity] Quantity >>>> " + str);
 		Integer qty = extractInt(str);
 		if (str != null && qty != null) {
 			// productInfo.setQuantity(extractInt(str));
@@ -187,8 +200,9 @@ public class NavigableProductDetailPage extends NavigablePage {
 	}
 
 	public void scrapeQuantity(DomNode node, String selector) {
+		LOGGER.info("[scrapeQuantity] in");
 		String str = getText(node, selector);
-		LOGGER.info("\n Quantity >>>> " + str);
+		LOGGER.info("[scrapeQuantity] Quantity >>>> " + str);
 		if (str != null) {
 			productInfo.setQuantity(extractInt(str));
 		}

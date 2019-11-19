@@ -62,71 +62,58 @@ public abstract class AbstractPurchaseHistoryListCrawlerScriptSupport extends Sc
   // Scraping wrapper: general -----------------------------------------------------------------------------------------
 
   List<DomNode> scrapeDomList(String selector) {
-    LOGGER.info("scrape dom list: " + selector);
     return this.crawler.getHistoryPage().scrapeDomList(selector);
   }
 
   // Scraping wrapper: order in purchase history -----------------------------------------------------------------------
 
   void scrapeOrderNumber(DomNode orderNode, String selector) {
-    LOGGER.info("scrape order number");
     this.crawler.getHistoryPage().scrapeOrderNumber(orderNode, selector);
   }
 
   void scrapeOrderNumberWithRegex(DomNode orderNode, String selector, String regexStr) {
-    LOGGER.info("scrape order number");
     this.crawler.getHistoryPage().scrapeOrderNumberWithRegex(orderNode, selector, regexStr);
   }
 
   void scrapeOrderDate(DomNode orderNode, String selector) {
-    LOGGER.info("scrape order date");
     this.crawler.getHistoryPage().scrapeOrderDate(orderNode, selector);
   }
 
   void scrapeOrderDateDefault(DomNode orderNode, String selector) {
-    LOGGER.info("scrape order date");
     this.crawler.getHistoryPage().scrapeOrderDateDefault(orderNode, selector);
   }
 
   void scrapeTotalAmount(DomNode orderNode, String selector) {
-    LOGGER.info("scrape order date");
     this.crawler.getHistoryPage().scrapeTotalAmount(orderNode, selector);
   }
 
   void scrapeDeliveryStatus(DomNode orderNode, String selector) {
-    LOGGER.info("scrape delivery status");
     this.crawler.getHistoryPage().scrapeDeliveryStatus(orderNode, selector);
   }
 
   // Scraping wrapper: product in order --------------------------------------------------------------------------------
 
   void scrapeProductCodeFromAnchor(DomNode productNode, String selector, String regexStr) {
-    LOGGER.info("scrape product code");
     this.crawler.getHistoryPage().scrapeProductCodeFromAnchor(productNode, selector, regexStr);
   }
 
   void scrapeProductName(DomNode productNode, String selector) {
-    LOGGER.info("scrape product name");
     this.crawler.getHistoryPage().scrapeProductName(productNode, selector);
   }
 
   void scrapeProductNameFromAnchor(DomNode productNode, String selector) {
-    LOGGER.info("scrape product name");
     this.crawler.getHistoryPage().scrapeProductNameFromAnchor(productNode, selector);
   }
 
   void scrapeUnitPrice(DomNode productNode, String selector) {
-    LOGGER.info("scrape unit price");
     this.crawler.getHistoryPage().scrapeUnitPrice(productNode, selector);
   }
 
   void scrapeProductQuantity(DomNode productNode, String selector) {
-    LOGGER.info("scrape product quantity");
     this.crawler.getHistoryPage().scrapeProductQuantity(productNode, selector);
   }
 
   void scrapeProductDistributor(DomNode productNode, String selector) {
-    LOGGER.info("scrape product distributor");
     this.crawler.getHistoryPage().scrapeProductDistributor(productNode, selector);
   }
 

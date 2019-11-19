@@ -21,10 +21,10 @@ public class AmazonPurchaseHistoryListModule extends AbstractPurchaseHistoryList
 
   @Autowired
   public AmazonPurchaseHistoryListModule(
-          PurchaseHistoryService purchaseHistoryService,
-          ECSiteAccountRepository ecSiteAccountRepository,
-          WebpageService webpageService,
-          AmazonLoginHandler loginHandler,
+          PurchaseHistoryService           purchaseHistoryService,
+          ECSiteAccountRepository          ecSiteAccountRepository,
+          WebpageService                   webpageService,
+          AmazonLoginHandler               loginHandler,
           AmazonPurchaseHistoryListCrawler crawler
   ) {
     super(purchaseHistoryService, ecSiteAccountRepository, webpageService, loginHandler, crawler);

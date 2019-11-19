@@ -15,14 +15,14 @@ public abstract class AmazonProductDetailCrawlerScriptSupport extends AbstractPr
   private static final Logger LOGGER = LoggerFactory.getLogger(AmazonProductDetailCrawlerScriptSupport.class);
 
   void scrapeCategoryRanking(List<String> categoryInfoList) {
-    this.crawler.scrapeCategoryRanking(categoryInfoList);
+    ((AmazonProductDetailCrawler)this.crawler).scrapeCategoryRanking(categoryInfoList);
   }
 
   List<String> scrapeCategoryInfoListBySalesRank(String salesRankSelector, Closure<?> setProps) {
-    return this.crawler.scrapeCategoryInfoListBySalesRank(salesRankSelector, setProps);
+    return ((AmazonProductDetailCrawler)this.crawler).scrapeCategoryInfoListBySalesRank(salesRankSelector, setProps);
   }
 
   List<String> scrapeCategoryInfoListByProductInfoTable(String productInfoTableSelector, Closure<?> setProps, Closure<Boolean> rankLineTest) {
-    return this.crawler.scrapeCategoryInfoListByProductInfoTable(productInfoTableSelector, setProps, rankLineTest);
+    return ((AmazonProductDetailCrawler)this.crawler).scrapeCategoryInfoListByProductInfoTable(productInfoTableSelector, setProps, rankLineTest);
   }
 }

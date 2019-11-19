@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Amazon implementation of ChangeDetectionInitModule
+ * Amazon implementation of ChangeDetectionCheckModule
  */
 @Component
 public class AmazonChangeDetectionCheckModule extends AbstractChangeDetectionCheckModule {

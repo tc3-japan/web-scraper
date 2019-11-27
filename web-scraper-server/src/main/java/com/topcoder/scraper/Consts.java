@@ -10,12 +10,14 @@ public class Consts {
   public static final String EC_SITE_AMAZON = "amazon";
   public static final String EC_SITE_KOJIMA = "kojima";
   public static final String EC_SITE_YAHOO  = "yahoo";
+  public static final String EC_SITE_RAKUTEN  = "rakuten";
 
   public static final List<String> ALL_SITES = new ArrayList();
   static {
     ALL_SITES.add(EC_SITE_AMAZON);
     ALL_SITES.add(EC_SITE_KOJIMA);
     ALL_SITES.add(EC_SITE_YAHOO);
+    ALL_SITES.add(EC_SITE_RAKUTEN);
   }
 
   public static final String SCRAPING_SCRIPT_PATH = "SCRAPING_SCRIPT_PATH";
@@ -29,12 +31,14 @@ public class Consts {
     CHECK_TARGET_KEYS_PASSWORDS.put(EC_SITE_AMAZON, "AMAZON_CHECK_TARGET_KEYS_PASSWORDS");
     CHECK_TARGET_KEYS_PASSWORDS.put(EC_SITE_KOJIMA, "KOJIMA_CHECK_TARGET_KEYS_PASSWORDS");
     CHECK_TARGET_KEYS_PASSWORDS.put(EC_SITE_YAHOO,  "YAHOO_CHECK_TARGET_KEYS_PASSWORDS");
+    CHECK_TARGET_KEYS_PASSWORDS.put(EC_SITE_RAKUTEN,  "YAHOO_CHECK_TARGET_KEYS_PASSWORDS");
   }
 
   // TODO: delete in the future
   public static final String AMAZON_CHECK_TARGET_KEYS_PASSWORDS = "AMAZON_CHECK_TARGET_KEYS_PASSWORDS";
   public static final String KOJIMA_CHECK_TARGET_KEYS_PASSWORDS = "KOJIMA_CHECK_TARGET_KEYS_PASSWORDS";
   public static final String YAHOO_CHECK_TARGET_KEYS_PASSWORDS  = "YAHOO_CHECK_TARGET_KEYS_PASSWORDS";
+  public static final String RAKUTEN_CHECK_TARGET_KEYS_PASSWORDS  = "RAKUTEN_CHECK_TARGET_KEYS_PASSWORDS";
 
   public static final String CHECK_EQUIVALENCE = "Equivalence check";
   public static final String CHECK_FORMAT      = "Format check";

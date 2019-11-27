@@ -1,6 +1,7 @@
 enum EcSite {
     amazon = 'amazon',
     kojima = 'kojima',
-    yahoo = 'yahoo'
+    yahoo = 'yahoo',
+    rakuten = 'rakuten'
 }
 export default EcSite;

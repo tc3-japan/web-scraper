@@ -103,6 +103,10 @@ public class ECSiteService {
 
     LoginHandler handler = this.loginHandlerFactory.getLoginHandler(ecSiteAccountDAO.getEcSite());
     
+    System.out.println("\n\nSITE ID @ ECSiteService: "+ siteId +"\n\n");
+    System.out.println("\n\nUUID ID @ ECSiteService: "+ uuid +"\n\n");
+    System.out.println("\n\nuserDAO.getId ID @ ECSiteService: "+ userDAO.getId() +"\n\n");
+    System.out.println("\n\nhandler @ ECSiteService: "+ handler +"\n\n");
     return handler.loginInit(userDAO.getId(), siteId, uuid);
   }
 

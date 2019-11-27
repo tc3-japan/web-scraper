@@ -6,6 +6,7 @@ export default class AppConfig {
     kojima: 'https://www.kojima.net/ec/disp/CSfGoodsPage_001.jsp?GOODS_STK_NO=',
     yahoo: 'https://store.shopping.yahoo.co.jp/',
     ec4: 'https://www.ec4.com/product/',
+    rakuten: 'https://item.rakuten.co.jp/',
   };
 
 }

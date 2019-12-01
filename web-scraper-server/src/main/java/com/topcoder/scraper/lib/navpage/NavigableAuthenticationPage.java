@@ -20,13 +20,32 @@ public class NavigableAuthenticationPage extends NavigablePage {
         loggedIn = false;
     }
 
-    public boolean ConfirmLoginByElementExists(String selector) {
+    public boolean confirmLoginByElementExists(String selector) {
         // If we see the yahoo image, consider ourselves logged in
         HtmlElement yahooImg = getPage()
                 .querySelector(selector);
         //savePage("yahoo-authenticated", siteName, webpageService);
         boolean loginSuccess;
         if (yahooImg != null) {
+            System.out.println("Logged in successfully");
+            loginSuccess = true;
+        } else {
+            System.out.println("Failed to login");
+            loginSuccess = false;
+        }
+
+        loggedIn = loginSuccess;
+
+        return loginSuccess;
+    }
+
+    public boolean confirmLoginByMissingLoginText(String selector, String text) {
+        // If we see the yahoo image, consider ourselves logged in
+        HtmlElement loginNode = getPage().querySelector(selector);
+        boolean matchResult = loginNode.getTextContent().matches(".*" + text + ".*");
+
+        boolean loginSuccess;
+        if (!matchResult) {
             System.out.println("Logged in successfully");
             loginSuccess = true;
         } else {

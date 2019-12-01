@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.DomNode;
-import com.gargoylesoftware.htmlunit.html.HtmlButton;
+import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlCheckBoxInput;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
@@ -12,6 +12,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlPasswordInput;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.service.WebpageService;
+import groovy.lang.Closure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,22 +71,9 @@ public class NavigablePage {
 
             HtmlElement element = page.querySelector(selector);
             LOGGER.info("click() > Selected " + element + " from " + selector);
-            HtmlButton button = (HtmlButton)page.querySelector(selector);
-            LOGGER.info("click() >  button Selected " + button + " from " + selector);
             if (element != null) {
                 try {
                     HtmlPage result = webClient.click(element);
-                    if (result != null)
-                        page = result;
-                    LOGGER.info("Setting page to " + result);
-                    // savePage("pageClicked", "yahoo", webPageServiceWired);
-                } catch (IOException e) {
-                    LOGGER.info("Could not navigate to " + selector + " in NavigablePage.java");
-                    e.printStackTrace();
-                }
-            } else if (button != null) {
-                try {
-                    HtmlPage result = webClient.click(button);
                     if (result != null)
                         page = result;
                     LOGGER.info("Setting page to " + result);
@@ -140,6 +128,27 @@ public class NavigablePage {
         }
     }
 
+    public void openPage(DomNode node, String selector, Closure<Boolean> closure, WebpageService webpageService) {
+        LOGGER.info("[openPage] in");
+
+        if (node != null && selector != null) {
+            HtmlAnchor anchorNode = node.querySelector(selector);
+            LOGGER.info("[openPage] open > Selected " + anchorNode + " from " + selector);
+            if (anchorNode != null) {
+                try {
+                    HtmlPage subPage = webClient.getPage(anchorNode.getHrefAttribute());
+                    webpageService.save("sub-page-opened", "yahoo", subPage.getWebResponse().getContentAsString());
+                    LOGGER.info("[openPage] CLICKED ELEMENT>>> " + subPage);
+                    if (subPage != null) {
+                        closure.call(subPage);
+                    }
+                } catch (IOException e) {
+                    LOGGER.info("[openPage] Could not navigate to " + selector + " in NavigablePage.java");
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
     protected String getText(String selector) {
         LOGGER.info("[getText] in");
 

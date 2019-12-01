@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.topcoder.scraper.module.ecisolatedmodule.yahoo.crawler.YahooAuthenticationCrawlerResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,8 +65,8 @@ public class YahooLoginHandler extends LoginHandlerBase {
     TrafficWebClient webClient = new TrafficWebClient(userId, false);
     
     try {
-      boolean result = crawler.authenticate(webClient, request.getEmail(), request.getPassword()).isSuccess();
-      if (result) { // succeed , update status and save cookies
+      YahooAuthenticationCrawlerResult result = crawler.authenticate(webClient, request.getEmail(), request.getPassword());
+      if (result.isSuccess()) { // succeed , update status and save cookies
         List<ECCookie> ecCookies = new LinkedList<>();
         for (Cookie cookie : webClient.getWebClient().getCookieManager().getCookies()) {
           ECCookie ecCookie = new ECCookie();

@@ -92,7 +92,7 @@ public abstract class AbstractPurchaseHistoryListModule implements IPurchaseHist
     }
 
     try {
-      AbstractPurchaseHistoryListCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClient, lastPurchaseHistory, true);
+      AbstractPurchaseHistoryListCrawlerResult crawlerResult = this.crawler.fetchPurchaseHistoryList(webClient, lastPurchaseHistory, true);
       webClient.finishTraffic();
       LOGGER.info("succeed fetch purchaseHistory for ec site account id = " + ecSiteAccountDAO.getId());
       return crawlerResult;

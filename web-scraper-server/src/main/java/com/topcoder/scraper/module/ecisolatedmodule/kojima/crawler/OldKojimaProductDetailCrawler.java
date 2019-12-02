@@ -32,36 +32,36 @@ public class OldKojimaProductDetailCrawler extends GeneralProductDetailCrawler {
 
     LOGGER.info("Product name " + productName);
     
-	ProductInfo productInfo = new ProductInfo();
+    ProductInfo productInfo = new ProductInfo();
 
-	NavigableProductDetailPage detailPage = new NavigableProductDetailPage("https://www.kojima.net/ec/top/CSfTop.jsp", webClient, productInfo);
+    NavigableProductDetailPage detailPage = new NavigableProductDetailPage("https://www.kojima.net/ec/top/CSfTop.jsp", webClient, productInfo);
 
-	/*
-	detailPage.type(productName, "#q");
-	detailPage.click("#btnSearch");
-	detailPage.setName("h1.htxt02");
-	detailPage.setDistributor("span");
-	detailPage.setPrice("td.price > span");
-	detailPage.setQuantity(".cart_box > div:nth-child(1) > form:nth-child(1) > input:nth-child(2)");
-	detailPage.setModelNo("#item_detail > div > div.item_detail_box > table > tbody > tr:nth-child(6) > td");
-	*/
+    /*
+    detailPage.type(productName, "#q");
+    detailPage.click("#btnSearch");
+    detailPage.setName("h1.htxt02");
+    detailPage.setDistributor("span");
+    detailPage.setPrice("td.price > span");
+    detailPage.setQuantity(".cart_box > div:nth-child(1) > form:nth-child(1) > input:nth-child(2)");
+    detailPage.setModelNo("#item_detail > div > div.item_detail_box > table > tbody > tr:nth-child(6) > td");
+    */
 
-	//setName(productInfo, "h1.htxt02");
-	//setDistributor(productInfo, "span");
-	//setPrice(productInfo, "td.price > span");  
-	//setModelNo(productInfo, "#item_detail > div > div.item_detail_box > table > tbody > tr:nth-child(6) > td");
-	
-	  
-	String savedPath = null;
-	if (saveHtml) {
-	  savedPath = detailPage.savePage("kojima-product-details", siteName, webpageService);
-	}
-	GeneralProductDetailCrawlerResult result = new GeneralProductDetailCrawlerResult(detailPage.getProductInfo(), savedPath);
+    //setName(productInfo, "h1.htxt02");
+    //setDistributor(productInfo, "span");
+    //setPrice(productInfo, "td.price > span");
+    //setModelNo(productInfo, "#item_detail > div > div.item_detail_box > table > tbody > tr:nth-child(6) > td");
+
+
+    String savedPath = null;
+    if (saveHtml) {
+      savedPath = detailPage.savePage("kojima-product-details", siteName, webpageService);
+    }
+    GeneralProductDetailCrawlerResult result = new GeneralProductDetailCrawlerResult(detailPage.getProductInfo(), savedPath);
 
     LOGGER.info("Product name from Purchase history: [" + productName + "]");
     LOGGER.info("Product name from Product page    : [" + result.getProductInfo().getName()+ "] matched: " + (productName.equals(result.getProductInfo().getName())));
 
-	return result;
+    return result;
   }
 
 }

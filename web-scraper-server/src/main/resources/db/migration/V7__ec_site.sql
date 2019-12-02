@@ -15,7 +15,7 @@ CREATE TABLE ec_site_account (
   password VARCHAR (255),
   auth_cookies MEDIUMTEXT,
   auth_status VARCHAR(255),
-  auth_fail_reason VARCHAR (1023),
+  auth_fail_reason VARCHAR (8192),
   update_at TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES user(id)
 );

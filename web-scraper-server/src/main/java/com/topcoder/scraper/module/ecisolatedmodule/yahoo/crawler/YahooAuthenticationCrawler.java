@@ -53,8 +53,8 @@ public class YahooAuthenticationCrawler extends AbstractAuthenticationCrawler {
     authPage.savePage("2-yahoo-auth", "yahoo", webpageService);
     authPage.typePassword(password, "#passwd"); //or #code
     authPage.savePage("3-yahoo-auth", "yahoo", webpageService);
-    authPage.typeCheckbox("off", "#persistent");
-    authPage.savePage("4-yahoo-auth", "yahoo", webpageService);
+    //authPage.typeCheckbox("off", "#persistent");
+    //authPage.savePage("4-yahoo-auth", "yahoo", webpageService);
     authPage.click("#btnSubmit", webpageService);
     authPage.savePage("5-yahoo-auth", "yahoo", webpageService);
     //authPage.click("#skipButton", webpageService);
@@ -74,10 +74,11 @@ public class YahooAuthenticationCrawler extends AbstractAuthenticationCrawler {
     }
 */
 //#SearchBoxHead
-    //authPage.ConfirmLoginByElementExists("#masthead > h1:nth-child(1) > a:nth-child(1) > img:nth-child(1)");
-    //authPage.ConfirmLoginByElementExists(".elLogo > a:nth-child(1) > img:nth-child(1)");
-    authPage.ConfirmLoginByElementExists("._3YIqBohnzWyU3NQ8zb-mQI > a:nth-child(1)");
-    
+    //authPage.confirmLoginByElementExists("#masthead > h1:nth-child(1) > a:nth-child(1) > img:nth-child(1)");
+    //authPage.confirmLoginByElementExists(".elLogo > a:nth-child(1) > img:nth-child(1)");
+    //authPage.confirmLoginByElementExists("._3YIqBohnzWyU3NQ8zb-mQI > a:nth-child(1)");
+    authPage.confirmLoginByMissingLoginText("#Login > div", "ログイン");
+
     return new YahooAuthenticationCrawlerResult(authPage.getLoginStatus(), null);
   }
 }

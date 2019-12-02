@@ -28,11 +28,15 @@ public abstract class AbstractPurchaseHistoryListCrawlerScriptSupport extends Sc
   }
 
   void savePage(String name) {
-    this.crawler.getHistoryPage().savePage(name, this.crawler.getSiteName(), this.crawler.getWebpageService()); //nullcheck?
+    this.crawler.getHistoryPage().savePage(name, this.crawler.getSiteName(), this.crawler.getWebpageService());
   }
 
   void click(String selector) {
     this.crawler.getHistoryPage().click(selector);
+  }
+
+  void openPage(DomNode node, String selector, Closure<Boolean> closure) {
+    this.crawler.getHistoryPage().openPage(node, selector, closure, this.crawler.getWebpageService());
   }
 
   void type(String input, String selector) {
@@ -65,6 +69,10 @@ public abstract class AbstractPurchaseHistoryListCrawlerScriptSupport extends Sc
     return this.crawler.getHistoryPage().scrapeDomList(selector);
   }
 
+  List<DomNode> scrapeDomList(DomNode node, String selector) {
+    return this.crawler.getHistoryPage().scrapeDomList(node, selector);
+  }
+
   // Scraping wrapper: order in purchase history -----------------------------------------------------------------------
 
   void scrapeOrderNumber(DomNode orderNode, String selector) {
@@ -95,6 +103,10 @@ public abstract class AbstractPurchaseHistoryListCrawlerScriptSupport extends Sc
 
   void scrapeProductCodeFromAnchor(DomNode productNode, String selector, String regexStr) {
     this.crawler.getHistoryPage().scrapeProductCodeFromAnchor(productNode, selector, regexStr);
+  }
+
+  void scrapeProductCodeFromInput(DomNode productNode, String selector, String regexStr) {
+    this.crawler.getHistoryPage().scrapeProductCodeFromInput(productNode, selector, regexStr);
   }
 
   void scrapeProductName(DomNode productNode, String selector) {

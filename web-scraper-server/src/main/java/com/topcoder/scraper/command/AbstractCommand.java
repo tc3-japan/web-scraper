@@ -1,6 +1,8 @@
 package com.topcoder.scraper.command;
 
 import com.topcoder.scraper.module.IBasicModule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
 
 import java.util.List;
@@ -12,6 +14,8 @@ import java.util.Optional;
  * @param <T> class extends from {@link IBasicModule}
  */
 public abstract class AbstractCommand<T extends IBasicModule> {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractCommand.class);
 
   /**
    * Presents list of modules available
@@ -37,14 +41,11 @@ public abstract class AbstractCommand<T extends IBasicModule> {
     List<String> moduletypes = args.getOptionValues("module");
 
     if (moduletypes == null || moduletypes.size() == 0 || moduletypes.get(0).equals("unified") ) {
-      // TODO: delete
-      System.out.println("---unified=general----------------------------------");
+      LOGGER.info("moduletype: unified, site=module: general");
       getModule("general").ifPresent(this::process);
-      if (sites.size()<1) System.out.println("You must enter --site=xxx parameter");
     } else {
-      // TODO: delete
-      System.out.println("---isolated----------------------------------");
-      System.out.println("---sites:" + sites);
+      LOGGER.info("moduletype: isolated");
+      LOGGER.info("sites=modules: " + sites);
       if (sites != null) {
         sites.forEach(site -> getModule(site).ifPresent(this::process));
       } else {

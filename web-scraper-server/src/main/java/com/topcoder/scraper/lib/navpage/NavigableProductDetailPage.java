@@ -18,7 +18,7 @@ import static com.topcoder.common.util.HtmlUtils.extractInt;
 
 public class NavigableProductDetailPage extends NavigablePage {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(NavigablePurchaseHistoryPage.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(NavigableProductDetailPage.class);
 
 	// TrafficWebClient webClient;
 	// HtmlPage page;

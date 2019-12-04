@@ -15,7 +15,7 @@ import com.topcoder.common.repository.NormalDataRepository;
 import com.topcoder.common.util.CheckUtils;
 import com.topcoder.scraper.Consts;
 import com.topcoder.scraper.module.IChangeDetectionCheckModule;
-import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractProductDetailCrawlerResult;
+import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractProductCrawlerResult;
 import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractPurchaseHistoryListCrawlerResult;
 import com.topcoder.scraper.service.WebpageService;
 import org.slf4j.Logger;
@@ -41,7 +41,7 @@ public abstract class AbstractChangeDetectionCheckModule extends AbstractChangeD
           ECSiteAccountRepository            ecSiteAccountRepository,
           NormalDataRepository               normalDataRepository,
           AbstractPurchaseHistoryListModule  purchaseHistoryListModule,
-          AbstractProductDetailModule        productDetailModule,
+          AbstractProductModule              productModule,
           CheckItemsDefinitionProperty       checkItemsDefinitionProperty,
           CheckResultRepository              checkResultRepository
   ) {
@@ -51,7 +51,7 @@ public abstract class AbstractChangeDetectionCheckModule extends AbstractChangeD
             ecSiteAccountRepository,
             normalDataRepository,
             purchaseHistoryListModule,
-            productDetailModule);
+            productModule);
 
     this.checkItemsDefinitionProperty = checkItemsDefinitionProperty;
     this.checkResultRepository        = checkResultRepository;
@@ -110,7 +110,7 @@ public abstract class AbstractChangeDetectionCheckModule extends AbstractChangeD
    * Process product info crawler result
    * @param crawlerResult the crawler result
    */
-  protected void processProductInfo(AbstractProductDetailCrawlerResult crawlerResult) {
+  protected void processProductInfo(AbstractProductCrawlerResult crawlerResult) {
     ProductInfo productInfo = crawlerResult.getProductInfo();
 
     CheckItemsDefinitionProperty.CheckItemsCheckSite checkSiteDefinition = checkItemsDefinitionProperty.getCheckSiteDefinition(getModuleType());

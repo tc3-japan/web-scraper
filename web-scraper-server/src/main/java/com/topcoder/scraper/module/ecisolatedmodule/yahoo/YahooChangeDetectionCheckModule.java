@@ -27,7 +27,7 @@ public class YahooChangeDetectionCheckModule extends AbstractChangeDetectionChec
           ECSiteAccountRepository          ecSiteAccountRepository,
           NormalDataRepository             normalDataRepository,
           YahooPurchaseHistoryListModule   purchaseHistoryListModule,
-          YahooProductDetailModule         productDetailModule,
+          YahooProductDetailModule         productModule,
           CheckItemsDefinitionProperty     checkItemsDefinitionProperty,
           CheckResultRepository            checkResultRepository
 
@@ -38,7 +38,7 @@ public class YahooChangeDetectionCheckModule extends AbstractChangeDetectionChec
             ecSiteAccountRepository,
             normalDataRepository,
             purchaseHistoryListModule,
-            productDetailModule,
+            productModule,
             checkItemsDefinitionProperty,
             checkResultRepository
     );

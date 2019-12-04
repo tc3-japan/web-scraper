@@ -8,14 +8,14 @@ import java.util.List;
 /**
  * abstract product detail module
  */
-public interface IProductDetailModule extends IBasicModule {
+public interface IProductModule extends IBasicModule {
   /**
    * fetch product detail
    */
   void fetchProductDetailList(List<String> sites) throws IOException;
 
   /**
-   * cross ec product
+   * search product for cross ec product
    */
-  ProductDAO crossEcProduct(String modelNo) throws IOException;
+  ProductDAO searchProductInfo(String siteName, String searchKey) throws IOException;
 }

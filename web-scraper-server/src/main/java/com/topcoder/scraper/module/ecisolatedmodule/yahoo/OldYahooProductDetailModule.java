@@ -3,9 +3,9 @@ package com.topcoder.scraper.module.ecisolatedmodule.yahoo;
 import com.topcoder.common.dao.ProductDAO;
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.traffic.TrafficWebClient;
-import com.topcoder.scraper.module.IProductDetailModule;
-import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralProductDetailCrawler;
-import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralProductDetailCrawlerResult;
+import com.topcoder.scraper.module.IProductModule;
+import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralProductCrawler;
+import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralProductCrawlerResult;
 import com.topcoder.scraper.service.ProductService;
 import com.topcoder.scraper.service.WebpageService;
 import org.slf4j.Logger;
@@ -21,7 +21,7 @@ import java.util.Objects;
  * Yahoo implementation of ProductDetailModule
  */
 @Component
-public class OldYahooProductDetailModule implements IProductDetailModule {
+public class OldYahooProductDetailModule implements IProductModule {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(OldYahooProductDetailModule.class);
 
@@ -53,7 +53,7 @@ public class OldYahooProductDetailModule implements IProductDetailModule {
 
     List<ProductDAO> products = this.productService.getAllFetchInfoStatusIsNull(getModuleType());
 
-    GeneralProductDetailCrawler crawler = new GeneralProductDetailCrawler(getModuleType(), webpageService);
+    GeneralProductCrawler crawler = new GeneralProductCrawler(getModuleType(), webpageService);
 
     products.forEach(product -> {
       try {
@@ -72,10 +72,10 @@ public class OldYahooProductDetailModule implements IProductDetailModule {
    * @param productCode the product code
    * @throws IOException webclient exception
    */
-  private void fetchProductDetail(GeneralProductDetailCrawler crawler, int productId, String productCode) throws IOException {
+  private void fetchProductDetail(GeneralProductCrawler crawler, int productId, String productCode) throws IOException {
 
     TrafficWebClient webClient = new TrafficWebClient(0, false);
-    GeneralProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productCode);
+    GeneralProductCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productCode);
     webClient.finishTraffic();
     ProductInfo productInfo = crawlerResult.getProductInfo();
 
@@ -92,11 +92,11 @@ public class OldYahooProductDetailModule implements IProductDetailModule {
   }
 
   @Override
-  public ProductDAO crossEcProduct(String modelNo) throws IOException {
+  public ProductDAO searchProductInfo(String siteName, String modelNo) throws IOException {
     TrafficWebClient webClient = new TrafficWebClient(0, false);
 
-    GeneralProductDetailCrawler crawler = new GeneralProductDetailCrawler(getModuleType(), webpageService);
-    GeneralProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, modelNo);
+    GeneralProductCrawler crawler = new GeneralProductCrawler(getModuleType(), webpageService);
+    GeneralProductCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, modelNo);
     
     webClient.finishTraffic();
 

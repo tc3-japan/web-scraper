@@ -25,6 +25,8 @@ public class Consts {
   public static final String PURCHASE_HISTORY_LIST_PAGE_NAME = "purchase_history_list";
   public static final String PRODUCT_DETAIL_PAGE_NAME        = "product_detail";
 
+  public static final int SEARCH_PRODUCT_TRIAL_COUNT = 10;
+
   // TODO: delete in the future
   public static final Map<String, String> CHECK_TARGET_KEYS_PASSWORDS = new HashMap<>();
   static {

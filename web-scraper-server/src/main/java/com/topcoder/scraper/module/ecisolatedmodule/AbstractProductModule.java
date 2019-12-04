@@ -3,9 +3,9 @@ package com.topcoder.scraper.module.ecisolatedmodule;
 import com.topcoder.common.dao.ProductDAO;
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.traffic.TrafficWebClient;
-import com.topcoder.scraper.module.IProductDetailModule;
-import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractProductDetailCrawler;
-import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractProductDetailCrawlerResult;
+import com.topcoder.scraper.module.IProductModule;
+import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractProductCrawler;
+import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractProductCrawlerResult;
 import com.topcoder.scraper.service.ProductService;
 import com.topcoder.scraper.service.WebpageService;
 import org.slf4j.Logger;
@@ -14,15 +14,15 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.List;
 
-public abstract class AbstractProductDetailModule implements IProductDetailModule {
+public abstract class AbstractProductModule implements IProductModule {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractProductDetailModule.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractProductModule.class);
 
   protected final ProductService productService;
   protected final WebpageService webpageService;
-  protected final AbstractProductDetailCrawler crawler;
+  protected final AbstractProductCrawler crawler;
 
-  public AbstractProductDetailModule(ProductService productService, WebpageService webpageService, AbstractProductDetailCrawler crawler) {
+  public AbstractProductModule(ProductService productService, WebpageService webpageService, AbstractProductCrawler crawler) {
     this.productService = productService;
     this.webpageService = webpageService;
     this.crawler        = crawler;
@@ -55,7 +55,7 @@ public abstract class AbstractProductDetailModule implements IProductDetailModul
    */
   private void processProductDetail(int productId, String productCode) throws IOException {
 
-    AbstractProductDetailCrawlerResult crawlerResult = this.fetchProductDetail(productCode);
+    AbstractProductCrawlerResult crawlerResult = this.fetchProductDetail(productCode);
     ProductInfo productInfo = crawlerResult.getProductInfo();
 
     if (productInfo != null) {
@@ -70,38 +70,17 @@ public abstract class AbstractProductDetailModule implements IProductDetailModul
     }
   }
 
-  public AbstractProductDetailCrawlerResult fetchProductDetail(String productCode) throws IOException {
+  public AbstractProductCrawlerResult fetchProductDetail(String productCode) throws IOException {
     TrafficWebClient webClient = new TrafficWebClient(0, false);
-    AbstractProductDetailCrawlerResult crawlerResult = this.crawler.fetchProductInfo(webClient, productCode);
+    AbstractProductCrawlerResult crawlerResult = this.crawler.fetchProductInfo(webClient, productCode);
     webClient.finishTraffic();
     return crawlerResult;
   }
-  /*
-  @Override
-  //TODO: ADD String site parameter to this function in base class
-  public ProductDAO crossEcProduct(String site, String modelNo) throws IOException {
-    TrafficWebClient webClient = new TrafficWebClient(0, false);
-
-    AbstractProductDetailCrawler crawler = new AbstractProductDetailCrawler(site, webpageService);
-    AbstractProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, modelNo);
-
-    webClient.finishTraffic();
-
-    ProductInfo productInfo = Objects.isNull(crawlerResult) ? null : crawlerResult.getProductInfo();
-
-    if (Objects.isNull(productInfo) || productInfo.getModelNo() == null) {
-      LOGGER.warn("Unable to obtain cross ec product information for: " + modelNo);
-      return null;
-    }
-
-    return new ProductDAO(site, productInfo);
-  }
-  */
 
   @Override
-  public ProductDAO crossEcProduct(String modelNo) throws IOException {
-    // TODO Auto-generated method stub
-    // FAKE CLASS DO NOT USE
+  public ProductDAO searchProductInfo(String site, String modelNo) throws IOException {
     return null;
+    // TODO: implement by copying from GeneralProductModule
   }
+
 }

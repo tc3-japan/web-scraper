@@ -27,7 +27,7 @@ public class KojimaChangeDetectionCheckModule extends AbstractChangeDetectionChe
           ECSiteAccountRepository          ecSiteAccountRepository,
           NormalDataRepository             normalDataRepository,
           KojimaPurchaseHistoryListModule  purchaseHistoryListModule,
-          KojimaProductDetailModule        productDetailModule,
+          KojimaProductModule              productModule,
           CheckItemsDefinitionProperty     checkItemsDefinitionProperty,
           CheckResultRepository            checkResultRepository
 
@@ -38,7 +38,7 @@ public class KojimaChangeDetectionCheckModule extends AbstractChangeDetectionChe
             ecSiteAccountRepository,
             normalDataRepository,
             purchaseHistoryListModule,
-            productDetailModule,
+            productModule,
             checkItemsDefinitionProperty,
             checkResultRepository
     );

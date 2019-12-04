@@ -1,7 +1,7 @@
 package com.topcoder.scraper.module.ecisolatedmodule.amazon;
 
-import com.topcoder.scraper.module.ecisolatedmodule.AbstractProductDetailModule;
-import com.topcoder.scraper.module.ecisolatedmodule.amazon.crawler.AmazonProductDetailCrawler;
+import com.topcoder.scraper.module.ecisolatedmodule.AbstractProductModule;
+import com.topcoder.scraper.module.ecisolatedmodule.amazon.crawler.AmazonProductCrawler;
 import com.topcoder.scraper.service.ProductService;
 import com.topcoder.scraper.service.WebpageService;
 import org.slf4j.Logger;
@@ -10,18 +10,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Amazon implementation of ProductDetailModule
+ * Amazon implementation of ProductModule
  */
 @Component
-public class AmazonProductDetailModule extends AbstractProductDetailModule {
+public class AmazonProductModule extends AbstractProductModule {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(AmazonProductDetailModule.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AmazonProductModule.class);
 
   @Autowired
-  public AmazonProductDetailModule(
+  public AmazonProductModule(
           ProductService             productService,
           WebpageService             webpageService,
-          AmazonProductDetailCrawler crawler) {
+          AmazonProductCrawler crawler) {
     super(productService, webpageService, crawler);
   }
 

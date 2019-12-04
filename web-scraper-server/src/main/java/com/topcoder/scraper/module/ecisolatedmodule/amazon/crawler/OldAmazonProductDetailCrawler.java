@@ -6,7 +6,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.topcoder.common.config.AmazonProperty;
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.traffic.TrafficWebClient;
-import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractProductDetailCrawlerResult;
+import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractProductCrawlerResult;
 import com.topcoder.scraper.service.WebpageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +19,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static com.topcoder.common.util.HtmlUtils.*;
+import static com.topcoder.common.util.HtmlUtils.findFirstElementInSelectors;
+import static com.topcoder.common.util.HtmlUtils.getNumberAsStringFrom;
+import static com.topcoder.common.util.HtmlUtils.getTextContent;
+import static com.topcoder.common.util.HtmlUtils.getTextContentWithoutDuplicatedSpaces;
 
 /**
  * Crawl amazon product detail page
@@ -49,7 +52,7 @@ public class OldAmazonProductDetailCrawler {
    * @return ProductDetailCrawlerResult
    * @throws IOException
    */
-  public AbstractProductDetailCrawlerResult fetchProductInfo(TrafficWebClient webClient, String productCode, boolean saveHtml) throws IOException {
+  public AbstractProductCrawlerResult fetchProductInfo(TrafficWebClient webClient, String productCode, boolean saveHtml) throws IOException {
 
     String productUrl = property.getProductUrl() + productCode;
     LOGGER.info("Product url " + productUrl);
@@ -65,7 +68,7 @@ public class OldAmazonProductDetailCrawler {
     }
 
     productInfo.setCode(productCode);
-    return new AbstractProductDetailCrawlerResult(productInfo, savedPath);
+    return new AbstractProductCrawlerResult(productInfo, savedPath);
   }
 
   /**
@@ -222,7 +225,7 @@ public class OldAmazonProductDetailCrawler {
   * @return ProductDetailCrawlerResult
   * @throws IOException
   */
-  public AbstractProductDetailCrawlerResult serarchProductAndFetchProductInfoByModelNo(TrafficWebClient webClient, String modelNo, boolean saveHtml) throws IOException  {
+  public AbstractProductCrawlerResult serarchProductAndFetchProductInfoByModelNo(TrafficWebClient webClient, String modelNo, boolean saveHtml) throws IOException  {
 	  
 	  String productCode = searchProduct(webClient,modelNo);
 	  

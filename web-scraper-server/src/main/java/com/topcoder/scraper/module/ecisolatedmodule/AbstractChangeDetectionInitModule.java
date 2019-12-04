@@ -8,7 +8,7 @@ import com.topcoder.common.repository.ECSiteAccountRepository;
 import com.topcoder.common.repository.NormalDataRepository;
 import com.topcoder.scraper.Consts;
 import com.topcoder.scraper.module.IChangeDetectionInitModule;
-import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractProductDetailCrawlerResult;
+import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractProductCrawlerResult;
 import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractPurchaseHistoryListCrawlerResult;
 import com.topcoder.scraper.service.WebpageService;
 import org.slf4j.Logger;
@@ -31,7 +31,7 @@ public abstract class AbstractChangeDetectionInitModule extends AbstractChangeDe
           ECSiteAccountRepository            ecSiteAccountRepository,
           NormalDataRepository               normalDataRepository,
           AbstractPurchaseHistoryListModule  purchaseHistoryListModule,
-          AbstractProductDetailModule        productDetailModule
+          AbstractProductModule              productModule
   ) {
     super(
             monitorTargetDefinitionProperty,
@@ -39,7 +39,7 @@ public abstract class AbstractChangeDetectionInitModule extends AbstractChangeDe
             ecSiteAccountRepository,
             normalDataRepository,
             purchaseHistoryListModule,
-            productDetailModule);
+            productModule);
   }
 
   @Override
@@ -90,7 +90,7 @@ public abstract class AbstractChangeDetectionInitModule extends AbstractChangeDe
    * process product info crawler result
    * @param crawlerResult the crawler result
    */
-  protected void processProductInfo(AbstractProductDetailCrawlerResult crawlerResult) {
+  protected void processProductInfo(AbstractProductCrawlerResult crawlerResult) {
     LOGGER.info("[processProductInfo]");
     ProductInfo productInfo = crawlerResult.getProductInfo();
     saveNormalData(productInfo.toJson(), productInfo.getCode(), Consts.PRODUCT_DETAIL_PAGE_NAME);

@@ -3,10 +3,10 @@ package com.topcoder.scraper.module.ecisolatedmodule.kojima;
 import com.topcoder.common.dao.ProductDAO;
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.traffic.TrafficWebClient;
-import com.topcoder.scraper.module.ecisolatedmodule.AbstractProductDetailModule;
-import com.topcoder.scraper.module.ecisolatedmodule.kojima.crawler.KojimaProductDetailCrawler;
-import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralProductDetailCrawler;
-import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralProductDetailCrawlerResult;
+import com.topcoder.scraper.module.ecisolatedmodule.AbstractProductModule;
+import com.topcoder.scraper.module.ecisolatedmodule.kojima.crawler.KojimaProductCrawler;
+import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralProductCrawler;
+import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralProductCrawlerResult;
 import com.topcoder.scraper.service.ProductService;
 import com.topcoder.scraper.service.WebpageService;
 import org.slf4j.Logger;
@@ -16,14 +16,14 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
-public class OldKojimaProductDetailModule extends AbstractProductDetailModule {
+public class OldKojimaProductDetailModule extends AbstractProductModule {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(OldKojimaProductDetailModule.class);
 
   public OldKojimaProductDetailModule(
           ProductService             productService,
           WebpageService             webpageService,
-          KojimaProductDetailCrawler crawler) {
+          KojimaProductCrawler crawler) {
     super(productService, webpageService, crawler);
   }
   
@@ -36,7 +36,7 @@ public class OldKojimaProductDetailModule extends AbstractProductDetailModule {
   public void fetchProductDetailList(List<String> sites) {
 
     List<ProductDAO> products = this.productService.getAllFetchInfoStatusIsNull(getModuleType());
-    GeneralProductDetailCrawler crawler = new GeneralProductDetailCrawler(getModuleType(), webpageService);
+    GeneralProductCrawler crawler = new GeneralProductCrawler(getModuleType(), webpageService);
     
     products.forEach(product -> {
       try {
@@ -47,10 +47,10 @@ public class OldKojimaProductDetailModule extends AbstractProductDetailModule {
     });
   }
 
-  private void fetchProductDetail(GeneralProductDetailCrawler crawler, int productId, String productName) throws IOException {
+  private void fetchProductDetail(GeneralProductCrawler crawler, int productId, String productName) throws IOException {
     TrafficWebClient webClient = new TrafficWebClient(0, false);
 
-    GeneralProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productName);
+    GeneralProductCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productName);
     webClient.finishTraffic();
     ProductInfo productInfo = crawlerResult != null ? crawlerResult.getProductInfo() : null;
     
@@ -72,11 +72,11 @@ public class OldKojimaProductDetailModule extends AbstractProductDetailModule {
   }
 
   @Override
-  public ProductDAO crossEcProduct(String modelNo) throws IOException {
+  public ProductDAO searchProductInfo(String siteName, String modelNo) throws IOException {
     TrafficWebClient webClient = new TrafficWebClient(0, false);
 
-    GeneralProductDetailCrawler crawler = new GeneralProductDetailCrawler(getModuleType(), webpageService);
-	  GeneralProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, modelNo);
+    GeneralProductCrawler crawler = new GeneralProductCrawler(getModuleType(), webpageService);
+	  GeneralProductCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, modelNo);
 	  webClient.finishTraffic();
 	  ProductInfo productInfo = Objects.isNull(crawlerResult) ? null : crawlerResult.getProductInfo();
 	    

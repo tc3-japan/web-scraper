@@ -1,6 +1,14 @@
 package com.topcoder.scraper;
 
-import com.topcoder.scraper.command.impl.*;
+import com.topcoder.scraper.command.impl.ChangeDetectionCheckCommand;
+import com.topcoder.scraper.command.impl.ChangeDetectionInitCommand;
+import com.topcoder.scraper.command.impl.CrossECProductCommand;
+import com.topcoder.scraper.command.impl.DemoCommand;
+import com.topcoder.scraper.command.impl.GroovyDemoCommand;
+import com.topcoder.scraper.command.impl.ProductDetailCommand;
+import com.topcoder.scraper.command.impl.PurchaseHistoryListCommand;
+import com.topcoder.scraper.command.impl.SearchProductDemoCommand;
+import com.topcoder.scraper.command.impl.UserEncoderCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,20 +26,21 @@ public class AppRunner implements ApplicationRunner {
 
   private static Logger LOGGER = LoggerFactory.getLogger(AppRunner.class);
 
-  private final PurchaseHistoryListCommand purchaseHistoryListCommand;
-  private final ProductDetailCommand productDetailCommand;
-  private final ChangeDetectionInitCommand changeDetectionInitCommand;
+  private final PurchaseHistoryListCommand  purchaseHistoryListCommand;
+  private final ProductDetailCommand        productDetailCommand;
+  private final ChangeDetectionInitCommand  changeDetectionInitCommand;
   private final ChangeDetectionCheckCommand changeDetectionCheckCommand;
-  private final UserEncoderCommand userEncoderCommand;
-  private final CrossECProductCommand crossECProductCommand;
-  private final DemoCommand demoCommand;
-  private final GroovyDemoCommand groovyDemoCommand;
+  private final UserEncoderCommand          userEncoderCommand;
+  private final CrossECProductCommand       crossECProductCommand;
+  private final DemoCommand                 demoCommand;
+  private final GroovyDemoCommand           groovyDemoCommand;
+  private final SearchProductDemoCommand    searchProductDemoCommand;
 
   @Autowired
   public AppRunner(PurchaseHistoryListCommand purchaseHistoryListCommand, ProductDetailCommand productDetailCommand,
                    ChangeDetectionInitCommand changeDetectionInitCommand, ChangeDetectionCheckCommand changeDetectionCheckCommand,
                    UserEncoderCommand userEncoderCommand, CrossECProductCommand crossECProductCommand,
-                   DemoCommand demoCommand, GroovyDemoCommand groovyDemoCommand) {
+                   DemoCommand demoCommand, GroovyDemoCommand groovyDemoCommand, SearchProductDemoCommand searchProductDemoCommand) {
     this.purchaseHistoryListCommand  = purchaseHistoryListCommand;
     this.productDetailCommand        = productDetailCommand;
     this.changeDetectionInitCommand  = changeDetectionInitCommand;
@@ -40,6 +49,7 @@ public class AppRunner implements ApplicationRunner {
     this.crossECProductCommand       = crossECProductCommand;
     this.demoCommand                 = demoCommand;
     this.groovyDemoCommand           = groovyDemoCommand;
+    this.searchProductDemoCommand    = searchProductDemoCommand;
   }
 
   /**
@@ -69,8 +79,10 @@ public class AppRunner implements ApplicationRunner {
       crossECProductCommand.run(args);
     } else if(batches.contains("demo")){
       demoCommand.run(args);
-    } else if(batches.contains("groovy_demo")){
+    } else if(batches.contains("groovy_demo")) {
       groovyDemoCommand.run(args);
+    } else if(batches.contains("search_product_demo")) {
+      searchProductDemoCommand.run(args);
     }else {
       usage();
     }

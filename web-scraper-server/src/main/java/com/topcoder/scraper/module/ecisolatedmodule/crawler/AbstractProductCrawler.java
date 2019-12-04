@@ -1,4 +1,4 @@
-package com.topcoder.scraper.module.ecunifiedmodule.crawler;
+package com.topcoder.scraper.module.ecisolatedmodule.crawler;
 
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.traffic.TrafficWebClient;
@@ -20,26 +20,26 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
-public class GeneralProductDetailCrawler {
+public abstract class AbstractProductCrawler {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(GeneralProductDetailCrawler.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractProductCrawler.class);
 
-  private final Binding               scriptBinding;
-  private final CompilerConfiguration scriptConfig;
-  private GroovyShell                 scriptShell;
-  private String                      scriptText = "";
+  protected final Binding               scriptBinding;
+  protected final CompilerConfiguration scriptConfig;
+  protected GroovyShell                 scriptShell;
+  protected String                      scriptText = "";
 
-  private String savedPath;
+  protected String savedPath;
 
-  @Getter@Setter private WebpageService   webpageService;
-  @Getter@Setter private TrafficWebClient webClient;
-  @Getter@Setter private String           siteName;
+  @Getter@Setter protected WebpageService   webpageService;
+  @Getter@Setter protected TrafficWebClient webClient;
+  @Getter@Setter protected String           siteName;
 
-  @Getter@Setter private String           productCode;
-  @Getter@Setter private ProductInfo      productInfo;
-  @Getter@Setter private NavigableProductDetailPage detailPage;
+  @Getter@Setter protected String           productCode;
+  @Getter@Setter protected ProductInfo      productInfo;
+  @Getter@Setter protected NavigableProductDetailPage detailPage;
 
-  public GeneralProductDetailCrawler(String siteName, WebpageService webpageService) {
+  public AbstractProductCrawler(String siteName, WebpageService webpageService) {
     LOGGER.info("[constructor] in");
 
     this.siteName = siteName;
@@ -50,7 +50,7 @@ public class GeneralProductDetailCrawler {
 
     Properties configProps = new Properties();
     configProps.setProperty("groovy.script.base", this.getScriptSupportClassName());
-    this.scriptConfig  = new org.codehaus.groovy.control.CompilerConfiguration(configProps);
+    this.scriptConfig  = new CompilerConfiguration(configProps);
     this.scriptBinding = new Binding();
   }
 
@@ -61,7 +61,7 @@ public class GeneralProductDetailCrawler {
     if (StringUtils.isEmpty(scriptPath)) {
       scriptPath = System.getProperty("user.dir") + "/scripts/scraping";
     }
-    scriptPath  += "/unified/" + this.siteName + "-product-detail.groovy";
+    scriptPath  += "/isolated/" + this.siteName + "-product-detail.groovy";
 
     LOGGER.info("scriptPath: " + scriptPath);
     return scriptPath;
@@ -78,9 +78,7 @@ public class GeneralProductDetailCrawler {
     }
   }
 
-  private String getScriptSupportClassName() {
-    return GeneralProductDetailCrawlerScriptSupport.class.getName();
-  }
+  protected abstract String getScriptSupportClassName();
 
   private String executeScript() {
     LOGGER.info("[executeScript] in");
@@ -91,22 +89,22 @@ public class GeneralProductDetailCrawler {
     return resStr;
   }
 
-  public GeneralProductDetailCrawlerResult fetchProductInfo(TrafficWebClient webClient, String productCode) throws IOException {
+  public AbstractProductCrawlerResult fetchProductInfo(TrafficWebClient webClient, String productCode) throws IOException {
     LOGGER.info("[fetchProductInfo] in");
 
     this.webClient  = webClient;
     this.detailPage = new NavigableProductDetailPage(this.webClient);
 
-    this.webClient   = webClient;
     this.productCode = productCode;
     this.productInfo = new ProductInfo();
     this.productInfo.setCode(productCode);
+    this.detailPage.setProductInfo(this.productInfo);
 
     // binding variables for scraping script
     this.scriptBinding.setProperty("productCode", this.productCode);
 
     this.executeScript();
 
-    return new GeneralProductDetailCrawlerResult(this.productInfo, this.savedPath);
+    return new AbstractProductCrawlerResult(this.productInfo, this.savedPath);
   }
 }

@@ -6,7 +6,7 @@ import com.topcoder.common.repository.ECSiteAccountRepository;
 import com.topcoder.common.repository.NormalDataRepository;
 import com.topcoder.scraper.Consts;
 import com.topcoder.scraper.module.IBasicModule;
-import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractProductDetailCrawlerResult;
+import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractProductCrawlerResult;
 import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractPurchaseHistoryListCrawlerResult;
 import com.topcoder.scraper.service.WebpageService;
 import org.slf4j.Logger;
@@ -28,7 +28,7 @@ public abstract class AbstractChangeDetectionCommonModule implements IBasicModul
   protected final ECSiteAccountRepository            ecSiteAccountRepository;
   protected final NormalDataRepository               normalDataRepository;
   protected final AbstractPurchaseHistoryListModule  purchaseHistoryListModule;
-  protected final AbstractProductDetailModule        productDetailModule;
+  protected final AbstractProductModule              productModule;
 
   public AbstractChangeDetectionCommonModule(
           MonitorTargetDefinitionProperty    monitorTargetDefinitionProperty,
@@ -36,14 +36,14 @@ public abstract class AbstractChangeDetectionCommonModule implements IBasicModul
           ECSiteAccountRepository            ecSiteAccountRepository,
           NormalDataRepository               normalDataRepository,
           AbstractPurchaseHistoryListModule  purchaseHistoryListModule,
-          AbstractProductDetailModule        productDetailModule
+          AbstractProductModule              productModule
   ) {
     this.monitorTargetDefinitionProperty = monitorTargetDefinitionProperty;
     this.webpageService                  = webpageService;
     this.ecSiteAccountRepository         = ecSiteAccountRepository;
     this.normalDataRepository            = normalDataRepository;
     this.purchaseHistoryListModule       = purchaseHistoryListModule;
-    this.productDetailModule             = productDetailModule;
+    this.productModule                   = productModule;
   }
 
   abstract public String getModuleType();
@@ -85,8 +85,8 @@ public abstract class AbstractChangeDetectionCommonModule implements IBasicModul
           if (monitorTargetCheckPage.getCheckTargetKeys() == null) continue;
 
           for (String productCode : monitorTargetCheckPage.getCheckTargetKeys()) {
-            AbstractProductDetailCrawlerResult crawlerResult =
-                    this.productDetailModule.fetchProductDetail(productCode);
+            AbstractProductCrawlerResult crawlerResult =
+                    this.productModule.fetchProductDetail(productCode);
             if (crawlerResult != null) {
               this.processProductInfo(crawlerResult);
             }
@@ -95,10 +95,8 @@ public abstract class AbstractChangeDetectionCommonModule implements IBasicModul
         } else {
           throw new RuntimeException("[processMonitorTarget] Unknown monitor target definition " + monitorTargetCheckPage.getPageName());
         }
-
       }
     }
-
   }
 
   /**
@@ -112,5 +110,5 @@ public abstract class AbstractChangeDetectionCommonModule implements IBasicModul
    * Process product info crawler result
    * @param crawlerResult the crawler result
    */
-  abstract protected void processProductInfo(AbstractProductDetailCrawlerResult crawlerResult);
+  abstract protected void processProductInfo(AbstractProductCrawlerResult crawlerResult);
 }

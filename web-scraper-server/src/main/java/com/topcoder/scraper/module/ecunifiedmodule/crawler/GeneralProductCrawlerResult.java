@@ -1,12 +1,12 @@
-package com.topcoder.scraper.module.ecisolatedmodule.crawler;
+package com.topcoder.scraper.module.ecunifiedmodule.crawler;
 
 import com.topcoder.common.model.ProductInfo;
 
-public class AbstractProductDetailCrawlerResult {
+public class GeneralProductCrawlerResult {
   private ProductInfo productInfo;
   private String htmlPath;
 
-  public AbstractProductDetailCrawlerResult(ProductInfo productInfo, String htmlPath) {
+  public GeneralProductCrawlerResult(ProductInfo productInfo, String htmlPath) {
     this.productInfo = productInfo;
     this.htmlPath = htmlPath;
   }

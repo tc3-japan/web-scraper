@@ -25,7 +25,7 @@ public class YahooChangeDetectionInitModule extends AbstractChangeDetectionInitM
           ECSiteAccountRepository         ecSiteAccountRepository,
           NormalDataRepository            normalDataRepository,
           YahooPurchaseHistoryListModule  purchaseHistoryListModule,
-          YahooProductDetailModule        productDetailModule
+          YahooProductDetailModule        productModule
   ) {
     super(
             monitorTargetDefinitionProperty,
@@ -33,7 +33,7 @@ public class YahooChangeDetectionInitModule extends AbstractChangeDetectionInitM
             ecSiteAccountRepository,
             normalDataRepository,
             purchaseHistoryListModule,
-            productDetailModule
+            productModule
     );
   }
 

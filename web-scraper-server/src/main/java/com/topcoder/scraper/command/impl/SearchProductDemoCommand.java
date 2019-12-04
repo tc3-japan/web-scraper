@@ -1,6 +1,6 @@
 package com.topcoder.scraper.command.impl;
 
-import com.topcoder.scraper.Consts;
+import com.topcoder.common.dao.ProductDAO;
 import com.topcoder.scraper.command.AbstractCommand;
 import com.topcoder.scraper.exception.FetchProductDetailException;
 import com.topcoder.scraper.module.IProductModule;
@@ -16,12 +16,12 @@ import java.util.List;
  * Product detail command
  */
 @Component
-public class ProductDetailCommand extends AbstractCommand<IProductModule> {
+public class SearchProductDemoCommand extends AbstractCommand<IProductModule> {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ProductDetailCommand.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SearchProductDemoCommand.class);
 
   @Autowired
-  public ProductDetailCommand(List<IProductModule> modules) {
+  public SearchProductDemoCommand(List<IProductModule> modules) {
     super(modules);
   }
 
@@ -31,13 +31,11 @@ public class ProductDetailCommand extends AbstractCommand<IProductModule> {
    */
   @Override
   protected void process(IProductModule module) {
-    LOGGER.info("module=site: " + module);
     try {
-      if (this.sites == null || this.sites.size() == 0) {
-        module.fetchProductDetailList(Consts.ALL_SITES);
-      } else {
-        module.fetchProductDetailList(this.sites);
-      }
+      ProductDAO product = module.searchProductInfo("amazon", "ES-W111-SR");
+      LOGGER.info("ProductCode: " + product.getProductCode());
+      LOGGER.info("ProductName: " + product.getProductName());
+      LOGGER.info("ModelNo: "     + product.getModelNo());
     } catch (IOException e) {
       LOGGER.error("Fail to fetch product detail list", e);
       throw new FetchProductDetailException();

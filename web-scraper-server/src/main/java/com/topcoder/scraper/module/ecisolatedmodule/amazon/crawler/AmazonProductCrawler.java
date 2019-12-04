@@ -3,7 +3,7 @@ package com.topcoder.scraper.module.ecisolatedmodule.amazon.crawler;
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.topcoder.common.util.HtmlUtils;
-import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractProductDetailCrawler;
+import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractProductCrawler;
 import com.topcoder.scraper.service.WebpageService;
 import groovy.lang.Closure;
 import org.slf4j.Logger;
@@ -23,18 +23,18 @@ import java.util.stream.Collectors;
  * Amazon implementation of ProductDetailCrawler
  */
 @Component
-public class AmazonProductDetailCrawler extends AbstractProductDetailCrawler {
+public class AmazonProductCrawler extends AbstractProductCrawler {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(AmazonProductDetailCrawler.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AmazonProductCrawler.class);
 
   @Autowired
-  public AmazonProductDetailCrawler(WebpageService webpageService) {
+  public AmazonProductCrawler(WebpageService webpageService) {
     super("amazon", webpageService);
   }
 
   @Override
   public String getScriptSupportClassName() {
-    return AmazonProductDetailCrawlerScriptSupport.class.getName();
+    return AmazonProductCrawlerScriptSupport.class.getName();
   }
 
   public void scrapeCategoryRanking(List<String> categoryInfoList) {

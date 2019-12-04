@@ -13,7 +13,7 @@ import com.topcoder.scraper.module.ecisolatedmodule.amazon.crawler.AmazonAuthent
 import com.topcoder.scraper.module.ecisolatedmodule.amazon.crawler.AmazonAuthenticationCrawlerResult;
 import com.topcoder.scraper.module.ecisolatedmodule.amazon.crawler.AmazonPurchaseHistoryListCrawler;
 import com.topcoder.scraper.module.ecisolatedmodule.amazon.crawler.OldAmazonProductDetailCrawler;
-import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractProductDetailCrawlerResult;
+import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractProductCrawlerResult;
 import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractPurchaseHistoryListCrawlerResult;
 import com.topcoder.scraper.service.WebpageService;
 import org.slf4j.Logger;
@@ -98,7 +98,7 @@ public class OldAmazonChangeDetectionInitModule implements IChangeDetectionInitM
           OldAmazonProductDetailCrawler crawler = new OldAmazonProductDetailCrawler(getModuleType(), property, webpageService);
           for (String productCode : monitorTargetCheckPage.getCheckTargetKeys()) {
             TrafficWebClient webClient = new TrafficWebClient(0, false);
-            AbstractProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productCode, false);
+            AbstractProductCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productCode, false);
             webClient.finishTraffic();
             processProductInfo(crawlerResult);
           }
@@ -145,7 +145,7 @@ public class OldAmazonChangeDetectionInitModule implements IChangeDetectionInitM
    * process product info crawler result
    * @param crawlerResult the crawler result
    */
-  protected void processProductInfo(AbstractProductDetailCrawlerResult crawlerResult) {
+  protected void processProductInfo(AbstractProductCrawlerResult crawlerResult) {
     ProductInfo productInfo = crawlerResult.getProductInfo();
     saveNormalData(productInfo.toJson(), productInfo.getCode(), Consts.PRODUCT_DETAIL_PAGE_NAME);
   }

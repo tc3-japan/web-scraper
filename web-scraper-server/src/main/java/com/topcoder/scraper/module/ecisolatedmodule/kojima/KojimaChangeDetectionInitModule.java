@@ -25,7 +25,7 @@ public class KojimaChangeDetectionInitModule extends AbstractChangeDetectionInit
           ECSiteAccountRepository          ecSiteAccountRepository,
           NormalDataRepository             normalDataRepository,
           KojimaPurchaseHistoryListModule  purchaseHistoryListModule,
-          KojimaProductDetailModule        productDetailModule
+          KojimaProductModule              productModule
   ) {
     super(
             monitorTargetDefinitionProperty,
@@ -33,7 +33,7 @@ public class KojimaChangeDetectionInitModule extends AbstractChangeDetectionInit
             ecSiteAccountRepository,
             normalDataRepository,
             purchaseHistoryListModule,
-            productDetailModule
+            productModule
     );
   }
 

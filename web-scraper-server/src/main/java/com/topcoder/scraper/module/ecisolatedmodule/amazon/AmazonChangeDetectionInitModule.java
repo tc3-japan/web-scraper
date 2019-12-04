@@ -25,7 +25,7 @@ public class AmazonChangeDetectionInitModule extends AbstractChangeDetectionInit
           ECSiteAccountRepository          ecSiteAccountRepository,
           NormalDataRepository             normalDataRepository,
           AmazonPurchaseHistoryListModule  purchaseHistoryListModule,
-          AmazonProductDetailModule        productDetailModule
+          AmazonProductModule              productModule
   ) {
     super(
             monitorTargetDefinitionProperty,
@@ -33,7 +33,7 @@ public class AmazonChangeDetectionInitModule extends AbstractChangeDetectionInit
             ecSiteAccountRepository,
             normalDataRepository,
             purchaseHistoryListModule,
-            productDetailModule
+            productModule
     );
   }
 

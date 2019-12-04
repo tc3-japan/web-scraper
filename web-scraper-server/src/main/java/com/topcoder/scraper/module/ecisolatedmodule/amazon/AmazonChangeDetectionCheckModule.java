@@ -27,7 +27,7 @@ public class AmazonChangeDetectionCheckModule extends AbstractChangeDetectionChe
           ECSiteAccountRepository          ecSiteAccountRepository,
           NormalDataRepository             normalDataRepository,
           AmazonPurchaseHistoryListModule  purchaseHistoryListModule,
-          AmazonProductDetailModule        productDetailModule,
+          AmazonProductModule              productModule,
           CheckItemsDefinitionProperty     checkItemsDefinitionProperty,
           CheckResultRepository            checkResultRepository
 
@@ -38,7 +38,7 @@ public class AmazonChangeDetectionCheckModule extends AbstractChangeDetectionChe
             ecSiteAccountRepository,
             normalDataRepository,
             purchaseHistoryListModule,
-            productDetailModule,
+            productModule,
             checkItemsDefinitionProperty,
             checkResultRepository
     );

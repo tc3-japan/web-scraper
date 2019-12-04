@@ -1,4 +1,4 @@
-package com.topcoder.scraper.module.ecunifiedmodule.crawler;
+package com.topcoder.scraper.module.ecisolatedmodule.crawler;
 
 import groovy.lang.Script;
 import org.slf4j.Logger;
@@ -7,13 +7,13 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Map;
 
-public abstract class GeneralProductDetailCrawlerScriptSupport extends Script {
+public abstract class AbstractProductCrawlerScriptSupport extends Script {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(GeneralProductDetailCrawlerScriptSupport.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractProductCrawlerScriptSupport.class);
 
-  protected GeneralProductDetailCrawler crawler;
+  protected AbstractProductCrawler crawler;
 
-  void setCrawler(GeneralProductDetailCrawler crawler) {
+  void setCrawler(AbstractProductCrawler crawler) {
     this.crawler = crawler;
   }
 
@@ -38,7 +38,7 @@ public abstract class GeneralProductDetailCrawlerScriptSupport extends Script {
     this.crawler.getDetailPage().type(input, selector);
   }
 
-  // Scraping wrapper: product in purchase history ---------------------------------------------------------------------
+  // Scraping wrapper: product -----------------------------------------------------------------------------------------
   void scrapeCode(String selector) {
     this.crawler.getDetailPage().scrapeCode(selector);
   }
@@ -75,5 +75,4 @@ public abstract class GeneralProductDetailCrawlerScriptSupport extends Script {
   void log(String str) {
     LOGGER.info(str);
   }
-
 }

@@ -1,7 +1,7 @@
 package com.topcoder.scraper.module.ecisolatedmodule.kojima;
 
-import com.topcoder.scraper.module.ecisolatedmodule.AbstractProductDetailModule;
-import com.topcoder.scraper.module.ecisolatedmodule.kojima.crawler.KojimaProductDetailCrawler;
+import com.topcoder.scraper.module.ecisolatedmodule.AbstractProductModule;
+import com.topcoder.scraper.module.ecisolatedmodule.kojima.crawler.KojimaProductCrawler;
 import com.topcoder.scraper.service.ProductService;
 import com.topcoder.scraper.service.WebpageService;
 import org.slf4j.Logger;
@@ -13,15 +13,15 @@ import org.springframework.stereotype.Component;
  * Kojima implementation of ProductDetailModule
  */
 @Component
-public class KojimaProductDetailModule extends AbstractProductDetailModule {
+public class KojimaProductModule extends AbstractProductModule {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(KojimaProductDetailModule.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(KojimaProductModule.class);
 
   @Autowired
-  public KojimaProductDetailModule(
+  public KojimaProductModule(
           ProductService             productService,
           WebpageService             webpageService,
-          KojimaProductDetailCrawler crawler) {
+          KojimaProductCrawler crawler) {
     super(productService, webpageService, crawler);
   }
 

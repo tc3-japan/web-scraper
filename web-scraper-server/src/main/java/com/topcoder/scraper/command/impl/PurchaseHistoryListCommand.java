@@ -31,7 +31,7 @@ public class PurchaseHistoryListCommand extends AbstractCommand<IPurchaseHistory
    */
   @Override
   protected void process(IPurchaseHistoryListModule module) {
-    System.out.println("module = " + module);
+    LOGGER.info("module=site: " + module);
     try {
       if (this.sites == null || this.sites.size() == 0) {
         module.fetchPurchaseHistoryList(Consts.ALL_SITES);

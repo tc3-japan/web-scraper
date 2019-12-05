@@ -22,7 +22,7 @@ public class KojimaAuthenticationCrawler extends AbstractAuthenticationCrawler {
   private final WebpageService webpageService;
   
   public KojimaAuthenticationCrawler(String siteName, WebpageService webpageService) {
-    this.siteName = siteName;
+    this.siteName       = siteName;
     this.webpageService = webpageService;
   }
 

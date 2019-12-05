@@ -23,7 +23,7 @@ public class GeneralAuthenticationCrawler {
   private final WebpageService webpageService;
   
   public GeneralAuthenticationCrawler(String siteName, WebpageService webpageService) {
-    this.siteName = siteName;
+    this.siteName       = siteName;
     this.webpageService = webpageService;
   }
 

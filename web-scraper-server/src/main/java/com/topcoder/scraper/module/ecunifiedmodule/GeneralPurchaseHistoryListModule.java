@@ -11,8 +11,8 @@ import com.topcoder.common.repository.ECSiteAccountRepository;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.common.util.Common;
 import com.topcoder.scraper.module.IPurchaseHistoryListModule;
-import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistoryListCrawler;
-import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistoryListCrawlerResult;
+import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistoryCrawler;
+import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistoryCrawlerResult;
 import com.topcoder.scraper.service.PurchaseHistoryService;
 import com.topcoder.scraper.service.WebpageService;
 
@@ -71,11 +71,11 @@ public class GeneralPurchaseHistoryListModule implements IPurchaseHistoryListMod
         }
 
         try {
-          //KojimaPurchaseHistoryListCrawler crawler = new KojimaPurchaseHistoryListCrawler(getModuleType(), webpageService);
-          GeneralPurchaseHistoryListCrawler crawler = new GeneralPurchaseHistoryListCrawler(sites.get(i), webpageService);
+          //KojimaPurchaseHistoryCrawler crawler = new KojimaPurchaseHistoryCrawler(getModuleType(), webpageService);
+          GeneralPurchaseHistoryCrawler crawler = new GeneralPurchaseHistoryCrawler(sites.get(i), webpageService);
 
 
-          GeneralPurchaseHistoryListCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClient,
+          GeneralPurchaseHistoryCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClient,
               lastPurchaseHistory.orElse(null), true);
           webClient.finishTraffic();
           List<PurchaseHistory> list = crawlerResult.getPurchaseHistoryList();

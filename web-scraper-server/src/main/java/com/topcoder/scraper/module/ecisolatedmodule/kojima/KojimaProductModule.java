@@ -21,7 +21,7 @@ public class KojimaProductModule extends AbstractProductModule {
   public KojimaProductModule(
           ProductService             productService,
           WebpageService             webpageService,
-          KojimaProductCrawler crawler) {
+          KojimaProductCrawler       crawler) {
     super(productService, webpageService, crawler);
   }
 

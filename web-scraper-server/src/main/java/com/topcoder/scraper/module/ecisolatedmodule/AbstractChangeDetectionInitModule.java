@@ -9,7 +9,7 @@ import com.topcoder.common.repository.NormalDataRepository;
 import com.topcoder.scraper.Consts;
 import com.topcoder.scraper.module.IChangeDetectionInitModule;
 import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractProductCrawlerResult;
-import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractPurchaseHistoryListCrawlerResult;
+import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractPurchaseHistoryCrawlerResult;
 import com.topcoder.scraper.service.WebpageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +80,7 @@ public abstract class AbstractChangeDetectionInitModule extends AbstractChangeDe
    * @param crawlerResult the crawler result
    * @param pageKey the page key
    */
-  protected void processPurchaseHistory(AbstractPurchaseHistoryListCrawlerResult crawlerResult, String pageKey) {
+  protected void processPurchaseHistory(AbstractPurchaseHistoryCrawlerResult crawlerResult, String pageKey) {
     LOGGER.info("[processPurchaseHistory]");
     List<PurchaseHistory> purchaseHistoryList = crawlerResult.getPurchaseHistoryList();
     saveNormalData(PurchaseHistory.toArrayJson(purchaseHistoryList), pageKey, Consts.PURCHASE_HISTORY_LIST_PAGE_NAME);

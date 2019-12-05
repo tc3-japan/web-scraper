@@ -4,7 +4,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlSelect;
 import com.topcoder.common.traffic.TrafficWebClient;
-import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractPurchaseHistoryListCrawler;
+import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractPurchaseHistoryCrawler;
 import com.topcoder.scraper.service.WebpageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,21 +17,21 @@ import java.io.IOException;
  * Amazon implementation of PurchaseHistoryListCrawler
  */
 @Component
-public class AmazonPurchaseHistoryListCrawler extends AbstractPurchaseHistoryListCrawler {
+public class AmazonPurchaseHistoryCrawler extends AbstractPurchaseHistoryCrawler {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(AmazonPurchaseHistoryListCrawler.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AmazonPurchaseHistoryCrawler.class);
 
   // TODO : delete, this is for PoC Code that limits the count to go to next page to 3
   protected int nextPageCount;
 
   @Autowired
-  public AmazonPurchaseHistoryListCrawler(WebpageService webpageService) {
+  public AmazonPurchaseHistoryCrawler(WebpageService webpageService) {
     super("amazon", webpageService);
   }
 
   @Override
   public String getScriptSupportClassName() {
-    return AmazonPurchaseHistoryListCrawlerScriptSupport.class.getName();
+    return AmazonPurchaseHistoryCrawlerScriptSupport.class.getName();
   }
 
   @Override

@@ -16,7 +16,7 @@ import com.topcoder.common.util.CheckUtils;
 import com.topcoder.scraper.Consts;
 import com.topcoder.scraper.module.IChangeDetectionCheckModule;
 import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractProductCrawlerResult;
-import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractPurchaseHistoryListCrawlerResult;
+import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractPurchaseHistoryCrawlerResult;
 import com.topcoder.scraper.service.WebpageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +74,7 @@ public abstract class AbstractChangeDetectionCheckModule extends AbstractChangeD
    * @param crawlerResult the crawler result
    * @param pageKey the page key
    */
-  protected void processPurchaseHistory(AbstractPurchaseHistoryListCrawlerResult crawlerResult, String pageKey) {
+  protected void processPurchaseHistory(AbstractPurchaseHistoryCrawlerResult crawlerResult, String pageKey) {
     List<PurchaseHistory> purchaseHistoryList = crawlerResult.getPurchaseHistoryList();
 
     CheckItemsDefinitionProperty.CheckItemsCheckSite checkSiteDefinition = checkItemsDefinitionProperty.getCheckSiteDefinition(getModuleType());

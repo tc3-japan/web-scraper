@@ -3,7 +3,7 @@ package com.topcoder.scraper.module.ecisolatedmodule.kojima;
 import com.topcoder.api.service.login.kojima.KojimaLoginHandler;
 import com.topcoder.common.repository.ECSiteAccountRepository;
 import com.topcoder.scraper.module.ecisolatedmodule.AbstractPurchaseHistoryListModule;
-import com.topcoder.scraper.module.ecisolatedmodule.kojima.crawler.KojimaPurchaseHistoryListCrawler;
+import com.topcoder.scraper.module.ecisolatedmodule.kojima.crawler.KojimaPurchaseHistoryCrawler;
 import com.topcoder.scraper.service.PurchaseHistoryService;
 import com.topcoder.scraper.service.WebpageService;
 import org.slf4j.Logger;
@@ -25,7 +25,7 @@ public class KojimaPurchaseHistoryListModule extends AbstractPurchaseHistoryList
           ECSiteAccountRepository          ecSiteAccountRepository,
           WebpageService                   webpageService,
           KojimaLoginHandler               loginHandler,
-          KojimaPurchaseHistoryListCrawler crawler
+          KojimaPurchaseHistoryCrawler crawler
   ) {
     super(purchaseHistoryService, ecSiteAccountRepository, webpageService, loginHandler, crawler);
   }

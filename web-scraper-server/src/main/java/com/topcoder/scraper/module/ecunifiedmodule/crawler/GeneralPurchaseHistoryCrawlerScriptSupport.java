@@ -1,6 +1,8 @@
-package com.topcoder.scraper.module.ecisolatedmodule.crawler;
+package com.topcoder.scraper.module.ecunifiedmodule.crawler;
 
 import com.gargoylesoftware.htmlunit.html.DomNode;
+import com.topcoder.common.model.ProductInfo;
+
 import groovy.lang.Closure;
 import groovy.lang.Script;
 import org.slf4j.Logger;
@@ -9,26 +11,27 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.List;
 
-public abstract class AbstractPurchaseHistoryListCrawlerScriptSupport extends Script {
+public abstract class GeneralPurchaseHistoryCrawlerScriptSupport extends Script {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPurchaseHistoryListCrawlerScriptSupport.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GeneralPurchaseHistoryCrawlerScriptSupport.class);
 
-  protected AbstractPurchaseHistoryListCrawler crawler;
-  void setCrawler(AbstractPurchaseHistoryListCrawler crawler) {
+  protected GeneralPurchaseHistoryCrawler crawler;
+  void setCrawler(GeneralPurchaseHistoryCrawler crawler) {
     this.crawler = crawler;
   }
 
   void setPage(String historyUrl) {
     this.crawler.getWebClient().getWebClient().getOptions().setJavaScriptEnabled(false); //TODO: TEST ONLY
     this.crawler.getHistoryPage().setPage(historyUrl);
+
   }
 
   void setEnableJS(boolean value) {
     this.crawler.getWebClient().getWebClient().getOptions().setJavaScriptEnabled(value);
   }
 
-  void savePage(String name) {
-    this.crawler.getHistoryPage().savePage(name, this.crawler.getSiteName(), this.crawler.getWebpageService());
+  void savePage(String name, String siteName) {
+    this.crawler.getHistoryPage().savePage(name, siteName, this.crawler.getWebpageService());
   }
 
   void click(String selector) {
@@ -39,7 +42,12 @@ public abstract class AbstractPurchaseHistoryListCrawlerScriptSupport extends Sc
     this.crawler.getHistoryPage().openPage(node, selector, closure, this.crawler.getWebpageService());
   }
 
-  void type(String input, String selector) {
+  void click(DomNode node, String selector) {
+    this.crawler.getHistoryPage().click(node, selector);
+  }
+
+
+  void type(String input, String selector) { 
     this.crawler.getHistoryPage().type(input, selector);
   }
 
@@ -101,10 +109,21 @@ public abstract class AbstractPurchaseHistoryListCrawlerScriptSupport extends Sc
 
   // Scraping wrapper: product in order --------------------------------------------------------------------------------
 
+  public void addProduct(ProductInfo product) {
+    this.crawler.getHistoryPage().addProduct(product);
+  }
+
+  String getText(String selector) {
+    return this.crawler.getHistoryPage().getText(selector);
+  }
+
+  String getText(DomNode node, String selector) {
+    return this.crawler.getHistoryPage().getText(node, selector);
+  }
+
   void scrapeProductCodeFromAnchor(DomNode productNode, String selector, String regexStr) {
     this.crawler.getHistoryPage().scrapeProductCodeFromAnchor(productNode, selector, regexStr);
   }
-
 
   void scrapeProductCodeFromInput(DomNode productNode, String selector, String regexStr) {
     this.crawler.getHistoryPage().scrapeProductCodeFromInput(productNode, selector, regexStr);

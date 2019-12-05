@@ -1,4 +1,4 @@
-package com.topcoder.scraper.module.ecunifiedmodule.crawler;
+package com.topcoder.scraper.module.ecisolatedmodule.crawler;
 
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
@@ -27,32 +27,32 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
-public class GeneralPurchaseHistoryListCrawler {
+public abstract class AbstractPurchaseHistoryCrawler {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(GeneralPurchaseHistoryListCrawler.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPurchaseHistoryCrawler.class);
 
-  private final Binding               scriptBinding;
-  private final CompilerConfiguration scriptConfig;
-  private GroovyShell                 scriptShell;
-  private String                      scriptText = "";
+  protected final Binding               scriptBinding;
+  protected final CompilerConfiguration scriptConfig;
+  protected GroovyShell                 scriptShell;
+  protected String                      scriptText = "";
 
-  private PurchaseHistory       lastPurchaseHistory;
-  private List<String>          savedPathList;
-  private boolean               saveHtml;
+  protected PurchaseHistory       lastPurchaseHistory;
+  protected List<String>          savedPathList;
+  protected boolean               saveHtml;
 
-  @Getter@Setter private NavigablePurchaseHistoryPage historyPage;
-  @Getter@Setter private TrafficWebClient webClient;
-  @Getter@Setter private String           siteName;
-  @Getter@Setter private WebpageService   webpageService;
+  @Getter@Setter protected NavigablePurchaseHistoryPage historyPage;
+  @Getter@Setter protected TrafficWebClient webClient;
+  @Getter@Setter protected String           siteName;
+  @Getter@Setter protected WebpageService   webpageService;
 
-  @Getter@Setter private PurchaseHistory       currentPurchaseHistory; // OrderInfo (to be refactored)
-  @Getter@Setter private ProductInfo           currentProduct;
-  @Getter@Setter private List<PurchaseHistory> purchaseHistoryList;
+  @Getter@Setter protected PurchaseHistory       currentPurchaseHistory; // OrderInfo (to be refactored)
+  @Getter@Setter protected ProductInfo           currentProduct;
+  @Getter@Setter protected List<PurchaseHistory> purchaseHistoryList;
 
-  public GeneralPurchaseHistoryListCrawler(String siteName, WebpageService webpageService) {
+  public AbstractPurchaseHistoryCrawler(String siteName, WebpageService webpageService) {
     LOGGER.info("[constructor] in");
 
-    this.siteName = siteName;
+    this.siteName       = siteName;
     this.webpageService = webpageService;
 
     String scriptPath = this.getScriptPath();
@@ -64,20 +64,20 @@ public class GeneralPurchaseHistoryListCrawler {
     this.scriptBinding = new Binding();
   }
 
-  private String getScriptPath() {
+  protected String getScriptPath() {
     LOGGER.info("[getScriptPath] in");
 
     String scriptPath = System.getenv(Consts.SCRAPING_SCRIPT_PATH);
     if (StringUtils.isEmpty(scriptPath)) {
       scriptPath = System.getProperty("user.dir") + "/scripts/scraping";
     }
-    scriptPath  += "/unified/" + this.siteName + "-purchase-history-list.groovy";
+    scriptPath  += "/isolated/" + this.siteName + "-purchase-history-list.groovy";
 
     LOGGER.info("[getScriptPath] scriptPath: " + scriptPath);
     return scriptPath;
   }
 
-  private String getScriptText(String scriptPath) {
+  protected String getScriptText(String scriptPath) {
     LOGGER.info("[getScriptText] in");
 
     try {
@@ -88,20 +88,18 @@ public class GeneralPurchaseHistoryListCrawler {
     }
   }
 
-  private String getScriptSupportClassName() {
-    return GeneralPurchaseHistoryListCrawlerScriptSupport.class.getName();
-  }
+  protected abstract String getScriptSupportClassName();
 
-  private String executeScript() {
+  protected String executeScript() {
     LOGGER.info("[executeScript] in");
     this.scriptShell = new GroovyShell(this.scriptBinding, this.scriptConfig);
-    Script script = scriptShell.parse(this.scriptText);
+    Script script = this.scriptShell.parse(this.scriptText);
     script.invokeMethod("setCrawler", this);
     String resStr = (String)script.run();
     return resStr;
   }
 
-  public GeneralPurchaseHistoryListCrawlerResult fetchPurchaseHistoryList(TrafficWebClient webClient, PurchaseHistory lastPurchaseHistory, boolean saveHtml) throws IOException {
+  public AbstractPurchaseHistoryCrawlerResult fetchPurchaseHistoryList(TrafficWebClient webClient, PurchaseHistory lastPurchaseHistory, boolean saveHtml) throws IOException {
     LOGGER.info("[fetchPurchaseHistoryList] in");
 
     this.webClient = webClient;
@@ -115,10 +113,10 @@ public class GeneralPurchaseHistoryListCrawler {
     // binding variables for scraping script
     // TODO: re-consider whether this is necessary
     this.scriptBinding.setProperty("purchaseHistoryList", this.purchaseHistoryList);
-    
+
     this.executeScript();
 
-    return new GeneralPurchaseHistoryListCrawlerResult(this.purchaseHistoryList, this.savedPathList);
+    return new AbstractPurchaseHistoryCrawlerResult(this.purchaseHistoryList, this.savedPathList);
   }
 
   // TODO: re-consider Closure<HERE>, now temporarily Boolean
@@ -129,10 +127,10 @@ public class GeneralPurchaseHistoryListCrawler {
     // TODO : implement
     /*
     if (page.getBaseURI().contains("?autoLogin")) {
-      throw new SessionExpiredException("Session has been expired.");
+      throw new SessionExpiredException("Session has been expired.");      
     }
      */
-
+    
     while (true) {
       if (this.historyPage.getPage() == null) {
         break;
@@ -144,7 +142,7 @@ public class GeneralPurchaseHistoryListCrawler {
 
   public void processOrders(List<DomNode> orderList, Closure<Boolean> closure) {
     LOGGER.info("[processOrders] in");
-    LOGGER.info("[processOrders] Parsing page url " + historyPage.getPage().getUrl().toString());
+    LOGGER.debug("Parsing page url " + historyPage.getPage().getUrl().toString());
 
     for (DomNode orderNode : orderList) {
       this.currentPurchaseHistory = new PurchaseHistory();
@@ -155,7 +153,7 @@ public class GeneralPurchaseHistoryListCrawler {
       this.purchaseHistoryList.add(this.currentPurchaseHistory);
     }
   }
- 
+
   public void processProducts(List<DomNode> productList, Closure<Boolean> closure) {
     LOGGER.info("[processProducts] in");
 
@@ -187,7 +185,7 @@ public class GeneralPurchaseHistoryListCrawler {
     return true;
   }
 
-  private HtmlPage gotoNextPage(HtmlPage page, TrafficWebClient webClient) throws IOException {
+  protected HtmlPage gotoNextPage(HtmlPage page, TrafficWebClient webClient) throws IOException {
     LOGGER.info("[gotoNextPage] in");
     return null;
   }

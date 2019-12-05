@@ -8,13 +8,12 @@ import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.exception.SessionExpiredException;
-import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistoryListCrawlerResult;
+import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistoryCrawlerResult;
 import com.topcoder.scraper.service.WebpageService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -32,7 +31,7 @@ import static com.topcoder.common.util.HtmlUtils.getTextContent;
 
 public class OldAmazonPurchaseHistoryListCrawler {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(AmazonPurchaseHistoryListCrawler.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AmazonPurchaseHistoryCrawler.class);
   private final String siteName;
   private final AmazonProperty property;
   private final WebpageService webpageService;
@@ -58,7 +57,7 @@ public class OldAmazonPurchaseHistoryListCrawler {
    * @return PurchaseHistoryListCrawlerResult
    * @throws IOException
    */
-  public GeneralPurchaseHistoryListCrawlerResult fetchPurchaseHistoryList(TrafficWebClient webClient, PurchaseHistory lastPurchaseHistory, boolean saveHtml) throws IOException {
+  public GeneralPurchaseHistoryCrawlerResult fetchPurchaseHistoryList(TrafficWebClient webClient, PurchaseHistory lastPurchaseHistory, boolean saveHtml) throws IOException {
     List<PurchaseHistory> list = new LinkedList<>();
     List<String> pathList = new LinkedList<>();
     LOGGER.info("goto Order Page");
@@ -77,7 +76,7 @@ public class OldAmazonPurchaseHistoryListCrawler {
       }
     }
 
-    return new GeneralPurchaseHistoryListCrawlerResult(list, pathList);
+    return new GeneralPurchaseHistoryCrawlerResult(list, pathList);
   }
 
   /**

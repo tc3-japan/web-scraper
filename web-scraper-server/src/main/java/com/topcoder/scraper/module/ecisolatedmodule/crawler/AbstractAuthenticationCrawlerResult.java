@@ -17,15 +17,15 @@ public class AbstractAuthenticationCrawlerResult {
   protected boolean  needContinue;
 
   public AbstractAuthenticationCrawlerResult(boolean success, String htmlPath) {
-    this.success = success;
+    this.success  = success;
     this.htmlPath = htmlPath;
   }
 
   public AbstractAuthenticationCrawlerResult(boolean success, String reason, CodeType codeType, String img, boolean needContinue) {
-    this.success = success;
-    this.reason = reason;
-    this.codeType = codeType;
-    this.img = img;
+    this.success      = success;
+    this.reason       = reason;
+    this.codeType     = codeType;
+    this.img          = img;
     this.needContinue = needContinue;
   }
 

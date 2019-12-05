@@ -7,7 +7,7 @@ import com.topcoder.common.repository.NormalDataRepository;
 import com.topcoder.scraper.Consts;
 import com.topcoder.scraper.module.IBasicModule;
 import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractProductCrawlerResult;
-import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractPurchaseHistoryListCrawlerResult;
+import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractPurchaseHistoryCrawlerResult;
 import com.topcoder.scraper.service.WebpageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,7 +69,7 @@ public abstract class AbstractChangeDetectionCommonModule implements IBasicModul
           Iterable<ECSiteAccountDAO> accountDAOS = ecSiteAccountRepository.findAllByEcSiteAndUserIdIn(this.getModuleType(), userIdList);
 
           for (ECSiteAccountDAO ecSiteAccountDAO : accountDAOS) {
-            AbstractPurchaseHistoryListCrawlerResult crawlerResult =
+            AbstractPurchaseHistoryCrawlerResult crawlerResult =
                     this.purchaseHistoryListModule.fetchPurchaseHistoryListForECSiteAccount(ecSiteAccountDAO, null);
             if (crawlerResult != null) {
               String key = Integer.toString(ecSiteAccountDAO.getId());
@@ -104,7 +104,7 @@ public abstract class AbstractChangeDetectionCommonModule implements IBasicModul
    * @param crawlerResult the crawler result
    * @param pageKey the page key
    */
-  abstract protected void processPurchaseHistory(AbstractPurchaseHistoryListCrawlerResult crawlerResult, String pageKey);
+  abstract protected void processPurchaseHistory(AbstractPurchaseHistoryCrawlerResult crawlerResult, String pageKey);
 
   /**
    * Process product info crawler result

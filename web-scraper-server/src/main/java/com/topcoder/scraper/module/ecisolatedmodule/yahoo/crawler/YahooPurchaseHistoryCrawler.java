@@ -1,6 +1,6 @@
 package com.topcoder.scraper.module.ecisolatedmodule.yahoo.crawler;
 
-import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractPurchaseHistoryListCrawler;
+import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractPurchaseHistoryCrawler;
 import com.topcoder.scraper.service.WebpageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,18 +11,18 @@ import org.springframework.stereotype.Component;
  * Yahoo implementation of PurchaseHistoryListCrawler
  */
 @Component
-public class YahooPurchaseHistoryListCrawler extends AbstractPurchaseHistoryListCrawler {
+public class YahooPurchaseHistoryCrawler extends AbstractPurchaseHistoryCrawler {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(YahooPurchaseHistoryListCrawler.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(YahooPurchaseHistoryCrawler.class);
 
   @Autowired
-  public YahooPurchaseHistoryListCrawler(WebpageService webpageService) {
+  public YahooPurchaseHistoryCrawler(WebpageService webpageService) {
     super("yahoo", webpageService);
   }
 
   @Override
   public String getScriptSupportClassName() {
-    return YahooPurchaseHistoryListCrawlerScriptSupport.class.getName();
+    return YahooPurchaseHistoryCrawlerScriptSupport.class.getName();
   }
 
 }

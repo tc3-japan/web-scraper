@@ -1,25 +1,19 @@
 package com.topcoder.scraper.module.ecisolatedmodule;
 
 import com.topcoder.api.service.login.LoginHandlerBase;
-import com.topcoder.api.service.login.amazon.AmazonLoginHandler;
 import com.topcoder.common.dao.ECSiteAccountDAO;
 import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.common.repository.ECSiteAccountRepository;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.common.util.Common;
 import com.topcoder.scraper.module.IPurchaseHistoryListModule;
-import com.topcoder.scraper.module.ecisolatedmodule.amazon.crawler.AmazonPurchaseHistoryListCrawler;
-import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractPurchaseHistoryListCrawler;
-import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractPurchaseHistoryListCrawlerResult;
-import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistoryListCrawlerResult;
+import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractPurchaseHistoryCrawler;
+import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractPurchaseHistoryCrawlerResult;
 import com.topcoder.scraper.service.PurchaseHistoryService;
 import com.topcoder.scraper.service.WebpageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,18 +24,18 @@ public abstract class AbstractPurchaseHistoryListModule implements IPurchaseHist
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPurchaseHistoryListModule.class);
 
-  protected final PurchaseHistoryService  purchaseHistoryService;
-  protected final WebpageService          webpageService;
-  protected final ECSiteAccountRepository ecSiteAccountRepository;
-  protected final LoginHandlerBase        loginHandler;
-  protected final AbstractPurchaseHistoryListCrawler crawler;
+  protected final PurchaseHistoryService         purchaseHistoryService;
+  protected final WebpageService                 webpageService;
+  protected final ECSiteAccountRepository        ecSiteAccountRepository;
+  protected final LoginHandlerBase               loginHandler;
+  protected final AbstractPurchaseHistoryCrawler crawler;
 
   public AbstractPurchaseHistoryListModule(
-    PurchaseHistoryService purchaseHistoryService,
-    ECSiteAccountRepository ecSiteAccountRepository,
-    WebpageService webpageService,
-    LoginHandlerBase loginHandler,
-    AbstractPurchaseHistoryListCrawler crawler
+    PurchaseHistoryService         purchaseHistoryService,
+    ECSiteAccountRepository        ecSiteAccountRepository,
+    WebpageService                 webpageService,
+    LoginHandlerBase               loginHandler,
+    AbstractPurchaseHistoryCrawler crawler
   ) {
     this.purchaseHistoryService  = purchaseHistoryService;
     this.webpageService          = webpageService;
@@ -64,7 +58,7 @@ public abstract class AbstractPurchaseHistoryListModule implements IPurchaseHist
     for (ECSiteAccountDAO ecSiteAccountDAO : accountDAOS) {
       Optional<PurchaseHistory> lastPurchaseHistory = purchaseHistoryService.fetchLast(ecSiteAccountDAO.getId());
 
-      AbstractPurchaseHistoryListCrawlerResult crawlerResult =
+      AbstractPurchaseHistoryCrawlerResult crawlerResult =
               this.fetchPurchaseHistoryListForECSiteAccount(ecSiteAccountDAO, lastPurchaseHistory.orElse(null));
 
       if (crawlerResult != null) {
@@ -77,7 +71,7 @@ public abstract class AbstractPurchaseHistoryListModule implements IPurchaseHist
     }
   }
 
-  public AbstractPurchaseHistoryListCrawlerResult fetchPurchaseHistoryListForECSiteAccount(ECSiteAccountDAO ecSiteAccountDAO, PurchaseHistory lastPurchaseHistory) {
+  public AbstractPurchaseHistoryCrawlerResult fetchPurchaseHistoryListForECSiteAccount(ECSiteAccountDAO ecSiteAccountDAO, PurchaseHistory lastPurchaseHistory) {
     if (ecSiteAccountDAO.getEcUseFlag() != Boolean.TRUE) {
       LOGGER.info("EC Site [" + ecSiteAccountDAO.getId() + ":" + ecSiteAccountDAO.getEcSite() + "] is not active. Skipped.");
       return null;
@@ -92,7 +86,7 @@ public abstract class AbstractPurchaseHistoryListModule implements IPurchaseHist
     }
 
     try {
-      AbstractPurchaseHistoryListCrawlerResult crawlerResult = this.crawler.fetchPurchaseHistoryList(webClient, lastPurchaseHistory, true);
+      AbstractPurchaseHistoryCrawlerResult crawlerResult = this.crawler.fetchPurchaseHistoryList(webClient, lastPurchaseHistory, true);
       webClient.finishTraffic();
       LOGGER.info("succeed fetch purchaseHistory for ec site account id = " + ecSiteAccountDAO.getId());
       return crawlerResult;

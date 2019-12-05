@@ -21,7 +21,7 @@ public class AmazonProductModule extends AbstractProductModule {
   public AmazonProductModule(
           ProductService             productService,
           WebpageService             webpageService,
-          AmazonProductCrawler crawler) {
+          AmazonProductCrawler       crawler) {
     super(productService, webpageService, crawler);
   }
 

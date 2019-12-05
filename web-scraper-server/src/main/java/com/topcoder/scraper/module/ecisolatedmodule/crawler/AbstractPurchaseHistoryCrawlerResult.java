@@ -5,15 +5,15 @@ import com.topcoder.common.model.PurchaseHistory;
 import java.util.List;
 
 /**
- * Result for AmazonPurchaseHistoryListCrawler
+ * Result for AmazonPurchaseHistoryCrawler
  */
-public class AbstractPurchaseHistoryListCrawlerResult {
+public class AbstractPurchaseHistoryCrawlerResult {
   private List<PurchaseHistory> purchaseHistoryList;
   private List<String> htmlPathList;
 
-  public AbstractPurchaseHistoryListCrawlerResult(List<PurchaseHistory> purchaseHistoryList, List<String> htmlPathList) {
+  public AbstractPurchaseHistoryCrawlerResult(List<PurchaseHistory> purchaseHistoryList, List<String> htmlPathList) {
     this.purchaseHistoryList = purchaseHistoryList;
-    this.htmlPathList = htmlPathList;
+    this.htmlPathList        = htmlPathList;
   }
 
   public List<PurchaseHistory> getPurchaseHistoryList() {

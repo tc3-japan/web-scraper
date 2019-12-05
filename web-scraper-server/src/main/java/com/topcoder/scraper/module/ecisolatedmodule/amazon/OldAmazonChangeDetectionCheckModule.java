@@ -16,7 +16,7 @@ import com.topcoder.scraper.module.ecisolatedmodule.amazon.crawler.AmazonAuthent
 import com.topcoder.scraper.module.ecisolatedmodule.amazon.crawler.AmazonAuthenticationCrawlerResult;
 import com.topcoder.scraper.module.ecisolatedmodule.amazon.crawler.OldAmazonProductDetailCrawler;
 import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractProductCrawlerResult;
-import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractPurchaseHistoryListCrawlerResult;
+import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractPurchaseHistoryCrawlerResult;
 import com.topcoder.scraper.service.WebpageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,8 +100,8 @@ public class OldAmazonChangeDetectionCheckModule implements IChangeDetectionChec
 
             // TODO: fix
             /*
-            AmazonPurchaseHistoryListCrawler purchaseHistoryListCrawler = new AmazonPurchaseHistoryListCrawler(getModuleType(), property, webpageService);
-            AbstractPurchaseHistoryListCrawlerResult crawlerResult = purchaseHistoryListCrawler.fetchPurchaseHistoryList(webClient, null, true);
+            AmazonPurchaseHistoryCrawler purchaseHistoryListCrawler = new AmazonPurchaseHistoryCrawler(getModuleType(), property, webpageService);
+            AbstractPurchaseHistoryCrawlerResult crawlerResult = purchaseHistoryListCrawler.fetchPurchaseHistoryList(webClient, null, true);
             webClient.finishTraffic();
 
             processPurchaseHistory(crawlerResult, username, checkSiteDefinition);
@@ -131,7 +131,7 @@ public class OldAmazonChangeDetectionCheckModule implements IChangeDetectionChec
    * @param crawlerResult the crawler result
    * @param pageKey the page key
    */
-  protected void processPurchaseHistory(AbstractPurchaseHistoryListCrawlerResult crawlerResult, String pageKey, CheckItemsDefinitionProperty.CheckItemsCheckSite checkSiteDefinition) {
+  protected void processPurchaseHistory(AbstractPurchaseHistoryCrawlerResult crawlerResult, String pageKey, CheckItemsDefinitionProperty.CheckItemsCheckSite checkSiteDefinition) {
     List<PurchaseHistory> purchaseHistoryList = crawlerResult.getPurchaseHistoryList();
 
     CheckItemsDefinitionProperty.CheckItemsCheckPage checkItemsCheckPage = checkSiteDefinition.getCheckPageDefinition(Consts.PURCHASE_HISTORY_LIST_PAGE_NAME);

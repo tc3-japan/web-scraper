@@ -25,7 +25,7 @@ public class YahooAuthenticationCrawler extends AbstractAuthenticationCrawler {
   private final WebpageService webpageService;
   
   public YahooAuthenticationCrawler(WebpageService webpageService) {
-    this.siteName = "yahoo";
+    this.siteName       = "yahoo";
     this.webpageService = webpageService;
   }
 

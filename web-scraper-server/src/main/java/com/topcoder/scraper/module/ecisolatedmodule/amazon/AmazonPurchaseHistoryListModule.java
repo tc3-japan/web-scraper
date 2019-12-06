@@ -3,7 +3,7 @@ package com.topcoder.scraper.module.ecisolatedmodule.amazon;
 import com.topcoder.api.service.login.amazon.AmazonLoginHandler;
 import com.topcoder.common.repository.ECSiteAccountRepository;
 import com.topcoder.scraper.module.ecisolatedmodule.AbstractPurchaseHistoryListModule;
-import com.topcoder.scraper.module.ecisolatedmodule.amazon.crawler.AmazonPurchaseHistoryListCrawler;
+import com.topcoder.scraper.module.ecisolatedmodule.amazon.crawler.AmazonPurchaseHistoryCrawler;
 import com.topcoder.scraper.service.PurchaseHistoryService;
 import com.topcoder.scraper.service.WebpageService;
 import org.slf4j.Logger;
@@ -25,7 +25,7 @@ public class AmazonPurchaseHistoryListModule extends AbstractPurchaseHistoryList
           ECSiteAccountRepository          ecSiteAccountRepository,
           WebpageService                   webpageService,
           AmazonLoginHandler               loginHandler,
-          AmazonPurchaseHistoryListCrawler crawler
+          AmazonPurchaseHistoryCrawler     crawler
   ) {
     super(purchaseHistoryService, ecSiteAccountRepository, webpageService, loginHandler, crawler);
   }

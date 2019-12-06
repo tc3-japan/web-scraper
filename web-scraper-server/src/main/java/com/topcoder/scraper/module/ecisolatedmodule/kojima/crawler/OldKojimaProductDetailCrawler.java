@@ -82,6 +82,7 @@ public class OldKojimaProductDetailCrawler extends GeneralProductCrawler {
 
     HtmlPage searchResultPage = webClient.click(searchButtonInput);
 
+    // TODO: -----------------
     DomNode firstItemAnchorNode = searchResultPage.querySelector("#category_item_list > li:first-child > a");
     if (saveHtml) {
       webpageService.save("kojima-search-result", siteName, searchResultPage.getWebResponse().getContentAsString());

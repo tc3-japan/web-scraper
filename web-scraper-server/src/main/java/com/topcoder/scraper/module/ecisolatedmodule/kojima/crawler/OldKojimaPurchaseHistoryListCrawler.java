@@ -19,7 +19,7 @@ import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.common.util.DateUtils;
 import com.topcoder.scraper.exception.SessionExpiredException;
-import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistoryListCrawlerResult;
+import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistoryCrawlerResult;
 import com.topcoder.scraper.lib.navpage.NavigablePurchaseHistoryPage;
 import com.topcoder.scraper.service.WebpageService;
 
@@ -35,7 +35,7 @@ public class OldKojimaPurchaseHistoryListCrawler {
     this.webpageService = webpageService;
   }
 
-  public GeneralPurchaseHistoryListCrawlerResult fetchPurchaseHistoryList(TrafficWebClient webClient, PurchaseHistory lastPurchaseHistory, boolean saveHtml) throws IOException {
+  public GeneralPurchaseHistoryCrawlerResult fetchPurchaseHistoryList(TrafficWebClient webClient, PurchaseHistory lastPurchaseHistory, boolean saveHtml) throws IOException {
     List<PurchaseHistory> list = new LinkedList<>();
     List<String> pathList = new LinkedList<>();
     LOGGER.info("goto Order History Page");
@@ -53,7 +53,7 @@ public class OldKojimaPurchaseHistoryListCrawler {
       page = gotoNextPage(page, webClient);
     }
 
-    return new GeneralPurchaseHistoryListCrawlerResult(list, pathList);
+    return new GeneralPurchaseHistoryCrawlerResult(list, pathList);
   }
   
   private boolean parsePurchaseHistory(TrafficWebClient webClient, List<PurchaseHistory> list, HtmlPage page, PurchaseHistory last, boolean saveHtml, List<String> pathList) {

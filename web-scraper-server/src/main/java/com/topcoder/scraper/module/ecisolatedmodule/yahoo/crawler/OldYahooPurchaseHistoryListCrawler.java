@@ -16,11 +16,11 @@ import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.lib.navpage.NavigablePurchaseHistoryPage;
-import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistoryListCrawler;
-import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistoryListCrawlerResult;
+import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistoryCrawler;
+import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistoryCrawlerResult;
 import com.topcoder.scraper.service.WebpageService;
 
-public class OldYahooPurchaseHistoryListCrawler extends GeneralPurchaseHistoryListCrawler {
+public class OldYahooPurchaseHistoryListCrawler extends GeneralPurchaseHistoryCrawler {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(OldYahooPurchaseHistoryListCrawler.class);
 
@@ -49,8 +49,8 @@ public class OldYahooPurchaseHistoryListCrawler extends GeneralPurchaseHistoryLi
     this.password = password;
   }
 
-  public GeneralPurchaseHistoryListCrawlerResult fetchPurchaseHistoryList(TrafficWebClient webClient,
-                                                                          PurchaseHistory lastPurchaseHistory, boolean saveHtml) throws IOException {
+  public GeneralPurchaseHistoryCrawlerResult fetchPurchaseHistoryList(TrafficWebClient webClient,
+                                                                      PurchaseHistory lastPurchaseHistory, boolean saveHtml) throws IOException {
     List<PurchaseHistory> list = new LinkedList<>();
     List<String> pathList = new LinkedList<>();
     LOGGER.info("goto Order History Page");
@@ -67,7 +67,7 @@ public class OldYahooPurchaseHistoryListCrawler extends GeneralPurchaseHistoryLi
       //page = gotoNextPage(page, webClient);
     }
 
-    return new GeneralPurchaseHistoryListCrawlerResult(list, pathList);
+    return new GeneralPurchaseHistoryCrawlerResult(list, pathList);
   }
 
   private boolean parsePurchaseHistory(List<PurchaseHistory> list, HtmlPage page, TrafficWebClient webClient,

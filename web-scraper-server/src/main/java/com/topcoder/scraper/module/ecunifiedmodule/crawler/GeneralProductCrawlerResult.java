@@ -8,7 +8,7 @@ public class GeneralProductCrawlerResult {
 
   public GeneralProductCrawlerResult(ProductInfo productInfo, String htmlPath) {
     this.productInfo = productInfo;
-    this.htmlPath = htmlPath;
+    this.htmlPath    = htmlPath;
   }
 
   public ProductInfo getProductInfo() {

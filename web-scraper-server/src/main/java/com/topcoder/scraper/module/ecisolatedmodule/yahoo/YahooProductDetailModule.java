@@ -21,7 +21,7 @@ public class YahooProductDetailModule extends AbstractProductModule {
   public YahooProductDetailModule(
           ProductService            productService,
           WebpageService            webpageService,
-          YahooProductCrawler crawler) {
+          YahooProductCrawler       crawler) {
     super(productService, webpageService, crawler);
   }
 

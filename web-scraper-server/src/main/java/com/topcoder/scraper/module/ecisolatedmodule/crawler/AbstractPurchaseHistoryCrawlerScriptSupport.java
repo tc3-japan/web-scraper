@@ -9,12 +9,12 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.List;
 
-public abstract class AbstractPurchaseHistoryListCrawlerScriptSupport extends Script {
+public abstract class AbstractPurchaseHistoryCrawlerScriptSupport extends Script {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPurchaseHistoryListCrawlerScriptSupport.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPurchaseHistoryCrawlerScriptSupport.class);
 
-  protected AbstractPurchaseHistoryListCrawler crawler;
-  void setCrawler(AbstractPurchaseHistoryListCrawler crawler) {
+  protected AbstractPurchaseHistoryCrawler crawler;
+  void setCrawler(AbstractPurchaseHistoryCrawler crawler) {
     this.crawler = crawler;
   }
 

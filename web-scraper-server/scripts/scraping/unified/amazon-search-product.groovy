@@ -8,7 +8,7 @@ eachProducts { index ->
     searchResultSelector = "#search div[data-index='" + index + "']"
     adProductClass       = "AdHolder"
     productCodeAttribute = "data-asin"
-    scrapeProductCodeFromSearchResult(searchResultSelector, productCodeAttribute, adProductClass)
+    scrapeProductCodeFromSearchResultByProductAttrName(searchResultSelector, productCodeAttribute, adProductClass)
 }
 
 log("--------------script end--------------")

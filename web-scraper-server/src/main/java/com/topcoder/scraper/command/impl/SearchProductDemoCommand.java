@@ -32,7 +32,15 @@ public class SearchProductDemoCommand extends AbstractCommand<IProductModule> {
   @Override
   protected void process(IProductModule module) {
     try {
-      ProductDAO product = module.searchProductInfo("amazon", "ES-W111-SR");
+      ProductDAO product;
+      LOGGER.info(">>> SearchProductDemo, Amazon: ");
+      product = module.searchProductInfo("amazon", "ES-W111-SR");
+      LOGGER.info("ProductCode: " + product.getProductCode());
+      LOGGER.info("ProductName: " + product.getProductName());
+      LOGGER.info("ModelNo: "     + product.getModelNo());
+
+      LOGGER.info(">>> SearchProductDemo, Kojima: ");
+      product = module.searchProductInfo("kojima", "洗濯機");
       LOGGER.info("ProductCode: " + product.getProductCode());
       LOGGER.info("ProductName: " + product.getProductName());
       LOGGER.info("ModelNo: "     + product.getModelNo());

@@ -36,6 +36,14 @@ public abstract class GeneralProductCrawlerScriptSupport extends Script {
     this.crawler.getListPage().setPage(searchUrl);
   }
 
+  void searchProductsUsingForm(String searchUrl, String searchFormName, String searchInputName, String searchButtonSelector) {
+    LOGGER.info("[searchProductsUsingForm] in");
+
+    this.crawler.getWebClient().getWebClient().getOptions().setJavaScriptEnabled(false);
+    this.crawler.getListPage().searchProductsUsingForm(searchUrl, searchFormName, searchInputName, searchButtonSelector, this.crawler.getSearchWord());
+  }
+
+
   void setEnableJS(boolean value) {
     this.crawler.getWebClient().getWebClient().getOptions().setJavaScriptEnabled(value);
   }
@@ -94,9 +102,15 @@ public abstract class GeneralProductCrawlerScriptSupport extends Script {
     this.crawler.getDetailPage().scrapeModelNo(modelNoSelectors);
   }
 
-  String scrapeProductCodeFromSearchResult(String searchResultSelector, String productCodeAttribute, String adProductClass) {
-    String productCode = this.crawler.getListPage().scrapeProductCodeFromSearchResult(
+  String scrapeProductCodeFromSearchResultByProductAttrName(String searchResultSelector, String productCodeAttribute, String adProductClass) {
+    String productCode = this.crawler.getListPage().scrapeProductCodeFromSearchResultByProductAttrName(
             searchResultSelector, productCodeAttribute, adProductClass, this.crawler.getSearchWord());
+    return productCode;
+  }
+
+  String scrapeProductCodeFromSearchResultByProductUrl(String searchResultSelector, String productCodeRegex) {
+    String productCode = this.crawler.getListPage().scrapeProductCodeFromSearchResultByProductUrl(
+            searchResultSelector, productCodeRegex, this.crawler.getSearchWord());
     return productCode;
   }
 

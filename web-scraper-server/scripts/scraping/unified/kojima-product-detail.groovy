@@ -1,13 +1,12 @@
 log "Kojima TEST"
-log productId
-log productId
+log productCode
 setPage "https://www.kojima.net/ec/top/CSfTop.jsp"
 setEnableJS true
-type productId, "#q"
-savePage "test", "yahoo"
+type productCode, "#q"
+savePage "kojima-product"
 click "#btnSearch"
 click "#category_item_list > li:nth-child(1) > a:nth-child(1) > img:nth-child(2)"
-savePage "test-after-click", "yahoo"
+savePage "kojima-after-click"
 scrapeName "h1.htxt02"
 scrapeDistributor "span"
 scrapePrice "td.price > span"

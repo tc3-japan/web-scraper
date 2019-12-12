@@ -33,17 +33,28 @@ public class SearchProductDemoCommand extends AbstractCommand<IProductModule> {
   protected void process(IProductModule module) {
     try {
       ProductDAO product;
+
       LOGGER.info(">>> SearchProductDemo, Amazon: ");
       product = module.searchProductInfo("amazon", "ES-W111-SR");
       LOGGER.info("ProductCode: " + product.getProductCode());
       LOGGER.info("ProductName: " + product.getProductName());
+      LOGGER.info("UnitPrice: "   + product.getUnitPrice());
       LOGGER.info("ModelNo: "     + product.getModelNo());
 
       LOGGER.info(">>> SearchProductDemo, Kojima: ");
       product = module.searchProductInfo("kojima", "洗濯機");
       LOGGER.info("ProductCode: " + product.getProductCode());
       LOGGER.info("ProductName: " + product.getProductName());
+      LOGGER.info("UnitPrice: "   + product.getUnitPrice());
       LOGGER.info("ModelNo: "     + product.getModelNo());
+
+      LOGGER.info(">>> SearchProductDemo, Yahoo: ");
+      product = module.searchProductInfo("yahoo", "毛皮");
+      LOGGER.info("ProductCode: " + product.getProductCode());
+      LOGGER.info("ProductName: " + product.getProductName());
+      LOGGER.info("UnitPrice: "   + product.getUnitPrice());
+      LOGGER.info("ModelNo: "     + product.getModelNo());
+
     } catch (IOException e) {
       LOGGER.error("Fail to fetch product detail list", e);
       throw new FetchProductDetailException();

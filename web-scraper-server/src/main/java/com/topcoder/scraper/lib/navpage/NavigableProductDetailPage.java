@@ -13,8 +13,11 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
+import static com.topcoder.common.util.HtmlUtils.extract1;
 import static com.topcoder.common.util.HtmlUtils.extractInt;
+import static com.topcoder.common.util.HtmlUtils.getAnchorHref;
 
 public class NavigableProductDetailPage extends NavigablePage {
 
@@ -74,6 +77,19 @@ public class NavigableProductDetailPage extends NavigablePage {
 		LOGGER.info("[scrapeCode] Code >>>> " + code);
 		if (code != null) {
 			productInfo.setCode(code);
+		}
+	}
+
+	public void scrapeCodeFromAttr(String selector, String attrName, String codeRegexStr) {
+		LOGGER.info("[scrapeCodeFromAttr] in");
+		HtmlElement node = this.page.querySelector(selector);
+		String attrValue = node.getAttribute(attrName);
+		Pattern pattern  = Pattern.compile(codeRegexStr);
+
+		String str = extract1(attrValue, pattern);
+		LOGGER.info("[scrapeCodeFromAttr] >>> Setting Product Code >>>" + str);
+		if (str != null) {
+			productInfo.setCode(str);
 		}
 	}
 

@@ -41,7 +41,7 @@ public class NavigableProductListPage extends NavigablePage {
 		}
 	}
 
-	public String scrapeProductCodeFromSearchResultByProductAttrName(String searchResultSelector, String productCodeAttribute, String adProductClass, String searchWord) {
+	public String scrapeProductCodeFromSearchResultByProductAttrName(String searchWord, String searchResultSelector, String productCodeAttribute, String adProductClass, String productCodeRegex) {
 		LOGGER.info("[scrapeProductCodeFromSearchResultByProductAttrName] in");
 
 		HtmlElement element = this.page.querySelector(searchResultSelector);
@@ -55,8 +55,16 @@ public class NavigableProductListPage extends NavigablePage {
 				return null;
 			}
 		}
-		//get asin no
+		// get product code (amazon: data-asin, yahoo: data-beacon)
 		String productCode = element.getAttribute(productCodeAttribute);
+		// extract product code using regex (yahoo)
+		if (StringUtils.isNotEmpty(productCode) && StringUtils.isNotEmpty(productCodeRegex)) {
+			productCode = HtmlUtils.extract1(productCode, Pattern.compile(productCodeRegex));
+		}
+		if(productCode == null) {
+			return null;
+		}
+
 		if(productCode == null) {
 			return null;
 		}
@@ -64,7 +72,7 @@ public class NavigableProductListPage extends NavigablePage {
 		return productCode;
 	}
 
-	public String scrapeProductCodeFromSearchResultByProductUrl(String searchResultSelector, String productCodeRegex, String searchWord) {
+	public String scrapeProductCodeFromSearchResultByProductUrl(String searchWord, String searchResultSelector, String productCodeRegex) {
 		LOGGER.info("[scrapeProductCodeFromSearchResultByProductUrl] in");
 
 		HtmlAnchor anchor = this.page.querySelector(searchResultSelector);

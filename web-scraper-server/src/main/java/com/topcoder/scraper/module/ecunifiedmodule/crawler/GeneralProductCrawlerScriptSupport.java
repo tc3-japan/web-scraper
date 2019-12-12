@@ -74,6 +74,10 @@ public abstract class GeneralProductCrawlerScriptSupport extends Script {
     this.crawler.getDetailPage().scrapeCode(selector);
   }
 
+  void scrapeCodeFromAttr(String selector, String attrName, String codeRegexStr) {
+    this.crawler.getDetailPage().scrapeCodeFromAttr(selector, attrName, codeRegexStr);
+  }
+
   void scrapeName(String selector) {
     this.crawler.getDetailPage().scrapeName(selector);
   }
@@ -104,13 +108,19 @@ public abstract class GeneralProductCrawlerScriptSupport extends Script {
 
   String scrapeProductCodeFromSearchResultByProductAttrName(String searchResultSelector, String productCodeAttribute, String adProductClass) {
     String productCode = this.crawler.getListPage().scrapeProductCodeFromSearchResultByProductAttrName(
-            searchResultSelector, productCodeAttribute, adProductClass, this.crawler.getSearchWord());
+            this.crawler.getSearchWord(), searchResultSelector, productCodeAttribute, adProductClass, null);
+    return productCode;
+  }
+
+  String scrapeProductCodeFromSearchResultByProductAttrName(String searchResultSelector, String productCodeAttribute, String adProductClass, String productCodeRegex) {
+    String productCode = this.crawler.getListPage().scrapeProductCodeFromSearchResultByProductAttrName(
+            this.crawler.getSearchWord(), searchResultSelector, productCodeAttribute, adProductClass, productCodeRegex);
     return productCode;
   }
 
   String scrapeProductCodeFromSearchResultByProductUrl(String searchResultSelector, String productCodeRegex) {
     String productCode = this.crawler.getListPage().scrapeProductCodeFromSearchResultByProductUrl(
-            searchResultSelector, productCodeRegex, this.crawler.getSearchWord());
+            this.crawler.getSearchWord(), searchResultSelector, productCodeRegex);
     return productCode;
   }
 

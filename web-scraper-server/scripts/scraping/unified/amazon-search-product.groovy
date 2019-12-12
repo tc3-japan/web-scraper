@@ -6,8 +6,8 @@ saveListPage("product-list")
 
 eachProducts { index ->
     searchResultSelector = "#search div[data-index='" + index + "']"
-    adProductClass       = "AdHolder"
     productCodeAttribute = "data-asin"
+    adProductClass       = "AdHolder"
     scrapeProductCodeFromSearchResultByProductAttrName(searchResultSelector, productCodeAttribute, adProductClass)
 }
 

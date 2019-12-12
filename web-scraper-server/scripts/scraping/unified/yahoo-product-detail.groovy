@@ -1,10 +1,21 @@
 def htmlPath = "https://store.shopping.yahoo.co.jp/"
-setEnableJS(false);
+setEnableJS(false)
 setPage(htmlPath + productCode)
-savePage("test-"+productCode, "yahoo")
+savePage("yahoo-" + productCode.replace("/", "_"))
+
 log(" >>> Requesting Page >>> " + htmlPath + productCode)
 
-scrapeCode("#abuserpt > p:nth-child(3)");
-scrapeName("div.elTitle > h2:nth-child(1)");
-scrapeDistributor("dt.elStore > a:nth-child(1)");
-scrapePrice(".elNum");
+// #abuserpt > p:nth-child(3)
+// head > link[rel='canonical']
+scrapeCodeFromAttr("head > link[rel='canonical']", "href", "https:\\/\\/.*?\\/(.*)\\.html");
+
+// .mdItemInfoTitle > h2:nth-child(1)
+scrapeName(".mdItemInfoTitle > h2")
+
+// dt.elStore > a:nth-child(1)
+scrapeDistributor("dt.elStore > a")
+
+// .elNum
+// .ItemPrice_price
+// p.elPrice:nth-child(2) > em:nth-child(1)
+scrapePrices([".elNum", ".ItemPrice_price", "p.elPrice:nth-child(2) > em"])

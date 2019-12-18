@@ -97,6 +97,12 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
     }
   }
 
+    public List<DomNode> scrapeDomList(DomNode node, String selector) {
+        LOGGER.info("[scrapeDomList] in");
+        return node.querySelectorAll(selector);
+    }
+
+
   public void scrapeOrderNumberWithRegex(DomNode node, String selector, String regexStr) {
     LOGGER.info("[scrapeOrderNumberWithRegex] in");
 
@@ -163,51 +169,68 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
     if (str != null) {
       purchaseHistory.setDeliveryStatus(str);
     }
-  }
 
-  public void scrapeProductCodeFromAnchor(DomNode node, String anchorSelector, String regexStr) {
-    LOGGER.info("[scrapeProductCodeFromAnchor] in");
-    HtmlElement productAnchor = node.querySelector(anchorSelector);
-    String productAnchorStr   = getAnchorHref(productAnchor);
-    Pattern pattern           = Pattern.compile(regexStr);
+    public void scrapeProductCodeFromAnchor(DomNode node, String anchorSelector, String regexStr) {
+        LOGGER.info("[scrapeProductCodeFromAnchor] in");
+        LOGGER.info("WARNING: DEPRACATED. DO NOT USE");
+        HtmlElement productAnchor = node.querySelector(anchorSelector);
+        String productAnchorStr   = getAnchorHref(productAnchor);
+        Pattern pattern           = Pattern.compile(regexStr);
 
-    String str = extract1(productAnchorStr, pattern);
-    LOGGER.info("[scrapeProductCodeFromAnchor] >>> Setting Product Code >>>" + str);
-    if (str != null) {
-      productInfo.setCode(str);
+        String str = extract1(productAnchorStr, pattern);
+        //LOGGER.info("[scrapeProductCodeFromAnchor] >>> Setting Product Code >>>" + str);
+        if (str != null) {
+            productInfo.setCode(str);
+        }
     }
-  }
 
-  public void scrapeProductCodeFromInput(DomNode node, String inputSelector, String regexStr) {
-    LOGGER.info("[scrapeProductCodeFromInput] in");
-    HtmlHiddenInput productCodeInput = (HtmlHiddenInput)node.querySelector(inputSelector);
-    String  productCodeInputValue    = productCodeInput.getValueAttribute();
-    Pattern pattern                  = Pattern.compile(regexStr);
-
-    String str = extract1(productCodeInputValue, pattern);
-    LOGGER.info("[scrapeProductCodeFromInput] >>> Setting Product Code >>>" + str);
-    if (str != null) {
-      productInfo.setCode(str);
+    public void addProduct(ProductInfo product) {
+        purchaseHistory.addProduct(product);
     }
-  }
-
-  public void scrapeProductName(DomNode node, String selector) {
-    LOGGER.info("[scrapeProductName] in");
-    String str = getText(node, selector);
-    str = normalizeText(str);
-    LOGGER.info("[scrapeProductName] >>> Setting Product Name >>>" + str);
-    if (str != null) {
-      productInfo.setName(str);
+    
+    public void scrapeProductCode(String selector) {
+        LOGGER.info("WARNING: DEPRACATED. DO NOT USE");
+        String str = getText(selector);
+        LOGGER.info("[scrapeProductCodeFromAnchor] >>> Setting Product Code >>>" + str);
+        if (str != null) {
+            productInfo.setCode(str);
+        }
     }
-  }
 
-  public void scrapeProductNameFromAnchor(DomNode node, String anchorSelector) {
-    LOGGER.info("[scrapeProductNameFromAnchor] in");
-    HtmlElement productAnchor = node.querySelector(anchorSelector);
-    String str = getTextContent(productAnchor);
-    LOGGER.info("[scrapeProductNameFromAnchor] >>> Setting Product Name >>>" + str);
-    if (str != null) {
-      productInfo.setName(str);
+    public void scrapeProductName(DomNode node, String selector) {
+        LOGGER.info("WARNING: DEPRACATED. DO NOT USE");
+        LOGGER.info("[scrapeProductName] in");
+        String str = getText(node, selector);
+        str = normalizeText(str);
+        LOGGER.info("[scrapeProductName] >>> Setting Product Distributor >>>" + str);
+        if (str != null) {
+            productInfo.setName(str);
+        }
+    }
+
+    public void scrapeProductNameFromAnchor(DomNode node, String anchorSelector) {
+        LOGGER.info("WARNING: DEPRACATED. DO NOT USE");
+        LOGGER.info("[scrapeProductNameFromAnchor] in");
+        HtmlElement productAnchor = node.querySelector(anchorSelector);
+        String str = getTextContent(productAnchor);
+        LOGGER.info("[scrapeProductNameFromAnchor] >>> Setting Product Name >>>" + str);
+        if (str != null) {
+            productInfo.setName(str);
+        }
+    }
+
+    public void scrapeUnitPrice(DomNode node, String selector) {
+
+        LOGGER.info("[scrapeUnitPrice] in");
+        LOGGER.info(">>> Selector: " + selector);
+        HtmlElement num = node.querySelector(selector);
+        LOGGER.info("[scrapeUnitPrice] >>> Setting Unit Price >>>" + num);
+
+        if (num != null) {
+            Integer numInt = num != null ? extractInt(num.asText()) : null;
+            LOGGER.info("[scrapeUnitPrice] >>> Setting Unit Price >>>" + numInt);
+            productInfo.setPrice(Integer.toString(numInt));
+        }
     }
   }
 

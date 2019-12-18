@@ -68,9 +68,23 @@ public class NavigablePage {
     public void click(String selector) {
         LOGGER.info("[click] in");
         if (selector != null) {
+            HtmlElement element = null;
+            HtmlButton button = null;
 
-            HtmlElement element = page.querySelector(selector);
-            LOGGER.info("click() > Selected " + element + " from " + selector);
+            try {
+                element = page.querySelector(selector);
+                LOGGER.info("click() > Selected " + element + " from " + selector);
+            } catch (Exception e) {
+                //e.printStackTrace();
+            }
+
+            try {
+                button = (HtmlButton)page.querySelector(selector);
+                LOGGER.info("click() >  button Selected " + button + " from " + selector);
+            } catch (Exception e) {
+                //e.printStackTrace();
+            }
+
             if (element != null) {
                 try {
                     HtmlPage result = webClient.click(element);
@@ -149,7 +163,8 @@ public class NavigablePage {
             }
         }
     }
-    protected String getText(String selector) {
+    
+    public String getText(String selector) {
         LOGGER.info("[getText] in");
 
         HtmlElement node = page.querySelector(selector);
@@ -157,6 +172,7 @@ public class NavigablePage {
         LOGGER.info(">>> Got Text >>> " + str + " for " + selector);
         return str;
     }
+
 
     protected String getValue(String selector) {
         LOGGER.info("[getValue] in");
@@ -171,7 +187,7 @@ public class NavigablePage {
         return str;
     }
 
-    protected String getText(DomNode sourceNode, String selector) {
+    public String getText(DomNode sourceNode, String selector) {
         LOGGER.info("[getText] in");
 
         HtmlElement node = sourceNode.querySelector(selector);
@@ -221,7 +237,6 @@ public class NavigablePage {
             HtmlCheckBoxInput memberIdInput = page.querySelector(selector);
             if (memberIdInput != null) {
                 LOGGER.info("typeCheckBox() > Selected " + memberIdInput + " from " + selector);
-                // LOGGER.info("Typing " + input); //TODO: REMOVE
                 try {
                     memberIdInput.type(input);
                 } catch (IOException e) {

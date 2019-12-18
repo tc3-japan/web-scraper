@@ -81,12 +81,16 @@ public class GeneralPurchaseHistoryListModule implements IPurchaseHistoryListMod
           List<PurchaseHistory> list = crawlerResult.getPurchaseHistoryList();
 
           if (list != null && list.size() > 0) {
+            //System.out.println("NULL PTR DEBUG. >>> before list.forEach command <<<");
             list.forEach(purchaseHistory -> purchaseHistory.setAccountId(Integer.toString(ecSiteAccountDAO.getId())));
+           // System.out.println("NULL PTR DEBUG. getModuleType(): " + getModuleType());
+            System.out.println("NULL PTR DEBUG. historylist: " + list);
+
             purchaseHistoryService.save(getModuleType(), list);
           }
           LOGGER.info("succeed fetch purchaseHistory for ecSite id = " + ecSiteAccountDAO.getId());
         } catch (Exception e) { // here catch all exception and did not throw it
-          this.loginHandler.saveFailedResult(ecSiteAccountDAO, e.getMessage());
+          //this.loginHandler.saveFailedResult(ecSiteAccountDAO, e.getMessage());
           LOGGER.error("failed to PurchaseHistory for ecSite id = " + ecSiteAccountDAO.getId());
           e.printStackTrace();
         }

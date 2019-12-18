@@ -34,6 +34,11 @@ public abstract class AbstractProductCrawlerScriptSupport extends Script {
     this.crawler.getDetailPage().click(selector);
   }
 
+
+  void clickAnchor(String selector) {
+    this.crawler.getDetailPage().click(selector);
+  }
+
   void type(String input, String selector) {
     this.crawler.getDetailPage().type(input, selector);
   }

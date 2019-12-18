@@ -53,7 +53,7 @@ public class RakutenAuthenticationCrawler extends AbstractAuthenticationCrawler 
 
     authPage.savePage("rakuten-authenticated", siteName, webpageService);
 
-    authPage.ConfirmLoginByElementExists(".header-logo");
+    authPage.confirmLoginByElementExists(".header-logo");
     
     return new RakutenAuthenticationCrawlerResult(authPage.getLoginStatus(), null);
   }

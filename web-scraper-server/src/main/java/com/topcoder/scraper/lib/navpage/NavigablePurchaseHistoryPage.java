@@ -4,7 +4,6 @@ import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlHiddenInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.gargoylesoftware.htmlunit.javascript.host.html.HTMLInputElement;
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.common.traffic.TrafficWebClient;
@@ -19,11 +18,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static com.topcoder.common.util.HtmlUtils.extract;
-import static com.topcoder.common.util.HtmlUtils.extract1;
-import static com.topcoder.common.util.HtmlUtils.extractInt;
-import static com.topcoder.common.util.HtmlUtils.getAnchorHref;
-import static com.topcoder.common.util.HtmlUtils.getTextContent;
+import static com.topcoder.common.util.HtmlUtils.*;
 
 public class NavigablePurchaseHistoryPage extends NavigablePage {
 
@@ -165,19 +160,6 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
     }
   }
 
-  public void scrapeProductCodeFromAnchor(DomNode node, String anchorSelector, String regexStr) {
-    LOGGER.info("[scrapeProductCodeFromAnchor] in");
-    HtmlElement productAnchor = node.querySelector(anchorSelector);
-    String productAnchorStr   = getAnchorHref(productAnchor);
-    Pattern pattern           = Pattern.compile(regexStr);
-
-    String str = extract1(productAnchorStr, pattern);
-    LOGGER.info("[scrapeProductCodeFromAnchor] >>> Setting Product Code >>>" + str);
-    if (str != null) {
-      productInfo.setCode(str);
-    }
-  }
-
   public void scrapeProductCodeFromInput(DomNode node, String inputSelector, String regexStr) {
     LOGGER.info("[scrapeProductCodeFromInput] in");
     HtmlHiddenInput productCodeInput = (HtmlHiddenInput)node.querySelector(inputSelector);
@@ -192,6 +174,7 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
   }
 
   public void scrapeProductName(DomNode node, String selector) {
+    LOGGER.info("WARNING: DEPRACATED. DO NOT USE");
     LOGGER.info("[scrapeProductName] in");
     String str = getText(node, selector);
     str = normalizeText(str);
@@ -201,7 +184,35 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
     }
   }
 
+  public void scrapeProductCodeFromAnchor(DomNode node, String anchorSelector, String regexStr) {
+    LOGGER.info("[scrapeProductCodeFromAnchor] in");
+    LOGGER.info("WARNING: DEPRACATED. DO NOT USE");
+    HtmlElement productAnchor = node.querySelector(anchorSelector);
+    String productAnchorStr   = getAnchorHref(productAnchor);
+    Pattern pattern           = Pattern.compile(regexStr);
+
+    String str = extract1(productAnchorStr, pattern);
+    //LOGGER.info("[scrapeProductCodeFromAnchor] >>> Setting Product Code >>>" + str);
+    if (str != null) {
+      productInfo.setCode(str);
+    }
+  }
+
+  public void addProduct(ProductInfo product) {
+    purchaseHistory.addProduct(product);
+  }
+
+  public void scrapeProductCode(String selector) {
+    LOGGER.info("WARNING: DEPRACATED. DO NOT USE");
+    String str = getText(selector);
+    LOGGER.info("[scrapeProductCodeFromAnchor] >>> Setting Product Code >>>" + str);
+    if (str != null) {
+      productInfo.setCode(str);
+    }
+  }
+
   public void scrapeProductNameFromAnchor(DomNode node, String anchorSelector) {
+    LOGGER.info("WARNING: DEPRACATED. DO NOT USE");
     LOGGER.info("[scrapeProductNameFromAnchor] in");
     HtmlElement productAnchor = node.querySelector(anchorSelector);
     String str = getTextContent(productAnchor);
@@ -213,6 +224,7 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
 
   public void scrapeUnitPrice(DomNode node, String selector) {
     LOGGER.info("[scrapeUnitPrice] in");
+    LOGGER.info(">>> Selector: " + selector);
     HtmlElement num = node.querySelector(selector);
     if (num != null) {
       Integer numInt = num != null ? extractInt(num.asText()) : null;

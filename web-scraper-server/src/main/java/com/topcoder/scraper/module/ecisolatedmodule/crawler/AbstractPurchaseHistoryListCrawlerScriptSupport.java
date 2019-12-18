@@ -65,6 +65,10 @@ public abstract class AbstractPurchaseHistoryListCrawlerScriptSupport extends Sc
     return this.crawler.getHistoryPage().scrapeDomList(selector);
   }
 
+  List<DomNode> scrapeDomList(DomNode node, String selector) {
+    return this.crawler.getHistoryPage().scrapeDomList(node, selector);
+  }
+
   // Scraping wrapper: order in purchase history -----------------------------------------------------------------------
 
   void scrapeOrderNumber(DomNode orderNode, String selector) {
@@ -95,6 +99,10 @@ public abstract class AbstractPurchaseHistoryListCrawlerScriptSupport extends Sc
 
   void scrapeProductCodeFromAnchor(DomNode productNode, String selector, String regexStr) {
     this.crawler.getHistoryPage().scrapeProductCodeFromAnchor(productNode, selector, regexStr);
+  }
+
+  void scrapeProductCode(String selector) {
+    this.crawler.getHistoryPage().scrapeProductCode(selector);
   }
 
   void scrapeProductName(DomNode productNode, String selector) {

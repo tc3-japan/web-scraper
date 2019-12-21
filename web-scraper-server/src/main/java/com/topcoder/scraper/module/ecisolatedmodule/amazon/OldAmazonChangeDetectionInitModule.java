@@ -88,8 +88,8 @@ public class OldAmazonChangeDetectionInitModule implements IChangeDetectionInitM
               continue;
             }
 
-            AmazonPurchaseHistoryCrawler purchaseHistoryListCrawler = new AmazonPurchaseHistoryCrawler(webpageService);
-            AbstractPurchaseHistoryCrawlerResult crawlerResult = purchaseHistoryListCrawler.fetchPurchaseHistoryList(webClient, null, false);
+            AmazonPurchaseHistoryCrawler purchaseHistoryCrawler = new AmazonPurchaseHistoryCrawler(webpageService);
+            AbstractPurchaseHistoryCrawlerResult crawlerResult = purchaseHistoryCrawler.fetchPurchaseHistoryList(webClient, null, false);
             webClient.finishTraffic();
             processPurchaseHistory(crawlerResult, username);
           }

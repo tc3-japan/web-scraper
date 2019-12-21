@@ -24,7 +24,7 @@ public class YahooChangeDetectionInitModule extends AbstractChangeDetectionInitM
           WebpageService                  webpageService,
           ECSiteAccountRepository         ecSiteAccountRepository,
           NormalDataRepository            normalDataRepository,
-          YahooPurchaseHistoryListModule  purchaseHistoryListModule,
+          YahooPurchaseHistoryModule      purchaseHistoryModule,
           YahooProductDetailModule        productModule
   ) {
     super(
@@ -32,7 +32,7 @@ public class YahooChangeDetectionInitModule extends AbstractChangeDetectionInitM
             webpageService,
             ecSiteAccountRepository,
             normalDataRepository,
-            purchaseHistoryListModule,
+            purchaseHistoryModule,
             productModule
     );
   }

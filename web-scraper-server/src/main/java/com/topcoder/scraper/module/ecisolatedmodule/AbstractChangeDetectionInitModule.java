@@ -26,19 +26,19 @@ public abstract class AbstractChangeDetectionInitModule extends AbstractChangeDe
   private static Logger LOGGER = LoggerFactory.getLogger(AbstractChangeDetectionInitModule.class);
 
   public AbstractChangeDetectionInitModule(
-          MonitorTargetDefinitionProperty    monitorTargetDefinitionProperty,
-          WebpageService                     webpageService,
-          ECSiteAccountRepository            ecSiteAccountRepository,
-          NormalDataRepository               normalDataRepository,
-          AbstractPurchaseHistoryListModule  purchaseHistoryListModule,
-          AbstractProductModule              productModule
+          MonitorTargetDefinitionProperty monitorTargetDefinitionProperty,
+          WebpageService                  webpageService,
+          ECSiteAccountRepository         ecSiteAccountRepository,
+          NormalDataRepository            normalDataRepository,
+          AbstractPurchaseHistoryModule   purchaseHistoryModule,
+          AbstractProductModule           productModule
   ) {
     super(
             monitorTargetDefinitionProperty,
             webpageService,
             ecSiteAccountRepository,
             normalDataRepository,
-            purchaseHistoryListModule,
+            purchaseHistoryModule,
             productModule);
   }
 

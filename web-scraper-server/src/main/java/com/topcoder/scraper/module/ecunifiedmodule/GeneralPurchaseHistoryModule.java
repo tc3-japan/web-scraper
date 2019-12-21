@@ -10,7 +10,7 @@ import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.common.repository.ECSiteAccountRepository;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.common.util.Common;
-import com.topcoder.scraper.module.IPurchaseHistoryListModule;
+import com.topcoder.scraper.module.IPurchaseHistoryModule;
 import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistoryCrawler;
 import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistoryCrawlerResult;
 import com.topcoder.scraper.service.PurchaseHistoryService;
@@ -23,9 +23,9 @@ import org.springframework.stereotype.Component;
 
 // TODO : implement, now this is just copyed from yahoo product detail
 @Component
-public class GeneralPurchaseHistoryListModule implements IPurchaseHistoryListModule {
+public class GeneralPurchaseHistoryModule implements IPurchaseHistoryModule {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(GeneralPurchaseHistoryListModule.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GeneralPurchaseHistoryModule.class);
 
   private final PurchaseHistoryService purchaseHistoryService;
   private final WebpageService webpageService;
@@ -33,8 +33,8 @@ public class GeneralPurchaseHistoryListModule implements IPurchaseHistoryListMod
   private final YahooLoginHandler loginHandler;
 
   @Autowired
-  public GeneralPurchaseHistoryListModule(PurchaseHistoryService purchaseHistoryService,
-      ECSiteAccountRepository ecSiteAccountRepository, WebpageService webpageService, YahooLoginHandler loginHandler) {
+  public GeneralPurchaseHistoryModule(PurchaseHistoryService purchaseHistoryService,
+                                      ECSiteAccountRepository ecSiteAccountRepository, WebpageService webpageService, YahooLoginHandler loginHandler) {
     this.purchaseHistoryService = purchaseHistoryService;
     this.webpageService = webpageService;
     this.ecSiteAccountRepository = ecSiteAccountRepository;

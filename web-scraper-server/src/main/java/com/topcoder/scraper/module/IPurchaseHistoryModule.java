@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * abstract purchase history list module
  */
-public interface IPurchaseHistoryListModule extends IBasicModule {
+public interface IPurchaseHistoryModule extends IBasicModule {
   /**
    * fetch purchase history list
    */

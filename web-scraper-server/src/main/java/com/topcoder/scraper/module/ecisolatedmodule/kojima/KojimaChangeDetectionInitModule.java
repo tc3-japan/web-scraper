@@ -20,19 +20,19 @@ public class KojimaChangeDetectionInitModule extends AbstractChangeDetectionInit
 
   @Autowired
   public KojimaChangeDetectionInitModule(
-          MonitorTargetDefinitionProperty  monitorTargetDefinitionProperty,
-          WebpageService                   webpageService,
-          ECSiteAccountRepository          ecSiteAccountRepository,
-          NormalDataRepository             normalDataRepository,
-          KojimaPurchaseHistoryListModule  purchaseHistoryListModule,
-          KojimaProductModule              productModule
+          MonitorTargetDefinitionProperty monitorTargetDefinitionProperty,
+          WebpageService                  webpageService,
+          ECSiteAccountRepository         ecSiteAccountRepository,
+          NormalDataRepository            normalDataRepository,
+          KojimaPurchaseHistoryModule     purchaseHistoryModule,
+          KojimaProductModule             productModule
   ) {
     super(
             monitorTargetDefinitionProperty,
             webpageService,
             ecSiteAccountRepository,
             normalDataRepository,
-            purchaseHistoryListModule,
+            purchaseHistoryModule,
             productModule
     );
   }

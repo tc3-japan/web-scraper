@@ -32,5 +32,5 @@ insert into web_scraper.user (id,email_for_contact,total_ec_status,id_expire_at,
 insert into web_scraper.ec_site_account (id, ec_site, ec_use_flag, user_id, update_at) values
  (2, 'amazon',  0, 2,'2019-03-08 12:00:00')
 ,(4, 'kojima',  0, 2,'2019-03-08 12:00:00')
-,(6, 'yahoo',   0, 2,'2019-03-08 12:00:00');
-,(8, 'rakuten', 0, 1,'2019-03-08 12:00:00');
+,(6, 'yahoo',   0, 2,'2019-03-08 12:00:00')
+,(8, 'rakuten', 0, 2,'2019-03-08 12:00:00');

@@ -22,14 +22,14 @@ public class KojimaChangeDetectionCheckModule extends AbstractChangeDetectionChe
 
   @Autowired
   public KojimaChangeDetectionCheckModule(
-          MonitorTargetDefinitionProperty  monitorTargetDefinitionProperty,
-          WebpageService                   webpageService,
-          ECSiteAccountRepository          ecSiteAccountRepository,
-          NormalDataRepository             normalDataRepository,
-          KojimaPurchaseHistoryListModule  purchaseHistoryListModule,
-          KojimaProductModule              productModule,
-          CheckItemsDefinitionProperty     checkItemsDefinitionProperty,
-          CheckResultRepository            checkResultRepository
+          MonitorTargetDefinitionProperty monitorTargetDefinitionProperty,
+          WebpageService                  webpageService,
+          ECSiteAccountRepository         ecSiteAccountRepository,
+          NormalDataRepository            normalDataRepository,
+          KojimaPurchaseHistoryModule     purchaseHistoryModule,
+          KojimaProductModule             productModule,
+          CheckItemsDefinitionProperty    checkItemsDefinitionProperty,
+          CheckResultRepository           checkResultRepository
 
   ) {
     super(
@@ -37,7 +37,7 @@ public class KojimaChangeDetectionCheckModule extends AbstractChangeDetectionChe
             webpageService,
             ecSiteAccountRepository,
             normalDataRepository,
-            purchaseHistoryListModule,
+            purchaseHistoryModule,
             productModule,
             checkItemsDefinitionProperty,
             checkResultRepository

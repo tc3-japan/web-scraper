@@ -107,7 +107,9 @@ public abstract class AbstractPurchaseHistoryCrawlerScriptSupport extends Script
 
 
   void scrapeProductCodeFromInput(DomNode productNode, String selector, String regexStr) {
-    this.crawler.getHistoryPage().scrapeProductCodeFromInput(productNode, selector, regexStr);
+    //this.crawler.getHistoryPage().scrapeProductCodeFromInput(productNode, selector, regexStr);
+    //TODO: FIXME
+    System.out.println(" >>>>> scrapeProductCodeFromInput not implemented @ AbstractPurchaseHistoryCrawlerScriptSupport <<< ");
   }
 
   void scrapeProductCode(String selector) {

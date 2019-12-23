@@ -126,7 +126,9 @@ public abstract class GeneralPurchaseHistoryCrawlerScriptSupport extends Script 
   }
 
   void scrapeProductCodeFromInput(DomNode productNode, String selector, String regexStr) {
-    this.crawler.getHistoryPage().scrapeProductCodeFromInput(productNode, selector, regexStr);
+    //TODO: FIXME
+    System.out.println("This is broken");
+    //this.crawler.getHistoryPage().scrapeProductCodeFromInput(productNode, selector, regexStr);
   }
 
   void scrapeProductCode(String selector) {

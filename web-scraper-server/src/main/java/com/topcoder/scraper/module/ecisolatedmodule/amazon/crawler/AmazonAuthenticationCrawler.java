@@ -17,8 +17,6 @@ import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractAuthenticationCrawler;
 import com.topcoder.scraper.module.ecunifiedmodule.AuthStep;
 import com.topcoder.scraper.service.WebpageService;
-import lombok.Getter;
-import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -174,6 +172,11 @@ public class AmazonAuthenticationCrawler extends AbstractAuthenticationCrawler {
           loginPage = submitInput1.click();
         }
         */
+        HtmlSubmitInput submitInput1 = loginPage.querySelector(property.getCrawling().getLoginPage().getContinueInput());
+        // continue button is optional, it shows sometimes
+        if (submitInput1 != null) {
+          loginPage = submitInput1.click();
+        }
 
         // Save page
         webpageService.save("login-pass", siteName, loginPage.getWebResponse().getContentAsString());
@@ -199,6 +202,7 @@ public class AmazonAuthenticationCrawler extends AbstractAuthenticationCrawler {
         webpageService.save("login-click", siteName, finalPage.getWebResponse().getContentAsString());
 
         // Check Login Successfully > CAPTCHA
+        /*
         HtmlEmailInput emailInputCheck = finalPage.querySelector(property.getCrawling().getLoginPage().getEmailInput());
         if (emailInputCheck != null) {
           // still in login page
@@ -214,6 +218,22 @@ public class AmazonAuthenticationCrawler extends AbstractAuthenticationCrawler {
         } else {
           authStep = AuthStep.LAST; // goto last step
         }
+        */
+        HtmlPasswordInput passwordInputCheck = finalPage.querySelector(property.getCrawling().getLoginPage().getPasswordInput());
+        if (passwordInputCheck != null) {
+            // still in login page
+            HtmlTextInput captchaInput = finalPage.querySelector(property.getCrawling().getLoginPage().getCaptchaInput2nd());
+            if (captchaInput != null) {
+              LOGGER.info("Captcha 2nd Input Found, at step " + authStep);
+              HtmlImage htmlImg = finalPage.querySelector(property.getCrawling().getLoginPage().getCaptchaImage2nd());
+              return new AmazonAuthenticationCrawlerResult(false,
+                      "CAPTCHA code needed on login page", CodeType.CAPTCHA, webpageService.toBase64Image(htmlImg), true);
+            } else {
+              authStep = AuthStep.LAST; // goto last step
+            }
+          } else {
+            authStep = AuthStep.LAST; // goto last step
+          }
       } else { // fill code
         logger.info("start check Captcha in step 2 with code = " + code);
         result = handleCaptchaInput2st(webClient, finalPage, password, code);

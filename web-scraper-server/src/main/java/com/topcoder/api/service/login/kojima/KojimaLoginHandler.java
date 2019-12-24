@@ -1,11 +1,8 @@
 package com.topcoder.api.service.login.kojima;
 
-import com.gargoylesoftware.htmlunit.util.Cookie;
 import com.topcoder.api.exception.ApiException;
 import com.topcoder.api.service.login.LoginHandlerBase;
 import com.topcoder.common.dao.ECSiteAccountDAO;
-import com.topcoder.common.model.ECCookie;
-import com.topcoder.common.model.ECCookies;
 import com.topcoder.common.model.LoginRequest;
 import com.topcoder.common.model.LoginResponse;
 import com.topcoder.common.repository.ECSiteAccountRepository;
@@ -21,9 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 
 @Component
 public class KojimaLoginHandler extends LoginHandlerBase {
@@ -63,6 +61,7 @@ public class KojimaLoginHandler extends LoginHandlerBase {
     try {
       KojimaAuthenticationCrawlerResult result = crawler.authenticate(webClient, request.getEmail(), request.getPassword(), null);
       if (result.isSuccess()) { // succeed , update status and save cookies
+        /*
         List<ECCookie> ecCookies = new LinkedList<>();
         for (Cookie cookie : webClient.getWebClient().getCookieManager().getCookies()) {
           ECCookie ecCookie = new ECCookie();
@@ -75,8 +74,16 @@ public class KojimaLoginHandler extends LoginHandlerBase {
           ecCookie.setSecure(cookie.isSecure());
           ecCookies.add(ecCookie);
         }
-        ecSiteAccountDAO.setEcCookies(new ECCookies(ecCookies).toJSONString());
+        SecSiteAccountDAO.setEcCookies(new ECCookies(ecCookies).toJSONString());
         saveSuccessResult(ecSiteAccountDAO);
+        */
+
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        ObjectOutput oout = new ObjectOutputStream(bout);
+        oout.writeObject(webClient.getWebClient().getCookieManager().getCookies());
+        oout.close();
+        bout.close();
+        ecSiteAccountDAO.setEcCookies(bout.toByteArray());
 
         return new LoginResponse(ecSiteAccountDAO.getLoginEmail(), null, null, AuthStep.DONE, "");
       } else { // login failed

@@ -1,11 +1,14 @@
 logging:
   level:
-    com.topcoder.api: debug
-    org.apache.http: off
-    com.gargoylesoftware: off
+    root: INFO
+    com.topcoder: DEBUG
+    org.apache.http: OFF
+    org.springframework.jdbc.core: DEBUG
+    com.gargoylesoftware: OFF
 
 spring:
   jpa:
+    show-sql: true
     hibernate:
       ddl-auto: validate
   datasource:
@@ -16,6 +19,16 @@ spring:
 server:
   servlet-path: /api/v1
   port: 8085
+
+solr:
+  uri: http://localhost:9983/solr/ecsite_products
+  load_batch_size: 100
+
+scraper:
+  matching:
+    price_tolerance: 0.1
+    mlt_score_threthold: 1.0
+
 
 amazon:
   # amazon.com
@@ -96,9 +109,9 @@ amazon:
     # Searh produ page
     SearchProductPage:
       productSelector:      "#search > div.sg-row > div.sg-col-20-of-24.sg-col-28-of-32.sg-col-16-of-20.sg-col.s-right-column.sg-col-32-of-36.sg-col-8-of-12.sg-col-12-of-16.sg-col-24-of-28 > div > span:nth-child(4) > div.s-result-list.sg-row > div:nth-child("
-      adProductClass:       "AdHolder" 
-      productCodeAttribute: "data-asin"  
-    
+      adProductClass:       "AdHolder"
+      productCodeAttribute: "data-asin"
+
     # Product detail page
     productDetailPage:
       prices:
@@ -131,4 +144,3 @@ amazon:
         -               "#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(3)"
         -               "#prodDetails > div.wrapper.JPlocale > div.column.col1 > div > div.content.pdClearfix > div > div > table > tbody > tr:nth-child(2) > td.value"
         -               "#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(2)"
-        

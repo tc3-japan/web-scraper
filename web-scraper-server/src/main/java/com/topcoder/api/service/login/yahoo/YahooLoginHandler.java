@@ -1,29 +1,27 @@
 package com.topcoder.api.service.login.yahoo;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 
-import com.topcoder.scraper.module.ecisolatedmodule.yahoo.crawler.YahooAuthenticationCrawlerResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-import com.gargoylesoftware.htmlunit.util.Cookie;
 import com.topcoder.api.exception.ApiException;
 import com.topcoder.api.service.login.LoginHandlerBase;
 import com.topcoder.common.dao.ECSiteAccountDAO;
-import com.topcoder.common.model.ECCookie;
-import com.topcoder.common.model.ECCookies;
 import com.topcoder.common.model.LoginRequest;
 import com.topcoder.common.model.LoginResponse;
 import com.topcoder.common.repository.ECSiteAccountRepository;
 import com.topcoder.common.repository.UserRepository;
 import com.topcoder.common.traffic.TrafficWebClient;
-import com.topcoder.scraper.module.ecunifiedmodule.AuthStep;
 import com.topcoder.scraper.module.ecisolatedmodule.yahoo.crawler.YahooAuthenticationCrawler;
+import com.topcoder.scraper.module.ecisolatedmodule.yahoo.crawler.YahooAuthenticationCrawlerResult;
+import com.topcoder.scraper.module.ecunifiedmodule.AuthStep;
 import com.topcoder.scraper.service.WebpageService;
 
 @Component
@@ -39,7 +37,7 @@ public class YahooLoginHandler extends LoginHandlerBase {
     super(ecSiteAccountRepository, userRepository);
     this.applicationContext = applicationContext;
   }
-  
+
   @Override
   public String getECSite() {
     return "yahoo";
@@ -52,7 +50,7 @@ public class YahooLoginHandler extends LoginHandlerBase {
 
   @Override
   public LoginResponse login(int userId, LoginRequest request) throws ApiException {
-    
+
     ECSiteAccountDAO ecSiteAccountDAO = ecSiteAccountRepository.findOne(request.getSiteId());
     //TODO.property: Use application.yaml instead -- or don't use this at all. It's just for testing
     ecSiteAccountDAO.setPassword(request.getPassword());
@@ -63,10 +61,11 @@ public class YahooLoginHandler extends LoginHandlerBase {
 
     YahooAuthenticationCrawler crawler = new YahooAuthenticationCrawler(applicationContext.getBean(WebpageService.class));
     TrafficWebClient webClient = new TrafficWebClient(userId, false);
-    
+
     try {
       YahooAuthenticationCrawlerResult result = crawler.authenticate(webClient, request.getEmail(), request.getPassword());
       if (result.isSuccess()) { // succeed , update status and save cookies
+    	/*
         List<ECCookie> ecCookies = new LinkedList<>();
         for (Cookie cookie : webClient.getWebClient().getCookieManager().getCookies()) {
           ECCookie ecCookie = new ECCookie();
@@ -80,6 +79,15 @@ public class YahooLoginHandler extends LoginHandlerBase {
           ecCookies.add(ecCookie);
         }
         ecSiteAccountDAO.setEcCookies(new ECCookies(ecCookies).toJSONString());
+        saveSuccessResult(ecSiteAccountDAO);
+        */
+
+      	ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        ObjectOutput oout = new ObjectOutputStream(bout);
+        oout.writeObject(webClient.getWebClient().getCookieManager().getCookies());
+        oout.close();
+        bout.close();
+        ecSiteAccountDAO.setEcCookies(bout.toByteArray());
         saveSuccessResult(ecSiteAccountDAO);
 
         return new LoginResponse(ecSiteAccountDAO.getLoginEmail(), null, null, AuthStep.DONE, "");

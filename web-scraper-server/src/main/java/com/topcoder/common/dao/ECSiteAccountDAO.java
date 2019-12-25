@@ -1,12 +1,6 @@
 package com.topcoder.common.dao;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import com.topcoder.common.util.CipherUtils;
-import org.springframework.transaction.annotation.Transactional;
-
-import lombok.Data;
-import lombok.ToString;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,7 +12,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.topcoder.common.util.CipherUtils;
+
+import lombok.Data;
+import lombok.ToString;
 
 
 /**
@@ -70,9 +69,11 @@ public class ECSiteAccountDAO {
   /**
    * the cookies
    */
-  @JsonIgnore
-  @Column(name = "auth_cookies", columnDefinition = "MEDIUMTEXT")
-  private String ecCookies;
+  //@JsonIgnore
+  //@Column(name = "auth_cookies", columnDefinition = "MEDIUMTEXT")
+  @Column(name = "auth_cookies", columnDefinition = "BLOB")
+  //private String ecCookies;
+  private byte[] ecCookies;
 
   /**
    * the auth status

@@ -3,7 +3,7 @@ package com.topcoder.api.controller;
 import com.topcoder.common.model.LoginRequest;
 import com.topcoder.common.model.LoginResponse;
 import com.topcoder.api.exception.ApiException;
-import com.topcoder.api.service.ECSiteService;
+import com.topcoder.api.service.ECSiteAccountService;
 import com.topcoder.common.dao.ECSiteAccountDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +29,7 @@ public class ECSiteController {
    * the ec site service
    */
   @Autowired
-  ECSiteService ecSiteService;
+  ECSiteAccountService ecSiteAccountService;
 
 
   /**
@@ -40,7 +40,7 @@ public class ECSiteController {
    */
   @GetMapping("/{userId}/ec_sites")
   public List<ECSiteAccountDAO> getAllEcSites(@PathVariable("userId") String userId) throws ApiException {
-    return ecSiteService.getAll(userId);
+    return ecSiteAccountService.getAll(userId);
   }
 
   /**
@@ -52,7 +52,7 @@ public class ECSiteController {
    */
   @GetMapping("/{userId}/ec_sites/{siteId}")
   public ECSiteAccountDAO getECSite(@PathVariable("userId") String userId, @PathVariable("siteId") Integer id) throws ApiException {
-    return ecSiteService.getECSite(userId, id);
+    return ecSiteAccountService.getECSite(userId, id);
   }
 
   /**
@@ -67,7 +67,7 @@ public class ECSiteController {
   public ECSiteAccountDAO updateECSite(@PathVariable("user_id") String userId,
                                        @PathVariable("siteId") Integer id,
                                        @RequestBody ECSiteAccountDAO entity) throws ApiException {
-    return ecSiteService.updateECSite(userId, id, entity);
+    return ecSiteAccountService.updateECSite(userId, id, entity);
   }
 
   /**
@@ -83,7 +83,7 @@ public class ECSiteController {
                                  @RequestParam("siteId") Integer siteId,
                                  @RequestParam("uuid") String uuid)
     throws ApiException {
-    return ecSiteService.loginInit(userId, siteId, uuid);
+    return ecSiteAccountService.loginInit(userId, siteId, uuid);
   }
 
   /**
@@ -95,6 +95,6 @@ public class ECSiteController {
    */
   @PostMapping("/{userId}/login")
   public LoginResponse login(@PathVariable("userId") String userId, @RequestBody LoginRequest request) throws ApiException {
-    return ecSiteService.login(userId, request);
+    return ecSiteAccountService.login(userId, request);
   }
 }

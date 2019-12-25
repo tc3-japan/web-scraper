@@ -2,7 +2,6 @@ package com.topcoder.common.repository;
 
 import java.util.List;
 
-import com.topcoder.common.dao.ProductDAO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -14,16 +13,16 @@ import com.topcoder.common.dao.ProductDAO;
 
 @Repository
 public interface ProductRepository extends CrudRepository<ProductDAO, Integer> {
-  
+
   ProductDAO findById(Integer id);
 
   ProductDAO findByProductCode(String productCode);
 
   List<ProductDAO> findByFetchInfoStatusIsNull();
-  
+
   @Query("select p from ProductDAO p where p.ecSite = :ecSite and p.productName = :productName")
   ProductDAO findByECSiteAndProductName(@Param("ecSite") String ecSite, @Param("productName") String productName);
-  
+
   @Query("select p from ProductDAO p where p.ecSite = :ecSite and p.fetchInfoStatus = null")
   List<ProductDAO> findByFetchInfoStatusAndECSite(@Param("ecSite") String ecSite);
 
@@ -35,4 +34,13 @@ public interface ProductRepository extends CrudRepository<ProductDAO, Integer> {
 
   @Query("select p from ProductDAO p where (p.productGroupId is null or p.productGroupId in :groupIds) and (p.productName like %:keyword% or p.modelNo like %:keyword%)")
   Page<ProductDAO> findProducts(@Param("groupIds") List<Integer> groupIds, @Param("keyword") String keyword, Pageable pageable);
+
+  List<ProductDAO> findByModelNo(String modelNo);
+
+  List<ProductDAO> findByJanCode(String janCode);
+
+  List<ProductDAO> findByIdIn(List<Integer> ids);
+
+  Page<ProductDAO> findAll(Pageable pageable);
+
 }

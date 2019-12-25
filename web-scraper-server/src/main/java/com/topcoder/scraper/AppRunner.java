@@ -1,14 +1,7 @@
 package com.topcoder.scraper;
 
-import com.topcoder.scraper.command.impl.ChangeDetectionCheckCommand;
-import com.topcoder.scraper.command.impl.ChangeDetectionInitCommand;
-import com.topcoder.scraper.command.impl.CrossECProductCommand;
-import com.topcoder.scraper.command.impl.DemoCommand;
-import com.topcoder.scraper.command.impl.GroovyDemoCommand;
-import com.topcoder.scraper.command.impl.ProductDetailCommand;
-import com.topcoder.scraper.command.impl.PurchaseHistoryListCommand;
-import com.topcoder.scraper.command.impl.SearchProductDemoCommand;
-import com.topcoder.scraper.command.impl.UserEncoderCommand;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +9,17 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import com.topcoder.scraper.command.impl.BuildProductIndexCommand;
+import com.topcoder.scraper.command.impl.ChangeDetectionCheckCommand;
+import com.topcoder.scraper.command.impl.ChangeDetectionInitCommand;
+import com.topcoder.scraper.command.impl.CrossECProductCommand;
+import com.topcoder.scraper.command.impl.DemoCommand;
+import com.topcoder.scraper.command.impl.GroovyDemoCommand;
+import com.topcoder.scraper.command.impl.GroupECProductsCommand;
+import com.topcoder.scraper.command.impl.ProductDetailCommand;
+import com.topcoder.scraper.command.impl.PurchaseHistoryListCommand;
+import com.topcoder.scraper.command.impl.SearchProductDemoCommand;
+import com.topcoder.scraper.command.impl.UserEncoderCommand;
 
 /**
  * AppRunner is an implementation of {@link ApplicationRunner}
@@ -35,12 +38,15 @@ public class AppRunner implements ApplicationRunner {
   private final DemoCommand                 demoCommand;
   private final GroovyDemoCommand           groovyDemoCommand;
   private final SearchProductDemoCommand    searchProductDemoCommand;
+  private final GroupECProductsCommand groupECProductsCommand;
+  private final BuildProductIndexCommand buildProductIndexCommand;
 
   @Autowired
   public AppRunner(PurchaseHistoryListCommand purchaseHistoryListCommand, ProductDetailCommand productDetailCommand,
                    ChangeDetectionInitCommand changeDetectionInitCommand, ChangeDetectionCheckCommand changeDetectionCheckCommand,
                    UserEncoderCommand userEncoderCommand, CrossECProductCommand crossECProductCommand,
-                   DemoCommand demoCommand, GroovyDemoCommand groovyDemoCommand, SearchProductDemoCommand searchProductDemoCommand) {
+      DemoCommand demoCommand, GroovyDemoCommand groovyDemoCommand, SearchProductDemoCommand searchProductDemoCommand,
+      GroupECProductsCommand groupECProductsCommand, BuildProductIndexCommand buildProductIndexCommand) {
     this.purchaseHistoryListCommand  = purchaseHistoryListCommand;
     this.productDetailCommand        = productDetailCommand;
     this.changeDetectionInitCommand  = changeDetectionInitCommand;
@@ -50,6 +56,8 @@ public class AppRunner implements ApplicationRunner {
     this.demoCommand                 = demoCommand;
     this.groovyDemoCommand           = groovyDemoCommand;
     this.searchProductDemoCommand    = searchProductDemoCommand;
+    this.groupECProductsCommand = groupECProductsCommand;
+    this.buildProductIndexCommand = buildProductIndexCommand;
   }
 
   /**
@@ -83,7 +91,11 @@ public class AppRunner implements ApplicationRunner {
       groovyDemoCommand.run(args);
     } else if(batches.contains("search_product_demo")) {
       searchProductDemoCommand.run(args);
-    }else {
+    } else if (batches.contains("group_products")) {
+      groupECProductsCommand.run(args);
+    } else if (batches.contains("load_product_index")) {
+      buildProductIndexCommand.run(args);
+    } else {
       usage();
     }
   }

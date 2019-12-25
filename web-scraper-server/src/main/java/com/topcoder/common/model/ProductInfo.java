@@ -1,12 +1,13 @@
 package com.topcoder.common.model;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Product information model
@@ -49,9 +50,12 @@ public class ProductInfo {
 
   @JsonProperty("rankings")
   private List<Integer> rankingList = new ArrayList<>();
-  
+
   @JsonProperty("moedel_no")
   private String modelNo;
+
+  @JsonProperty("jan_code")
+  private String janCode;
 
   public ProductInfo() {
   }
@@ -93,9 +97,13 @@ public class ProductInfo {
   public List<Integer> getRankingList() {
     return rankingList;
   }
-  
+
   public String getModelNo() {
 	  return modelNo;
+  }
+
+  public String getJanCode() {
+    return this.janCode;
   }
 
   public void setName(String name) {
@@ -125,9 +133,13 @@ public class ProductInfo {
   public void setRankingList(List<Integer> rankingList) {
     this.rankingList = rankingList;
   }
-  
+
   public void setModelNo(String modelNo) {
-	    this.modelNo = modelNo;
+    this.modelNo = modelNo;
+  }
+
+  public void setJanCode(String janCode) {
+    this.janCode = janCode;
   }
 
   public void addCategoryRanking(String category, int ranking) {

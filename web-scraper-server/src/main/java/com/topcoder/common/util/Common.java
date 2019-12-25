@@ -1,5 +1,13 @@
 package com.topcoder.common.util;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.util.Cookie;
@@ -7,11 +15,6 @@ import com.topcoder.common.dao.ECSiteAccountDAO;
 import com.topcoder.common.model.AuthStatusType;
 import com.topcoder.common.model.ECCookie;
 import com.topcoder.common.model.ECCookies;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
  * common util class
@@ -84,5 +87,37 @@ public class Common {
    */
   public static <T> T getValueOrDefault(T value, T defaultValue) {
     return value == null ? defaultValue : value;
+  }
+
+  /**
+   *
+   * @param numText
+   * @return float value
+   */
+  public static Float toFloat(String numText) {
+    if (numText == null) {
+      return null;
+    }
+    return Float.valueOf(numText
+        .replaceAll("０", "0").replaceAll("１", "1").replaceAll("２", "2")
+        .replaceAll("３", "3").replaceAll("４", "4").replaceAll("５", "5")
+        .replaceAll("６", "6").replaceAll("７", "7").replaceAll("８", "8")
+        .replaceAll("９", "9").replaceAll("[^\\d.]", ""));
+  }
+
+  private static final ObjectMapper MAPPER = new ObjectMapper();
+  static {
+    MAPPER.enable(SerializationFeature.INDENT_OUTPUT);
+  }
+
+  public static String toJSON(Object obj) {
+    if (obj == null)
+      return "";
+    try {
+      return MAPPER.writeValueAsString(obj);
+    } catch (Exception e) {
+      logger.error("Failed to convert object to JSON.", e);
+      return null;
+    }
   }
 }

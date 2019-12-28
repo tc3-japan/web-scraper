@@ -40,10 +40,9 @@ public class NavigableAuthenticationPage extends NavigablePage {
     }
 
     public boolean confirmLoginByMissingLoginText(String selector, String text) {
-        // If we see the yahoo image, consider ourselves logged in
+
         HtmlElement loginNode = getPage().querySelector(selector);
         boolean matchResult = loginNode.getTextContent().matches(".*" + text + ".*");
-
         boolean loginSuccess;
         if (!matchResult) {
             System.out.println("Logged in successfully");
@@ -52,9 +51,7 @@ public class NavigableAuthenticationPage extends NavigablePage {
             System.out.println("Failed to login");
             loginSuccess = false;
         }
-
         loggedIn = loginSuccess;
-
         return loginSuccess;
     }
 

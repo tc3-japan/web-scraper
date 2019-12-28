@@ -1,13 +1,13 @@
 package com.topcoder.api.service.login;
 
-import java.util.Date;
-import java.util.List;
-
 import com.topcoder.common.dao.ECSiteAccountDAO;
 import com.topcoder.common.dao.UserDAO;
 import com.topcoder.common.model.AuthStatusType;
 import com.topcoder.common.repository.ECSiteAccountRepository;
 import com.topcoder.common.repository.UserRepository;
+
+import java.util.Date;
+import java.util.List;
 
 public abstract class LoginHandlerBase implements LoginHandler {
 

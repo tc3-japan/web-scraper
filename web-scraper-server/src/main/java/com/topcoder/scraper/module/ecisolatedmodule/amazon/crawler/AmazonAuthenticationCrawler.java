@@ -84,10 +84,6 @@ public class AmazonAuthenticationCrawler extends AbstractAuthenticationCrawler {
 
   private Logger logger = LoggerFactory.getLogger(AmazonAuthenticationCrawler.class.getName());
 
-  @Getter
-  @Setter
-  private AuthStep authStep = AuthStep.FIRST;
-
   public AmazonAuthenticationCrawler(AmazonProperty property, WebpageService webpageService) {
     this.siteName = "amazon";
     this.property = property;
@@ -107,8 +103,8 @@ public class AmazonAuthenticationCrawler extends AbstractAuthenticationCrawler {
    */
   @Override
   public AmazonAuthenticationCrawlerResult authenticate(TrafficWebClient webClient,
-                                                        String username,
-                                                        String password, String code, boolean init) throws IOException {
+                                                        String username, String password, String code,
+                                                        boolean init) throws IOException {
     if (homePage == null) {
       webClient.getWebClient().getCookieManager().clearCookies();
       // Fetch homepage
@@ -329,8 +325,8 @@ public class AmazonAuthenticationCrawler extends AbstractAuthenticationCrawler {
    */
   @Override
   public AmazonAuthenticationCrawlerResult authenticate(TrafficWebClient webClient,
-                                                        String username,
-                                                        String password) throws IOException {
+                                                        String username, String password, String initCode // fixme: initCode -> xxxCode
+                                                        ) throws IOException {
 
     // TODO: consider whether we don't need below code
     webClient.getWebClient().getCookieManager().clearCookies();

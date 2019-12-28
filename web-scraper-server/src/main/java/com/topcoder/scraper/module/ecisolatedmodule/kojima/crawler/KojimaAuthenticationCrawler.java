@@ -34,7 +34,7 @@ public class KojimaAuthenticationCrawler extends AbstractAuthenticationCrawler {
     return new KojimaAuthenticationCrawlerResult(false, null);
   }
 
-  public KojimaAuthenticationCrawlerResult authenticate(TrafficWebClient webClient, String username, String password) throws IOException {
+  public KojimaAuthenticationCrawlerResult authenticate(TrafficWebClient webClient, String username, String password, String code) throws IOException {
     
     webClient.getWebClient().getCookieManager().clearCookies();
     

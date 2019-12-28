@@ -1,15 +1,5 @@
 package com.topcoder.api.service.login.kojima;
 
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
-
 import com.gargoylesoftware.htmlunit.util.Cookie;
 import com.topcoder.api.exception.ApiException;
 import com.topcoder.api.service.login.LoginHandlerBase;
@@ -21,9 +11,19 @@ import com.topcoder.common.model.LoginResponse;
 import com.topcoder.common.repository.ECSiteAccountRepository;
 import com.topcoder.common.repository.UserRepository;
 import com.topcoder.common.traffic.TrafficWebClient;
-import com.topcoder.scraper.module.ecunifiedmodule.AuthStep;
 import com.topcoder.scraper.module.ecisolatedmodule.kojima.crawler.KojimaAuthenticationCrawler;
+import com.topcoder.scraper.module.ecisolatedmodule.kojima.crawler.KojimaAuthenticationCrawlerResult;
+import com.topcoder.scraper.module.ecunifiedmodule.AuthStep;
 import com.topcoder.scraper.service.WebpageService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 @Component
 public class KojimaLoginHandler extends LoginHandlerBase {
@@ -61,8 +61,8 @@ public class KojimaLoginHandler extends LoginHandlerBase {
     TrafficWebClient webClient = new TrafficWebClient(userId, false);
     
     try {
-      boolean result = crawler.authenticate(webClient, request.getEmail(), request.getPassword()).isSuccess();
-      if (result) { // succeed , update status and save cookies
+      KojimaAuthenticationCrawlerResult result = crawler.authenticate(webClient, request.getEmail(), request.getPassword(), null);
+      if (result.isSuccess()) { // succeed , update status and save cookies
         List<ECCookie> ecCookies = new LinkedList<>();
         for (Cookie cookie : webClient.getWebClient().getCookieManager().getCookies()) {
           ECCookie ecCookie = new ECCookie();

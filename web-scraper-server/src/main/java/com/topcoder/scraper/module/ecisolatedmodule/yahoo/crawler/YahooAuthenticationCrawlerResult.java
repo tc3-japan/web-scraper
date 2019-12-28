@@ -12,6 +12,10 @@ public class YahooAuthenticationCrawlerResult extends AbstractAuthenticationCraw
     super(success, htmlPath);
   }
 
+  public YahooAuthenticationCrawlerResult(boolean success, CodeType codeType, String htmlPath) {
+    super(success, null, codeType, null, false, htmlPath);
+  }
+
   public YahooAuthenticationCrawlerResult(boolean success, String reason, CodeType codeType, String img, boolean needContinue) {
     super(success, reason, codeType, img, needContinue);
   }

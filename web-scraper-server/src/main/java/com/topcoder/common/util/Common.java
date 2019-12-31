@@ -1,17 +1,19 @@
 package com.topcoder.common.util;
 
+import java.io.ByteArrayInputStream;
+import java.io.ObjectInputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.util.Cookie;
 import com.topcoder.common.dao.ECSiteAccountDAO;
 import com.topcoder.common.model.AuthStatusType;
-import com.topcoder.common.model.ECCookie;
-import com.topcoder.common.model.ECCookies;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
  * common util class
@@ -39,6 +41,26 @@ public class Common {
     }
 
     // restore cookies
+    try {
+      byte[] byteCookies = ecSiteAccountDAO.getEcCookies();
+      ByteArrayInputStream bin = new ByteArrayInputStream(byteCookies);
+      ObjectInputStream oin = new ObjectInputStream(bin);
+      Set<Cookie> cookies = (Set<Cookie>)oin.readObject();
+      bin.close();
+      oin.close();
+      for (Cookie cookie : cookies) {
+        webClient.getCookieManager().addCookie(cookie);
+      }
+    } catch (Exception e) {
+        e.printStackTrace();
+        return false;
+    }
+
+    logger.info("Restore Cookie Successful");
+
+    return true;
+
+    /*
     String stringCookies = ecSiteAccountDAO.getEcCookies();
     ECCookies ecCookies = ECCookies.fromJSON(stringCookies);
     if (ecCookies == null || ecCookies.getCookies() == null || ecCookies.getCookies().size() <= 0) {
@@ -55,7 +77,7 @@ public class Common {
               ecCookie.isSecure(), ecCookie.isHttpOnly()
       ));
     }
-    return true;
+    */
   }
 
   /**

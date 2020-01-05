@@ -2,6 +2,8 @@ package com.topcoder.common.util;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,6 +107,42 @@ public class Common {
         .replaceAll("９", "9").replaceAll("[^\\d.]", ""));
   }
 
+  static String[] HALF_CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&'()--=^~¥\\|@`[{;+:*]},<.>/?_,."
+      .split("");
+  static String[] FULL_CHARS = "０１２３４５６７８９ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ！”＃＄％＆’（）−ー＝＾〜￥＼｜＠｀［｛；＋：＊］｝，＜．＞／？＿、。"
+      .split("");
+  static Map<String, Integer> HALF_CHARS_MAP = new HashMap<>();
+  static Map<String, Integer> FULL_CHARS_MAP = new HashMap<>();
+  static {
+    for (int i = 0; i < HALF_CHARS.length; i++) {
+      HALF_CHARS_MAP.put(HALF_CHARS[i], i);
+    }
+    for (int i = 0; i < FULL_CHARS.length; i++) {
+      FULL_CHARS_MAP.put(FULL_CHARS[i], i);
+    }
+  }
+  public static String toHalf(String text) {
+    if (text == null) {
+      return null;
+    }
+    StringBuilder sb = new StringBuilder();
+    String[] chars = text.split("");
+    for (int i = 0; i < chars.length; i++) {
+      Integer idx = FULL_CHARS_MAP.get(chars[i]);
+      sb.append(idx == null ? (HALF_CHARS_MAP.containsKey(chars[i]) ? chars[i] : " ") : HALF_CHARS[idx]);
+    }
+    //return Normalizer.normalize(text, Normalizer.Form.NFKC);
+    return sb.toString().trim();
+  }
+
+  public static String normalize(String code) {
+    if (code == null) {
+      return null;
+    }
+    String tmp = toHalf(code);
+    return tmp == null ? null : tmp.replaceAll("[\\p{Punct}¥]+", "-");
+  }
+
   private static final ObjectMapper MAPPER = new ObjectMapper();
   static {
     MAPPER.enable(SerializationFeature.INDENT_OUTPUT);
@@ -119,5 +157,14 @@ public class Common {
       logger.error("Failed to convert object to JSON.", e);
       return null;
     }
+  }
+
+  public static void main(String[] args) {
+    String text = "０１２３４５６７８９ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ！”＃＄％＆’（）−ー＝＾〜￥＼｜＠｀［｛；＋：＊］｝，＜．＞／？＿、。";
+    System.out.println(text);
+    text = Common.toHalf(text);
+    System.out.println(text);
+    text = text.replaceAll("[\\p{Punct}¥]+", "-");
+    System.out.println(text);
   }
 }

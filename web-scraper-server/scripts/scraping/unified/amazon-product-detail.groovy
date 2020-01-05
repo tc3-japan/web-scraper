@@ -16,6 +16,7 @@ class Vars {
 
     // model-no experimanet 1
     static def modelNoLabelNames = [
+            "メーカー型番",
             "製品型番",
             "製品型番",
             "製品型番",
@@ -25,6 +26,7 @@ class Vars {
             "製造元リファレンス"
     ]
     static def modelNoLabelSelectors = [
+            "#prodDetails > div.wrapper.JPlocale table > tbody > tr.item-model-number > td.label",
             "div.wrapper.JPlocale > div.column.col1 > div > div.content.pdClearfix > div > div > table > tbody > tr:nth-child(8) > td.label",
             "#prodDetails > div.wrapper.JPlocale > div.column.col1 > div > div.content.pdClearfix > div > div > table > tbody > tr:nth-child(2) > td.label",
             "#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(3) > b",
@@ -34,6 +36,7 @@ class Vars {
             "#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(2) > b"
     ]
     static def modelNoValueSelectors = [
+            "#prodDetails > div.wrapper.JPlocale table > tbody > tr.item-model-number > td.value",
             "div.wrapper.JPlocale > div.column.col1 > div > div.content.pdClearfix > div > div > table > tbody > tr:nth-child(8) > td.value",
             "#prodDetails > div.wrapper.JPlocale > div.column.col1 > div > div.content.pdClearfix > div > div > table > tbody > tr:nth-child(2) > td.value",
             "#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(3)",
@@ -45,6 +48,11 @@ class Vars {
 
     // model-no experimanet 2
     static def modelNoSelectors = [
+            [label_name    : "メーカー型番",
+             label_selector: "#prodDetails > div.wrapper.JPlocale table > tbody > tr.item-model-number > td.label",
+             value_selector: "#prodDetails > div.wrapper.JPlocale table > tbody > tr.item-model-number > td.value"
+            ],
+
             [label_name    : "製品型番",
              label_selector: "div.wrapper.JPlocale > div.column.col1 > div > div.content.pdClearfix > div > div > table > tbody > tr:nth-child(8) > td.label",
              value_selector: "div.wrapper.JPlocale > div.column.col1 > div > div.content.pdClearfix > div > div > table > tbody > tr:nth-child(8) > td.value"

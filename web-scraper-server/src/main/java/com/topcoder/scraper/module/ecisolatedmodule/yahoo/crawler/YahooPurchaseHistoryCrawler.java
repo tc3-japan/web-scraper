@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Yahoo implementation of PurchaseHistoryListCrawler
+ * Yahoo implementation of PurchaseHistoryCrawler
  */
 @Component
 public class YahooPurchaseHistoryCrawler extends AbstractPurchaseHistoryCrawler {

@@ -22,14 +22,14 @@ public class AmazonChangeDetectionCheckModule extends AbstractChangeDetectionChe
 
   @Autowired
   public AmazonChangeDetectionCheckModule(
-          MonitorTargetDefinitionProperty  monitorTargetDefinitionProperty,
-          WebpageService                   webpageService,
-          ECSiteAccountRepository          ecSiteAccountRepository,
-          NormalDataRepository             normalDataRepository,
-          AmazonPurchaseHistoryListModule  purchaseHistoryListModule,
-          AmazonProductModule              productModule,
-          CheckItemsDefinitionProperty     checkItemsDefinitionProperty,
-          CheckResultRepository            checkResultRepository
+          MonitorTargetDefinitionProperty monitorTargetDefinitionProperty,
+          WebpageService                  webpageService,
+          ECSiteAccountRepository         ecSiteAccountRepository,
+          NormalDataRepository            normalDataRepository,
+          AmazonPurchaseHistoryModule     purchaseHistoryModule,
+          AmazonProductModule             productModule,
+          CheckItemsDefinitionProperty    checkItemsDefinitionProperty,
+          CheckResultRepository           checkResultRepository
 
   ) {
     super(
@@ -37,7 +37,7 @@ public class AmazonChangeDetectionCheckModule extends AbstractChangeDetectionChe
             webpageService,
             ecSiteAccountRepository,
             normalDataRepository,
-            purchaseHistoryListModule,
+            purchaseHistoryModule,
             productModule,
             checkItemsDefinitionProperty,
             checkResultRepository

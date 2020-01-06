@@ -1,6 +1,8 @@
 package com.topcoder.scraper.module.ecunifiedmodule.crawler;
 
 import com.gargoylesoftware.htmlunit.html.DomNode;
+import com.topcoder.common.model.ProductInfo;
+
 import groovy.lang.Closure;
 import groovy.lang.Script;
 import org.slf4j.Logger;
@@ -21,6 +23,7 @@ public abstract class GeneralPurchaseHistoryCrawlerScriptSupport extends Script 
   void setPage(String historyUrl) {
     this.crawler.getWebClient().getWebClient().getOptions().setJavaScriptEnabled(false); //TODO: TEST ONLY
     this.crawler.getHistoryPage().setPage(historyUrl);
+
   }
 
   void setEnableJS(boolean value) {
@@ -38,6 +41,11 @@ public abstract class GeneralPurchaseHistoryCrawlerScriptSupport extends Script 
   void openPage(DomNode node, String selector, Closure<Boolean> closure) {
     this.crawler.getHistoryPage().openPage(node, selector, closure, this.crawler.getWebpageService());
   }
+
+  void click(DomNode node, String selector) {
+    this.crawler.getHistoryPage().click(node, selector);
+  }
+
 
   void type(String input, String selector) { 
     this.crawler.getHistoryPage().type(input, selector);
@@ -101,12 +109,28 @@ public abstract class GeneralPurchaseHistoryCrawlerScriptSupport extends Script 
 
   // Scraping wrapper: product in order --------------------------------------------------------------------------------
 
+  public void addProduct(ProductInfo product) {
+    this.crawler.getHistoryPage().addProduct(product);
+  }
+
+  String getText(String selector) {
+    return this.crawler.getHistoryPage().getText(selector);
+  }
+
+  String getText(DomNode node, String selector) {
+    return this.crawler.getHistoryPage().getText(node, selector);
+  }
+
   void scrapeProductCodeFromAnchor(DomNode productNode, String selector, String regexStr) {
     this.crawler.getHistoryPage().scrapeProductCodeFromAnchor(productNode, selector, regexStr);
   }
 
   void scrapeProductCodeFromInput(DomNode productNode, String selector, String regexStr) {
     this.crawler.getHistoryPage().scrapeProductCodeFromInput(productNode, selector, regexStr);
+  }
+
+  void scrapeProductCode(String selector) {
+    this.crawler.getHistoryPage().scrapeProductCode(selector);
   }
 
   void scrapeProductName(DomNode productNode, String selector) {

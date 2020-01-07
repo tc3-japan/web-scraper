@@ -1,5 +1,12 @@
 package com.topcoder.scraper.lib.navpage;
 
+import java.io.IOException;
+import java.util.regex.Pattern;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
@@ -8,12 +15,6 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.common.util.HtmlUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.util.regex.Pattern;
 
 public class NavigableProductListPage extends NavigablePage {
 
@@ -61,13 +62,10 @@ public class NavigableProductListPage extends NavigablePage {
 		if (StringUtils.isNotEmpty(productCode) && StringUtils.isNotEmpty(productCodeRegex)) {
 			productCode = HtmlUtils.extract1(productCode, Pattern.compile(productCodeRegex));
 		}
-		if(productCode == null) {
+    if (StringUtils.isEmpty(productCode)) {
 			return null;
 		}
 
-		if(productCode == null) {
-			return null;
-		}
 		LOGGER.info(String.format("Product is found with search word = %s, product code is %s", searchWord, productCode));
 		return productCode;
 	}

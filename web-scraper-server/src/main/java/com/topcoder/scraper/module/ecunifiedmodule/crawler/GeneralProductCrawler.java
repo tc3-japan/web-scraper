@@ -1,28 +1,28 @@
 package com.topcoder.scraper.module.ecunifiedmodule.crawler;
 
-import com.gargoylesoftware.htmlunit.html.HtmlElement;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.topcoder.common.model.ProductInfo;
-import com.topcoder.common.traffic.TrafficWebClient;
-import com.topcoder.scraper.Consts;
-import com.topcoder.scraper.lib.navpage.NavigableProductDetailPage;
-import com.topcoder.scraper.lib.navpage.NavigableProductListPage;
-import com.topcoder.scraper.service.WebpageService;
-import groovy.lang.Binding;
-import groovy.lang.Closure;
-import groovy.lang.GroovyShell;
-import groovy.lang.Script;
-import lombok.Getter;
-import lombok.Setter;
+import java.io.File;
+import java.io.IOException;
+import java.util.Properties;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Properties;
+import com.topcoder.common.model.ProductInfo;
+import com.topcoder.common.traffic.TrafficWebClient;
+import com.topcoder.scraper.Consts;
+import com.topcoder.scraper.lib.navpage.NavigableProductDetailPage;
+import com.topcoder.scraper.lib.navpage.NavigableProductListPage;
+import com.topcoder.scraper.service.WebpageService;
+
+import groovy.lang.Binding;
+import groovy.lang.Closure;
+import groovy.lang.GroovyShell;
+import groovy.lang.Script;
+import lombok.Getter;
+import lombok.Setter;
 
 public class GeneralProductCrawler {
 
@@ -143,7 +143,7 @@ public class GeneralProductCrawler {
     for(int index = 0; index < Consts.SEARCH_PRODUCT_TRIAL_COUNT ; index++) {
       this.productCode = closure.call(index);
 
-      if (this.productCode != null || StringUtils.isNotEmpty(this.productCode)) {
+      if (StringUtils.isNotEmpty(this.productCode)) {
         return this.productCode;
       }
     }

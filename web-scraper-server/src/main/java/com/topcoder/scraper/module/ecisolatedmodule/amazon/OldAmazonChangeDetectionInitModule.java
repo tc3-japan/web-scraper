@@ -82,7 +82,7 @@ public class OldAmazonChangeDetectionInitModule implements IChangeDetectionInitM
             LOGGER.info("init ...");
             TrafficWebClient webClient = new TrafficWebClient(0, false);
             AmazonAuthenticationCrawler authenticationCrawler = new AmazonAuthenticationCrawler(property, webpageService);
-            AmazonAuthenticationCrawlerResult loginResult = authenticationCrawler.authenticate(webClient, username, password);
+            AmazonAuthenticationCrawlerResult loginResult = authenticationCrawler.authenticate(webClient, username, password, null);
             if (!loginResult.isSuccess()) {
               LOGGER.error(String.format("Failed to login %s with username %s. Skip.", getModuleType(), username));
               continue;

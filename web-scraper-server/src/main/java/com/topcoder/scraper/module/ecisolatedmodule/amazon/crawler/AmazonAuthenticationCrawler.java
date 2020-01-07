@@ -30,6 +30,7 @@ import com.topcoder.scraper.service.WebpageService;
 import lombok.Getter;
 import lombok.Setter;
 
+
 /**
  * Amazon implementation of AuthenticationCrawler
  */
@@ -86,10 +87,6 @@ public class AmazonAuthenticationCrawler extends AbstractAuthenticationCrawler {
 
   private Logger logger = LoggerFactory.getLogger(AmazonAuthenticationCrawler.class.getName());
 
-  @Getter
-  @Setter
-  private AuthStep authStep = AuthStep.FIRST;
-
   public AmazonAuthenticationCrawler(AmazonProperty property, WebpageService webpageService) {
     this.siteName = "amazon";
     this.property = property;
@@ -109,8 +106,8 @@ public class AmazonAuthenticationCrawler extends AbstractAuthenticationCrawler {
    */
   @Override
   public AmazonAuthenticationCrawlerResult authenticate(TrafficWebClient webClient,
-                                                        String username,
-                                                        String password, String code, boolean init) throws IOException {
+                                                        String username, String password, String code,
+                                                        boolean init) throws IOException {
     if (homePage == null) {
       webClient.getWebClient().getCookieManager().clearCookies();
       // Fetch homepage
@@ -180,7 +177,6 @@ public class AmazonAuthenticationCrawler extends AbstractAuthenticationCrawler {
           loginPage = submitInput1.click();
         }
 
-
         // Save page
         webpageService.save("login-pass", siteName, loginPage.getWebResponse().getContentAsString());
 
@@ -205,6 +201,7 @@ public class AmazonAuthenticationCrawler extends AbstractAuthenticationCrawler {
         webpageService.save("login-click", siteName, finalPage.getWebResponse().getContentAsString());
 
         // Check Login Successfully > CAPTCHA
+        /*
         HtmlEmailInput emailInputCheck = finalPage.querySelector(property.getCrawling().getLoginPage().getEmailInput());
         if (emailInputCheck != null) {
           // still in login page
@@ -220,6 +217,22 @@ public class AmazonAuthenticationCrawler extends AbstractAuthenticationCrawler {
         } else {
           authStep = AuthStep.LAST; // goto last step
         }
+        */
+        HtmlPasswordInput passwordInputCheck = finalPage.querySelector(property.getCrawling().getLoginPage().getPasswordInput());
+        if (passwordInputCheck != null) {
+            // still in login page
+            HtmlTextInput captchaInput = finalPage.querySelector(property.getCrawling().getLoginPage().getCaptchaInput2nd());
+            if (captchaInput != null) {
+              LOGGER.info("Captcha 2nd Input Found, at step " + authStep);
+              HtmlImage htmlImg = finalPage.querySelector(property.getCrawling().getLoginPage().getCaptchaImage2nd());
+              return new AmazonAuthenticationCrawlerResult(false,
+                      "CAPTCHA code needed on login page", CodeType.CAPTCHA, webpageService.toBase64Image(htmlImg), true);
+            } else {
+              authStep = AuthStep.LAST; // goto last step
+            }
+          } else {
+            authStep = AuthStep.LAST; // goto last step
+          }
       } else { // fill code
         logger.info("start check Captcha in step 2 with code = " + code);
         result = handleCaptchaInput2st(webClient, finalPage, password, code);
@@ -331,8 +344,8 @@ public class AmazonAuthenticationCrawler extends AbstractAuthenticationCrawler {
    */
   @Override
   public AmazonAuthenticationCrawlerResult authenticate(TrafficWebClient webClient,
-                                                        String username,
-                                                        String password) throws IOException {
+                                                        String username, String password, String initCode // fixme: initCode -> xxxCode
+                                                        ) throws IOException {
 
     // TODO: consider whether we don't need below code
     webClient.getWebClient().getCookieManager().clearCookies();

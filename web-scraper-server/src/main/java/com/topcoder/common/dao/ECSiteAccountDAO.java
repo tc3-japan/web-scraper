@@ -1,10 +1,7 @@
 package com.topcoder.common.dao;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import com.topcoder.common.util.CipherUtils;
-import org.springframework.transaction.annotation.Transactional;
-
 import lombok.Data;
 import lombok.ToString;
 
@@ -70,9 +67,11 @@ public class ECSiteAccountDAO {
   /**
    * the cookies
    */
-  @JsonIgnore
-  @Column(name = "auth_cookies", columnDefinition = "MEDIUMTEXT")
-  private String ecCookies;
+  //@JsonIgnore
+  //@Column(name = "auth_cookies", columnDefinition = "MEDIUMTEXT")
+  //private String ecCookies;
+  @Column(name = "auth_cookies", columnDefinition = "BLOB")
+  private byte[] ecCookies;
 
   /**
    * the auth status

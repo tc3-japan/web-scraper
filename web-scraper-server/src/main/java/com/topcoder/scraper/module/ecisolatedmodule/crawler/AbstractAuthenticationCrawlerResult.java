@@ -29,6 +29,15 @@ public class AbstractAuthenticationCrawlerResult {
     this.needContinue = needContinue;
   }
 
+  public AbstractAuthenticationCrawlerResult(boolean success, String reason, CodeType codeType, String img, boolean needContinue, String htmlPath) {
+    this.success      = success;
+    this.reason       = reason;
+    this.codeType     = codeType;
+    this.img          = img;
+    this.needContinue = needContinue;
+    this.htmlPath     = htmlPath;
+  }
+
   public boolean isSuccess() {
     return success;
   }

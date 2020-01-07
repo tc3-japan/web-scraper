@@ -44,6 +44,26 @@ public class Common {
     }
 
     // restore cookies
+    try {
+      byte[] byteCookies = ecSiteAccountDAO.getEcCookies();
+      ByteArrayInputStream bin = new ByteArrayInputStream(byteCookies);
+      ObjectInputStream oin = new ObjectInputStream(bin);
+      Set<Cookie> cookies = (Set<Cookie>)oin.readObject();
+      bin.close();
+      oin.close();
+      for (Cookie cookie : cookies) {
+        webClient.getCookieManager().addCookie(cookie);
+      }
+    } catch (Exception e) {
+        e.printStackTrace();
+        return false;
+    }
+
+    logger.info("Restore Cookie Successful");
+
+    return true;
+
+    /*
     String stringCookies = ecSiteAccountDAO.getEcCookies();
     ECCookies ecCookies = ECCookies.fromJSON(stringCookies);
     if (ecCookies == null || ecCookies.getCookies() == null || ecCookies.getCookies().size() <= 0) {
@@ -60,7 +80,7 @@ public class Common {
               ecCookie.isSecure(), ecCookie.isHttpOnly()
       ));
     }
-    return true;
+    */
   }
 
   /**

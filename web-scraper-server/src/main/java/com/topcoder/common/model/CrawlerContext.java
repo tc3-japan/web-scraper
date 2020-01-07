@@ -2,7 +2,7 @@ package com.topcoder.common.model;
 
 import com.topcoder.common.config.AmazonProperty;
 import com.topcoder.common.traffic.TrafficWebClient;
-import com.topcoder.scraper.module.ecisolatedmodule.amazon.crawler.AmazonAuthenticationCrawler;
+import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractAuthenticationCrawler;
 import com.topcoder.scraper.service.WebpageService;
 import lombok.Data;
 
@@ -17,6 +17,7 @@ public class CrawlerContext {
    */
   private TrafficWebClient webClient;
 
+  // TODO: delete AmazonProperty
   /**
    * the Amazon Property
    */
@@ -35,15 +36,15 @@ public class CrawlerContext {
   /**
    * the auth crawler
    */
-  private AmazonAuthenticationCrawler crawler;
+  private AbstractAuthenticationCrawler crawler;
 
-
+  // TODO: delete AmazonProperty
   public CrawlerContext(TrafficWebClient webClient, AmazonProperty property, WebpageService webpageService, String uuid,
-                        AmazonAuthenticationCrawler crawler) {
-    this.webClient = webClient;
-    this.property = property;
+                        AbstractAuthenticationCrawler crawler) {
+    this.webClient      = webClient;
+    this.property       = property;
     this.webpageService = webpageService;
-    this.uuid = uuid;
-    this.crawler = crawler;
+    this.uuid           = uuid;
+    this.crawler        = crawler;
   }
 }

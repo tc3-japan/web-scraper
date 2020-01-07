@@ -8,4 +8,5 @@ public enum CodeType {
   MFA,
   Verification,
   CAPTCHA,
+  VerifyCodeLogin,
 }

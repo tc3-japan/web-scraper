@@ -1,25 +1,11 @@
 package com.topcoder.api.service.login.amazon;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
-
-import com.gargoylesoftware.htmlunit.util.Cookie;
 import com.topcoder.api.exception.ApiException;
 import com.topcoder.api.exception.BadRequestException;
 import com.topcoder.api.service.login.LoginHandlerBase;
 import com.topcoder.common.config.AmazonProperty;
 import com.topcoder.common.dao.ECSiteAccountDAO;
 import com.topcoder.common.model.CrawlerContext;
-import com.topcoder.common.model.ECCookie;
-import com.topcoder.common.model.ECCookies;
 import com.topcoder.common.model.LoginRequest;
 import com.topcoder.common.model.LoginResponse;
 import com.topcoder.common.repository.ECSiteAccountRepository;
@@ -28,9 +14,22 @@ import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.module.ecisolatedmodule.amazon.crawler.AmazonAuthenticationCrawler;
 import com.topcoder.scraper.module.ecisolatedmodule.amazon.crawler.AmazonAuthenticationCrawlerResult;
 import com.topcoder.scraper.service.WebpageService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
+
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class AmazonLoginHandler extends LoginHandlerBase {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(AmazonLoginHandler.class);
 
   private final AmazonProperty amazonProperty;
 
@@ -40,9 +39,6 @@ public class AmazonLoginHandler extends LoginHandlerBase {
    * save Crawler context
    */
   private Map<Integer, CrawlerContext> crawlerContextMap = new HashMap<>();
-
-  
-  private static final Logger LOGGER = LoggerFactory.getLogger(AmazonLoginHandler.class);
 
   @Autowired
   public AmazonLoginHandler(ECSiteAccountRepository ecSiteAccountRepository,
@@ -75,8 +71,9 @@ public class AmazonLoginHandler extends LoginHandlerBase {
     }
 
     try {
-      AmazonAuthenticationCrawlerResult result = context.getCrawler().authenticate(context.getWebClient(),
-        null, null, null, true);
+      AmazonAuthenticationCrawler crawler = (AmazonAuthenticationCrawler)context.getCrawler();
+      AmazonAuthenticationCrawlerResult result = crawler.authenticate(
+              context.getWebClient(),null, null, null, true);
       if (result.isSuccess()) {
         return new LoginResponse(ecSiteAccountDAO.getLoginEmail(), null, null,
           context.getCrawler().getAuthStep(), result.getReason());
@@ -100,7 +97,6 @@ public class AmazonLoginHandler extends LoginHandlerBase {
     ecSiteAccountDAO.setLoginEmail(request.getEmail());
     ecSiteAccountRepository.save(ecSiteAccountDAO); // save it first
 
-
     CrawlerContext context = crawlerContextMap.get(request.getSiteId());
     if (context == null || !context.getUuid().equals(request.getUuid())) { // context error
       saveFailedResult(ecSiteAccountDAO, "crawler context error");
@@ -108,11 +104,12 @@ public class AmazonLoginHandler extends LoginHandlerBase {
     }
 
     try {
-      AmazonAuthenticationCrawlerResult result = context.getCrawler()
-        .authenticate(context.getWebClient(), request.getEmail(),
-          request.getPassword(), request.getCode(), false);
+      AmazonAuthenticationCrawler crawler = (AmazonAuthenticationCrawler)context.getCrawler();
+      AmazonAuthenticationCrawlerResult result = crawler.authenticate(
+              context.getWebClient(), request.getEmail(), request.getPassword(), request.getCode(), false);
 
       if (result.isSuccess()) { // succeed , update status and save cookies
+        /*
         List<ECCookie> ecCookies = new LinkedList<>();
         for (Cookie cookie : context.getWebClient().getWebClient().getCookieManager().getCookies()) {
           ECCookie ecCookie = new ECCookie();
@@ -126,6 +123,15 @@ public class AmazonLoginHandler extends LoginHandlerBase {
           ecCookies.add(ecCookie);
         }
         ecSiteAccountDAO.setEcCookies(new ECCookies(ecCookies).toJSONString());
+        saveSuccessResult(ecSiteAccountDAO);
+        */
+
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        ObjectOutput oout = new ObjectOutputStream(bout);
+        oout.writeObject(context.getWebClient().getWebClient().getCookieManager().getCookies());
+        oout.close();
+        bout.close();
+        ecSiteAccountDAO.setEcCookies(bout.toByteArray());
         saveSuccessResult(ecSiteAccountDAO);
 
         return new LoginResponse(ecSiteAccountDAO.getLoginEmail(), result.getCodeType(), result.getImg(),

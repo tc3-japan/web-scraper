@@ -5,6 +5,9 @@
     <div v-if="!siteLoaded">{{trans('loginInitializing')}}</div>
 
     <div class="user-login" v-if="siteLoaded && !userLoadErrorMsg">
+      <div class="row" v-if="site['ecSite'] === 'yahoo'">
+        {{trans('yahooPasswordMessage')}}
+      </div>
       <div class="row">
         <div class="label">Email(User Id):</div>
         <input v-model="email">
@@ -67,9 +70,10 @@ export default class ECSiteLogin extends Vue {
   public loginError = null;
 
   public codeMessageMap = {
-    MFA: Vue.prototype.trans('mfaPlease'),
-    Verification: Vue.prototype.trans('verifyPlease'),
-    CAPTCHA: Vue.prototype.trans('capchaPlease'),
+    MFA:             Vue.prototype.trans('mfaPlease'),
+    Verification:    Vue.prototype.trans('verifyPlease'),
+    CAPTCHA:         Vue.prototype.trans('capchaPlease'),
+    VerifyCodeLogin: Vue.prototype.trans('verifyCodeLoginPelase'),
   };
 
   /**
@@ -128,6 +132,12 @@ export default class ECSiteLogin extends Vue {
    * is input invalid
    */
   public isInvalid() {
+    // TODO: consider input validations for kojima and yahoo
+    if (    this.site[String('ecSite')] === EcSite.kojima ||
+            this.site[String('ecSite')] === EcSite.yahoo) {
+      return false;
+    }
+
     // ignore email and password in first step
     if (this.step !== 'FIRST' && this.password.trim().length <= 0) {
       return true;
@@ -135,9 +145,7 @@ export default class ECSiteLogin extends Vue {
     if (this.step !== 'FIRST' && this.email.trim().length <= 0) {
       return true;
     }
-    if (this.step !== 'FIRST'
-        && this.site[String('ecSite')] !== EcSite.kojima
-        && !this.validateEmail(this.email)) {
+    if (this.step !== 'FIRST' && !this.validateEmail(this.email) ) {
       return true;
     }
 

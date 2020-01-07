@@ -1,16 +1,17 @@
 package com.topcoder.scraper.command.impl;
 
-import com.topcoder.common.dao.ProductDAO;
-import com.topcoder.scraper.command.AbstractCommand;
-import com.topcoder.scraper.exception.FetchProductDetailException;
-import com.topcoder.scraper.module.IProductModule;
+import java.io.IOException;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.util.List;
+import com.topcoder.common.dao.ProductDAO;
+import com.topcoder.scraper.command.AbstractCommand;
+import com.topcoder.scraper.exception.FetchProductDetailException;
+import com.topcoder.scraper.module.IProductModule;
 
 /**
  * Product detail command
@@ -35,25 +36,37 @@ public class SearchProductDemoCommand extends AbstractCommand<IProductModule> {
       ProductDAO product;
 
       LOGGER.info(">>> SearchProductDemo, Amazon: ");
-      product = module.searchProductInfo("amazon", "ES-W111-SR");
-      LOGGER.info("ProductCode: " + product.getProductCode());
-      LOGGER.info("ProductName: " + product.getProductName());
-      LOGGER.info("UnitPrice: "   + product.getUnitPrice());
-      LOGGER.info("ModelNo: "     + product.getModelNo());
+      product = module.searchProductInfo("amazon", "GZ-E109KC-R");
+      if (product != null) {
+        LOGGER.info("ProductCode: " + product.getProductCode());
+        LOGGER.info("ProductName: " + product.getProductName());
+        LOGGER.info("UnitPrice: " + product.getUnitPrice());
+        LOGGER.info("ModelNo: " + product.getModelNo());
+      } else {
+        LOGGER.warn(String.format("No product(%s) found in %s", "GZ-E109KC-R", "amazon"));
+      }
 
       LOGGER.info(">>> SearchProductDemo, Kojima: ");
-      product = module.searchProductInfo("kojima", "洗濯機");
-      LOGGER.info("ProductCode: " + product.getProductCode());
-      LOGGER.info("ProductName: " + product.getProductName());
-      LOGGER.info("UnitPrice: "   + product.getUnitPrice());
-      LOGGER.info("ModelNo: "     + product.getModelNo());
+      product = module.searchProductInfo("kojima", "GZ-E109KC-R");
+      if (product != null) {
+        LOGGER.info("ProductCode: " + product.getProductCode());
+        LOGGER.info("ProductName: " + product.getProductName());
+        LOGGER.info("UnitPrice: " + product.getUnitPrice());
+        LOGGER.info("ModelNo: " + product.getModelNo());
+      } else {
+        LOGGER.warn(String.format("No product(%s) found in %s", "GZ-E109KC-R", "Kojima"));
+      }
 
       LOGGER.info(">>> SearchProductDemo, Yahoo: ");
-      product = module.searchProductInfo("yahoo", "毛皮");
-      LOGGER.info("ProductCode: " + product.getProductCode());
-      LOGGER.info("ProductName: " + product.getProductName());
-      LOGGER.info("UnitPrice: "   + product.getUnitPrice());
-      LOGGER.info("ModelNo: "     + product.getModelNo());
+      product = module.searchProductInfo("yahoo", "GZ-E109KC-R");
+      if (product != null) {
+        LOGGER.info("ProductCode: " + product.getProductCode());
+        LOGGER.info("ProductName: " + product.getProductName());
+        LOGGER.info("UnitPrice: " + product.getUnitPrice());
+        LOGGER.info("ModelNo: " + product.getModelNo());
+      } else {
+        LOGGER.warn(String.format("No product(%s) found in %s", "GZ-E109KC-R", "yahoo"));
+      }
 
     } catch (IOException e) {
       LOGGER.error("Fail to fetch product detail list", e);

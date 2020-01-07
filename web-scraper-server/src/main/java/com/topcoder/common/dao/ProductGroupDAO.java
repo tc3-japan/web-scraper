@@ -1,10 +1,19 @@
 package com.topcoder.common.dao;
 
-import lombok.Data;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.*;
-import java.util.Date;
+import lombok.Data;
 
 /**
  * product group DAO
@@ -29,6 +38,8 @@ public class ProductGroupDAO {
   public static class GroupingMethod {
     public static final String manual = "Manual-Grouping";
     public static final String same_no = "Model-No-Grouping";
+    public static final String jan_code = "Jan-Code-Grouping";
+    public static final String product_name = "Product-Name-Grouping";
   }
 
   /**
@@ -44,6 +55,17 @@ public class ProductGroupDAO {
   @Column(name = "model_no")
   private String modelNo;
 
+  /**
+   * JAN code
+   */
+  @Column(name = "jan_code")
+  private String janCode;
+
+  /**
+   * Product name
+   */
+  @Column(name = "product_name")
+  private String productName;
 
   /**
    * the group method

@@ -1,19 +1,22 @@
 package com.topcoder.common.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.ObjectInputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.util.Cookie;
 import com.topcoder.common.dao.ECSiteAccountDAO;
 import com.topcoder.common.model.AuthStatusType;
+import com.topcoder.common.model.ECCookie;
+import com.topcoder.common.model.ECCookies;
 
 /**
  * common util class
@@ -106,5 +109,82 @@ public class Common {
    */
   public static <T> T getValueOrDefault(T value, T defaultValue) {
     return value == null ? defaultValue : value;
+  }
+
+  /**
+   *
+   * @param numText
+   * @return float value
+   */
+  public static Float toFloat(String numText) {
+    if (numText == null) {
+      return null;
+    }
+    return Float.valueOf(numText
+        .replaceAll("０", "0").replaceAll("１", "1").replaceAll("２", "2")
+        .replaceAll("３", "3").replaceAll("４", "4").replaceAll("５", "5")
+        .replaceAll("６", "6").replaceAll("７", "7").replaceAll("８", "8")
+        .replaceAll("９", "9").replaceAll("[^\\d.]", ""));
+  }
+
+  static String[] HALF_CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&'()--=^~¥\\|@`[{;+:*]},<.>/?_,."
+      .split("");
+  static String[] FULL_CHARS = "０１２３４５６７８９ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ！”＃＄％＆’（）−ー＝＾〜￥＼｜＠｀［｛；＋：＊］｝，＜．＞／？＿、。"
+      .split("");
+  static Map<String, Integer> HALF_CHARS_MAP = new HashMap<>();
+  static Map<String, Integer> FULL_CHARS_MAP = new HashMap<>();
+  static {
+    for (int i = 0; i < HALF_CHARS.length; i++) {
+      HALF_CHARS_MAP.put(HALF_CHARS[i], i);
+    }
+    for (int i = 0; i < FULL_CHARS.length; i++) {
+      FULL_CHARS_MAP.put(FULL_CHARS[i], i);
+    }
+  }
+  public static String toHalf(String text) {
+    if (text == null) {
+      return null;
+    }
+    StringBuilder sb = new StringBuilder();
+    String[] chars = text.split("");
+    for (int i = 0; i < chars.length; i++) {
+      Integer idx = FULL_CHARS_MAP.get(chars[i]);
+      sb.append(idx == null ? (HALF_CHARS_MAP.containsKey(chars[i]) ? chars[i] : " ") : HALF_CHARS[idx]);
+    }
+    //return Normalizer.normalize(text, Normalizer.Form.NFKC);
+    return sb.toString().trim();
+  }
+
+  public static String normalize(String code) {
+    if (code == null) {
+      return null;
+    }
+    String tmp = toHalf(code);
+    return tmp == null ? null : tmp.replaceAll("[\\p{Punct}¥]+", "-");
+  }
+
+  private static final ObjectMapper MAPPER = new ObjectMapper();
+  static {
+    MAPPER.enable(SerializationFeature.INDENT_OUTPUT);
+  }
+
+  public static String toJSON(Object obj) {
+    if (obj == null)
+      return "";
+    try {
+      return MAPPER.writeValueAsString(obj);
+    } catch (Exception e) {
+      logger.error("Failed to convert object to JSON.", e);
+      return null;
+    }
+  }
+
+  public static void main(String[] args) {
+    String text = "０１２３４５６７８９ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ！”＃＄％＆’（）−ー＝＾〜￥＼｜＠｀［｛；＋：＊］｝，＜．＞／？＿、。";
+    System.out.println(text);
+    text = Common.toHalf(text);
+    System.out.println(text);
+    text = text.replaceAll("[\\p{Punct}¥]+", "-");
+    System.out.println(text);
   }
 }

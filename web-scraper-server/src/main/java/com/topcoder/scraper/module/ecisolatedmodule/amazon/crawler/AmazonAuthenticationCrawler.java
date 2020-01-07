@@ -1,5 +1,14 @@
 package com.topcoder.scraper.module.ecisolatedmodule.amazon.crawler;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
 import com.gargoylesoftware.htmlunit.html.HtmlButton;
 import com.gargoylesoftware.htmlunit.html.HtmlCheckBoxInput;
 import com.gargoylesoftware.htmlunit.html.HtmlEmailInput;
@@ -17,14 +26,10 @@ import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractAuthenticationCrawler;
 import com.topcoder.scraper.module.ecunifiedmodule.AuthStep;
 import com.topcoder.scraper.service.WebpageService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import lombok.Getter;
+import lombok.Setter;
+
 
 /**
  * Amazon implementation of AuthenticationCrawler
@@ -163,15 +168,9 @@ public class AmazonAuthenticationCrawler extends AbstractAuthenticationCrawler {
         HtmlEmailInput emailInput = loginPage.querySelector(property.getCrawling().getLoginPage().getEmailInput());
         emailInput.type(username);
 
-        /* TODO: delete
+        /* TODO: delete */
         // Submit form
         //HtmlSubmitInput submitInput1 = loginPage.getFirstByXPath("//input[@id=\"continue\"]");
-        HtmlSubmitInput submitInput1 = loginPage.querySelector(property.getCrawling().getLoginPage().getContinueInput());
-        // continue button is optional, it shows sometimes
-        if (submitInput1 != null) {
-          loginPage = submitInput1.click();
-        }
-        */
         HtmlSubmitInput submitInput1 = loginPage.querySelector(property.getCrawling().getLoginPage().getContinueInput());
         // continue button is optional, it shows sometimes
         if (submitInput1 != null) {
@@ -430,7 +429,7 @@ public class AmazonAuthenticationCrawler extends AbstractAuthenticationCrawler {
         }
       }
     }
-    
+
     // verification code input
     final HtmlTextInput codeInput        = finalPage.querySelector(property.getCrawling().getLoginPage().getVerificationCodeInput());
     final HtmlSubmitInput sendCode       = finalPage.querySelector(property.getCrawling().getLoginPage().getVerificationCodeSubmit());
@@ -464,7 +463,7 @@ public class AmazonAuthenticationCrawler extends AbstractAuthenticationCrawler {
       return new AmazonAuthenticationCrawlerResult(false, null);
     }
     return new AmazonAuthenticationCrawlerResult(codeAuthResult.isSuccess(), codeAuthResult.getHtmlPath());
-/*    
+    /*
     // Check Login Successfully > Verification Code Needed
     HtmlRadioButtonInput smsInputCheck = finalPage.querySelector("input[type='radio'][name='option']");
     if (smsInputCheck != null) {
@@ -478,7 +477,7 @@ public class AmazonAuthenticationCrawler extends AbstractAuthenticationCrawler {
       }
     }
     return new AmazonAuthenticationCrawlerResult(true, path);
-*/
+    */
   }
 
 

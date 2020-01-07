@@ -1,23 +1,24 @@
 package com.topcoder.scraper.lib.navpage;
 
-import com.gargoylesoftware.htmlunit.html.DomNode;
-import com.gargoylesoftware.htmlunit.html.HtmlElement;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.topcoder.common.model.ProductInfo;
-import com.topcoder.common.traffic.TrafficWebClient;
-import com.topcoder.common.util.HtmlUtils;
-import lombok.Getter;
-import lombok.Setter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static com.topcoder.common.util.HtmlUtils.*;
 
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import static com.topcoder.common.util.HtmlUtils.extract1;
-import static com.topcoder.common.util.HtmlUtils.extractInt;
-import static com.topcoder.common.util.HtmlUtils.getAnchorHref;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.gargoylesoftware.htmlunit.html.DomNode;
+import com.gargoylesoftware.htmlunit.html.HtmlElement;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.topcoder.common.model.ProductInfo;
+import com.topcoder.common.traffic.TrafficWebClient;
+import com.topcoder.common.util.Common;
+import com.topcoder.common.util.HtmlUtils;
+
+import lombok.Getter;
+import lombok.Setter;
 
 public class NavigableProductDetailPage extends NavigablePage {
 
@@ -143,8 +144,7 @@ public class NavigableProductDetailPage extends NavigablePage {
 
 	public void scrapeModelNo(String selector) {
 		LOGGER.info("[scrapeModelNo] in");
-		String str = getText(selector);
-		str = str.replaceAll("[^0-9a-zA-Z\\-]", "").trim();
+    String str = Common.normalize(getText(selector));
 		LOGGER.info("[scrapeModelNo] Model No >>>> " + str);
 		if (str != null) {
 			productInfo.setModelNo(str);
@@ -153,8 +153,7 @@ public class NavigableProductDetailPage extends NavigablePage {
 
 	public void scrapeModelNo(DomNode node, String selector) {
 		LOGGER.info("[scrapeModelNo] in");
-		String str = getText(node, selector);
-		str = str.replaceAll("[^0-9a-zA-Z\\-]", "").trim();
+    String str = Common.normalize(getText(node, selector));
 		LOGGER.info("[scrapeModelNo] Model No >>>> " + str);
 		if (str != null) {
 			productInfo.setModelNo(str);
@@ -174,7 +173,7 @@ public class NavigableProductDetailPage extends NavigablePage {
 							&& HtmlUtils.getTextContent(modelNoLabelElement).replaceAll("[:：]", "").equals(modelNoLabelNames.get(i))) {
 
 				LOGGER.info(String.format("[scrapeModelNo] model no (%s) is found by selector: %s", modelNoLabelNames.get(i), modelNoValueSelectors.get(i)));
-				String modelNo = HtmlUtils.getTextContentWithoutDuplicatedSpaces(modelNoValueElement).replaceAll("[^0-9a-zA-Z\\-]", "").trim();
+        String modelNo = Common.normalize(HtmlUtils.getTextContentWithoutDuplicatedSpaces(modelNoValueElement));
 				this.productInfo.setModelNo(modelNo);
 				break;
 			}
@@ -197,7 +196,7 @@ public class NavigableProductDetailPage extends NavigablePage {
 							&& HtmlUtils.getTextContent(modelNoLabelElement).replaceAll("[:：]", "").equals(modelNoSelector.get(MODEL_NO_LABEL_NAME_KEY))) {
 
 				LOGGER.info(String.format("[scrapeModelNo] model no (%s) is found by selector: %s", modelNoSelector.get(MODEL_NO_LABEL_NAME_KEY), modelNoSelector.get(MODEL_NO_VALUE_SELECTOR_KEY)));
-				String modelNo = HtmlUtils.getTextContentWithoutDuplicatedSpaces(modelNoValueElement).replaceAll("[^0-9a-zA-Z\\-]", "").trim();
+        String modelNo = Common.normalize(HtmlUtils.getTextContentWithoutDuplicatedSpaces(modelNoValueElement));
 				this.productInfo.setModelNo(modelNo);
 				break;
 			}

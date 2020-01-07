@@ -1,15 +1,11 @@
 package com.topcoder.common.dao;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.topcoder.scraper.converter.JpaConverterPurchaseInfoJson;
-import com.topcoder.common.model.ProductInfo;
-import org.hibernate.annotations.UpdateTimestamp;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -21,6 +17,13 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
+import org.hibernate.annotations.UpdateTimestamp;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.topcoder.common.model.ProductInfo;
+import com.topcoder.common.util.Common;
+import com.topcoder.scraper.converter.JpaConverterPurchaseInfoJson;
 
 @Entity
 @Table(name = "product")
@@ -85,11 +88,16 @@ public class ProductDAO {
   private Date updateAt;
 
   /**
-   * Product number
+   * Model number
    */
   @Column(name = "model_no")
   private String modelNo;
 
+  /**
+   * JAN code
+   */
+  @Column(name = "jan_code")
+  private String janCode;
 
   /**
    * Product group status
@@ -121,6 +129,7 @@ public class ProductDAO {
     this.productInfo = new ProductInfo(productInfo.getCode(), productInfo.getName(), productInfo.getPrice(), null, productInfo.getDistributor());
     this.updateAt = new Date();
     this.modelNo = productInfo.getModelNo();
+    this.janCode = productInfo.getJanCode();
   }
 
   public ProductDAO(String ecSite, String productCode, String productName, String unitPrice, String productDistributor, ProductInfo productInfo, String fetchInfoStatus, Date updateAt) {
@@ -203,9 +212,13 @@ public class ProductDAO {
   public void setRankings(List<RankingDAO> rankings) {
     this.rankings = rankings;
   }
-  
+
   public void setModelNo(String modelNo) {
     this.modelNo = modelNo;
+  }
+
+  public void setJanCode(String janCode) {
+    this.janCode = janCode;
   }
 
   public int getId() {
@@ -252,6 +265,10 @@ public class ProductDAO {
     return modelNo;
   }
 
+  public String getJanCode() {
+    return this.janCode;
+  }
+
   public String getGroupStatus() {
     return groupStatus;
   }
@@ -266,6 +283,14 @@ public class ProductDAO {
 
   public void setProductGroupId(Integer productGroupId) {
     this.productGroupId = productGroupId;
+  }
+
+  public Float getUnitPriceAsNumber() {
+    if (this.unitPrice == null) {
+      return null;
+    }
+
+    return Common.toFloat(this.unitPrice);
   }
 
   public static class GroupStatus {

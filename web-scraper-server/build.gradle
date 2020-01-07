@@ -6,7 +6,8 @@ buildscript {
     'jackson'        : '2.9.7',
     'mysqlConnector' : '8.0.13',
     'flyway'         : '5.2.4',
-    'groovy'         : '2.5.8'
+    'groovy'         : '2.5.8',
+    'solr'           : '8.2.0'
   ]
 
   repositories {
@@ -15,6 +16,10 @@ buildscript {
   dependencies {
     classpath("org.springframework.boot:spring-boot-gradle-plugin:${versions.springBoot}")
   }
+}
+
+plugins {
+    id "org.flywaydb.flyway" version "5.2.4"
 }
 
 apply plugin: 'java'
@@ -37,8 +42,10 @@ dependencies {
   compile("org.springframework.boot:spring-boot-configuration-processor:${versions.springBoot}")
   compile("org.springframework.boot:spring-boot-starter-web:${versions.springBoot}")
   compile("org.springframework.boot:spring-boot-starter-security:${versions.springBoot}")
-  compile("org.projectlombok:lombok:1.18.6")
+  //compile("org.projectlombok:lombok:1.18.6")
 
+  compileOnly 'org.projectlombok:lombok:1.18.6'
+  annotationProcessor 'org.projectlombok:lombok:1.18.6'
 
   compile("net.sourceforge.htmlunit:htmlunit:${versions.htmlunit}")
   compile("com.google.code.gson:gson:${versions.gson}")
@@ -53,6 +60,10 @@ dependencies {
   compile("org.codehaus.groovy:groovy-bsf:${versions.groovy}")
   compile("org.codehaus.groovy:groovy-groovysh:${versions.groovy}")
 
+  compile("org.apache.solr:solr-solrj:${versions.solr}")
+  compile("commons-codec:commons-codec:1.13")
+
+
   testCompile("org.springframework.boot:spring-boot-starter-test:${versions.springBoot}")
 }
 
@@ -63,6 +74,13 @@ task wrapper(type: Wrapper) {
 compileJava {
   options.warnings    = true
   options.deprecation = true
+}
+
+flyway {
+  url = "jdbc:mysql://localhost:3306/web_scraper"
+  user = "root"
+  password = "mypassword"
+  schemas = ["web_scraper"]
 }
 
 task copyJar(type: Copy) {

@@ -53,3 +53,18 @@ services:
         awslogs-group: scraper-db-lg
         awslogs-region: ap-northeast-1
         awslogs-stream-prefix: scraper-db
+
+  scraper-solr:
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/scraper-solr:latest
+    build:
+      context: ./solr/
+    ports:
+      - 8983:8983
+    volumes:
+      - search-store:/var/solr/data
+    logging:
+      driver: awslogs
+      options:
+        awslogs-group: scraper-solr-lg
+        awslogs-region: ap-northeast-1
+        awslogs-stream-prefix: scraper-solr

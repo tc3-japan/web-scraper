@@ -24,7 +24,7 @@ import com.topcoder.common.repository.ECSiteAccountRepository;
 import com.topcoder.common.repository.UserRepository;
 
 @Service
-public class ECSiteService {
+public class ECSiteAccountService {
 
   /**
    * user repository
@@ -48,7 +48,7 @@ public class ECSiteService {
   /**
    * the logger
    */
-  private Logger logger = LoggerFactory.getLogger(ECSiteService.class.getName());
+  private Logger logger = LoggerFactory.getLogger(ECSiteAccountService.class.getName());
 
   /**
    * the BCryptPasswordEncoder passwordEncoder instance.

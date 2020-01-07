@@ -1,13 +1,16 @@
 package com.topcoder.scraper.module.ecunifiedmodule.crawler;
 
-import com.gargoylesoftware.htmlunit.html.HtmlElement;
-import groovy.lang.Closure;
-import groovy.lang.Script;
+import java.util.List;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-import java.util.Map;
+import com.topcoder.common.model.ProductInfo;
+import com.topcoder.common.util.Common;
+
+import groovy.lang.Closure;
+import groovy.lang.Script;
 
 public abstract class GeneralProductCrawlerScriptSupport extends Script {
 
@@ -101,6 +104,10 @@ public abstract class GeneralProductCrawlerScriptSupport extends Script {
     this.crawler.getDetailPage().scrapeModelNo(modelNoSelectors);
   }
 
+  String scrapeText(String selector) {
+    return this.crawler.getDetailPage().scrapeText(selector);
+  }
+
   String scrapeProductCodeFromSearchResultByProductAttrName(String searchResultSelector, String productCodeAttribute, String adProductClass) {
     String productCode = this.crawler.getListPage().scrapeProductCodeFromSearchResultByProductAttrName(
             this.crawler.getSearchWord(), searchResultSelector, productCodeAttribute, adProductClass, null);
@@ -121,6 +128,14 @@ public abstract class GeneralProductCrawlerScriptSupport extends Script {
 
   String eachProducts(Closure<String> closure) {
     return this.crawler.eachProducts(closure);
+  }
+
+  ProductInfo getProductInfo() {
+    return this.crawler.getProductInfo();
+  }
+
+  String normalize(String code) {
+    return Common.normalize(code);
   }
 
   // Others: logging ---------------------------------------------------------------------------------------------------

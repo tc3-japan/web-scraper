@@ -19,3 +19,12 @@ scrapeDistributor("dt.elStore > a")
 // .ItemPrice_price
 // p.elPrice:nth-child(2) > em:nth-child(1)
 scrapePrices([".elNum", ".ItemPrice_price", "p.elPrice:nth-child(2) > em"])
+
+def jan = scrapeText(".mdItemInfoCode > p")
+log "JAN : $jan"
+productInfo?.janCode = normalize removeLabel(jan)
+
+// "JANコード/ISBNコード:4988617257443" -> "4988617257443"
+def removeLabel (text) {
+  text ? text.split("：|:")[-1].trim() : text
+}

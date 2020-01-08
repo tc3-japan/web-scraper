@@ -2,6 +2,9 @@ package com.topcoder.scraper.lib.navpage;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
@@ -13,9 +16,8 @@ import com.gargoylesoftware.htmlunit.html.HtmlPasswordInput;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.service.WebpageService;
+
 import groovy.lang.Closure;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class NavigablePage {
 
@@ -164,6 +166,7 @@ public class NavigablePage {
             }
         }
     }
+
     public String getText(String selector) {
         LOGGER.info("[getText] in");
 
@@ -173,6 +176,14 @@ public class NavigablePage {
         return str;
     }
 
+  public String getNodeAttribute(String selector, String attr) {
+    LOGGER.info("[getNodeAttribute(" + attr + ")] in");
+
+    HtmlElement node = page.querySelector(selector);
+    String str = node != null ? node.getAttribute(attr) : null;
+    LOGGER.info(">>> Got Attribute >>> " + str + " for " + selector);
+    return str;
+  }
 
     protected String getValue(String selector) {
         LOGGER.info("[getValue] in");
@@ -187,6 +198,7 @@ public class NavigablePage {
         return str;
     }
 
+
     public String getText(DomNode sourceNode, String selector) {
         LOGGER.info("[getText] in");
 
@@ -195,6 +207,15 @@ public class NavigablePage {
         LOGGER.info(">>> Got Text >>> " + str + " for " + selector);
         return str;
     }
+
+  public String getNodeAttribute(DomNode sourceNode, String selector, String attr) {
+    LOGGER.info("[getNodeAttribute(" + attr + ")] in");
+
+    HtmlElement node = sourceNode.querySelector(selector);
+    String str = node != null ? node.getAttribute(attr) : null;
+    LOGGER.info(">>> Got Attribute >>> " + str + " for " + selector);
+    return str;
+  }
 
     public void type(String input, String selector) {
         LOGGER.info("[type] in");

@@ -1,5 +1,11 @@
 package com.topcoder.common.util;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.util.Cookie;
@@ -7,11 +13,6 @@ import com.topcoder.common.dao.ECSiteAccountDAO;
 import com.topcoder.common.model.AuthStatusType;
 import com.topcoder.common.model.ECCookie;
 import com.topcoder.common.model.ECCookies;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
  * common util class

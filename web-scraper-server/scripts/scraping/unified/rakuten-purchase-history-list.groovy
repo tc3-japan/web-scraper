@@ -14,14 +14,17 @@ processPurchaseHistory() {
 	processOrders(orderList) { orderNode ->
 		index += 1;
 		//print "looping through orderNode" + orderNode
-		print "orderNode loop"
+		log "orderNode loop"
 		scrapeOrderNumber(orderNode, "table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > div:nth-child(1) > ul:nth-child(1) > li:nth-child(2) > span:nth-child(1)")
 		scrapeOrderDate(orderNode, "table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > div:nth-child(1) > ul:nth-child(1) > li:nth-child(1)")
-	
+
+		distoributor = getText orderNode, ".purchaseShop .shopName"
+
 		//if (!isNew()) { return false; } //PROBLEM! Date changes per order not per item!
 
-		productList = scrapeDomList orderNode, "table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > div:nth-child(1) > div:nth-child(1)"
-		print "productList: " + productList.size()
+		//productList = scrapeDomList orderNode, "table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > div:nth-child(1) > div:nth-child(1)"
+		productList = scrapeDomList orderNode, "table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > div"
+		log "productList: " + productList.size()
 
 		//REWRITE BELOW TO PROPERLY ITERATE THROUGH PRODUCT DETAIL PAGES!
 		//See yahoo script on develop & Feature/update-modules-groovy-unified
@@ -29,14 +32,23 @@ processPurchaseHistory() {
 		processProducts(productList) { productNode ->
 			setPage(htmlPath) //This doesn't work?
 			//print "Looping through product node: " + productNode
-			productQty = getText productNode, "ul:nth-child(2) > li:nth-child(1) > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > ul:nth-child(1) > li:nth-child(3)"
-			productPrice = getText productNode, "ul:nth-child(2) > li:nth-child(1) > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > ul:nth-child(1) > li:nth-child(2)" //"table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > div:nth-child(2) > div:nth-child(1) > ul:nth-child(2) > li:nth-child(1) > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > ul:nth-child(1) > li:nth-child(2) > span:nth-child(1)"
+
+			productName = getText productNode, ".itemPriceCnt > .itemName a"
+
+			qty = getText productNode, ".itemPriceCnt > .itemNum"
+			qty = qty.replaceAll("[^\\d.]", "");
+			productQty = qty.isInteger() ? qty.toInteger() : null
+
+			productPrice = getText productNode, ".itemPriceCnt > .itemPrice"
+			productPrice = productPrice.replaceAll("[^\\d.]", "");
+
 			click productNode, "ul:nth-child(2) > li:nth-child(1) > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > ul:nth-child(1) > li:nth-child(1) > a:nth-child(1)"
 			productCode = getText ".item_number"
-			productPrice = productPrice.replaceAll("[^\\d.]", "");
-			productQty = productQty.replaceAll("[^\\d.]", "");
-			productName = getText ".item_desc > font:nth-child(1) > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > b:nth-child(1) > font:nth-child(1)"
-			ProductInfo info = new ProductInfo(productCode, productName, productPrice, (int)productQty, "DistributorUknown")		
+			distributor = getNodeAttribute "input[name=\"shopname\"]", "value"
+
+			ProductInfo info = new ProductInfo(productCode, productName, productPrice, productQty, distributor)
+
+			log "**** addProduct order:${purchaseHistory.orderNumber}, code:$productCode, name:$productName, price:$productPrice, qty:$productQty, distributor:$distributor"
 			addProduct(info)
 		}
 	}

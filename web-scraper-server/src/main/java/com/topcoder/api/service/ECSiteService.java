@@ -44,7 +44,7 @@ public class ECSiteService {
 
   @Autowired
   private LoginHandlerFactory loginHandlerFactory;
-  
+
   /**
    * the logger
    */
@@ -95,28 +95,24 @@ public class ECSiteService {
     return accountDAO;
   }
 
-  
+
   public LoginResponse loginInit(String userId, Integer siteId, String uuid) throws ApiException {
-        
+
     UserDAO userDAO = checkUserByCryptoID(userId);
     ECSiteAccountDAO ecSiteAccountDAO = ecSiteAccountRepository.findOne(siteId);
 
     LoginHandler handler = this.loginHandlerFactory.getLoginHandler(ecSiteAccountDAO.getEcSite());
-    
-    System.out.println("\n\nSITE ID @ ECSiteService: "+ siteId +"\n\n");
-    System.out.println("\n\nUUID ID @ ECSiteService: "+ uuid +"\n\n");
-    System.out.println("\n\nuserDAO.getId ID @ ECSiteService: "+ userDAO.getId() +"\n\n");
-    System.out.println("\n\nhandler @ ECSiteService: "+ handler +"\n\n");
+
     return handler.loginInit(userDAO.getId(), siteId, uuid);
   }
 
   public LoginResponse login(String userId, LoginRequest request) throws ApiException {
-    
+
     UserDAO userDAO = checkUserByCryptoID(userId);
     ECSiteAccountDAO ecSiteAccountDAO = ecSiteAccountRepository.findOne(request.getSiteId());
-    
+
     LoginHandler handler = this.loginHandlerFactory.getLoginHandler(ecSiteAccountDAO.getEcSite());
-    
+
     return handler.login(userDAO.getId(), request);
   }
 

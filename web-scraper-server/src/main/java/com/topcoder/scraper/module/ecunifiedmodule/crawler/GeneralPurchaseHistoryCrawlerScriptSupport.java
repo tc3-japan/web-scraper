@@ -18,13 +18,15 @@ public abstract class GeneralPurchaseHistoryCrawlerScriptSupport extends Script 
   private static final Logger LOGGER = LoggerFactory.getLogger(GeneralPurchaseHistoryCrawlerScriptSupport.class);
 
   protected GeneralPurchaseHistoryCrawler crawler;
+
   void setCrawler(GeneralPurchaseHistoryCrawler crawler) {
     this.crawler = crawler;
   }
 
   void setPage(String historyUrl) {
-    this.crawler.getWebClient().getWebClient().getOptions().setJavaScriptEnabled(false); //TODO: TEST ONLY
+    this.crawler.getWebClient().getWebClient().getOptions().setJavaScriptEnabled(false); // TODO: TEST ONLY
     this.crawler.getHistoryPage().setPage(historyUrl);
+
   }
 
   void setEnableJS(boolean value) {
@@ -47,22 +49,22 @@ public abstract class GeneralPurchaseHistoryCrawlerScriptSupport extends Script 
     this.crawler.getHistoryPage().click(node, selector);
   }
 
-
   void type(String input, String selector) {
     this.crawler.getHistoryPage().type(input, selector);
   }
 
-  // Crawler method: purchase history structure processor --------------------------------------------------------------
+  // Crawler method: purchase history structure processor
+  // --------------------------------------------------------------
 
   void processPurchaseHistory(Closure<Boolean> closure) throws IOException {
     this.crawler.processPurchaseHistory(closure);
   }
 
-  void processOrders(List<DomNode> orderList , Closure<Boolean> closure) {
+  void processOrders(List<DomNode> orderList, Closure<Boolean> closure) {
     this.crawler.processOrders(orderList, closure);
   }
 
-  void processProducts(List<DomNode> productList , Closure<Boolean> closure) {
+  void processProducts(List<DomNode> productList, Closure<Boolean> closure) {
     this.crawler.processProducts(productList, closure);
   }
 
@@ -70,13 +72,15 @@ public abstract class GeneralPurchaseHistoryCrawlerScriptSupport extends Script 
     return this.crawler.getCurrentPurchaseHistory();
   }
 
-  // Crawler method: others --------------------------------------------------------------------------------------------
+  // Crawler method: others
+  // --------------------------------------------------------------------------------------------
 
   boolean isNew() {
     return this.crawler.isNew();
   }
 
-  // Scraping wrapper: general -----------------------------------------------------------------------------------------
+  // Scraping wrapper: general
+  // -----------------------------------------------------------------------------------------
 
   List<DomNode> scrapeDomList(String selector) {
     return this.crawler.getHistoryPage().scrapeDomList(selector);
@@ -86,7 +90,8 @@ public abstract class GeneralPurchaseHistoryCrawlerScriptSupport extends Script 
     return this.crawler.getHistoryPage().scrapeDomList(node, selector);
   }
 
-  // Scraping wrapper: order in purchase history -----------------------------------------------------------------------
+  // Scraping wrapper: order in purchase history
+  // -----------------------------------------------------------------------
 
   void scrapeOrderNumber(DomNode orderNode, String selector) {
     this.crawler.getHistoryPage().scrapeOrderNumber(orderNode, selector);
@@ -112,7 +117,8 @@ public abstract class GeneralPurchaseHistoryCrawlerScriptSupport extends Script 
     this.crawler.getHistoryPage().scrapeDeliveryStatus(orderNode, selector);
   }
 
-  // Scraping wrapper: product in order --------------------------------------------------------------------------------
+  // Scraping wrapper: product in order
+  // --------------------------------------------------------------------------------
 
   public void addProduct(ProductInfo product) {
     this.crawler.getHistoryPage().addProduct(product);
@@ -166,7 +172,8 @@ public abstract class GeneralPurchaseHistoryCrawlerScriptSupport extends Script 
     this.crawler.getHistoryPage().scrapeProductDistributor(productNode, selector);
   }
 
-  // Others: logging ---------------------------------------------------------------------------------------------------
+  // Others: logging
+  // ---------------------------------------------------------------------------------------------------
   void log(String str) {
     LOGGER.info(str);
   }

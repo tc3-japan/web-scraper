@@ -34,7 +34,7 @@ public class GeneralPurchaseHistoryModule implements IPurchaseHistoryModule {
 
   @Autowired
   public GeneralPurchaseHistoryModule(PurchaseHistoryService purchaseHistoryService,
-                                      ECSiteAccountRepository ecSiteAccountRepository, WebpageService webpageService, YahooLoginHandler loginHandler) {
+      ECSiteAccountRepository ecSiteAccountRepository, WebpageService webpageService, YahooLoginHandler loginHandler) {
     this.purchaseHistoryService = purchaseHistoryService;
     this.webpageService = webpageService;
     this.ecSiteAccountRepository = ecSiteAccountRepository;
@@ -71,9 +71,9 @@ public class GeneralPurchaseHistoryModule implements IPurchaseHistoryModule {
         }
 
         try {
-          //KojimaPurchaseHistoryCrawler crawler = new KojimaPurchaseHistoryCrawler(getModuleType(), webpageService);
+          // KojimaPurchaseHistoryCrawler crawler = new
+          // KojimaPurchaseHistoryCrawler(getModuleType(), webpageService);
           GeneralPurchaseHistoryCrawler crawler = new GeneralPurchaseHistoryCrawler(sites.get(i), webpageService);
-
 
           GeneralPurchaseHistoryCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClient,
               lastPurchaseHistory.orElse(null), true);
@@ -81,21 +81,21 @@ public class GeneralPurchaseHistoryModule implements IPurchaseHistoryModule {
           List<PurchaseHistory> list = crawlerResult.getPurchaseHistoryList();
 
           if (list != null && list.size() > 0) {
-            //System.out.println("NULL PTR DEBUG. >>> before list.forEach command <<<");
+            // System.out.println("NULL PTR DEBUG. >>> before list.forEach command <<<");
             final String accountId = "" + ecSiteAccountDAO.getId();
             list.forEach(purchaseHistory -> {
               purchaseHistory.setAccountId(accountId);
               LOGGER.info(String.format("purchaseHistory#%s accountid: %s", purchaseHistory.getOrderNumber(),
                   purchaseHistory.getAccountId()));
             });
-           // System.out.println("NULL PTR DEBUG. getModuleType(): " + getModuleType());
+            // System.out.println("NULL PTR DEBUG. getModuleType(): " + getModuleType());
             System.out.println("NULL PTR DEBUG. historylist: " + list);
 
             purchaseHistoryService.save(ecSiteAccountDAO.getEcSite(), list);
           }
           LOGGER.info("succeed fetch purchaseHistory for ecSite id = " + ecSiteAccountDAO.getId());
         } catch (Exception e) { // here catch all exception and did not throw it
-          //this.loginHandler.saveFailedResult(ecSiteAccountDAO, e.getMessage());
+          // this.loginHandler.saveFailedResult(ecSiteAccountDAO, e.getMessage());
           LOGGER.error("failed to PurchaseHistory for ecSite id = " + ecSiteAccountDAO.getId());
           e.printStackTrace();
         }

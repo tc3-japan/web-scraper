@@ -45,6 +45,13 @@ public class NavigableProductDetailPage extends NavigablePage {
 		LOGGER.info("[constructor] in");
 	}
 
+  public String scrapeText(String selector) {
+    LOGGER.info("[scrapeText] in");
+    String str = getText(selector);
+    LOGGER.info("[scrapeText] text >>>> " + str);
+    return str;
+  }
+
 	public void scrapeDistributor(String selector) {
 		LOGGER.info("[scrapeDistributor] in");
 		String str = getText(selector);

@@ -1,6 +1,7 @@
 package com.topcoder.scraper.lib.navpage;
 
 import java.io.IOException;
+import java.net.URL;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -176,6 +177,19 @@ public class NavigablePage {
         return str;
     }
 
+    public String getText(String... selectors) {
+      if (selectors == null || selectors.length == 0) {
+        return null;
+      }
+      for (String s : selectors) {
+        String text = getText(s);
+        if (text != null) {
+          return text;
+        }
+      }
+      return null;
+    }
+
     public String getNodeAttribute(String selector, String attr) {
       LOGGER.info("[getNodeAttribute(" + attr + ")] in");
 
@@ -276,4 +290,7 @@ public class NavigablePage {
         return webpageService.save(fileName, siteName, page.getWebResponse().getContentAsString());
     }
 
+    public URL getPageUrl() {
+      return this.page != null ? this.page.getUrl() : null;
+    }
 }

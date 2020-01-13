@@ -36,7 +36,7 @@ public class RakutenLoginHandler extends LoginHandlerBase {
     super(ecSiteAccountRepository, userRepository);
     this.applicationContext = applicationContext;
   }
-  
+
   @Override
   public String getECSite() {
     return "rakuten";
@@ -49,7 +49,7 @@ public class RakutenLoginHandler extends LoginHandlerBase {
 
   @Override
   public LoginResponse login(int userId, LoginRequest request) throws ApiException {
-    
+
     ECSiteAccountDAO ecSiteAccountDAO = ecSiteAccountRepository.findOne(request.getSiteId());
     ecSiteAccountDAO.setPassword(request.getPassword());
     ecSiteAccountDAO.setLoginEmail(request.getEmail());
@@ -57,7 +57,7 @@ public class RakutenLoginHandler extends LoginHandlerBase {
 
     RakutenAuthenticationCrawler crawler = new RakutenAuthenticationCrawler(this.getECSite(), applicationContext.getBean(WebpageService.class));
     TrafficWebClient webClient = new TrafficWebClient(userId, false);
-    
+
     try {
       RakutenAuthenticationCrawlerResult result = crawler.authenticate(webClient, request.getEmail(), request.getPassword(), null);
       if (result.isSuccess()) { // succeed , update status and save cookies
@@ -67,6 +67,7 @@ public class RakutenLoginHandler extends LoginHandlerBase {
         oout.close();
         bout.close();
         ecSiteAccountDAO.setEcCookies(bout.toByteArray());
+        saveSuccessResult(ecSiteAccountDAO);
 
         return new LoginResponse(ecSiteAccountDAO.getLoginEmail(), null, null, AuthStep.DONE, "");
       } else { // login failed

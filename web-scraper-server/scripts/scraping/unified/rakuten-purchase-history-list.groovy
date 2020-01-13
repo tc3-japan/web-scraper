@@ -40,15 +40,20 @@ processPurchaseHistory() {
 			productQty = qty.isInteger() ? qty.toInteger() : null
 
 			productPrice = getText productNode, ".itemPriceCnt > .itemPrice"
-			productPrice = productPrice.replaceAll("[^\\d.]", "");
 
-			click productNode, "ul:nth-child(2) > li:nth-child(1) > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > ul:nth-child(1) > li:nth-child(1) > a:nth-child(1)"
-			productCode = getText ".item_number"
+			// click the link at product name
+			click productNode, "#oDrCenterContents .itemName > a"
+
+			//log "**** product url: ${pageUrl}"
+			matcher = pageUrl =~ /.+item.rakuten.co.jp\/([^\/]+\/[^\/]+)\/.*/
+			productCode = matcher?.size() > 0 ? matcher[0][1] : null
+			//log "**** product code: ${productCode}"
+
 			distributor = getNodeAttribute "input[name=\"shopname\"]", "value"
 
 			ProductInfo info = new ProductInfo(productCode, productName, productPrice, productQty, distributor)
 
-			log "**** addProduct order:${purchaseHistory.orderNumber}, code:$productCode, name:$productName, price:$productPrice, qty:$productQty, distributor:$distributor"
+			//log "**** addProduct order:${purchaseHistory.orderNumber}, code:$productCode, name:$productName, price:$productPrice, qty:$productQty, distributor:$distributor"
 			addProduct(info)
 		}
 	}

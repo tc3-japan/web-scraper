@@ -1,11 +1,14 @@
 package com.topcoder.scraper.module.ecunifiedmodule.crawler;
 
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
+import com.topcoder.scraper.lib.navpage.NavigableProductDetailPage;
+
 import groovy.lang.Closure;
 import groovy.lang.Script;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -64,6 +67,10 @@ public abstract class GeneralProductCrawlerScriptSupport extends Script {
     this.crawler.getDetailPage().type(input, selector);
   }
 
+  URL getPageUrl() {
+    return this.crawler.getDetailPage().getPageUrl();
+  }
+
   // Scraping wrapper: product -----------------------------------------------------------------------------------------
   void scrapeCode(String selector) {
     this.crawler.getDetailPage().scrapeCode(selector);
@@ -117,6 +124,17 @@ public abstract class GeneralProductCrawlerScriptSupport extends Script {
     String productCode = this.crawler.getListPage().scrapeProductCodeFromSearchResultByProductUrl(
             this.crawler.getSearchWord(), searchResultSelector, productCodeRegex);
     return productCode;
+  }
+
+  String scrapeText(String... selectors) {
+    if (selectors == null || selectors.length == 0) {
+      return null;
+    }
+    NavigableProductDetailPage page = this.crawler.getDetailPage();
+    if (page == null) {
+      return null;
+    }
+    return page.getText(selectors);
   }
 
   String eachProducts(Closure<String> closure) {

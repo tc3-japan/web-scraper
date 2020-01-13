@@ -1,6 +1,7 @@
 package com.topcoder.scraper.module.ecunifiedmodule.crawler;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -9,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.model.PurchaseHistory;
+import com.topcoder.scraper.lib.navpage.NavigableProductDetailPage;
+import com.topcoder.scraper.lib.navpage.NavigablePurchaseHistoryPage;
 
 import groovy.lang.Closure;
 import groovy.lang.Script;
@@ -50,6 +53,10 @@ public abstract class GeneralPurchaseHistoryCrawlerScriptSupport extends Script 
 
   void type(String input, String selector) {
     this.crawler.getHistoryPage().type(input, selector);
+  }
+
+  URL getPageUrl() {
+    return this.crawler.getHistoryPage().getPageUrl();
   }
 
   // Crawler method: purchase history structure processor --------------------------------------------------------------
@@ -164,6 +171,14 @@ public abstract class GeneralPurchaseHistoryCrawlerScriptSupport extends Script 
 
   void scrapeProductDistributor(DomNode productNode, String selector) {
     this.crawler.getHistoryPage().scrapeProductDistributor(productNode, selector);
+  }
+
+  String scrapeText(String... selectors) {
+    NavigablePurchaseHistoryPage page = this.crawler.getHistoryPage();
+    if (page == null) {
+      return null;
+    }
+    return page.getText(selectors);
   }
 
   // Others: logging ---------------------------------------------------------------------------------------------------

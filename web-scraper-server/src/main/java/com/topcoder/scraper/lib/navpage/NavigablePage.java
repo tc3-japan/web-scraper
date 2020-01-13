@@ -176,14 +176,14 @@ public class NavigablePage {
         return str;
     }
 
-  public String getNodeAttribute(String selector, String attr) {
-    LOGGER.info("[getNodeAttribute(" + attr + ")] in");
+    public String getNodeAttribute(String selector, String attr) {
+      LOGGER.info("[getNodeAttribute(" + attr + ")] in");
 
-    HtmlElement node = page.querySelector(selector);
-    String str = node != null ? node.getAttribute(attr) : null;
-    LOGGER.info(">>> Got Attribute >>> " + str + " for " + selector);
-    return str;
-  }
+      HtmlElement node = page.querySelector(selector);
+      String str = node != null ? node.getAttribute(attr) : null;
+      LOGGER.info(">>> Got Attribute >>> " + str + " for " + selector);
+      return str;
+    }
 
     protected String getValue(String selector) {
         LOGGER.info("[getValue] in");
@@ -208,14 +208,14 @@ public class NavigablePage {
         return str;
     }
 
-  public String getNodeAttribute(DomNode sourceNode, String selector, String attr) {
-    LOGGER.info("[getNodeAttribute(" + attr + ")] in");
+    public String getNodeAttribute(DomNode sourceNode, String selector, String attr) {
+      LOGGER.info("[getNodeAttribute(" + attr + ")] in");
 
-    HtmlElement node = sourceNode.querySelector(selector);
-    String str = node != null ? node.getAttribute(attr) : null;
-    LOGGER.info(">>> Got Attribute >>> " + str + " for " + selector);
-    return str;
-  }
+      HtmlElement node = sourceNode.querySelector(selector);
+      String str = node != null ? node.getAttribute(attr) : null;
+      LOGGER.info(">>> Got Attribute >>> " + str + " for " + selector);
+      return str;
+    }
 
     public void type(String input, String selector) {
         LOGGER.info("[type] in");

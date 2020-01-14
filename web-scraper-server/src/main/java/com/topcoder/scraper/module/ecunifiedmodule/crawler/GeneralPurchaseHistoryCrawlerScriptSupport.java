@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.model.PurchaseHistory;
+import com.topcoder.common.util.Common;
 import com.topcoder.scraper.lib.navpage.NavigableProductDetailPage;
 import com.topcoder.scraper.lib.navpage.NavigablePurchaseHistoryPage;
 
@@ -125,6 +126,10 @@ public abstract class GeneralPurchaseHistoryCrawlerScriptSupport extends Script 
     this.crawler.getHistoryPage().addProduct(product);
   }
 
+  public ProductInfo getProductInfo() {
+    return this.crawler.getCurrentProduct();
+  }
+
   String getText(String selector) {
     return this.crawler.getHistoryPage().getText(selector);
   }
@@ -179,6 +184,10 @@ public abstract class GeneralPurchaseHistoryCrawlerScriptSupport extends Script 
       return null;
     }
     return page.getText(selectors);
+  }
+
+  String normalize(String code) {
+    return Common.normalize(code);
   }
 
   // Others: logging ---------------------------------------------------------------------------------------------------

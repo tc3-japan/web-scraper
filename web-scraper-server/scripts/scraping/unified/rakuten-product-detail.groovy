@@ -14,7 +14,8 @@ scrapeName ".item_name"
 //books - scrapeCode("li.productInfo:nth-child(7) > span:nth-child(2)");
 
 // [Distributor]
-scrapeDistributor "input[name=\"shopname\"]"
+// unable to obtain shopname because it's inside of iframe
+//scrapeDistributor "input[name=\"shopname\"]"
 
 // [Price]
 scrapePrice(".price2");
@@ -23,6 +24,19 @@ scrapePrice(".price2");
 // [JAN Code]
 code = scrapeText ".item_number"
 if (code?.trim() ==~ /[0-9]{13}/) {
-  productInfo.janCode = code
-  log "**** JAN: ${code}"
+  productInfo.janCode = normalize code
+  log "**** JAN: ${productInfo.janCode}"
+} else {
+  productInfo.modelNo = normalize infarModelNumber(code)
+  log "**** Model#: ${productInfo.modelNo}"
 }
+
+// code: 商品番号
+def infarModelNumber(code) {
+  if (!code) {
+    return null
+  }
+  chunks = code.split("[^\\p{ASCII}]")
+  chunks[0]
+}
+

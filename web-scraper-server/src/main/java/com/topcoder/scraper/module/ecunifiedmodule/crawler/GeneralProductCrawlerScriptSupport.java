@@ -1,7 +1,9 @@
 package com.topcoder.scraper.module.ecunifiedmodule.crawler;
 
+import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.util.Common;
+import com.topcoder.scraper.lib.navpage.NavigablePage;
 import com.topcoder.scraper.lib.navpage.NavigableProductDetailPage;
 import groovy.lang.Closure;
 import groovy.lang.Script;
@@ -109,10 +111,6 @@ public abstract class GeneralProductCrawlerScriptSupport extends Script {
     this.crawler.getDetailPage().scrapeModelNo(modelNoSelectors);
   }
 
-  String scrapeText(String selector) {
-    return this.crawler.getDetailPage().scrapeText(selector);
-  }
-
   String scrapeProductCodeFromSearchResultByProductAttrName(String searchResultSelector, String productCodeAttribute, String adProductClass) {
     String productCode = this.crawler.getListPage().scrapeProductCodeFromSearchResultByProductAttrName(
             this.crawler.getSearchWord(), searchResultSelector, productCodeAttribute, adProductClass, null);
@@ -131,17 +129,6 @@ public abstract class GeneralProductCrawlerScriptSupport extends Script {
     return productCode;
   }
 
-  String scrapeText(String... selectors) {
-    if (selectors == null || selectors.length == 0) {
-      return null;
-    }
-    NavigableProductDetailPage page = this.crawler.getDetailPage();
-    if (page == null) {
-      return null;
-    }
-    return page.getText(selectors);
-  }
-
   String eachProducts(Closure<String> closure) {
     return this.crawler.eachProducts(closure);
   }
@@ -150,11 +137,41 @@ public abstract class GeneralProductCrawlerScriptSupport extends Script {
     return this.crawler.getProductInfo();
   }
 
+  // Others: utility ---------------------------------------------------------------------------------------------------
+  String scrapeText(String selector) {
+    return getPage().getText(selector);
+  }
+
+  String scrapeText(String... selectors) {
+    if (selectors == null || selectors.length == 0) {
+      return null;
+    }
+    NavigablePage page = getPage();
+    if (page == null) {
+      return null;
+    }
+    return page.getText(selectors);
+  }
+
+  String getNodeAttribute(String selector, String attr) {
+    return getPage().getNodeAttribute(selector, attr);
+  }
+
+  String getNodeAttribute(DomNode sourceNode, String selector, String attr) {
+    return getPage().getNodeAttribute(sourceNode, selector, attr);
+  }
+
   String normalize(String code) {
     return Common.normalize(code);
   }
 
-  // Others: logging ---------------------------------------------------------------------------------------------------
+  NavigablePage getPage() {
+    if (this.crawler.getDetailPage() != null) {
+      return this.crawler.getDetailPage();
+    }
+    return this.crawler.getListPage();
+  }
+
   void log(String str) {
     LOGGER.info(str);
   }

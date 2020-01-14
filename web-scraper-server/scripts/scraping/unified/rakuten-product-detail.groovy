@@ -23,6 +23,6 @@ scrapePrice(".price2");
 // [JAN Code]
 code = scrapeText ".item_number"
 if (code?.trim() ==~ /[0-9]{13}/) {
-//  productInfo.janCode = code
+  productInfo.janCode = code
   log "**** JAN: ${code}"
 }

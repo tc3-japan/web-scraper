@@ -39,7 +39,7 @@ processPurchaseHistory() {
 			qty = qty.replaceAll("[^\\d.]", "");
 			productQty = qty.isInteger() ? qty.toInteger() : null
 
-			productPrice = getText productNode, ".itemPriceCnt > .itemPrice"
+			productPrice = getText productNode, ".itemPriceCnt > .itemPrice > .price"
 
 			// click the link at product name
 			click productNode, "#oDrCenterContents .itemName > a"

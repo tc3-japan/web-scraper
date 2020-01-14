@@ -4,6 +4,8 @@ import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.util.Common;
 import com.topcoder.scraper.lib.navpage.NavigableProductDetailPage;
 import groovy.lang.Closure;
+import groovy.lang.Script;
+
 import java.net.URL;
 import java.util.List;
 import java.util.Map;

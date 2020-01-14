@@ -42,10 +42,10 @@ dependencies {
   compile("org.springframework.boot:spring-boot-configuration-processor:${versions.springBoot}")
   compile("org.springframework.boot:spring-boot-starter-web:${versions.springBoot}")
   compile("org.springframework.boot:spring-boot-starter-security:${versions.springBoot}")
-  //compile("org.projectlombok:lombok:1.18.6")
+  compile("org.projectlombok:lombok:1.18.6")
 
-  compileOnly 'org.projectlombok:lombok:1.18.6'
-  annotationProcessor 'org.projectlombok:lombok:1.18.6'
+  //compileOnly('org.projectlombok:lombok:1.18.6')
+  //annotationProcessor('org.projectlombok:lombok:1.18.6')
 
   compile("net.sourceforge.htmlunit:htmlunit:${versions.htmlunit}")
   compile("com.google.code.gson:gson:${versions.gson}")

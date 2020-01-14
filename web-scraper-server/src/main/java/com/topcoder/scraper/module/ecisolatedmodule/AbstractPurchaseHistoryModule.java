@@ -6,7 +6,7 @@ import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.common.repository.ECSiteAccountRepository;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.common.util.Common;
-import com.topcoder.scraper.module.IPurchaseHistoryListModule;
+import com.topcoder.scraper.module.IPurchaseHistoryModule;
 import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractPurchaseHistoryCrawler;
 import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractPurchaseHistoryCrawlerResult;
 import com.topcoder.scraper.service.PurchaseHistoryService;
@@ -18,11 +18,11 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Amazon implementation of PurchaseHistoryListModule
+ * Amazon implementation of PurchaseHistoryModule
  */
-public abstract class AbstractPurchaseHistoryListModule implements IPurchaseHistoryListModule {
+public abstract class AbstractPurchaseHistoryModule implements IPurchaseHistoryModule {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPurchaseHistoryListModule.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPurchaseHistoryModule.class);
 
   protected final PurchaseHistoryService         purchaseHistoryService;
   protected final WebpageService                 webpageService;
@@ -30,7 +30,7 @@ public abstract class AbstractPurchaseHistoryListModule implements IPurchaseHist
   protected final LoginHandlerBase               loginHandler;
   protected final AbstractPurchaseHistoryCrawler crawler;
 
-  public AbstractPurchaseHistoryListModule(
+  public AbstractPurchaseHistoryModule(
     PurchaseHistoryService         purchaseHistoryService,
     ECSiteAccountRepository        ecSiteAccountRepository,
     WebpageService                 webpageService,

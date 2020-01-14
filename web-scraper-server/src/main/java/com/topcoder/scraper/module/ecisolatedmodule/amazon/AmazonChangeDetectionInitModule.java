@@ -20,19 +20,19 @@ public class AmazonChangeDetectionInitModule extends AbstractChangeDetectionInit
 
   @Autowired
   public AmazonChangeDetectionInitModule(
-          MonitorTargetDefinitionProperty  monitorTargetDefinitionProperty,
-          WebpageService                   webpageService,
-          ECSiteAccountRepository          ecSiteAccountRepository,
-          NormalDataRepository             normalDataRepository,
-          AmazonPurchaseHistoryListModule  purchaseHistoryListModule,
-          AmazonProductModule              productModule
+          MonitorTargetDefinitionProperty monitorTargetDefinitionProperty,
+          WebpageService                  webpageService,
+          ECSiteAccountRepository         ecSiteAccountRepository,
+          NormalDataRepository            normalDataRepository,
+          AmazonPurchaseHistoryModule     purchaseHistoryModule,
+          AmazonProductModule             productModule
   ) {
     super(
             monitorTargetDefinitionProperty,
             webpageService,
             ecSiteAccountRepository,
             normalDataRepository,
-            purchaseHistoryListModule,
+            purchaseHistoryModule,
             productModule
     );
   }

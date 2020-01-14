@@ -42,6 +42,7 @@ public class SearchProductDemoCommand extends AbstractCommand<IProductModule> {
         LOGGER.info("ProductName: " + product.getProductName());
         LOGGER.info("UnitPrice: " + product.getUnitPrice());
         LOGGER.info("ModelNo: " + product.getModelNo());
+        LOGGER.info("JANCode: " + product.getJanCode());
       } else {
         LOGGER.warn(String.format("No product(%s) found in %s", "GZ-E109KC-R", "amazon"));
       }
@@ -53,6 +54,7 @@ public class SearchProductDemoCommand extends AbstractCommand<IProductModule> {
         LOGGER.info("ProductName: " + product.getProductName());
         LOGGER.info("UnitPrice: " + product.getUnitPrice());
         LOGGER.info("ModelNo: " + product.getModelNo());
+        LOGGER.info("JANCode: " + product.getJanCode());
       } else {
         LOGGER.warn(String.format("No product(%s) found in %s", "GZ-E109KC-R", "Kojima"));
       }
@@ -64,10 +66,22 @@ public class SearchProductDemoCommand extends AbstractCommand<IProductModule> {
         LOGGER.info("ProductName: " + product.getProductName());
         LOGGER.info("UnitPrice: " + product.getUnitPrice());
         LOGGER.info("ModelNo: " + product.getModelNo());
+        LOGGER.info("JANCode: " + product.getJanCode());
       } else {
         LOGGER.warn(String.format("No product(%s) found in %s", "GZ-E109KC-R", "yahoo"));
       }
 
+      LOGGER.info(">>> SearchProductDemo, Rakuten: ");
+      product = module.searchProductInfo("rakuten", "HandyCam");
+      if (product != null) {
+        LOGGER.info("ProductCode: " + product.getProductCode());
+        LOGGER.info("ProductName: " + product.getProductName());
+        LOGGER.info("UnitPrice: " + product.getUnitPrice());
+        LOGGER.info("ModelNo: " + product.getModelNo());
+        LOGGER.info("JANCode: " + product.getJanCode());
+      } else {
+        LOGGER.warn(String.format("No product(%s) found in %s", "GZ-E109KC-R", "rakuten"));
+      }
     } catch (IOException e) {
       LOGGER.error("Fail to fetch product detail list", e);
       throw new FetchProductDetailException();

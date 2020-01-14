@@ -36,21 +36,21 @@ public abstract class AbstractChangeDetectionCheckModule extends AbstractChangeD
   protected final CheckResultRepository        checkResultRepository;
 
   public AbstractChangeDetectionCheckModule(
-          MonitorTargetDefinitionProperty    monitorTargetDefinitionProperty,
-          WebpageService                     webpageService,
-          ECSiteAccountRepository            ecSiteAccountRepository,
-          NormalDataRepository               normalDataRepository,
-          AbstractPurchaseHistoryListModule  purchaseHistoryListModule,
-          AbstractProductModule              productModule,
-          CheckItemsDefinitionProperty       checkItemsDefinitionProperty,
-          CheckResultRepository              checkResultRepository
+          MonitorTargetDefinitionProperty monitorTargetDefinitionProperty,
+          WebpageService                  webpageService,
+          ECSiteAccountRepository         ecSiteAccountRepository,
+          NormalDataRepository            normalDataRepository,
+          AbstractPurchaseHistoryModule   purchaseHistoryModule,
+          AbstractProductModule           productModule,
+          CheckItemsDefinitionProperty    checkItemsDefinitionProperty,
+          CheckResultRepository           checkResultRepository
   ) {
     super(
             monitorTargetDefinitionProperty,
             webpageService,
             ecSiteAccountRepository,
             normalDataRepository,
-            purchaseHistoryListModule,
+            purchaseHistoryModule,
             productModule);
 
     this.checkItemsDefinitionProperty = checkItemsDefinitionProperty;

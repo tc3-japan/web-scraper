@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 /**
- * Amazon implementation of PurchaseHistoryListCrawler
+ * Amazon implementation of PurchaseHistoryCrawler
  */
 @Component
 public class AmazonPurchaseHistoryCrawler extends AbstractPurchaseHistoryCrawler {

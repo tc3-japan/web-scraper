@@ -2,7 +2,7 @@ package com.topcoder.scraper.module.ecisolatedmodule.kojima;
 
 import com.topcoder.api.service.login.kojima.KojimaLoginHandler;
 import com.topcoder.common.repository.ECSiteAccountRepository;
-import com.topcoder.scraper.module.ecisolatedmodule.AbstractPurchaseHistoryListModule;
+import com.topcoder.scraper.module.ecisolatedmodule.AbstractPurchaseHistoryModule;
 import com.topcoder.scraper.module.ecisolatedmodule.kojima.crawler.KojimaPurchaseHistoryCrawler;
 import com.topcoder.scraper.service.PurchaseHistoryService;
 import com.topcoder.scraper.service.WebpageService;
@@ -15,12 +15,12 @@ import org.springframework.stereotype.Component;
  * Kojima implementation of PurchaseHistoryListModule
  */
 @Component
-public class KojimaPurchaseHistoryListModule extends AbstractPurchaseHistoryListModule {
+public class KojimaPurchaseHistoryModule extends AbstractPurchaseHistoryModule {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(KojimaPurchaseHistoryListModule.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(KojimaPurchaseHistoryModule.class);
 
   @Autowired
-  public KojimaPurchaseHistoryListModule(
+  public KojimaPurchaseHistoryModule(
           PurchaseHistoryService           purchaseHistoryService,
           ECSiteAccountRepository          ecSiteAccountRepository,
           WebpageService                   webpageService,

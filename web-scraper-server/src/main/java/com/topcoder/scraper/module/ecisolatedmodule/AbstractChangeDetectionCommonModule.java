@@ -23,26 +23,26 @@ public abstract class AbstractChangeDetectionCommonModule implements IBasicModul
 
   private static Logger LOGGER = LoggerFactory.getLogger(AbstractChangeDetectionCommonModule.class);
 
-  protected final MonitorTargetDefinitionProperty    monitorTargetDefinitionProperty;
-  protected final WebpageService                     webpageService;
-  protected final ECSiteAccountRepository            ecSiteAccountRepository;
-  protected final NormalDataRepository               normalDataRepository;
-  protected final AbstractPurchaseHistoryListModule  purchaseHistoryListModule;
-  protected final AbstractProductModule              productModule;
+  protected final MonitorTargetDefinitionProperty monitorTargetDefinitionProperty;
+  protected final WebpageService                  webpageService;
+  protected final ECSiteAccountRepository         ecSiteAccountRepository;
+  protected final NormalDataRepository            normalDataRepository;
+  protected final AbstractPurchaseHistoryModule   purchaseHistoryModule;
+  protected final AbstractProductModule           productModule;
 
   public AbstractChangeDetectionCommonModule(
-          MonitorTargetDefinitionProperty    monitorTargetDefinitionProperty,
-          WebpageService                     webpageService,
-          ECSiteAccountRepository            ecSiteAccountRepository,
-          NormalDataRepository               normalDataRepository,
-          AbstractPurchaseHistoryListModule  purchaseHistoryListModule,
-          AbstractProductModule              productModule
+          MonitorTargetDefinitionProperty monitorTargetDefinitionProperty,
+          WebpageService                  webpageService,
+          ECSiteAccountRepository         ecSiteAccountRepository,
+          NormalDataRepository            normalDataRepository,
+          AbstractPurchaseHistoryModule   purchaseHistoryModule,
+          AbstractProductModule           productModule
   ) {
     this.monitorTargetDefinitionProperty = monitorTargetDefinitionProperty;
     this.webpageService                  = webpageService;
     this.ecSiteAccountRepository         = ecSiteAccountRepository;
     this.normalDataRepository            = normalDataRepository;
-    this.purchaseHistoryListModule       = purchaseHistoryListModule;
+    this.purchaseHistoryModule           = purchaseHistoryModule;
     this.productModule                   = productModule;
   }
 
@@ -70,7 +70,7 @@ public abstract class AbstractChangeDetectionCommonModule implements IBasicModul
 
           for (ECSiteAccountDAO ecSiteAccountDAO : accountDAOS) {
             AbstractPurchaseHistoryCrawlerResult crawlerResult =
-                    this.purchaseHistoryListModule.fetchPurchaseHistoryListForECSiteAccount(ecSiteAccountDAO, null);
+                    this.purchaseHistoryModule.fetchPurchaseHistoryListForECSiteAccount(ecSiteAccountDAO, null);
             if (crawlerResult != null) {
               String key = Integer.toString(ecSiteAccountDAO.getId());
               this.processPurchaseHistory(crawlerResult, key);

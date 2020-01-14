@@ -1,13 +1,20 @@
 package com.topcoder.scraper.module.ecunifiedmodule.crawler;
 
-import com.gargoylesoftware.htmlunit.html.DomNode;
-import groovy.lang.Closure;
-import groovy.lang.Script;
+import java.io.IOException;
+import java.net.URL;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.List;
+import com.gargoylesoftware.htmlunit.html.DomNode;
+import com.topcoder.common.model.ProductInfo;
+import com.topcoder.common.model.PurchaseHistory;
+import com.topcoder.scraper.lib.navpage.NavigableProductDetailPage;
+import com.topcoder.scraper.lib.navpage.NavigablePurchaseHistoryPage;
+
+import groovy.lang.Closure;
+import groovy.lang.Script;
 
 public abstract class GeneralPurchaseHistoryCrawlerScriptSupport extends Script {
 
@@ -39,8 +46,17 @@ public abstract class GeneralPurchaseHistoryCrawlerScriptSupport extends Script 
     this.crawler.getHistoryPage().openPage(node, selector, closure, this.crawler.getWebpageService());
   }
 
-  void type(String input, String selector) { 
+  void click(DomNode node, String selector) {
+    this.crawler.getHistoryPage().click(node, selector);
+  }
+
+
+  void type(String input, String selector) {
     this.crawler.getHistoryPage().type(input, selector);
+  }
+
+  URL getPageUrl() {
+    return this.crawler.getHistoryPage().getPageUrl();
   }
 
   // Crawler method: purchase history structure processor --------------------------------------------------------------
@@ -55,6 +71,10 @@ public abstract class GeneralPurchaseHistoryCrawlerScriptSupport extends Script 
 
   void processProducts(List<DomNode> productList , Closure<Boolean> closure) {
     this.crawler.processProducts(productList, closure);
+  }
+
+  PurchaseHistory getPurchaseHistory() {
+    return this.crawler.getCurrentPurchaseHistory();
   }
 
   // Crawler method: others --------------------------------------------------------------------------------------------
@@ -101,12 +121,36 @@ public abstract class GeneralPurchaseHistoryCrawlerScriptSupport extends Script 
 
   // Scraping wrapper: product in order --------------------------------------------------------------------------------
 
+  public void addProduct(ProductInfo product) {
+    this.crawler.getHistoryPage().addProduct(product);
+  }
+
+  String getText(String selector) {
+    return this.crawler.getHistoryPage().getText(selector);
+  }
+
+  String getText(DomNode node, String selector) {
+    return this.crawler.getHistoryPage().getText(node, selector);
+  }
+
+  String getNodeAttribute(String selector, String attr) {
+    return this.crawler.getHistoryPage().getNodeAttribute(selector, attr);
+  }
+
+  String getNodeAttribute(DomNode node, String selector, String attr) {
+    return this.crawler.getHistoryPage().getNodeAttribute(node, selector, attr);
+  }
+
   void scrapeProductCodeFromAnchor(DomNode productNode, String selector, String regexStr) {
     this.crawler.getHistoryPage().scrapeProductCodeFromAnchor(productNode, selector, regexStr);
   }
 
   void scrapeProductCodeFromInput(DomNode productNode, String selector, String regexStr) {
     this.crawler.getHistoryPage().scrapeProductCodeFromInput(productNode, selector, regexStr);
+  }
+
+  void scrapeProductCode(String selector) {
+    this.crawler.getHistoryPage().scrapeProductCode(selector);
   }
 
   void scrapeProductName(DomNode productNode, String selector) {
@@ -127,6 +171,14 @@ public abstract class GeneralPurchaseHistoryCrawlerScriptSupport extends Script 
 
   void scrapeProductDistributor(DomNode productNode, String selector) {
     this.crawler.getHistoryPage().scrapeProductDistributor(productNode, selector);
+  }
+
+  String scrapeText(String... selectors) {
+    NavigablePurchaseHistoryPage page = this.crawler.getHistoryPage();
+    if (page == null) {
+      return null;
+    }
+    return page.getText(selectors);
   }
 
   // Others: logging ---------------------------------------------------------------------------------------------------

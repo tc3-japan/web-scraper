@@ -3,11 +3,13 @@ package com.topcoder.scraper.lib.navpage;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.topcoder.common.traffic.TrafficWebClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class NavigableAuthenticationPage extends NavigablePage {
 
-    // TrafficWebClient webClient;
-    // HtmlPage page;
+    private static final Logger LOGGER = LoggerFactory.getLogger(NavigableAuthenticationPage.class.getName());
+
     private boolean loggedIn;
 
     public NavigableAuthenticationPage(HtmlPage page, TrafficWebClient webClient) {
@@ -22,15 +24,14 @@ public class NavigableAuthenticationPage extends NavigablePage {
 
     public boolean confirmLoginByElementExists(String selector) {
         // If we see the yahoo image, consider ourselves logged in
-        HtmlElement yahooImg = getPage()
-                .querySelector(selector);
-        //savePage("yahoo-authenticated", siteName, webpageService);
+
+        HtmlElement yahooImg = getPage().querySelector(selector);
         boolean loginSuccess;
         if (yahooImg != null) {
-            System.out.println("Logged in successfully");
+            LOGGER.info("Logged in successfully");
             loginSuccess = true;
         } else {
-            System.out.println("Failed to login");
+            LOGGER.info("Failed to login");
             loginSuccess = false;
         }
 
@@ -45,10 +46,10 @@ public class NavigableAuthenticationPage extends NavigablePage {
         boolean matchResult = loginNode.getTextContent().matches(".*" + text + ".*");
         boolean loginSuccess;
         if (!matchResult) {
-            System.out.println("Logged in successfully");
+            LOGGER.info("Logged in successfully");
             loginSuccess = true;
         } else {
-            System.out.println("Failed to login");
+            LOGGER.info("Failed to login");
             loginSuccess = false;
         }
         loggedIn = loginSuccess;

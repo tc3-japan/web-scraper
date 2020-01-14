@@ -62,10 +62,13 @@ public class DBProductService implements ProductService {
       product.setProductDistributor(productInfo.getDistributor());
       info.setDistributor(productInfo.getDistributor());
     }
-    
     if (productInfo.getModelNo() != null) {
         product.setModelNo(productInfo.getModelNo());
         info.setModelNo(productInfo.getModelNo());
+    }
+    if (productInfo.getJanCode() != null) {
+      product.setJanCode(productInfo.getJanCode());
+      info.setJanCode(productInfo.getJanCode());
     }
 
     product.setProductInfo(info);
@@ -85,7 +88,7 @@ public class DBProductService implements ProductService {
   public List<ProductDAO> getAllFetchInfoStatusIsNull(String ecSite) {
     return this.productRepository.findByFetchInfoStatusAndECSite(ecSite);
   }
-  
+
   @Override
   @Transactional
   public void saveProduct(String site, ProductInfo productInfo) {

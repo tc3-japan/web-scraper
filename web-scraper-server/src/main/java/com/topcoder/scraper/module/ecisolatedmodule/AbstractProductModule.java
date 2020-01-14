@@ -8,6 +8,8 @@ import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractProductCrawl
 import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractProductCrawlerResult;
 import com.topcoder.scraper.service.ProductService;
 import com.topcoder.scraper.service.WebpageService;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,13 +50,17 @@ public abstract class AbstractProductModule implements IProductModule {
 
   /**
    * Fetch product information from yahoo and save in database
-   * 
+   *
    * @param productId   the product id
    * @param productCode the product code
    * @throws IOException webclient exception
    */
   private void processProductDetail(int productId, String productCode) throws IOException {
 
+    if (StringUtils.isBlank(productCode)) {
+      LOGGER.info(String.format("Skipping Product#%d - no product code", productId));
+      return;
+    }
     AbstractProductCrawlerResult crawlerResult = this.fetchProductDetail(productCode);
     ProductInfo productInfo = crawlerResult.getProductInfo();
 

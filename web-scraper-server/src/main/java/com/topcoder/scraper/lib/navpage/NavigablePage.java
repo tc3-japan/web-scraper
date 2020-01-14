@@ -1,10 +1,15 @@
 package com.topcoder.scraper.lib.navpage;
 
 import java.io.IOException;
+import java.net.URL;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
+import com.gargoylesoftware.htmlunit.html.HtmlButton;
 import com.gargoylesoftware.htmlunit.html.HtmlCheckBoxInput;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
@@ -12,9 +17,8 @@ import com.gargoylesoftware.htmlunit.html.HtmlPasswordInput;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.service.WebpageService;
+
 import groovy.lang.Closure;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class NavigablePage {
 
@@ -68,9 +72,23 @@ public class NavigablePage {
     public void click(String selector) {
         LOGGER.info("[click] in");
         if (selector != null) {
+            HtmlElement element = null;
+            HtmlButton button = null;
 
-            HtmlElement element = page.querySelector(selector);
-            LOGGER.info("click() > Selected " + element + " from " + selector);
+            try {
+                element = page.querySelector(selector);
+                LOGGER.info("click() > Selected " + element + " from " + selector);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            try {
+                button = (HtmlButton)page.querySelector(selector);
+                LOGGER.info("click() >  button Selected " + button + " from " + selector);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             if (element != null) {
                 try {
                     HtmlPage result = webClient.click(element);
@@ -149,13 +167,36 @@ public class NavigablePage {
             }
         }
     }
-    protected String getText(String selector) {
+
+    public String getText(String selector) {
         LOGGER.info("[getText] in");
 
         HtmlElement node = page.querySelector(selector);
         String str = node != null ? node.asText().replaceAll("\\n", " ").trim() : null;
         LOGGER.info(">>> Got Text >>> " + str + " for " + selector);
         return str;
+    }
+
+    public String getText(String... selectors) {
+      if (selectors == null || selectors.length == 0) {
+        return null;
+      }
+      for (String s : selectors) {
+        String text = getText(s);
+        if (text != null) {
+          return text;
+        }
+      }
+      return null;
+    }
+
+    public String getNodeAttribute(String selector, String attr) {
+      LOGGER.info("[getNodeAttribute(" + attr + ")] in");
+
+      HtmlElement node = page.querySelector(selector);
+      String str = node != null ? node.getAttribute(attr) : null;
+      LOGGER.info(">>> Got Attribute >>> " + str + " for " + selector);
+      return str;
     }
 
     protected String getValue(String selector) {
@@ -171,13 +212,23 @@ public class NavigablePage {
         return str;
     }
 
-    protected String getText(DomNode sourceNode, String selector) {
+
+    public String getText(DomNode sourceNode, String selector) {
         LOGGER.info("[getText] in");
 
         HtmlElement node = sourceNode.querySelector(selector);
         String str = node != null ? node.asText().replaceAll("\\n", " ").trim() : null;
         LOGGER.info(">>> Got Text >>> " + str + " for " + selector);
         return str;
+    }
+
+    public String getNodeAttribute(DomNode sourceNode, String selector, String attr) {
+      LOGGER.info("[getNodeAttribute(" + attr + ")] in");
+
+      HtmlElement node = sourceNode.querySelector(selector);
+      String str = node != null ? node.getAttribute(attr) : null;
+      LOGGER.info(">>> Got Attribute >>> " + str + " for " + selector);
+      return str;
     }
 
     public void type(String input, String selector) {
@@ -221,7 +272,6 @@ public class NavigablePage {
             HtmlCheckBoxInput memberIdInput = page.querySelector(selector);
             if (memberIdInput != null) {
                 LOGGER.info("typeCheckBox() > Selected " + memberIdInput + " from " + selector);
-                // LOGGER.info("Typing " + input); //TODO: REMOVE
                 try {
                     memberIdInput.type(input);
                 } catch (IOException e) {
@@ -240,4 +290,7 @@ public class NavigablePage {
         return webpageService.save(fileName, siteName, page.getWebResponse().getContentAsString());
     }
 
+    public URL getPageUrl() {
+      return this.page != null ? this.page.getUrl() : null;
+    }
 }

@@ -19,7 +19,7 @@ import java.io.IOException;
 @Component
 public class YahooAuthenticationCrawler extends AbstractAuthenticationCrawler {
 
-  private Logger logger = LoggerFactory.getLogger(YahooAuthenticationCrawler.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(YahooAuthenticationCrawler.class.getName());
   
   private String                      siteName;
   private NavigableAuthenticationPage authPage;

@@ -6,7 +6,7 @@ import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.common.repository.ECSiteAccountRepository;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.common.util.Common;
-import com.topcoder.scraper.module.IPurchaseHistoryListModule;
+import com.topcoder.scraper.module.IPurchaseHistoryModule;
 import com.topcoder.scraper.module.ecisolatedmodule.kojima.crawler.OldKojimaPurchaseHistoryListCrawler;
 import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistoryCrawlerResult;
 import com.topcoder.scraper.service.PurchaseHistoryService;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-public class OldKojimaPurchaseHistoryListModule implements IPurchaseHistoryListModule {
+public class OldKojimaPurchaseHistoryListModule implements IPurchaseHistoryModule {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(OldKojimaPurchaseHistoryListModule.class);
 

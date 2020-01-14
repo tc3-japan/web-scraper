@@ -22,14 +22,14 @@ public class YahooChangeDetectionCheckModule extends AbstractChangeDetectionChec
 
   @Autowired
   public YahooChangeDetectionCheckModule(
-          MonitorTargetDefinitionProperty  monitorTargetDefinitionProperty,
-          WebpageService                   webpageService,
-          ECSiteAccountRepository          ecSiteAccountRepository,
-          NormalDataRepository             normalDataRepository,
-          YahooPurchaseHistoryListModule   purchaseHistoryListModule,
-          YahooProductDetailModule         productModule,
-          CheckItemsDefinitionProperty     checkItemsDefinitionProperty,
-          CheckResultRepository            checkResultRepository
+          MonitorTargetDefinitionProperty monitorTargetDefinitionProperty,
+          WebpageService                  webpageService,
+          ECSiteAccountRepository         ecSiteAccountRepository,
+          NormalDataRepository            normalDataRepository,
+          YahooPurchaseHistoryModule      purchaseHistoryModule,
+          YahooProductDetailModule        productModule,
+          CheckItemsDefinitionProperty    checkItemsDefinitionProperty,
+          CheckResultRepository           checkResultRepository
 
   ) {
     super(
@@ -37,7 +37,7 @@ public class YahooChangeDetectionCheckModule extends AbstractChangeDetectionChec
             webpageService,
             ecSiteAccountRepository,
             normalDataRepository,
-            purchaseHistoryListModule,
+            purchaseHistoryModule,
             productModule,
             checkItemsDefinitionProperty,
             checkResultRepository

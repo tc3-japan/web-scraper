@@ -1,6 +1,6 @@
 package com.topcoder.scraper.command.impl;
 
-import com.topcoder.scraper.module.IPurchaseHistoryListModule;
+import com.topcoder.scraper.module.IPurchaseHistoryModule;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,10 +23,10 @@ import static org.mockito.Mockito.when;
 public class PurchaseHistoryListCommandTest {
 
   @MockBean(name = "module1")
-  private IPurchaseHistoryListModule IPurchaseHistoryListModule1;
+  private IPurchaseHistoryModule IPurchaseHistoryModule1;
 
   @MockBean(name = "module2")
-  private IPurchaseHistoryListModule IPurchaseHistoryListModule2;
+  private IPurchaseHistoryModule IPurchaseHistoryModule2;
 
   @Mock
   private ApplicationArguments args;
@@ -36,38 +36,38 @@ public class PurchaseHistoryListCommandTest {
 
   @Before
   public void setUp() {
-    when(IPurchaseHistoryListModule1.getModuleType()).thenReturn("test");
-    when(IPurchaseHistoryListModule2.getModuleType()).thenReturn("test2");
+    when(IPurchaseHistoryModule1.getModuleType()).thenReturn("test");
+    when(IPurchaseHistoryModule2.getModuleType()).thenReturn("test2");
   }
 
   @Test
   public void testCallModuleOnceForFirstModule() throws IOException {
     when(args.getOptionValues("site")).thenReturn(Collections.singletonList("test"));
     purchaseHistoryListCommand.run(args);
-    verify(IPurchaseHistoryListModule1, times(1)).getModuleType();
-    verify(IPurchaseHistoryListModule1, times(1)).fetchPurchaseHistoryList();
+    verify(IPurchaseHistoryModule1, times(1)).getModuleType();
+    verify(IPurchaseHistoryModule1, times(1)).fetchPurchaseHistoryList();
     // not called because of find first module named test
-    verify(IPurchaseHistoryListModule2, times(0)).getModuleType();
-    verify(IPurchaseHistoryListModule2, times(0)).fetchPurchaseHistoryList();
+    verify(IPurchaseHistoryModule2, times(0)).getModuleType();
+    verify(IPurchaseHistoryModule2, times(0)).fetchPurchaseHistoryList();
   }
 
   @Test
   public void testCallModuleOnceForSecondModule() throws IOException {
     when(args.getOptionValues("site")).thenReturn(Collections.singletonList("test2"));
     purchaseHistoryListCommand.run(args);
-    verify(IPurchaseHistoryListModule1, times(1)).getModuleType();
-    verify(IPurchaseHistoryListModule1, times(0)).fetchPurchaseHistoryList();
-    verify(IPurchaseHistoryListModule2, times(1)).getModuleType();
-    verify(IPurchaseHistoryListModule2, times(1)).fetchPurchaseHistoryList();
+    verify(IPurchaseHistoryModule1, times(1)).getModuleType();
+    verify(IPurchaseHistoryModule1, times(0)).fetchPurchaseHistoryList();
+    verify(IPurchaseHistoryModule2, times(1)).getModuleType();
+    verify(IPurchaseHistoryModule2, times(1)).fetchPurchaseHistoryList();
   }
 
   @Test
   public void testCallAllModules() throws IOException {
     when(args.getOptionValues("site")).thenReturn(null);
     purchaseHistoryListCommand.run(args);
-    verify(IPurchaseHistoryListModule1, times(0)).getModuleType();
-    verify(IPurchaseHistoryListModule1, times(1)).fetchPurchaseHistoryList();
-    verify(IPurchaseHistoryListModule2, times(0)).getModuleType();
-    verify(IPurchaseHistoryListModule2, times(1)).fetchPurchaseHistoryList();
+    verify(IPurchaseHistoryModule1, times(0)).getModuleType();
+    verify(IPurchaseHistoryModule1, times(1)).fetchPurchaseHistoryList();
+    verify(IPurchaseHistoryModule2, times(0)).getModuleType();
+    verify(IPurchaseHistoryModule2, times(1)).fetchPurchaseHistoryList();
   }
 }

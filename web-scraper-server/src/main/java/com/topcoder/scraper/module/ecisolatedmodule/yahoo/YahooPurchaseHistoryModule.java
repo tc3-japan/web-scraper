@@ -2,7 +2,7 @@ package com.topcoder.scraper.module.ecisolatedmodule.yahoo;
 
 import com.topcoder.api.service.login.yahoo.YahooLoginHandler;
 import com.topcoder.common.repository.ECSiteAccountRepository;
-import com.topcoder.scraper.module.ecisolatedmodule.AbstractPurchaseHistoryListModule;
+import com.topcoder.scraper.module.ecisolatedmodule.AbstractPurchaseHistoryModule;
 import com.topcoder.scraper.module.ecisolatedmodule.yahoo.crawler.YahooPurchaseHistoryCrawler;
 import com.topcoder.scraper.service.PurchaseHistoryService;
 import com.topcoder.scraper.service.WebpageService;
@@ -12,15 +12,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Yahoo implementation of PurchaseHistoryListModule
+ * Yahoo implementation of PurchaseHistoryModule
  */
 @Component
-public class YahooPurchaseHistoryListModule extends AbstractPurchaseHistoryListModule {
+public class YahooPurchaseHistoryModule extends AbstractPurchaseHistoryModule {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(YahooPurchaseHistoryListModule.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(YahooPurchaseHistoryModule.class);
 
   @Autowired
-  public YahooPurchaseHistoryListModule(
+  public YahooPurchaseHistoryModule(
           PurchaseHistoryService          purchaseHistoryService,
           ECSiteAccountRepository         ecSiteAccountRepository,
           WebpageService                  webpageService,

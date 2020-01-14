@@ -2,7 +2,7 @@ package com.topcoder.scraper.module.ecisolatedmodule.amazon;
 
 import com.topcoder.api.service.login.amazon.AmazonLoginHandler;
 import com.topcoder.common.repository.ECSiteAccountRepository;
-import com.topcoder.scraper.module.ecisolatedmodule.AbstractPurchaseHistoryListModule;
+import com.topcoder.scraper.module.ecisolatedmodule.AbstractPurchaseHistoryModule;
 import com.topcoder.scraper.module.ecisolatedmodule.amazon.crawler.AmazonPurchaseHistoryCrawler;
 import com.topcoder.scraper.service.PurchaseHistoryService;
 import com.topcoder.scraper.service.WebpageService;
@@ -12,15 +12,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Amazon implementation of PurchaseHistoryListModule
+ * Amazon implementation of PurchaseHistoryModule
  */
 @Component
-public class AmazonPurchaseHistoryListModule extends AbstractPurchaseHistoryListModule {
+public class AmazonPurchaseHistoryModule extends AbstractPurchaseHistoryModule {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(AmazonPurchaseHistoryListModule.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AmazonPurchaseHistoryModule.class);
 
   @Autowired
-  public AmazonPurchaseHistoryListModule(
+  public AmazonPurchaseHistoryModule(
           PurchaseHistoryService           purchaseHistoryService,
           ECSiteAccountRepository          ecSiteAccountRepository,
           WebpageService                   webpageService,

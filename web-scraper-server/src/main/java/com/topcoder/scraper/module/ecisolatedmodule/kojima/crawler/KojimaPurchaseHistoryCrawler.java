@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Kojima implementation of PurchaseHistoryListCrawler
+ * Kojima implementation of PurchaseHistoryCrawler
  */
 @Component
 public class KojimaPurchaseHistoryCrawler extends AbstractPurchaseHistoryCrawler {

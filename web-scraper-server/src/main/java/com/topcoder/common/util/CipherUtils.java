@@ -8,6 +8,8 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
+
+import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -82,11 +84,25 @@ public class CipherUtils {
   public static String md5(String source) {
     try {
       MessageDigest md5 = MessageDigest.getInstance("MD5");
-      byte[] md5Byte = md5.digest(source.getBytes());
-      return new String(md5Byte);
-    } catch(NoSuchAlgorithmException e) {
-      e.printStackTrace();
+      byte[] md5Byte = md5.digest(source.getBytes("UTF-8"));
+      return toHexStr(md5Byte);
+    } catch(Exception e) {
+      logger.error("Failed to generate MD5 hash", e);
       return null;
     }
+  }
+
+  public static String toHexStr(byte[] bytes) {
+    if (bytes == null) {
+      return null;
+    }
+    if (bytes.length == 0) {
+      return "";
+    }
+    StringBuilder sb = new StringBuilder();
+    for(byte b : bytes) {
+      sb.append(String.format("%02x", b));
+    }
+    return sb.toString();
   }
 }

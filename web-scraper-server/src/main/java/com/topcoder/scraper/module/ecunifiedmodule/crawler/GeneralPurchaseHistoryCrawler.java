@@ -50,7 +50,7 @@ public class GeneralPurchaseHistoryCrawler {
   @Getter@Setter private List<PurchaseHistory> purchaseHistoryList;
 
   public GeneralPurchaseHistoryCrawler(String siteName, WebpageService webpageService) {
-    LOGGER.info("[constructor] in");
+    LOGGER.debug("[constructor] in");
 
     this.siteName = siteName;
     this.webpageService = webpageService;
@@ -65,7 +65,7 @@ public class GeneralPurchaseHistoryCrawler {
   }
 
   private String getScriptPath() {
-    LOGGER.info("[getScriptPath] in");
+    LOGGER.debug("[getScriptPath] in");
 
     String scriptPath = System.getenv(Consts.SCRAPING_SCRIPT_PATH);
     if (StringUtils.isEmpty(scriptPath)) {
@@ -73,17 +73,17 @@ public class GeneralPurchaseHistoryCrawler {
     }
     scriptPath  += "/unified/" + this.siteName + "-purchase-history-list.groovy";
 
-    LOGGER.info("[getScriptPath] scriptPath: " + scriptPath);
+    LOGGER.debug("[getScriptPath] scriptPath: " + scriptPath);
     return scriptPath;
   }
 
   private String getScriptText(String scriptPath) {
-    LOGGER.info("[getScriptText] in");
+    LOGGER.debug("[getScriptText] in");
 
     try {
       return FileUtils.readFileToString(new File(scriptPath), "utf-8");
     } catch (IOException e) {
-      LOGGER.info("[getScriptText] Could not read script file: " + scriptPath);
+      LOGGER.debug("[getScriptText] Could not read script file: " + scriptPath);
       return null;
     }
   }
@@ -93,7 +93,7 @@ public class GeneralPurchaseHistoryCrawler {
   }
 
   private String executeScript() {
-    LOGGER.info("[executeScript] in");
+    LOGGER.debug("[executeScript] in");
     this.scriptShell = new GroovyShell(this.scriptBinding, this.scriptConfig);
     Script script = scriptShell.parse(this.scriptText);
     script.invokeMethod("setCrawler", this);
@@ -102,7 +102,7 @@ public class GeneralPurchaseHistoryCrawler {
   }
 
   public GeneralPurchaseHistoryCrawlerResult fetchPurchaseHistoryList(TrafficWebClient webClient, PurchaseHistory lastPurchaseHistory, boolean saveHtml) throws IOException {
-    LOGGER.info("[fetchPurchaseHistoryList] in");
+    LOGGER.debug("[fetchPurchaseHistoryList] in");
 
     this.webClient = webClient;
     this.saveHtml  = saveHtml;
@@ -115,7 +115,7 @@ public class GeneralPurchaseHistoryCrawler {
     // binding variables for scraping script
     // TODO: re-consider whether this is necessary
     this.scriptBinding.setProperty("purchaseHistoryList", this.purchaseHistoryList);
-    
+
     this.executeScript();
 
     return new GeneralPurchaseHistoryCrawlerResult(this.purchaseHistoryList, this.savedPathList);
@@ -123,7 +123,7 @@ public class GeneralPurchaseHistoryCrawler {
 
   // TODO: re-consider Closure<HERE>, now temporarily Boolean
   public void processPurchaseHistory(Closure<Boolean> closure) throws IOException {
-    LOGGER.info("[processPurchaseHistory] in");
+    LOGGER.debug("[processPurchaseHistory] in");
 
     this.webpageService.save(this.siteName + "-purchase-history", this.siteName, this.historyPage.getPage().getWebResponse().getContentAsString(), this.saveHtml);
     // TODO : implement
@@ -143,8 +143,8 @@ public class GeneralPurchaseHistoryCrawler {
   }
 
   public void processOrders(List<DomNode> orderList, Closure<Boolean> closure) {
-    LOGGER.info("[processOrders] in");
-    LOGGER.info("[processOrders] Parsing page url " + historyPage.getPage().getUrl().toString());
+    LOGGER.debug("[processOrders] in");
+    LOGGER.debug("[processOrders] Parsing page url " + historyPage.getPage().getUrl().toString());
 
     for (DomNode orderNode : orderList) {
       this.currentPurchaseHistory = new PurchaseHistory();
@@ -155,9 +155,9 @@ public class GeneralPurchaseHistoryCrawler {
       this.purchaseHistoryList.add(this.currentPurchaseHistory);
     }
   }
- 
+
   public void processProducts(List<DomNode> productList, Closure<Boolean> closure) {
-    LOGGER.info("[processProducts] in");
+    LOGGER.debug("[processProducts] in");
 
     for (DomNode productNode : productList) {
       this.currentProduct = new ProductInfo();
@@ -172,7 +172,7 @@ public class GeneralPurchaseHistoryCrawler {
   }
 
   public boolean isNew() {
-    LOGGER.info("[isNew] in");
+    LOGGER.debug("[isNew] in");
     PurchaseHistory curr = this.currentPurchaseHistory;
     PurchaseHistory last = this.lastPurchaseHistory;
 
@@ -188,7 +188,7 @@ public class GeneralPurchaseHistoryCrawler {
   }
 
   private HtmlPage gotoNextPage(HtmlPage page, TrafficWebClient webClient) throws IOException {
-    LOGGER.info("[gotoNextPage] in");
+    LOGGER.debug("[gotoNextPage] in");
     return null;
   }
 }

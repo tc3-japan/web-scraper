@@ -9,14 +9,14 @@ eachProducts { index ->
     idx = index + 1
 
     pr = scrapeText ".searchresults .searchresultitem:nth-child(${idx}) .title .-pr"
-    log "**** PR: $pr"
+    //log "**** PR: $pr"
     if (pr != null) {
         return null
     }
     link = getNodeAttribute ".searchresults .searchresultitem:nth-child(${idx}) .title a", "href"
-    log "**** PROD LINK: $link"
+    //log "**** PROD LINK: $link"
 	pcode = extractProductCode(link)
-    log "**** PROD CODE: $pcode"
+    //log "**** PROD CODE: $pcode"
     return pcode
 }
 

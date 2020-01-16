@@ -25,10 +25,10 @@ scrapePrice(".price2");
 code = scrapeText ".item_number"
 if (code?.trim() ==~ /[0-9]{13}/) {
   productInfo.janCode = normalize code
-  log "**** JAN: ${productInfo.janCode}"
+  //log "**** JAN: ${productInfo.janCode}"
 } else {
   productInfo.modelNo = normalize infarModelNumber(code)
-  log "**** Model#: ${productInfo.modelNo}"
+  //log "**** Model#: ${productInfo.modelNo}"
 }
 
 // code: 商品番号

@@ -11,7 +11,7 @@ public abstract class GroovyDemoScriptSupport extends Script {
 
   // Wrapper for export methods
   String foo(String[] args) {
-    LOGGER.info("[GroovyDemoScriptSupport # foo()]");
+    LOGGER.debug("[GroovyDemoScriptSupport # foo()]");
     return HtmlUtils.foo(args);
   }
 }

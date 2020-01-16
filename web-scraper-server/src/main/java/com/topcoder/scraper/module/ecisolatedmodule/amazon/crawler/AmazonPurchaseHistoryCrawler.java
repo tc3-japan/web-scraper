@@ -36,7 +36,7 @@ public class AmazonPurchaseHistoryCrawler extends AbstractPurchaseHistoryCrawler
 
   @Override
   protected HtmlPage gotoNextPage(HtmlPage page, TrafficWebClient webClient) throws IOException {
-    LOGGER.info("[gotoNextPage] in");
+    LOGGER.debug("[gotoNextPage] in");
 
     HtmlSelect select = page.querySelector("#orderFilter");
     // XPath Version query

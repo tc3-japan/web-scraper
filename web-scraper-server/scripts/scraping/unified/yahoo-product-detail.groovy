@@ -3,8 +3,6 @@ setEnableJS(false)
 setPage(htmlPath + productCode)
 savePage("yahoo-" + productCode.replace("/", "_"))
 
-log(" >>> Requesting Page >>> " + htmlPath + productCode)
-
 // #abuserpt > p:nth-child(3)
 // head > link[rel='canonical']
 scrapeCodeFromAttr("head > link[rel='canonical']", "href", "https:\\/\\/.*?\\/(.*)\\.html");

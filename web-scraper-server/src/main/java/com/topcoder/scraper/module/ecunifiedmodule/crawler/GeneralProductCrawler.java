@@ -46,7 +46,7 @@ public class GeneralProductCrawler {
   @Getter@Setter private NavigableProductListPage   listPage;
 
   public GeneralProductCrawler(String siteName, WebpageService webpageService) {
-    LOGGER.info("[constructor] in");
+    LOGGER.debug("[constructor] in");
 
     this.siteName       = siteName;
     this.webpageService = webpageService;
@@ -61,7 +61,7 @@ public class GeneralProductCrawler {
   }
 
   private String getScriptPath(String scriptFile) {
-    LOGGER.info("[getScriptPath] in");
+    LOGGER.debug("[getScriptPath] in");
 
     String scriptPath = System.getenv(Consts.SCRAPING_SCRIPT_PATH);
     if (StringUtils.isEmpty(scriptPath)) {
@@ -74,7 +74,7 @@ public class GeneralProductCrawler {
   }
 
   private String getScriptText(String scriptPath) {
-    LOGGER.info("[getScriptText] in");
+    LOGGER.debug("[getScriptText] in");
 
     try {
       return FileUtils.readFileToString(new File(scriptPath), "utf-8");
@@ -89,7 +89,7 @@ public class GeneralProductCrawler {
   }
 
   private String executeScript(String scriptFile) {
-    LOGGER.info("[executeScript] in");
+    LOGGER.debug("[executeScript] in");
 
     // get script srouce
     String scriptPath = this.getScriptPath(scriptFile);
@@ -103,7 +103,7 @@ public class GeneralProductCrawler {
   }
 
   public GeneralProductCrawlerResult fetchProductInfo(TrafficWebClient webClient, String productCode) {
-    LOGGER.info("[fetchProductInfo] in");
+    LOGGER.debug("[fetchProductInfo] in");
 
     this.webClient  = webClient;
     this.detailPage = new NavigableProductDetailPage(this.webClient);
@@ -123,7 +123,7 @@ public class GeneralProductCrawler {
   }
 
   public String searchProduct(TrafficWebClient webClient, String searchWord) throws IOException {
-    LOGGER.info("[searchProduct] in");
+    LOGGER.debug("[searchProduct] in");
 
     this.webClient = webClient;
     this.listPage  = new NavigableProductListPage(this.webClient);

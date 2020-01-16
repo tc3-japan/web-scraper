@@ -1,9 +1,11 @@
 package com.topcoder.scraper.command.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.transaction.Transactional;
@@ -75,26 +77,38 @@ public class GroupECProductsCommand {
     final String groupingMethod = method;
     ungroupedProducts.forEach(product -> {
 
-      List<ProductDAO> groupedProducts = new LinkedList<>();
+      Map<Integer, ProductDAO> groupedProducts = new HashMap<>();
 
       if (groupingMethod == null || "model-no".equalsIgnoreCase(groupingMethod)) {
-        groupedProducts = modelNoProductGroupBuilder.createProductGroup(product, ecSites); // model-no
+        putAll(groupedProducts, modelNoProductGroupBuilder.createProductGroup(product, ecSites)); // model-no
       }
 
       if (groupingMethod == null || "jan-code".equalsIgnoreCase(groupingMethod)) {
         Set<String> targetSites = getIncompleteSites(getECSites(groupedProducts), ecSites);
         if (targetSites.size() > 0) {
-          groupedProducts = this.janCodeProductGroupBuilder.createProductGroup(product, targetSites); // jan-code
+          putAll(groupedProducts, this.janCodeProductGroupBuilder.createProductGroup(product, targetSites)); // jan-code
         }
       }
 
       if (groupingMethod == null || "product-name".equalsIgnoreCase(groupingMethod)) {
         Set<String> targetSites = getIncompleteSites(getECSites(groupedProducts), ecSites);
         if (targetSites.size() > 0) {
-          groupedProducts = this.productNameProductGroupBuilder.createProductGroup(product, targetSites); // product-name
+          putAll(groupedProducts, this.productNameProductGroupBuilder.createProductGroup(product, targetSites)); // product-name
         }
       }
     });
+  }
+
+  private void putAll(Map<Integer, ProductDAO> map, List<ProductDAO> products) {
+    if (map == null || products == null) {
+      return;
+    }
+    for (ProductDAO p : products) {
+      if (p.getId() < 1) {
+        continue;
+      }
+      map.put(p.getId(), p);
+    }
   }
 
   private Set<String> getIncompleteSites(Set<String> completeSites, Set<String> allSites) {
@@ -124,12 +138,12 @@ public class GroupECProductsCommand {
     return this.productRepository.findByIdIn(pids);
   }
 
-  public Set<String> getECSites(List<ProductDAO> products) {
+  public Set<String> getECSites(Map<Integer, ProductDAO> productsMap) {
     Set<String> ecSites = new HashSet<String>();
-    if (products == null || products.size() == 0) {
+    if (productsMap == null || productsMap.size() == 0) {
       return ecSites;
     }
-    products.forEach(p -> {
+    productsMap.values().forEach(p -> {
       if (!StringUtils.isBlank(p.getEcSite())) {
         ecSites.add(p.getEcSite());
       }

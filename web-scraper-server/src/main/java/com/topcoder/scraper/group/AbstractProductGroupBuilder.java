@@ -61,7 +61,11 @@ public abstract class AbstractProductGroupBuilder {
           return;
         }
         try {
-          ProductDAO result = productSearcher.searchProductInfo(site, getSearchParameter(product));
+          String searchWord = getSearchParameter(product);
+          if (StringUtils.isBlank(searchWord)) {
+            return;
+          }
+          ProductDAO result = productSearcher.searchProductInfo(site, searchWord);
           if (result == null) {
             logger.info(String.format("No product for '%s' found in %s.", product.getModelNo(), site));
             return;

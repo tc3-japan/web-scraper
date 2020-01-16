@@ -72,34 +72,19 @@ public class NavigablePage {
     public void click(String selector) {
         LOGGER.info("[click] in");
         if (selector != null) {
-            HtmlElement element = null;
-            HtmlButton button = null;
-
-            try {
-                element = page.querySelector(selector);
-                LOGGER.info("click() > Selected " + element + " from " + selector);
-            } catch (Exception e) {
-                e.printStackTrace();
+            HtmlElement element = page.querySelector(selector);
+            LOGGER.info("click() > Selected " + element + " from " + selector);
+            if (element == null) {
+              return;
             }
-
             try {
-                button = (HtmlButton)page.querySelector(selector);
-                LOGGER.info("click() >  button Selected " + button + " from " + selector);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            if (element != null) {
-                try {
-                    HtmlPage result = webClient.click(element);
-                    if (result != null)
-                        page = result;
-                    LOGGER.info("Setting page to " + result);
-                    // savePage("pageClicked", "yahoo", webPageServiceWired);
-                } catch (IOException e) {
-                    LOGGER.info("Could not navigate to " + selector + " in NavigablePage.java");
-                    e.printStackTrace();
+                HtmlPage result = webClient.click(element);
+                if (result != null) {
+                    page = result;
                 }
+                LOGGER.info("Setting page to " + result);
+            } catch (Exception e) {
+                LOGGER.error(String.format("Failed to perform click on the element selected by '%s'. page: %s", selector, page.getUrl()), e);
             }
         }
     }
@@ -283,10 +268,9 @@ public class NavigablePage {
 
     public String savePage(String fileName, String siteName, WebpageService webpageService) {
         LOGGER.info("[savePage] in");
-
-        // site name should be "yahoo", "amazon", etc.
-        // see [...] for details
-        // TODO: make proper documentation for these functions
+        if (page == null || page.getWebResponse() == null) {
+          return null;
+        }
         return webpageService.save(fileName, siteName, page.getWebResponse().getContentAsString());
     }
 

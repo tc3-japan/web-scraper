@@ -1,6 +1,5 @@
 package com.topcoder.scraper.lib.navpage;
 
-import java.io.IOException;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
@@ -37,8 +36,8 @@ public class NavigableProductListPage extends NavigablePage {
 			HtmlImageInput searchButtonInput = topPage.querySelector(searchButtonSelector);
 
 			this.page = webClient.click(searchButtonInput);
-		} catch (IOException e) {
-			LOGGER.info("[searchProductsUsingForm] failed to get products. page: " + searchUrl + "search word:" + searchWord);
+		} catch (Exception e) {
+			LOGGER.info("[searchProductsUsingForm] failed to get products. page: " + searchUrl + "search word:" + searchWord, e);
 		}
 	}
 

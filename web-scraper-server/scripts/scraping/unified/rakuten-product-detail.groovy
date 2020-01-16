@@ -2,7 +2,7 @@ def htmlPath = "https://item.rakuten.co.jp/"
 setEnableJS(true);
 setPage(htmlPath + productCode)
 savePage("test-"+productCode)
-log(" >>> Requesting Page >>> " + htmlPath + productCode)
+debug(" >>> Requesting Page >>> " + htmlPath + productCode)
 
 // [Name]
 scrapeName ".item_name"
@@ -25,10 +25,10 @@ scrapePrice(".price2");
 code = scrapeText ".item_number"
 if (code?.trim() ==~ /[0-9]{13}/) {
   productInfo.janCode = normalize code
-  //log "**** JAN: ${productInfo.janCode}"
+  debug "**** JAN: ${productInfo.janCode}"
 } else {
   productInfo.modelNo = normalize infarModelNumber(code)
-  //log "**** Model#: ${productInfo.modelNo}"
+  debug "**** Model#: ${productInfo.modelNo}"
 }
 
 // code: 商品番号

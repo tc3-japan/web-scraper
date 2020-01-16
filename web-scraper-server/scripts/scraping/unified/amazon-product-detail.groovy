@@ -85,7 +85,7 @@ class Vars {
 }
 
 // Script Main
-log("--------------script begin--------------")
+debug "--------------script begin--------------"
 
 productUrl = Vars.productUrlBase + productCode;
 
@@ -118,4 +118,4 @@ if (categoryInfoList.size() <= 0) {
 scrapeCategoryRanking(categoryInfoList)
 */
 
-log("--------------script end--------------")
+debug "--------------script end--------------"

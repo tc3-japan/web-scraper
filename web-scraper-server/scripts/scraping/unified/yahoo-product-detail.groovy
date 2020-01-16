@@ -19,7 +19,7 @@ scrapeDistributor("dt.elStore > a")
 scrapePrices([".elNum", ".ItemPrice_price", "p.elPrice:nth-child(2) > em"])
 
 def jan = scrapeText(".mdItemInfoCode > p")
-log "JAN : $jan"
+debug "JAN : $jan"
 productInfo?.janCode = normalize removeLabel(jan)
 
 // "JANコード/ISBNコード:4988617257443" -> "4988617257443"

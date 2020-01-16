@@ -1,5 +1,5 @@
 // Script Main
-log("--------------script begin--------------")
+debug("--------------script begin--------------")
 
 searchProducts("https://shopping.yahoo.co.jp/search?p=")
 saveListPage("product-list")
@@ -15,5 +15,5 @@ eachProducts { index ->
     scrapeProductCodeFromSearchResultByProductAttrName(searchResultSelector, productCodeAttribute, adProductClass, productCodeRegex)
 }
 
-log("--------------script end--------------")
+debug("--------------script end--------------")
 

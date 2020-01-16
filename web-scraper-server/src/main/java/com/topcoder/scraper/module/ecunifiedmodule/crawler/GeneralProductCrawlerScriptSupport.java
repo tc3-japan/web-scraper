@@ -176,4 +176,7 @@ public abstract class GeneralProductCrawlerScriptSupport extends Script {
     LOGGER.info(str);
   }
 
+  void debug(String str) {
+    LOGGER.debug(str);
+  }
 }

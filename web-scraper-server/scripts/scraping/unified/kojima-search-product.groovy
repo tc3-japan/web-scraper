@@ -1,5 +1,5 @@
 // Script Main
-log("--------------script begin--------------")
+debug("--------------script begin--------------")
 
 searchProductsUsingForm(
         "https://www.kojima.net/ec/top/CSfTop.jsp",
@@ -13,5 +13,5 @@ eachProducts { index ->
     scrapeProductCodeFromSearchResultByProductUrl(searchResultSelector, productCodeRegex)
 }
 
-log("--------------script end--------------")
+debug("--------------script end--------------")
 

@@ -1,5 +1,6 @@
-log "Kojima TEST"
+
 log productCode
+
 setPage "https://www.kojima.net/ec/top/CSfTop.jsp"
 setEnableJS true
 type productCode, "#q"

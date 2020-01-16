@@ -14,7 +14,7 @@ processPurchaseHistory() {
 	processOrders(orderList) { orderNode ->
 		index += 1;
 		//print "looping through orderNode" + orderNode
-		log "orderNode loop"
+		debug "orderNode loop"
 		scrapeOrderNumber(orderNode, "table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > div:nth-child(1) > ul:nth-child(1) > li:nth-child(2) > span:nth-child(1)")
 		scrapeOrderDate(orderNode, "table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > div:nth-child(1) > ul:nth-child(1) > li:nth-child(1)")
 
@@ -22,7 +22,7 @@ processPurchaseHistory() {
 
 		//productList = scrapeDomList orderNode, "table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > div:nth-child(1) > div:nth-child(1)"
 		productList = scrapeDomList orderNode, "table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > div"
-		log "productList: " + productList.size()
+		debug "productList: " + productList.size()
 
 		openPage(orderNode, ".purchaseInfo a.detail") { orderDetailPage ->
 

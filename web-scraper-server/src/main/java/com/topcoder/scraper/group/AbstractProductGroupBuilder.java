@@ -4,7 +4,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -105,15 +107,28 @@ public abstract class AbstractProductGroupBuilder {
   }
 
   public void groupProducts(List<ProductDAO> products, ProductGroupDAO group) {
-    if (group == null) {
+    if (group == null || products == null || products.size() == 0) {
       return;
     }
+    // product-code list
+    List<String> productCodes = products.stream()
+        .filter(p -> p.getProductCode() != null).map(p -> p.getProductCode())
+        .collect(Collectors.toList());
+    // map of {product-code : productD} built from products in the database
+    Map<String, ProductDAO> existingCodeProductsMap =
+        this.productRepository.findByProductCodeIn(productCodes).stream()
+          .collect(Collectors.toMap(ProductDAO::getProductCode, p -> p));
+
     List<ProductDAO> productsNeedUpdate = new LinkedList<>();
     products.forEach(p -> {
       if (p.getProductGroupId() != null) {
         logger.warn(String.format("Conflict detected. Product:%d has already been in the group:%d.", p.getId(),
             p.getProductGroupId()));
         return;
+      }
+      // copying ID from an existing product - for avoiding duplication error in saving in the database
+      if (p.getId() < 1 && p.getProductCode() != null && existingCodeProductsMap.containsKey(p.getProductCode())) {
+        p.setId(existingCodeProductsMap.get(p.getProductCode()).getId());
       }
       p.setProductGroupId(group.getId());
       p.setGroupStatus(ProductDAO.GroupStatus.grouped);

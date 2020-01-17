@@ -194,4 +194,8 @@ public abstract class GeneralPurchaseHistoryCrawlerScriptSupport extends Script 
   void log(String str) {
     LOGGER.info(str);
   }
+
+  void debug(String str) {
+    LOGGER.debug(str);
+  }
 }

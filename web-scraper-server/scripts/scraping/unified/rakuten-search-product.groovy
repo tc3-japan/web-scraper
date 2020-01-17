@@ -1,5 +1,5 @@
 // Script Main
-log("--------------script begin--------------")
+debug("--------------script begin--------------")
 
 searchProducts("https://search.rakuten.co.jp/search/mall/")
 saveListPage("product-list")
@@ -9,18 +9,18 @@ eachProducts { index ->
     idx = index + 1
 
     pr = scrapeText ".searchresults .searchresultitem:nth-child(${idx}) .title .-pr"
-    log "**** PR: $pr"
+    //debug "**** PR: $pr"
     if (pr != null) {
         return null
     }
     link = getNodeAttribute ".searchresults .searchresultitem:nth-child(${idx}) .title a", "href"
-    log "**** PROD LINK: $link"
+    debug "**** PROD LINK: $link"
 	pcode = extractProductCode(link)
-    log "**** PROD CODE: $pcode"
+    debug "**** PROD CODE: $pcode"
     return pcode
 }
 
-log("--------------script end--------------")
+debug("--------------script end--------------")
 
 /**
  * -> https://item.rakuten.co.jp/akindo/hdr-cx680-ti/

@@ -26,24 +26,24 @@ public abstract class GeneralProductCrawlerScriptSupport extends Script {
   }
 
   void setPage(String productUrl) {
-    LOGGER.info("[setPage] in");
+    LOGGER.debug("[setPage] in");
 
     this.crawler.getWebClient().getWebClient().getOptions().setJavaScriptEnabled(false); //TODO: TEST ONLY
     this.crawler.getDetailPage().setPage(productUrl);
   }
 
   void searchProducts(String searchUrlBase) {
-    LOGGER.info("[searchProducts] in");
+    LOGGER.debug("[searchProducts] in");
 
     this.crawler.getWebClient().getWebClient().getOptions().setJavaScriptEnabled(false);
 
     String searchUrl = searchUrlBase + this.crawler.getSearchWord();
-    LOGGER.info("[searchProducts] Product URL: " + searchUrl);
+    LOGGER.debug("[searchProducts] Product URL: " + searchUrl);
     this.crawler.getListPage().setPage(searchUrl);
   }
 
   void searchProductsUsingForm(String searchUrl, String searchFormName, String searchInputName, String searchButtonSelector) {
-    LOGGER.info("[searchProductsUsingForm] in");
+    LOGGER.debug("[searchProductsUsingForm] in");
 
     this.crawler.getWebClient().getWebClient().getOptions().setJavaScriptEnabled(false);
     this.crawler.getListPage().searchProductsUsingForm(searchUrl, searchFormName, searchInputName, searchButtonSelector, this.crawler.getSearchWord());
@@ -176,4 +176,7 @@ public abstract class GeneralProductCrawlerScriptSupport extends Script {
     LOGGER.info(str);
   }
 
+  void debug(String str) {
+    LOGGER.debug(str);
+  }
 }

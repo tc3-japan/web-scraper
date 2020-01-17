@@ -41,6 +41,8 @@ public interface ProductRepository extends CrudRepository<ProductDAO, Integer> {
 
   List<ProductDAO> findByIdIn(List<Integer> ids);
 
+  List<ProductDAO> findByProductCodeIn(List<String> codes);
+
   Page<ProductDAO> findAll(Pageable pageable);
 
 }

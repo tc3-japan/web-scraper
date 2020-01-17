@@ -1,5 +1,5 @@
 // Script Main
-log("--------------script begin--------------")
+debug("--------------script begin--------------")
 
 searchProducts("https://www.amazon.co.jp/s?k=")
 saveListPage("product-list")
@@ -11,5 +11,5 @@ eachProducts { index ->
     scrapeProductCodeFromSearchResultByProductAttrName(searchResultSelector, productCodeAttribute, adProductClass)
 }
 
-log("--------------script end--------------")
+debug("--------------script end--------------")
 

@@ -4,7 +4,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -47,7 +49,7 @@ public abstract class AbstractProductGroupBuilder {
 
   public List<ProductDAO> createProductGroup(ProductDAO product, Set<String> targetECSites) {
 
-    logger.info(String.format("Atempt to group the product#%d by \"%s\" ([%s] %s)",
+    logger.info(String.format("Trying to group the product#%d by \"%s\" ([%s] %s)",
         product.getId(), getGroupingMethod(), product.getEcSite(), product.getProductName()));
 
     List<ProductDAO> sameProducts = findSameProducts(product);
@@ -61,7 +63,11 @@ public abstract class AbstractProductGroupBuilder {
           return;
         }
         try {
-          ProductDAO result = productSearcher.searchProductInfo(site, getSearchParameter(product));
+          String searchWord = getSearchParameter(product);
+          if (StringUtils.isBlank(searchWord)) {
+            return;
+          }
+          ProductDAO result = productSearcher.searchProductInfo(site, searchWord);
           if (result == null) {
             logger.info(String.format("No product for '%s' found in %s.", product.getModelNo(), site));
             return;
@@ -101,15 +107,28 @@ public abstract class AbstractProductGroupBuilder {
   }
 
   public void groupProducts(List<ProductDAO> products, ProductGroupDAO group) {
-    if (group == null) {
+    if (group == null || products == null || products.size() == 0) {
       return;
     }
+    // product-code list
+    List<String> productCodes = products.stream()
+        .filter(p -> p.getProductCode() != null).map(p -> p.getProductCode())
+        .collect(Collectors.toList());
+    // map of {product-code : productD} built from products in the database
+    Map<String, ProductDAO> existingCodeProductsMap =
+        this.productRepository.findByProductCodeIn(productCodes).stream()
+          .collect(Collectors.toMap(ProductDAO::getProductCode, p -> p));
+
     List<ProductDAO> productsNeedUpdate = new LinkedList<>();
     products.forEach(p -> {
       if (p.getProductGroupId() != null) {
         logger.warn(String.format("Conflict detected. Product:%d has already been in the group:%d.", p.getId(),
             p.getProductGroupId()));
         return;
+      }
+      // copying ID from an existing product - for avoiding duplication error in saving in the database
+      if (p.getId() < 1 && p.getProductCode() != null && existingCodeProductsMap.containsKey(p.getProductCode())) {
+        p.setId(existingCodeProductsMap.get(p.getProductCode()).getId());
       }
       p.setProductGroupId(group.getId());
       p.setGroupStatus(ProductDAO.GroupStatus.grouped);
@@ -168,41 +187,42 @@ public abstract class AbstractProductGroupBuilder {
   }
 
   public boolean compareProducts(ProductDAO baseProduct, ProductDAO candidateProduct) {
-    logger.debug(String.format("matching products: [%d]%s <-> [%d]%s",
+    logger.info(String.format("matching for products: [%d]%s <-> [%d]%s",
         baseProduct.getId(), baseProduct.getProductName(), candidateProduct.getId(),
         candidateProduct.getProductName()));
 
-    logger.debug(String.format("matching with model-no: [%d]%s <-> %s", baseProduct.getId(), baseProduct.getModelNo(),
+    logger.info(String.format("matching with model-no: [%d]%s <-> %s", baseProduct.getId(), baseProduct.getModelNo(),
         candidateProduct.getModelNo()));
     if (!StringUtils.isBlank(baseProduct.getModelNo()) && !StringUtils.isBlank(candidateProduct.getModelNo())) {
       if (baseProduct.getModelNo().equalsIgnoreCase(candidateProduct.getModelNo())) {
-        logger.debug("products matched with model-no: " + baseProduct.getModelNo());
+        logger.info("products matched with model-no: " + baseProduct.getModelNo());
         return true;
       }
       return false;
     }
 
-    logger.debug(String.format("matching with jan-code: [%d]%s <-> %s", baseProduct.getId(), baseProduct.getJanCode(),
+    logger.info(String.format("matching with jan-code: [%d]%s <-> %s", baseProduct.getId(), baseProduct.getJanCode(),
         candidateProduct.getJanCode()));
     if (!StringUtils.isBlank(baseProduct.getJanCode()) && !StringUtils.isBlank(candidateProduct.getJanCode())) {
       if (baseProduct.getJanCode().equalsIgnoreCase(candidateProduct.getJanCode())) {
-        logger.debug("products matched with jan-code: " + baseProduct.getJanCode());
+        logger.info("products matched with jan-code: " + baseProduct.getJanCode());
         return true;
       }
       return false;
     }
 
-    logger.debug(String.format("matching with unit-price: [%d]%f <-> %f", baseProduct.getId(),
+    logger.info(String.format("matching with unit-price: [%d]%f <-> %f", baseProduct.getId(),
         baseProduct.getUnitPriceAsNumber(), candidateProduct.getUnitPriceAsNumber()));
-    logger.debug(String.format("price tolerance: %f", priceTolerance));
+    logger.info(String.format("price tolerance: %f", priceTolerance));
 
     Float basePrice = baseProduct.getUnitPriceAsNumber();
     Float rangeParam = basePrice * this.priceTolerance;
     if (basePrice != null) {
       Float price = candidateProduct.getUnitPriceAsNumber();
-      if (basePrice - rangeParam <= price && price <= basePrice + rangeParam) {
-        logger.debug(String.format("products matched with unit-price: %f <= %f <= %f [range: +-%f]",
-            (basePrice - rangeParam), price, (basePrice + rangeParam), rangeParam));
+      boolean result = basePrice - rangeParam <= price && price <= basePrice + rangeParam;
+      logger.info(String.format("result of matching with unit-price: %f <= %f <= %f [range: +-%f]::%b",
+          (basePrice - rangeParam), price, (basePrice + rangeParam), rangeParam, result));
+      if (result) {
         return true;
       }
     }

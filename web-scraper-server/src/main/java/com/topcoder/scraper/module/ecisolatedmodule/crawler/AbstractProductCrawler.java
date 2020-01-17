@@ -40,7 +40,7 @@ public abstract class AbstractProductCrawler {
   @Getter@Setter protected NavigableProductDetailPage detailPage;
 
   public AbstractProductCrawler(String siteName, WebpageService webpageService) {
-    LOGGER.info("[constructor] in");
+    LOGGER.debug("[constructor] in");
 
     this.siteName = siteName;
     this.webpageService = webpageService;
@@ -55,7 +55,7 @@ public abstract class AbstractProductCrawler {
   }
 
   private String getScriptPath() {
-    LOGGER.info("[getScriptPath] in");
+    LOGGER.debug("[getScriptPath] in");
 
     String scriptPath = System.getenv(Consts.SCRAPING_SCRIPT_PATH);
     if (StringUtils.isEmpty(scriptPath)) {
@@ -68,7 +68,7 @@ public abstract class AbstractProductCrawler {
   }
 
   private String getScriptText(String scriptPath) {
-    LOGGER.info("[getScriptText] in");
+    LOGGER.debug("[getScriptText] in");
 
     try {
       return FileUtils.readFileToString(new File(scriptPath), "utf-8");
@@ -81,7 +81,7 @@ public abstract class AbstractProductCrawler {
   protected abstract String getScriptSupportClassName();
 
   private String executeScript() {
-    LOGGER.info("[executeScript] in");
+    LOGGER.debug("[executeScript] in");
     this.scriptShell = new GroovyShell(this.scriptBinding, this.scriptConfig);
     Script script = scriptShell.parse(this.scriptText);
     script.invokeMethod("setCrawler", this);
@@ -90,7 +90,7 @@ public abstract class AbstractProductCrawler {
   }
 
   public AbstractProductCrawlerResult fetchProductInfo(TrafficWebClient webClient, String productCode) throws IOException {
-    LOGGER.info("[fetchProductInfo] in");
+    LOGGER.debug("[fetchProductInfo] in");
 
     this.webClient  = webClient;
     this.detailPage = new NavigableProductDetailPage(this.webClient);

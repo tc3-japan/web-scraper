@@ -45,8 +45,8 @@ public class GeneralProductModule implements IProductModule {
 
   @Override
   public void fetchProductDetailList(List<String> sites) {
-    LOGGER.info("[fetchProductDetailList] in");
-    LOGGER.info("[fetchProductDetailList] sites:" + sites);
+    LOGGER.debug("[fetchProductDetailList] in");
+    LOGGER.debug("[fetchProductDetailList] sites:" + sites);
 
     for (String site : sites) {
       List<ProductDAO> products = this.productService.getAllFetchInfoStatusIsNull(site);
@@ -65,14 +65,14 @@ public class GeneralProductModule implements IProductModule {
 
   /**
    * Fetch product information from yahoo and save in database
-   * 
+   *
    * @param crawler     the crawler
    * @param productId   the product id
    * @param productCode the product code
    * @throws IOException webclient exception
    */
   private void fetchProductDetail(GeneralProductCrawler crawler, int productId, String productCode) throws IOException {
-    LOGGER.info("[fetchProductDetail] in");
+    LOGGER.debug("[fetchProductDetail] in");
 
     TrafficWebClient webClient = new TrafficWebClient(0, false);
     GeneralProductCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productCode);
@@ -98,7 +98,7 @@ public class GeneralProductModule implements IProductModule {
 
   @Override
   public ProductDAO searchProductInfo(String siteName, String searchKey) throws IOException {
-    LOGGER.info("[searchProductInfo] in");
+    LOGGER.debug("[searchProductInfo] in");
 
     TrafficWebClient webClient = new TrafficWebClient(0, false);
 

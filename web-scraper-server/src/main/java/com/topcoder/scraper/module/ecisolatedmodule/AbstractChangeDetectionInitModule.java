@@ -50,7 +50,7 @@ public abstract class AbstractChangeDetectionInitModule extends AbstractChangeDe
    */
   @Override
   public void init(List<String> sites) throws IOException {
-    LOGGER.info("[init]");
+    LOGGER.debug("[init]");
     this.processMonitorTarget();
   }
 
@@ -61,7 +61,7 @@ public abstract class AbstractChangeDetectionInitModule extends AbstractChangeDe
    * @param pageKey the page key
    */
   protected void saveNormalData(String normalData, String pageKey, String page) {
-    LOGGER.info("[saveNormalData]");
+    LOGGER.debug("[saveNormalData]");
     NormalDataDAO dao = normalDataRepository.findFirstByEcSiteAndPageAndPageKey(this.getModuleType(), page, pageKey);
     if (dao == null) {
       dao = new NormalDataDAO();
@@ -81,7 +81,7 @@ public abstract class AbstractChangeDetectionInitModule extends AbstractChangeDe
    * @param pageKey the page key
    */
   protected void processPurchaseHistory(AbstractPurchaseHistoryCrawlerResult crawlerResult, String pageKey) {
-    LOGGER.info("[processPurchaseHistory]");
+    LOGGER.debug("[processPurchaseHistory]");
     List<PurchaseHistory> purchaseHistoryList = crawlerResult.getPurchaseHistoryList();
     saveNormalData(PurchaseHistory.toArrayJson(purchaseHistoryList), pageKey, Consts.PURCHASE_HISTORY_LIST_PAGE_NAME);
   }
@@ -91,7 +91,7 @@ public abstract class AbstractChangeDetectionInitModule extends AbstractChangeDe
    * @param crawlerResult the crawler result
    */
   protected void processProductInfo(AbstractProductCrawlerResult crawlerResult) {
-    LOGGER.info("[processProductInfo]");
+    LOGGER.debug("[processProductInfo]");
     ProductInfo productInfo = crawlerResult.getProductInfo();
     saveNormalData(productInfo.toJson(), productInfo.getCode(), Consts.PRODUCT_DETAIL_PAGE_NAME);
   }

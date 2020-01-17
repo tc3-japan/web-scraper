@@ -1,6 +1,5 @@
 package com.topcoder.scraper.lib.navpage;
 
-import java.io.IOException;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
@@ -22,11 +21,11 @@ public class NavigableProductListPage extends NavigablePage {
 
 	public NavigableProductListPage(TrafficWebClient webClient) {
 		super((HtmlPage)null, webClient);
-		LOGGER.info("[constructor] in");
+		LOGGER.debug("[constructor] in");
 	}
 
 	public void searchProductsUsingForm(String searchUrl, String searchFormName, String searchInputName, String searchButtonSelector, String searchWord) {
-		LOGGER.info("[searchProductsUsingForm] in");
+		LOGGER.debug("[searchProductsUsingForm] in");
 
 		try {
 			HtmlPage topPage    = this.webClient.getWebClient().getPage(searchUrl);
@@ -37,13 +36,13 @@ public class NavigableProductListPage extends NavigablePage {
 			HtmlImageInput searchButtonInput = topPage.querySelector(searchButtonSelector);
 
 			this.page = webClient.click(searchButtonInput);
-		} catch (IOException e) {
-			LOGGER.info("[searchProductsUsingForm] failed to get products. page: " + searchUrl + "search word:" + searchWord);
+		} catch (Exception e) {
+			LOGGER.debug("[searchProductsUsingForm] failed to get products. page: " + searchUrl + "search word:" + searchWord, e);
 		}
 	}
 
 	public String scrapeProductCodeFromSearchResultByProductAttrName(String searchWord, String searchResultSelector, String productCodeAttribute, String adProductClass, String productCodeRegex) {
-		LOGGER.info("[scrapeProductCodeFromSearchResultByProductAttrName] in");
+		LOGGER.debug("[scrapeProductCodeFromSearchResultByProductAttrName] in");
 
 		HtmlElement element = this.page.querySelector(searchResultSelector);
 		if (element == null) {
@@ -71,7 +70,7 @@ public class NavigableProductListPage extends NavigablePage {
 	}
 
 	public String scrapeProductCodeFromSearchResultByProductUrl(String searchWord, String searchResultSelector, String productCodeRegex) {
-		LOGGER.info("[scrapeProductCodeFromSearchResultByProductUrl] in");
+		LOGGER.debug("[scrapeProductCodeFromSearchResultByProductUrl] in");
 
 		HtmlAnchor anchor = this.page.querySelector(searchResultSelector);
 		if (anchor == null) {

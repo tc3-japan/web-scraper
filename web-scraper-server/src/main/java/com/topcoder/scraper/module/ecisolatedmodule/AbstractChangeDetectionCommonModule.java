@@ -52,7 +52,7 @@ public abstract class AbstractChangeDetectionCommonModule implements IBasicModul
    * Implementation of check method
    */
   protected void processMonitorTarget() throws IOException {
-    LOGGER.info("[processMonitorTarget] in");
+    LOGGER.debug("[processMonitorTarget] in");
     for (MonitorTargetDefinitionProperty.MonitorTargetCheckSite checkSite : monitorTargetDefinitionProperty.getCheckSites()) {
       if (!this.getModuleType().equalsIgnoreCase(checkSite.getEcSite())) {
         continue;
@@ -61,11 +61,11 @@ public abstract class AbstractChangeDetectionCommonModule implements IBasicModul
       for (MonitorTargetDefinitionProperty.MonitorTargetCheckPage monitorTargetCheckPage : checkSite.getCheckPages()) {
 
         if (monitorTargetCheckPage.getPageName().equalsIgnoreCase(Consts.PURCHASE_HISTORY_LIST_PAGE_NAME)) {
-          LOGGER.info("[processMonitorTarget] processPurchaseHistory for target accounts");
+          LOGGER.debug("[processMonitorTarget] processPurchaseHistory for target accounts");
 
           List<Integer> userIdList = monitorTargetCheckPage.getCheckTargetKeys()
                   .stream().map(e -> Integer.valueOf(e)).collect(Collectors.toList());
-          LOGGER.info("[processMonitorTarget] account ids: " + userIdList);
+          LOGGER.debug("[processMonitorTarget] account ids: " + userIdList);
           Iterable<ECSiteAccountDAO> accountDAOS = ecSiteAccountRepository.findAllByEcSiteAndUserIdIn(this.getModuleType(), userIdList);
 
           for (ECSiteAccountDAO ecSiteAccountDAO : accountDAOS) {
@@ -79,7 +79,7 @@ public abstract class AbstractChangeDetectionCommonModule implements IBasicModul
 
           // process puchase history
         } else if (monitorTargetCheckPage.getPageName().equalsIgnoreCase(Consts.PRODUCT_DETAIL_PAGE_NAME)) {
-          LOGGER.info("[processMonitorTarget] processProductDetail for target products");
+          LOGGER.debug("[processMonitorTarget] processProductDetail for target products");
 
           // TODO: fix below hacky code, monitorTargetCheckPage.getCheckTargetKeys() must not be null.
           if (monitorTargetCheckPage.getCheckTargetKeys() == null) continue;

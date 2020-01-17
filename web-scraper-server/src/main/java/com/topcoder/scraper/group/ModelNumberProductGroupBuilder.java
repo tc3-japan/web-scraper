@@ -36,7 +36,7 @@ public class ModelNumberProductGroupBuilder extends AbstractProductGroupBuilder 
 
   @Override
   public List<ProductDAO> findSameProducts(ProductDAO prod) {
-    logger.debug("Find products by Model no: " + prod.getModelNo());
+    logger.debug("Searching for products by Model no: " + prod.getModelNo());
     if (prod == null || StringUtils.isBlank(prod.getModelNo())) {
       return new ArrayList<ProductDAO>();
     }

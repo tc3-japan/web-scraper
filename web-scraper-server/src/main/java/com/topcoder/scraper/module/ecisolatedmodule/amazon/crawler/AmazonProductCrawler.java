@@ -38,7 +38,7 @@ public class AmazonProductCrawler extends AbstractProductCrawler {
   }
 
   public void scrapeCategoryRanking(List<String> categoryInfoList) {
-    LOGGER.info("[scrapeCategoryRanking] in");
+    LOGGER.debug("[scrapeCategoryRanking] in");
 
     if (categoryInfoList.size() <= 0) {
       LOGGER.info(String.format("Could not find category rankings for product %s:%s", this.siteName, this.productCode));
@@ -62,7 +62,7 @@ public class AmazonProductCrawler extends AbstractProductCrawler {
 
   // category ranking is from li#salesrank
   public List<String> scrapeCategoryInfoListBySalesRank(String salesRankSelector, Closure<?> setProps) {
-    LOGGER.info("[scrapeCategoryInfoListBySalesRank] in");
+    LOGGER.debug("[scrapeCategoryInfoListBySalesRank] in");
     List<String> categoryInfoList = new ArrayList<>();
 
     // properties for scraping (1st_line_regex, rest_ranks_selector, rest_paths_selector)
@@ -92,7 +92,7 @@ public class AmazonProductCrawler extends AbstractProductCrawler {
 
   // category ranking is from product table
   public List<String> scrapeCategoryInfoListByProductInfoTable(String productInfoTableSelector, Closure<?> setProps, Closure<Boolean> rankLineTest) {
-    LOGGER.info("[scrapeCategoryInfoListByProductInfoTable] in");
+    LOGGER.debug("[scrapeCategoryInfoListByProductInfoTable] in");
 
     // properties for scraping (lines_selector, ranks_selector)
     Map<String, String> props = new HashMap<>();

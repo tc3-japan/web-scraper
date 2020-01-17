@@ -30,118 +30,118 @@ public class NavigableProductDetailPage extends NavigablePage {
 
 	public NavigableProductDetailPage(HtmlPage page, TrafficWebClient webClient, ProductInfo productInfo) {
 		super(page, webClient);
-		LOGGER.info("[constructor] in");
+		LOGGER.debug("[constructor] in");
 		this.productInfo = productInfo;
 	}
 
 	public NavigableProductDetailPage(String url, TrafficWebClient webClient, ProductInfo productInfo) {
 		super(url, webClient);
-		LOGGER.info("[constructor] in");
+		LOGGER.debug("[constructor] in");
 		this.productInfo = productInfo;
 	}
 
 	public NavigableProductDetailPage(TrafficWebClient webClient) {
 		super((HtmlPage)null, webClient);
-		LOGGER.info("[constructor] in");
+		LOGGER.debug("[constructor] in");
 	}
 
   public String scrapeText(String selector) {
-    LOGGER.info("[scrapeText] in");
+    LOGGER.debug("[scrapeText] in");
     String str = getText(selector);
-    LOGGER.info("[scrapeText] text >>>> " + str);
+    LOGGER.debug("[scrapeText] text >>>> " + str);
     return str;
   }
 
 	public void scrapeDistributor(String selector) {
-		LOGGER.info("[scrapeDistributor] in");
+		LOGGER.debug("[scrapeDistributor] in");
 		String str = getText(selector);
-		LOGGER.info("[scrapeDistributor] Distributor >>>> " + str);
+		LOGGER.debug("[scrapeDistributor] Distributor >>>> " + str);
 		if (str != null) {
 			productInfo.setDistributor(str);
 		}
 	}
 
 	public void scrapeDistributor(DomNode node, String selector) {
-		LOGGER.info("[scrapeDistributor] in");
+		LOGGER.debug("[scrapeDistributor] in");
 		String str = getText(node, selector);
-		LOGGER.info("[scrapeDistributor] Distributor >>>> " + str);
+		LOGGER.debug("[scrapeDistributor] Distributor >>>> " + str);
 		if (str != null) {
 			productInfo.setDistributor(str);
 		}
 	}
 
 	public void scrapeCode(String selector) {
-		LOGGER.info("[scrapeCode] in");
+		LOGGER.debug("[scrapeCode] in");
 		String code = getText(selector);
-		LOGGER.info("[scrapeCode] Code >>>> " + code);
+		LOGGER.debug("[scrapeCode] Code >>>> " + code);
 		if (code != null) {
 			productInfo.setCode(code);
 		}
 	}
 
 	public void scrapeCode(DomNode node, String selector) {
-		LOGGER.info("[scrapeCode] in");
+		LOGGER.debug("[scrapeCode] in");
 		String code = getText(node, selector);
-		LOGGER.info("[scrapeCode] Code >>>> " + code);
+		LOGGER.debug("[scrapeCode] Code >>>> " + code);
 		if (code != null) {
 			productInfo.setCode(code);
 		}
 	}
 
 	public void scrapeCodeFromAttr(String selector, String attrName, String codeRegexStr) {
-		LOGGER.info("[scrapeCodeFromAttr] in");
+		LOGGER.debug("[scrapeCodeFromAttr] in");
 		HtmlElement node = this.page.querySelector(selector);
 		String attrValue = node.getAttribute(attrName);
 		Pattern pattern  = Pattern.compile(codeRegexStr);
 
 		String str = extract1(attrValue, pattern);
-		LOGGER.info("[scrapeCodeFromAttr] >>> Setting Product Code >>>" + str);
+		LOGGER.debug("[scrapeCodeFromAttr] >>> Setting Product Code >>>" + str);
 		if (str != null) {
 			productInfo.setCode(str);
 		}
 	}
 
 	public void scrapeName(String selector) {
-		LOGGER.info("[scrapeName] in");
+		LOGGER.debug("[scrapeName] in");
 		String str = getText(selector);
-		LOGGER.info("[scrapeName] Name >>>> " + str);
+		LOGGER.debug("[scrapeName] Name >>>> " + str);
 		if (str != null) {
 			productInfo.setName(str);
 		}
 	}
 
 	public void scrapeName(DomNode node, String selector) {
-		LOGGER.info("[scrapeName] in");
+		LOGGER.debug("[scrapeName] in");
 		String str = getText(node, selector);
-		LOGGER.info("[scrapeName] Name >>>> " + str);
+		LOGGER.debug("[scrapeName] Name >>>> " + str);
 		if (str != null) {
 			productInfo.setName(str);
 		}
 	}
 
 	public void scrapePrice(String selector) {
-		LOGGER.info("[scrapePrice] in");
+		LOGGER.debug("[scrapePrice] in");
 		String str = getText(selector);
-		LOGGER.info("[scrapePrice] Price >>>> " + str);
+		LOGGER.debug("[scrapePrice] Price >>>> " + str);
 		if (str != null) {
 			productInfo.setPrice(str);
 		}
 	}
 
 	public void scrapePrice(DomNode node, String selector) {
-		LOGGER.info("[scrapePrice] in");
+		LOGGER.debug("[scrapePrice] in");
 		String str = getText(node, selector);
-		LOGGER.info("[scrapePrice] Price >>>> " + str);
+		LOGGER.debug("[scrapePrice] Price >>>> " + str);
 		if (str != null) {
 			productInfo.setPrice(str);
 		}
 	}
 
 	public void scrapePrices(List<String> selectors) {
-		LOGGER.info("[scrapePrices] in");
+		LOGGER.debug("[scrapePrices] in");
 		for (String selector : selectors) {
 			String str = getText(selector);
-			LOGGER.info("[scrapePrices] Price >>>> " + str);
+			LOGGER.debug("[scrapePrices] Price >>>> " + str);
 			if (str != null) {
 				productInfo.setPrice(str);
 				return;
@@ -150,25 +150,25 @@ public class NavigableProductDetailPage extends NavigablePage {
 	}
 
 	public void scrapeModelNo(String selector) {
-		LOGGER.info("[scrapeModelNo] in");
+		LOGGER.debug("[scrapeModelNo] in");
     String str = Common.normalize(getText(selector));
-		LOGGER.info("[scrapeModelNo] Model No >>>> " + str);
+		LOGGER.debug("[scrapeModelNo] Model No >>>> " + str);
 		if (str != null) {
 			productInfo.setModelNo(str);
 		}
 	}
 
 	public void scrapeModelNo(DomNode node, String selector) {
-		LOGGER.info("[scrapeModelNo] in");
+		LOGGER.debug("[scrapeModelNo] in");
     String str = Common.normalize(getText(node, selector));
-		LOGGER.info("[scrapeModelNo] Model No >>>> " + str);
+		LOGGER.debug("[scrapeModelNo] Model No >>>> " + str);
 		if (str != null) {
 			productInfo.setModelNo(str);
 		}
 	}
 
 	public void scrapeModelNo(List<String> modelNoLabelNames, List<String> modelNoLabelSelectors, List<String> modelNoValueSelectors) {
-		LOGGER.info("[scrapeModelNo] in");
+		LOGGER.debug("[scrapeModelNo] in");
 		HtmlElement modelNoLabelElement = null;
 		HtmlElement modelNoValueElement = null;
 		for(int i = 0 ; i < modelNoLabelSelectors.size() ; i++) {
@@ -191,7 +191,7 @@ public class NavigableProductDetailPage extends NavigablePage {
 	private static final String MODEL_NO_LABEL_SELECTOR_KEY = "label_selector";
 	private static final String MODEL_NO_VALUE_SELECTOR_KEY = "value_selector";
 	public void scrapeModelNo(List<Map<String, String>> modelNoSelectors) {
-		LOGGER.info("[scrapeModelNo] in");
+		LOGGER.debug("[scrapeModelNo] in");
 		HtmlElement modelNoLabelElement = null;
 		HtmlElement modelNoValueElement = null;
 		for(Map<String, String> modelNoSelector : modelNoSelectors) {
@@ -211,9 +211,9 @@ public class NavigableProductDetailPage extends NavigablePage {
 	}
 
 	public void scrapeQuantity(String selector) {
-		LOGGER.info("[scrapeQuantity] in");
+		LOGGER.debug("[scrapeQuantity] in");
 		String str = getText(selector);
-		LOGGER.info("[scrapeQuantity] Quantity >>>> " + str);
+		LOGGER.debug("[scrapeQuantity] Quantity >>>> " + str);
 		Integer qty = extractInt(str);
 		if (str != null && qty != null) {
 			// productInfo.setQuantity(extractInt(str));
@@ -222,9 +222,9 @@ public class NavigableProductDetailPage extends NavigablePage {
 	}
 
 	public void scrapeQuantity(DomNode node, String selector) {
-		LOGGER.info("[scrapeQuantity] in");
+		LOGGER.debug("[scrapeQuantity] in");
 		String str = getText(node, selector);
-		LOGGER.info("[scrapeQuantity] Quantity >>>> " + str);
+		LOGGER.debug("[scrapeQuantity] Quantity >>>> " + str);
 		if (str != null) {
 			productInfo.setQuantity(extractInt(str));
 		}

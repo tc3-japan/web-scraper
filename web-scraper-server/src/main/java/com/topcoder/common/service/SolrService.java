@@ -1,6 +1,7 @@
 package com.topcoder.common.service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -57,7 +58,7 @@ public class SolrService {
     }
     String id = findByProductId(product.getId());
     if (id == null) {
-      return null;
+      return new ArrayList<SolrPorduct>(0);
     }
     /* q=id:a61d769e-a38b-4a84-a585-6d02a3d356d5&indent=on&mlt=true&mlt.fl=product_name
      * &mlt.mindf=1&mlt.mintf=1&fl=id,product_id,ec_site,product_name,unit_price,group_id,score

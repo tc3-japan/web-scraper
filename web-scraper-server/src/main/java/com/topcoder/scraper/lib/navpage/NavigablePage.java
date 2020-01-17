@@ -28,26 +28,26 @@ public class NavigablePage {
     protected HtmlPage page;
 
     public NavigablePage(HtmlPage page, TrafficWebClient webClient) {
-        LOGGER.info("[constructor] in");
+        LOGGER.debug("[constructor] in");
         this.webClient = webClient;
         this.page = page;
     }
 
     public NavigablePage(String url, TrafficWebClient webClient) {
-        LOGGER.info("[constructor] in");
+        LOGGER.debug("[constructor] in");
         this.webClient = webClient;
         setPage(url); // TODO: Will this work if page is uninitialized?
     }
 
     public void setEnableJS(boolean value) {
-        LOGGER.info("[setEnableJS] in");
-        LOGGER.info("[setEnableJS] Setting JavaScript Enabled to " + value);
+        LOGGER.debug("[setEnableJS] in");
+        LOGGER.debug("[setEnableJS] Setting JavaScript Enabled to " + value);
         webClient.getWebClient().getOptions().setJavaScriptEnabled(value);
     }
     /* Get and Set */
 
     public void setPage(String url) {
-        LOGGER.info("[setPage] in");
+        LOGGER.debug("[setPage] in");
         try {
             page = webClient.getPage(url);
         } catch (IOException e) {
@@ -58,54 +58,39 @@ public class NavigablePage {
     }
 
     public void setPage(HtmlPage page) {
-        LOGGER.info("[setPage] in");
+        LOGGER.debug("[setPage] in");
         this.page = page;
     }
 
     public HtmlPage getPage() {
-        LOGGER.info("[getPage] in");
+        LOGGER.debug("[getPage] in");
         return page;
     }
 
     /* Navigate */
 
     public void click(String selector) {
-        LOGGER.info("[click] in");
+        LOGGER.debug("[click] in");
         if (selector != null) {
-            HtmlElement element = null;
-            HtmlButton button = null;
-
-            try {
-                element = page.querySelector(selector);
-                LOGGER.info("click() > Selected " + element + " from " + selector);
-            } catch (Exception e) {
-                e.printStackTrace();
+            HtmlElement element = page.querySelector(selector);
+            LOGGER.info("click() > Selected " + element + " from " + selector);
+            if (element == null) {
+              return;
             }
-
             try {
-                button = (HtmlButton)page.querySelector(selector);
-                LOGGER.info("click() >  button Selected " + button + " from " + selector);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            if (element != null) {
-                try {
-                    HtmlPage result = webClient.click(element);
-                    if (result != null)
-                        page = result;
-                    LOGGER.info("Setting page to " + result);
-                    // savePage("pageClicked", "yahoo", webPageServiceWired);
-                } catch (IOException e) {
-                    LOGGER.info("Could not navigate to " + selector + " in NavigablePage.java");
-                    e.printStackTrace();
+                HtmlPage result = webClient.click(element);
+                if (result != null) {
+                    page = result;
                 }
+                LOGGER.info("Setting page to " + result);
+            } catch (Exception e) {
+                LOGGER.error(String.format("Failed to perform click on the element selected by '%s'. page: %s", selector, page.getUrl()), e);
             }
         }
     }
 
     public void click(DomNode node, String selector) {
-        LOGGER.info("[click] in");
+        LOGGER.debug("[click] in");
 
         if (node != null && selector != null) {
             DomElement element = node.querySelector(selector);
@@ -126,7 +111,7 @@ public class NavigablePage {
     }
 
     public void click(String selector, WebpageService webpageService) {
-        LOGGER.info("[click] in");
+        LOGGER.debug("[click] in");
 
         if (selector != null && webpageService != null) {
             HtmlElement element = page.querySelector(selector);
@@ -147,21 +132,21 @@ public class NavigablePage {
     }
 
     public void openPage(DomNode node, String selector, Closure<Boolean> closure, WebpageService webpageService) {
-        LOGGER.info("[openPage] in");
+        LOGGER.debug("[openPage] in");
 
         if (node != null && selector != null) {
             HtmlAnchor anchorNode = node.querySelector(selector);
-            LOGGER.info("[openPage] open > Selected " + anchorNode + " from " + selector);
+            LOGGER.debug("[openPage] open > Selected " + anchorNode + " from " + selector);
             if (anchorNode != null) {
                 try {
                     HtmlPage subPage = webClient.getPage(anchorNode.getHrefAttribute());
                     webpageService.save("sub-page-opened", "yahoo", subPage.getWebResponse().getContentAsString());
-                    LOGGER.info("[openPage] CLICKED ELEMENT>>> " + subPage);
+                    LOGGER.debug("[openPage] CLICKED ELEMENT>>> " + subPage);
                     if (subPage != null) {
                         closure.call(subPage);
                     }
                 } catch (IOException e) {
-                    LOGGER.info("[openPage] Could not navigate to " + selector + " in NavigablePage.java");
+                    LOGGER.debug("[openPage] Could not navigate to " + selector + " in NavigablePage.java");
                     e.printStackTrace();
                 }
             }
@@ -169,11 +154,11 @@ public class NavigablePage {
     }
 
     public String getText(String selector) {
-        LOGGER.info("[getText] in");
+        LOGGER.debug("[getText] in");
 
         HtmlElement node = page.querySelector(selector);
         String str = node != null ? node.asText().replaceAll("\\n", " ").trim() : null;
-        LOGGER.info(">>> Got Text >>> " + str + " for " + selector);
+        LOGGER.debug(">>> Got Text >>> " + str + " for " + selector);
         return str;
     }
 
@@ -191,21 +176,21 @@ public class NavigablePage {
     }
 
     public String getNodeAttribute(String selector, String attr) {
-      LOGGER.info("[getNodeAttribute(" + attr + ")] in");
+      LOGGER.debug("[getNodeAttribute(" + attr + ")] in");
 
       HtmlElement node = page.querySelector(selector);
       String str = node != null ? node.getAttribute(attr) : null;
-      LOGGER.info(">>> Got Attribute >>> " + str + " for " + selector);
+      LOGGER.debug(">>> Got Attribute >>> " + str + " for " + selector);
       return str;
     }
 
     protected String getValue(String selector) {
-        LOGGER.info("[getValue] in");
+        LOGGER.debug("[getValue] in");
 
         // HtmlElement node = page.querySelector(selector);
         // String str = node != null ? node.get
-        // LOGGER.info(">>> Got Text >>> " + str + " for " + selector);
-        LOGGER.info("NavigablePage.getValue(Str) -- This method is WIP");
+        // LOGGER.debug(">>> Got Text >>> " + str + " for " + selector);
+        LOGGER.debug("NavigablePage.getValue(Str) -- This method is WIP");
         // get the value of the selected thing, not the text value, when JSON object is
         // returned
         String str = null;
@@ -214,25 +199,25 @@ public class NavigablePage {
 
 
     public String getText(DomNode sourceNode, String selector) {
-        LOGGER.info("[getText] in");
+        LOGGER.debug("[getText] in");
 
         HtmlElement node = sourceNode.querySelector(selector);
         String str = node != null ? node.asText().replaceAll("\\n", " ").trim() : null;
-        LOGGER.info(">>> Got Text >>> " + str + " for " + selector);
+        LOGGER.debug(">>> Got Text >>> " + str + " for " + selector);
         return str;
     }
 
     public String getNodeAttribute(DomNode sourceNode, String selector, String attr) {
-      LOGGER.info("[getNodeAttribute(" + attr + ")] in");
+      LOGGER.debug("[getNodeAttribute(" + attr + ")] in");
 
       HtmlElement node = sourceNode.querySelector(selector);
       String str = node != null ? node.getAttribute(attr) : null;
-      LOGGER.info(">>> Got Attribute >>> " + str + " for " + selector);
+      LOGGER.debug(">>> Got Attribute >>> " + str + " for " + selector);
       return str;
     }
 
     public void type(String input, String selector) {
-        LOGGER.info("[type] in");
+        LOGGER.debug("[type] in");
 
         if (input != null && selector != null) {
             HtmlTextInput memberIdInput = page.querySelector(selector);
@@ -249,7 +234,7 @@ public class NavigablePage {
     }
 
     public void typePassword(String input, String selector) {
-        LOGGER.info("[typePassword] in");
+        LOGGER.debug("[typePassword] in");
 
         if (input != null && selector != null) {
             HtmlPasswordInput memberIdInput = page.querySelector(selector);
@@ -265,7 +250,7 @@ public class NavigablePage {
     }
 
     public void typeCheckbox(String input, String selector) {
-        LOGGER.info("[typeCheckbox] in");
+        LOGGER.debug("[typeCheckbox] in");
 
         if (input != null && selector != null) {
             // value should be "on" or "off"
@@ -282,11 +267,10 @@ public class NavigablePage {
     }
 
     public String savePage(String fileName, String siteName, WebpageService webpageService) {
-        LOGGER.info("[savePage] in");
-
-        // site name should be "yahoo", "amazon", etc.
-        // see [...] for details
-        // TODO: make proper documentation for these functions
+        LOGGER.debug("[savePage] in");
+        if (page == null || page.getWebResponse() == null) {
+          return null;
+        }
         return webpageService.save(fileName, siteName, page.getWebResponse().getContentAsString());
     }
 

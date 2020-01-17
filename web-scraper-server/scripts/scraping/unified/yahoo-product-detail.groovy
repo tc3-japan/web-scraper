@@ -3,8 +3,6 @@ setEnableJS(false)
 setPage(htmlPath + productCode)
 savePage("yahoo-" + productCode.replace("/", "_"))
 
-log(" >>> Requesting Page >>> " + htmlPath + productCode)
-
 // #abuserpt > p:nth-child(3)
 // head > link[rel='canonical']
 scrapeCodeFromAttr("head > link[rel='canonical']", "href", "https:\\/\\/.*?\\/(.*)\\.html");
@@ -21,7 +19,7 @@ scrapeDistributor("dt.elStore > a")
 scrapePrices([".elNum", ".ItemPrice_price", "p.elPrice:nth-child(2) > em"])
 
 def jan = scrapeText(".mdItemInfoCode > p")
-log "JAN : $jan"
+debug "JAN : $jan"
 productInfo?.janCode = normalize removeLabel(jan)
 
 // "JANコード/ISBNコード:4988617257443" -> "4988617257443"

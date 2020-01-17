@@ -158,7 +158,7 @@ public class NavigablePage {
 
         HtmlElement node = page.querySelector(selector);
         String str = node != null ? node.asText().replaceAll("\\n", " ").trim() : null;
-        LOGGER.info(">>> Got Text >>> " + str + " for " + selector);
+        LOGGER.debug(">>> Got Text >>> " + str + " for " + selector);
         return str;
     }
 
@@ -189,7 +189,7 @@ public class NavigablePage {
 
         // HtmlElement node = page.querySelector(selector);
         // String str = node != null ? node.get
-        // LOGGER.info(">>> Got Text >>> " + str + " for " + selector);
+        // LOGGER.debug(">>> Got Text >>> " + str + " for " + selector);
         LOGGER.debug("NavigablePage.getValue(Str) -- This method is WIP");
         // get the value of the selected thing, not the text value, when JSON object is
         // returned
@@ -203,7 +203,7 @@ public class NavigablePage {
 
         HtmlElement node = sourceNode.querySelector(selector);
         String str = node != null ? node.asText().replaceAll("\\n", " ").trim() : null;
-        LOGGER.info(">>> Got Text >>> " + str + " for " + selector);
+        LOGGER.debug(">>> Got Text >>> " + str + " for " + selector);
         return str;
     }
 

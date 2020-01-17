@@ -49,7 +49,7 @@ public abstract class AbstractProductGroupBuilder {
 
   public List<ProductDAO> createProductGroup(ProductDAO product, Set<String> targetECSites) {
 
-    logger.info(String.format("Atempt to group the product#%d by \"%s\" ([%s] %s)",
+    logger.info(String.format("Trying to group the product#%d by \"%s\" ([%s] %s)",
         product.getId(), getGroupingMethod(), product.getEcSite(), product.getProductName()));
 
     List<ProductDAO> sameProducts = findSameProducts(product);
@@ -187,41 +187,42 @@ public abstract class AbstractProductGroupBuilder {
   }
 
   public boolean compareProducts(ProductDAO baseProduct, ProductDAO candidateProduct) {
-    logger.debug(String.format("matching products: [%d]%s <-> [%d]%s",
+    logger.info(String.format("matching for products: [%d]%s <-> [%d]%s",
         baseProduct.getId(), baseProduct.getProductName(), candidateProduct.getId(),
         candidateProduct.getProductName()));
 
-    logger.debug(String.format("matching with model-no: [%d]%s <-> %s", baseProduct.getId(), baseProduct.getModelNo(),
+    logger.info(String.format("matching with model-no: [%d]%s <-> %s", baseProduct.getId(), baseProduct.getModelNo(),
         candidateProduct.getModelNo()));
     if (!StringUtils.isBlank(baseProduct.getModelNo()) && !StringUtils.isBlank(candidateProduct.getModelNo())) {
       if (baseProduct.getModelNo().equalsIgnoreCase(candidateProduct.getModelNo())) {
-        logger.debug("products matched with model-no: " + baseProduct.getModelNo());
+        logger.info("products matched with model-no: " + baseProduct.getModelNo());
         return true;
       }
       return false;
     }
 
-    logger.debug(String.format("matching with jan-code: [%d]%s <-> %s", baseProduct.getId(), baseProduct.getJanCode(),
+    logger.info(String.format("matching with jan-code: [%d]%s <-> %s", baseProduct.getId(), baseProduct.getJanCode(),
         candidateProduct.getJanCode()));
     if (!StringUtils.isBlank(baseProduct.getJanCode()) && !StringUtils.isBlank(candidateProduct.getJanCode())) {
       if (baseProduct.getJanCode().equalsIgnoreCase(candidateProduct.getJanCode())) {
-        logger.debug("products matched with jan-code: " + baseProduct.getJanCode());
+        logger.info("products matched with jan-code: " + baseProduct.getJanCode());
         return true;
       }
       return false;
     }
 
-    logger.debug(String.format("matching with unit-price: [%d]%f <-> %f", baseProduct.getId(),
+    logger.info(String.format("matching with unit-price: [%d]%f <-> %f", baseProduct.getId(),
         baseProduct.getUnitPriceAsNumber(), candidateProduct.getUnitPriceAsNumber()));
-    logger.debug(String.format("price tolerance: %f", priceTolerance));
+    logger.info(String.format("price tolerance: %f", priceTolerance));
 
     Float basePrice = baseProduct.getUnitPriceAsNumber();
     Float rangeParam = basePrice * this.priceTolerance;
     if (basePrice != null) {
       Float price = candidateProduct.getUnitPriceAsNumber();
-      if (basePrice - rangeParam <= price && price <= basePrice + rangeParam) {
-        logger.debug(String.format("products matched with unit-price: %f <= %f <= %f [range: +-%f]",
-            (basePrice - rangeParam), price, (basePrice + rangeParam), rangeParam));
+      boolean result = basePrice - rangeParam <= price && price <= basePrice + rangeParam;
+      logger.info(String.format("result of matching with unit-price: %f <= %f <= %f [range: +-%f]::%b",
+          (basePrice - rangeParam), price, (basePrice + rangeParam), rangeParam, result));
+      if (result) {
         return true;
       }
     }

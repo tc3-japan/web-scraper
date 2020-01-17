@@ -36,7 +36,7 @@ public class JanCodeProductGroupBuilder extends AbstractProductGroupBuilder {
 
   @Override
   public List<ProductDAO> findSameProducts(ProductDAO prod) {
-    logger.debug("Find products by JAN code: " + prod.getJanCode());
+    logger.info("Searching for products by JAN code: " + prod.getJanCode());
     List<ProductDAO> productList = new LinkedList<>();
     if (prod == null || StringUtils.isBlank(prod.getJanCode())) {
       return productList;

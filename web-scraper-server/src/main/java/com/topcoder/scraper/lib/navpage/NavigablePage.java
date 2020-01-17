@@ -180,7 +180,7 @@ public class NavigablePage {
 
       HtmlElement node = page.querySelector(selector);
       String str = node != null ? node.getAttribute(attr) : null;
-      LOGGER.info(">>> Got Attribute >>> " + str + " for " + selector);
+      LOGGER.debug(">>> Got Attribute >>> " + str + " for " + selector);
       return str;
     }
 
@@ -212,7 +212,7 @@ public class NavigablePage {
 
       HtmlElement node = sourceNode.querySelector(selector);
       String str = node != null ? node.getAttribute(attr) : null;
-      LOGGER.info(">>> Got Attribute >>> " + str + " for " + selector);
+      LOGGER.debug(">>> Got Attribute >>> " + str + " for " + selector);
       return str;
     }
 

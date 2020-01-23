@@ -32,7 +32,7 @@ public class ProductNameProductGroupBuilder extends AbstractProductGroupBuilder 
 
   @Override
   List<ProductDAO> findSameProducts(ProductDAO prod) {
-    logger.debug("Searching for products in Solr: " + prod.getProductName());
+    logger.info("Searching for products in Solr: " + prod.getProductName());
     List<ProductDAO> result = new LinkedList<>();
     result.add(prod);
     try {
@@ -40,12 +40,12 @@ public class ProductNameProductGroupBuilder extends AbstractProductGroupBuilder 
       logger.info(String.format("found %d products from Search Index", similarProducts.size()));
       similarProducts.forEach(p -> {
         if (p.getScore() != null && p.getScore() < this.scoreThreshold) {
-          logger.info(String.format("#%d [%s] is skipped because of the lower score: %.5f < %.3f", p.getScore(),
-              this.scoreThreshold));
+          logger.info(String.format("[%d][%s] %s is skipped because of the lower score: %.5f < %.3f", p.getId(), p.getEcSite(),
+              p.getProductName(), p.getScore(), this.scoreThreshold));
           return;
         }
         if (!compareProducts(prod, p)) {
-          logger.info(String.format("#%d [%s] is skipped."));
+          logger.info(String.format("#%d [%s] %s is skipped.", p.getId(), p.getEcSite(), p.getProductName()));
           return;
         }
         logger.info(String.format("Matched product found: [%d][%s] %s", p.getId(), p.getEcSite(), p.getProductName()));

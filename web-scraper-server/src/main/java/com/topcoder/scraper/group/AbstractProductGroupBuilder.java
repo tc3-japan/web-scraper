@@ -187,12 +187,12 @@ public abstract class AbstractProductGroupBuilder {
   }
 
   public boolean compareProducts(ProductDAO baseProduct, ProductDAO candidateProduct) {
-    logger.info(String.format("matching for products: [%d]%s <-> [%d]%s",
-        baseProduct.getId(), baseProduct.getProductName(), candidateProduct.getId(),
-        candidateProduct.getProductName()));
+    logger.info(String.format("matching for products: [%d][%s]%s <-> [%d][%s]%s",
+        baseProduct.getId(), baseProduct.getEcSite(), baseProduct.getProductName(),
+        candidateProduct.getId(), candidateProduct.getEcSite(), candidateProduct.getProductName()));
 
-    logger.info(String.format("matching with model-no: [%d]%s <-> %s", baseProduct.getId(), baseProduct.getModelNo(),
-        candidateProduct.getModelNo()));
+    logger.info(String.format("matching with model-no: [%d][%s]%s <-> [%s]%s", baseProduct.getId(), baseProduct.getEcSite(),
+        baseProduct.getModelNo(), candidateProduct.getEcSite(), candidateProduct.getModelNo()));
     if (!StringUtils.isBlank(baseProduct.getModelNo()) && !StringUtils.isBlank(candidateProduct.getModelNo())) {
       if (baseProduct.getModelNo().equalsIgnoreCase(candidateProduct.getModelNo())) {
         logger.info("products matched with model-no: " + baseProduct.getModelNo());
@@ -201,8 +201,8 @@ public abstract class AbstractProductGroupBuilder {
       return false;
     }
 
-    logger.info(String.format("matching with jan-code: [%d]%s <-> %s", baseProduct.getId(), baseProduct.getJanCode(),
-        candidateProduct.getJanCode()));
+    logger.info(String.format("matching with jan-code: [%d][%s]%s <-> [%s]%s", baseProduct.getId(), baseProduct.getEcSite(),
+        baseProduct.getJanCode(), candidateProduct.getEcSite(), candidateProduct.getJanCode()));
     if (!StringUtils.isBlank(baseProduct.getJanCode()) && !StringUtils.isBlank(candidateProduct.getJanCode())) {
       if (baseProduct.getJanCode().equalsIgnoreCase(candidateProduct.getJanCode())) {
         logger.info("products matched with jan-code: " + baseProduct.getJanCode());
@@ -211,8 +211,8 @@ public abstract class AbstractProductGroupBuilder {
       return false;
     }
 
-    logger.info(String.format("matching with unit-price: [%d]%f <-> %f", baseProduct.getId(),
-        baseProduct.getUnitPriceAsNumber(), candidateProduct.getUnitPriceAsNumber()));
+    logger.info(String.format("matching with unit-price: [%d][%s]%f <-> [%s]%f", baseProduct.getId(), baseProduct.getEcSite(),
+        baseProduct.getUnitPriceAsNumber(), candidateProduct.getEcSite(), candidateProduct.getUnitPriceAsNumber()));
     logger.info(String.format("price tolerance: %f", priceTolerance));
 
     Float basePrice = baseProduct.getUnitPriceAsNumber();

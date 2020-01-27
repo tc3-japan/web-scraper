@@ -22,6 +22,8 @@
     "searchProduct"         : "Search Product",
     "groupId"               : "Group ID",
     "modelNo"               : "Model No.",
+    "janCode"               : "JAN Code",
+    "groupProductName"      : "Grouping Product Name",
     "groupingMethod"        : "Grouping Method",
     "ecSite"                : "EC Site",
     "groupButton"           : "Group",
@@ -29,7 +31,7 @@
     "cancelButton"          : "Cancel",
     "productName"           : "Product Name (Orig. Model Number)",
     "price"                 : "Price",
-    "groupDialogMessage"    : "You can select or rename the Grouping Model No.",
+    "groupDialogMessage"    : "You can select or rename the Grouping Key.",
     "yahooPasswordMessage"  : "You can't input password if you use verify code login."
   },
   "ja" : {
@@ -55,6 +57,8 @@
     "searchProduct"         : "商品検索",
     "groupId"               : "グループID",
     "modelNo"               : "型番",
+    "janCode"               : "JANコード",
+    "groupProductName"      : "グルーピング商品名",
     "groupingMethod"        : "グルーピング方法",
     "ecSite"                : "ECサイト",
     "groupButton"           : "グループ化",
@@ -62,7 +66,7 @@
     "cancelButton"          : "取消",
     "productName"           : "商品名 (元型番)",
     "price"                 : "価格",
-    "groupDialogMessage"    : "型番を選択するか、あるいは入力してください。",
+    "groupDialogMessage"    : "紐付けのキーを選択するか、あるいは入力してください。",
 	"yahooPasswordMessage"  : "確認コードログインを使用する場合は、パスワードを入力しないでください。"
   }
 }

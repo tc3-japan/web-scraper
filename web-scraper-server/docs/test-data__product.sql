@@ -4,19 +4,19 @@ SET SQL_SAFE_UPDATES = 0;
 delete from web_scraper.product;
 delete from web_scraper.product_group;
 
-insert into web_scraper.product (id, ec_site, product_code, product_name, unit_price, product_distributor, model_no) values
- (1, 'amazon', 'B07KH55LSD', 'Drum type washer / dryer', 239114, 'SHARP', 'ES-W111-SR')
-,(2, 'kojima', '3957065',    'Drum type washer',         250972, 'SHARP', 'ES-W111-SR')
-,(3, 'EC3',    'QWERTY001',  'Drum type washer(SHARP)',  252384, 'SHARP', 'ES-W111-SR')
-,(4, 'EC4',    'HJKL001',    'Drum type washer',         255000, 'SHARP', 'ES-W111-SR')
-,(5, 'amazon', 'B06XJVGH11', 'Rice cooker IH Honsumigama', 43024, 'MITSUBISHI', 'NJ-SW069-B')
-,(6, 'kojima', '3792608',    'Rice cooker',                51111, 'MITSUBISHI', 'NJ-SW069-B')
-,(7, 'EC3',    'QWERTY002',  'Rice cooker IH(Panasonic)',  51234, 'MITSUBISHI', 'NJ-SW069-B')
-,(8, 'EC4',    'HJKL002',    'Rice cooker',                51234, 'MITSUBISHI', 'NJ-SW069-B')
-,(9, 'amazon', 'B008PSWX9A', 'DELSEY Paris Luggage Helium', 255000, 'SHARP', null )
-,(10, 'amazon', 'B008PSWX9B', 'DELSEY Paris Luggage Helium02', 255000, 'SHARP', 'ES-W111-SR' )
-,(11, 'amazon', 'B008PSWX9C', 'DELSEY Paris Luggage Helium03', 255000, 'SHARP', 'ES-W111-SB' )
-,(12, 'amazon', 'B07KH55LSF', 'Drum type washer / dryer', 239114, 'SHARP', 'ES-W111-SC')
+insert into web_scraper.product (id, ec_site, product_code, product_name, unit_price, product_distributor, model_no, jan_code) values
+ (1,  'amazon',  'B07KH55LSD', 'Drum type washer / dryer',      239114, 'SHARP',      'ES-W111-SR', '4974019970738')
+,(2,  'kojima',  '3957065',    'Drum type washer',              250972, 'SHARP',      'ES-W111-SR', null)
+,(3,  'yahoo',   'QWERTY001',  'Drum type washer(SHARP)',       252384, 'SHARP',      null,         '4974019970738')
+,(4,  'rakuten', 'HJKL001',    'Drum type washer',              255000, 'SHARP',      'ES-W111-SR', null)
+,(5,  'amazon',  'B06XJVGH11', 'Rice cooker IH Honsumigama',    43024,  'MITSUBISHI', 'NJ-SW069-B', null)
+,(6,  'kojima',  '3792608',    'Rice cooker',                   51111,  'MITSUBISHI', 'NJ-SW069-B', null)
+,(7,  'yahoo',   'QWERTY002',  'Rice cooker IH(Panasonic)',     51234,  'MITSUBISHI', null,         '4902901817519')
+,(8,  'rakuten', 'HJKL002',    'Rice cooker',                   51234,  'MITSUBISHI', 'NJ-SW069-B', null)
+,(9,  'amazon',  'B008PSWX9A', 'DELSEY Paris Luggage Helium',   255000, 'SHARP',      null,         null)
+,(10, 'amazon',  'B008PSWX9B', 'DELSEY Paris Luggage Helium02', 255000, 'SHARP',      'ES-W111-SR', null)
+,(11, 'amazon',  'B008PSWX9C', 'DELSEY Paris Luggage Helium03', 255000, 'SHARP',      'ES-W111-SB', null)
+,(12, 'amazon',  'B07KH55LSF', 'Drum type washer / dryer',      239114, 'SHARP',      'ES-W111-SC', null)
 ;
 
 /*

@@ -24,8 +24,10 @@
       <div class="thead">
         <div class="row">
           <div class="cell">{{ trans('groupId') }}</div>
-          <div class="cell">{{ trans('modelNo') }}</div>
           <div class="cell">{{ trans('groupingMethod') }}</div>
+          <div class="cell">{{ trans('modelNo') }}</div>
+          <div class="cell">{{ trans('janCode') }}</div>
+          <div class="cell">{{ trans('groupProductName') }}</div>
           <div class="cell">{{ trans('ecSite') }}</div>
           <div class="cell f3">{{ trans('productName') }}</div>
           <div class="cell">{{ trans('price') }}</div>
@@ -39,6 +41,7 @@
       <div class="tbody">
         <div class="row" v-for="item in tableData">
           <div class="cell">{{getValue(item,'groupId')}}</div>
+          <div class="cell">{{getValue(item,'groupingMethod')}}</div>
           <div class="cell">
             <div class="model-no">
               <span>{{getValue(item,'modelNo')}}</span>
@@ -47,7 +50,22 @@
                      @keyup.enter="updateGroup(item,'modelNo')"/>
             </div>
           </div>
-          <div class="cell">{{getValue(item,'groupingMethod')}}</div>
+          <div class="cell">
+            <div class="jan-code">
+              <span>{{getValue(item,'janCode')}}</span>
+              <input type="text" v-if="item.groupId" v-model="(groups[item.groupId]||{}).janCode"
+                     v-on:blur="updateGroup(item,'janCode')"
+                     @keyup.enter="updateGroup(item,'janCode')"/>
+            </div>
+          </div>
+          <div class="cell">
+            <div class="product-name">
+              <span>{{getValue(item,'productName')}}</span>
+              <input type="text" v-if="item.groupId" v-model="(groups[item.groupId]||{}).productName"
+                     v-on:blur="updateGroup(item,'productName')"
+                     @keyup.enter="updateGroup(item,'productName')"/>
+            </div>
+          </div>
           <div class="cell">{{item.ecSite}}</div>
           <div class="cell f3"><a :href="getLink(item)" target="_blank">{{getProductInfo(item)}}</a></div>
           <div class="cell">{{item.unitPrice ? item.unitPrice : ''}}</div>
@@ -70,18 +88,56 @@
         <div class="title">{{ trans('groupDialogMessage') }}</div>
 
         <div class="content">
-          <div class="group" v-for="key in Object.keys(groups)">
-            <input type="radio" name="group" :value="groups[key].modelNo" v-model="selectGroup"/>
-            <span @click="selectGroup=groups[key].modelNo">{{groups[key].modelNo}}</span>
+          <div class="key-group">
+            <div class="key-title">{{ trans('modelNo') }}:</div>
+            <div class="group" v-for="key in Object.keys(groups)">
+              <div v-if="groups[key].modelNo" >
+                <input type="radio" name="group" :value="groups[key].modelNo" v-model="selectGroupModelNo"/>
+                <span @click="selectGroupModelNo=groups[key].modelNo">{{groups[key].modelNo}}</span>
+              </div>
+            </div>
+            <div class="group">
+              <input type="radio" name="group" value="__new_group" v-model="selectGroupModelNo"/>
+              <span><input @focus="selectGroupModelNo='__new_group'" v-model="createGroupNameModelNo"/></span>
+            </div>
           </div>
-          <div class="group">
-            <input type="radio" name="group" value="__new_group" v-model="selectGroup"/>
-            <span><input @focus="selectGroup='__new_group'" v-model="createGroupName"/></span>
+          <div class="key-group">
+            <div class="key-title">{{ trans('janCode') }}:</div>
+            <div class="group" v-for="key in Object.keys(groups)">
+              <div v-if="groups[key].janCode" >
+                <input type="radio" name="group" :value="groups[key].janCode" v-model="selectGroupJanCode"/>
+                <span @click="selectGroupJanCode=groups[key].janCode">{{groups[key].janCode}}</span>
+              </div>
+            </div>
+            <div class="group">
+              <input type="radio" name="group" value="__new_group" v-model="selectGroupJanCode"/>
+              <span><input @focus="selectGroupJanCode='__new_group'" v-model="createGroupNameJanCode"/></span>
+            </div>
+          </div>
+          <div class="key-group">
+            <div class="key-title">{{ trans('groupProductName') }}:</div>
+            <div class="group" v-for="key in Object.keys(groups)">
+              <div v-if="groups[key].productName" >
+                <input type="radio" name="group" :value="groups[key].productName" v-model="selectGroupProductName"/>
+                <span @click="selectGroupProductName=groups[key].productName">{{groups[key].productName}}</span>
+              </div>
+            </div>
+            <div class="group">
+              <input type="radio" name="group" value="__new_group" v-model="selectGroupProductName"/>
+              <span><input @focus="selectGroupProductName='__new_group'" v-model="createGroupNameProductName"/></span>
+            </div>
           </div>
           <div class="buttons">
             <button @click="showSelectGroup=false">{{ trans('cancelButton') }}</button>
             <button @click="onGroup()"
-                    :disabled="!selectGroup || (selectGroup==='__new_group' && createGroupName.trim().length === 0)">
+                    :disabled="
+                    (!selectGroupModelNo && !selectGroupJanCode && !selectGroupProductName)
+                    || (
+                       (selectGroupModelNo     === '__new_group' && createGroupNameModelNo.trim().length === 0)
+                    && (selectGroupJanCode     === '__new_group' && createGroupNameJanCode.trim().length === 0)
+                    && (selectGroupProductName === '__new_group' && createGroupNameProductName.trim().length === 0)
+                    )
+            ">
               {{ trans('groupButton') }}
             </button>
           </div>
@@ -128,8 +184,12 @@ export default class ProductGroup extends Vue {
   public timer = null;
 
   public showSelectGroup = false;
-  public selectGroup = null;
-  public createGroupName = '';
+  public selectGroupModelNo     = null;
+  public selectGroupJanCode     = null;
+  public selectGroupProductName = null;
+  public createGroupNameModelNo     = '';
+  public createGroupNameJanCode     = '';
+  public createGroupNameProductName = '';
 
   /**
    * on page index changed
@@ -198,7 +258,7 @@ export default class ProductGroup extends Vue {
     clearTimeout(this.timer);
     this.timer = setTimeout(() => {
       this.message = null;
-    }, 3000);
+    }, 10000);
   }
 
   /**
@@ -234,15 +294,31 @@ export default class ProductGroup extends Vue {
         return;
       }
     }
+    if (key === 'janCode') {
+      if (this.getValue(item, key) === this.groups[item.groupId].janCode) {
+        return;
+      }
+    }
+    if (key === 'productName') {
+      if (this.getValue(item, key) === this.groups[item.groupId].productName) {
+        return;
+      }
+    }
     this.groups[item.groupId].confirmationStatus = this.groups[item.groupId].confirmation ? 'confirmed' : 'unconfirmed';
     ApiService.updateGroup(item.groupId, this.groups[item.groupId]).then(() => {
       this.showMessage({type: 'message', content: 'Group update successful'});
       this.fetchData();
     }).catch((e) => {
       this.showMessage({type: 'error', content: ApiService.getErrorString(e)});
+      // roll back
       if (key === 'modelNo') {
-        // roll back
         this.groups[item.groupId].modelNo = this.getValue(item, key);
+      }
+      if (key === 'janCode') {
+        this.groups[item.groupId].janCode = this.getValue(item, key);
+      }
+      if (key === 'productName') {
+        this.groups[item.groupId].productName = this.getValue(item, key);
       }
     });
   }
@@ -267,9 +343,11 @@ export default class ProductGroup extends Vue {
     Object.keys(groupProducts).forEach((key) => {
       const group = this.groups[key];
       tableData.push({
-        groupId: parseInt(key, 10),
-        modelNo: group.modelNo,
-        groupingMethod: group.groupingMethod,
+        groupId:            parseInt(key, 10),
+        modelNo:            group.modelNo,
+        janCode:            group.janCode,
+        productName:        group.productName,
+        groupingMethod:     group.groupingMethod,
         confirmationStatus: group.confirmationStatus,
       });
       tableData = tableData.concat(groupProducts[key]);
@@ -301,8 +379,12 @@ export default class ProductGroup extends Vue {
       return;
     }
 
-    this.selectGroup = null;
-    this.createGroupName = '';
+    this.selectGroupModelNo     = null;
+    this.selectGroupJanCode     = null;
+    this.selectGroupProductName = null;
+    this.createGroupNameModelNo     = '';
+    this.createGroupNameJanCode     = '';
+    this.createGroupNameProductName = '';
     this.showSelectGroup = true;
   }
 
@@ -311,9 +393,11 @@ export default class ProductGroup extends Vue {
    */
   public onGroup() {
     const {groupIds, productIds} = this.getSelectItems();
-    const modelNo = this.selectGroup === '__new_group' ? this.createGroupName.trim() : this.selectGroup;
+    const modelNo     = this.selectGroupModelNo     === '__new_group' ? this.createGroupNameModelNo.trim()     : this.selectGroupModelNo;
+    const janCode     = this.selectGroupJanCode     === '__new_group' ? this.createGroupNameJanCode.trim()     : this.selectGroupJanCode;
+    const productName = this.selectGroupProductName === '__new_group' ? this.createGroupNameProductName.trim() : this.selectGroupProductName;
 
-    ApiService.createOrUpdateGroup({groupIds, productIds, modelNo}).then(() => {
+    ApiService.createOrUpdateGroup({groupIds, productIds, modelNo, janCode, productName}).then(() => {
       this.fetchData();
       this.showSelectGroup = false;
       this.showMessage({type: 'message', content: 'group successful'});
@@ -370,17 +454,27 @@ export default class ProductGroup extends Vue {
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        .group {
-          display: flex;
-          flex-direction: row;
-          margin-top: 6px;
-          span {
-            margin-left: 6px;
+
+        .key-group {
+          margin-bottom: 32px;
+          .key-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #59647a;
+          }
+
+          .group {
             display: flex;
             flex-direction: row;
-            align-items: center;
-            cursor: pointer;
-            width: 180px;
+            margin-top: 6px;
+            > span {
+              margin-left: 6px;
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+              cursor: pointer;
+              width: 180px;
+            }
           }
         }
 
@@ -500,6 +594,22 @@ export default class ProductGroup extends Vue {
             align-items: center;
             justify-content: center;
             .model-no {
+              flex: 1;
+              font-size: 14px;
+              input[type="text"] {
+                width: 88%;
+                text-align: center;
+              }
+            }
+            .jan-code {
+              flex: 1;
+              font-size: 14px;
+              input[type="text"] {
+                width: 88%;
+                text-align: center;
+              }
+            }
+            .product-name {
               flex: 1;
               font-size: 14px;
               input[type="text"] {

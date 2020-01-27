@@ -8,7 +8,9 @@ import org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.ComponentScan;
 
-@SpringBootApplication(exclude = { FlywayAutoConfiguration.class, SolrAutoConfiguration.class })
+// TODO: consider if we set FlywayAutoConfiguration.class, or not.
+@SpringBootApplication(exclude = { SolrAutoConfiguration.class })
+//@SpringBootApplication(exclude = { FlywayAutoConfiguration.class, SolrAutoConfiguration.class })
 //Hack: Workaround for unable to component-scan "com.topcoder.common.util.SpringTool" by "java" command.
 //      Using "gradle bootRun", it can be scanned normally.
 @ComponentScan({

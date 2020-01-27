@@ -8,6 +8,7 @@ import com.topcoder.common.model.GroupRequest;
 import com.topcoder.common.model.SearchProductRequest;
 import com.topcoder.common.repository.ProductGroupRepository;
 import com.topcoder.common.repository.ProductRepository;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -91,10 +92,24 @@ public class ProductGroupService {
    */
   public void createOrUpdateGroup(GroupRequest request) {
 
-    ProductGroupDAO productGroupDAO = productGroupRepository.getByModelNo(request.getModelNo());
+    ProductGroupDAO productGroupDAO = null;
+    if (       StringUtils.isNotEmpty(request.getModelNo())) {
+      productGroupDAO = productGroupRepository.getByModelNo(request.getModelNo());
+    } else if (StringUtils.isNotEmpty(request.getJanCode()) && productGroupDAO == null) {
+      productGroupDAO = productGroupRepository.getByJanCode(request.getJanCode());
+    } else if (StringUtils.isNotEmpty(request.getProductName()) && productGroupDAO == null) {
+      productGroupDAO = productGroupRepository.getByProductName(request.getProductName());
+    }
+
     if (productGroupDAO == null) {
       productGroupDAO = new ProductGroupDAO();
-      productGroupDAO.setModelNo(request.getModelNo());
+      if (       StringUtils.isNotEmpty(request.getModelNo())) {
+        productGroupDAO.setModelNo(request.getModelNo());
+      } else if (StringUtils.isNotEmpty(request.getJanCode())) {
+        productGroupDAO.setJanCode(request.getJanCode());
+      } else if (StringUtils.isNotEmpty(request.getProductName())) {
+        productGroupDAO.setProductName(request.getProductName());
+      }
     }
     productGroupDAO.setGroupingMethod(ProductGroupDAO.GroupingMethod.manual);
     productGroupDAO.setUpdateAt(Date.from(Instant.now()));
@@ -152,11 +167,17 @@ public class ProductGroupService {
     if (groupDAO.getConfirmationStatus() != null) {
       dbEntity.setConfirmationStatus(groupDAO.getConfirmationStatus());
     }
-    if (groupDAO.getModelNo() != null && !dbEntity.getModelNo().equals(groupDAO.getModelNo())) {
+    if (groupDAO.getModelNo() != null && !groupDAO.getModelNo().equals(dbEntity.getModelNo())) {
       if (productGroupRepository.getByModelNo(groupDAO.getModelNo()) != null) {
         throw new BadRequestException("Model No " + groupDAO.getModelNo() + " already exist");
       }
       dbEntity.setModelNo(groupDAO.getModelNo());
+    }
+    if (groupDAO.getJanCode() != null && !groupDAO.getJanCode().equals(dbEntity.getJanCode())) {
+      if (productGroupRepository.getByJanCode(groupDAO.getJanCode()) != null) {
+        throw new BadRequestException("JAN Code " + groupDAO.getJanCode() + " already exist");
+      }
+      dbEntity.setJanCode(groupDAO.getJanCode());
     }
     dbEntity.setUpdateAt(Date.from(Instant.now()));
     productGroupRepository.save(dbEntity);

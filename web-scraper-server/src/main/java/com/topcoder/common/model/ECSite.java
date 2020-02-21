@@ -5,6 +5,7 @@ import com.topcoder.scraper.Consts;
 public enum ECSite {
 	  AMAZON(Consts.EC_SITE_AMAZON),
 	  KOJIMA(Consts.EC_SITE_KOJIMA),;
+	  // TODO : add Yahoo, Rakuten
 
 	  private final String value;
 

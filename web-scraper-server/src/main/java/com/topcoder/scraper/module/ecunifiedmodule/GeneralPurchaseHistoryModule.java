@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.topcoder.api.service.login.yahoo.YahooLoginHandler;
+import com.topcoder.api.service.login.LoginHandlerBase;
 import com.topcoder.common.dao.ECSiteAccountDAO;
 import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.common.repository.ECSiteAccountRepository;
@@ -21,7 +21,10 @@ import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistor
 import com.topcoder.scraper.service.PurchaseHistoryService;
 import com.topcoder.scraper.service.WebpageService;
 
-// TODO : implement, now this is just copyed from yahoo product detail
+/**
+ * General implementation of ecisolatedmodule .. PurchaseHistoryModule
+ */
+// TODO: refactoring to imitate AbstractPurchaseHistoryModule
 @Component
 public class GeneralPurchaseHistoryModule implements IPurchaseHistoryModule {
 
@@ -30,15 +33,19 @@ public class GeneralPurchaseHistoryModule implements IPurchaseHistoryModule {
   private final PurchaseHistoryService purchaseHistoryService;
   private final WebpageService webpageService;
   private final ECSiteAccountRepository ecSiteAccountRepository;
-  private final YahooLoginHandler loginHandler;
+
+  // TODO: arrange login handler
+  //private final LoginHandlerBase loginHandler;
 
   @Autowired
-  public GeneralPurchaseHistoryModule(PurchaseHistoryService purchaseHistoryService,
-                                      ECSiteAccountRepository ecSiteAccountRepository, WebpageService webpageService, YahooLoginHandler loginHandler) {
+  public GeneralPurchaseHistoryModule(PurchaseHistoryService purchaseHistoryService, ECSiteAccountRepository ecSiteAccountRepository, WebpageService webpageService
+                                      //LoginHandlerBase loginHandler
+  ) {
     this.purchaseHistoryService = purchaseHistoryService;
     this.webpageService = webpageService;
     this.ecSiteAccountRepository = ecSiteAccountRepository;
-    this.loginHandler = loginHandler;
+    // TODO: arrange login handler
+    //this.loginHandler = loginHandler;
   }
 
   @Override
@@ -48,8 +55,7 @@ public class GeneralPurchaseHistoryModule implements IPurchaseHistoryModule {
 
   @Override
   public void fetchPurchaseHistoryList(List<String> sites) throws IOException {
-    // Iterable<ECSiteAccountDAO> accountDAOS =
-    // ecSiteAccountRepository.findAllByEcSite(getModuleType());
+
     for (int i = 0; i < sites.size(); i++) {
 
       Iterable<ECSiteAccountDAO> accountDAOS = ecSiteAccountRepository.findAllByEcSite(sites.get(i));
@@ -71,9 +77,7 @@ public class GeneralPurchaseHistoryModule implements IPurchaseHistoryModule {
         }
 
         try {
-          //KojimaPurchaseHistoryCrawler crawler = new KojimaPurchaseHistoryCrawler(getModuleType(), webpageService);
           GeneralPurchaseHistoryCrawler crawler = new GeneralPurchaseHistoryCrawler(sites.get(i), webpageService);
-
 
           GeneralPurchaseHistoryCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClient,
               lastPurchaseHistory.orElse(null), true);
@@ -81,20 +85,18 @@ public class GeneralPurchaseHistoryModule implements IPurchaseHistoryModule {
           List<PurchaseHistory> list = crawlerResult.getPurchaseHistoryList();
 
           if (list != null && list.size() > 0) {
-            //System.out.println("NULL PTR DEBUG. >>> before list.forEach command <<<");
             final String accountId = "" + ecSiteAccountDAO.getId();
             list.forEach(purchaseHistory -> {
               purchaseHistory.setAccountId(accountId);
               LOGGER.info(String.format("purchaseHistory#%s accountid: %s", purchaseHistory.getOrderNumber(),
                   purchaseHistory.getAccountId()));
             });
-           // System.out.println("NULL PTR DEBUG. getModuleType(): " + getModuleType());
-            System.out.println("NULL PTR DEBUG. historylist: " + list);
 
             purchaseHistoryService.save(ecSiteAccountDAO.getEcSite(), list);
           }
           LOGGER.info("succeed fetch purchaseHistory for ecSite id = " + ecSiteAccountDAO.getId());
         } catch (Exception e) { // here catch all exception and did not throw it
+          // TODO: arrange login handler
           //this.loginHandler.saveFailedResult(ecSiteAccountDAO, e.getMessage());
           LOGGER.error("failed to PurchaseHistory for ecSite id = " + ecSiteAccountDAO.getId());
           e.printStackTrace();

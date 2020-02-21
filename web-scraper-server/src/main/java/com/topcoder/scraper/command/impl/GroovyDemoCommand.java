@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Properties;
 
-
+// TODO : re-consider whether this class is needed or not.
 @Component
 public class GroovyDemoCommand {
 

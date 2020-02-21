@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Yahoo implementation of ProductDetailModule
+ * General implementation of ProductDetailModule
  */
 @Component
 public class GeneralProductModule implements IProductModule {
@@ -86,6 +86,7 @@ public class GeneralProductModule implements IProductModule {
         System.out.println();
         System.out.println("WARNING: IGNORING CATEGORY AND RANK FOR TESTING PURPOSES!");
         System.out.println();
+        // TODO: implement below (MUST)
         /*
         String category = productInfo.getCategoryList().get(i);
         Integer rank = productInfo.getRankingList().get(i);

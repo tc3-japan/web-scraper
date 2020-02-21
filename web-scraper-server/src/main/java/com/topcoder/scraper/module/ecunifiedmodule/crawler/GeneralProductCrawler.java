@@ -24,6 +24,9 @@ import groovy.lang.Script;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * General implementation of PurchaseHistoryModule
+ */
 public class GeneralProductCrawler {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(GeneralProductCrawler.class);

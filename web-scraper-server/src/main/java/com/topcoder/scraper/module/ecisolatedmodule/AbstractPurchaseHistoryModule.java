@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Amazon implementation of PurchaseHistoryModule
+ * Abstract class of PurchaseHistoryModule
  */
 public abstract class AbstractPurchaseHistoryModule implements IPurchaseHistoryModule {
 

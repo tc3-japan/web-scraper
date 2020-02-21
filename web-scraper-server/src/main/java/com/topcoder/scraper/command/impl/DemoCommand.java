@@ -18,6 +18,7 @@ import com.topcoder.common.util.Common;
 import com.topcoder.common.util.scraping.ScrapingFieldProcessor;
 import com.topcoder.common.util.scraping.ScrapingFieldProperty;
 
+// TODO : re-consider whether this class is needed or not.
 @Component
 public class DemoCommand {
 

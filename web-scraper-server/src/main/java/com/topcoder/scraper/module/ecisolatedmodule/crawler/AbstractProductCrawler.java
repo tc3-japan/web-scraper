@@ -20,6 +20,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
+/**
+ * Abstract class of ProductDetailModule
+ */
 public abstract class AbstractProductCrawler {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractProductCrawler.class);

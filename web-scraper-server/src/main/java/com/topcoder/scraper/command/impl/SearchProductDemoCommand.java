@@ -14,8 +14,9 @@ import com.topcoder.scraper.exception.FetchProductDetailException;
 import com.topcoder.scraper.module.IProductModule;
 
 /**
- * Product detail command
+ * Search Product demo command
  */
+// TODO : re-consider whether this class is needed or not.
 @Component
 public class SearchProductDemoCommand extends AbstractCommand<IProductModule> {
 

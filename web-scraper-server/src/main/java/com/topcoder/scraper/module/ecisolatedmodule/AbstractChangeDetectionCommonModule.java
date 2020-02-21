@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Abstract class for ChangeDetectionInitModule
+ * Common class of AbstractChangeDetectionInitModule and AbstractChangeDetectionCheckModule
  */
 public abstract class AbstractChangeDetectionCommonModule implements IBasicModule {
 

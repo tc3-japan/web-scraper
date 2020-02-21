@@ -18,7 +18,7 @@ import java.io.PrintWriter;
 import java.util.List;
 
 /**
- * Change detection init Command
+ * User encoder init Command
  */
 @Component
 public class UserEncoderCommand {

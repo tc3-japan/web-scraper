@@ -16,6 +16,9 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Abstract class of ProductModule
+ */
 public abstract class AbstractProductModule implements IProductModule {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractProductModule.class);

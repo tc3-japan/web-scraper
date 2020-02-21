@@ -26,7 +26,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Abstract class for ChangeDetectionInitModule
+ * Abstract class of ChangeDetectionInitModule
  */
 public abstract class AbstractChangeDetectionCheckModule extends AbstractChangeDetectionCommonModule implements IChangeDetectionCheckModule {
 

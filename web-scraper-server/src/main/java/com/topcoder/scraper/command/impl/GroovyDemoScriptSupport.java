@@ -5,6 +5,7 @@ import groovy.lang.Script;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// TODO : re-consider whether this class is needed or not.
 public abstract class GroovyDemoScriptSupport extends Script {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(UserEncoderCommand.class);

@@ -100,6 +100,8 @@ public class GeneralProductModule implements IProductModule {
   public ProductDAO searchProductInfo(String siteName, String searchKey) throws IOException {
     LOGGER.debug("[searchProductInfo] in");
 
+    LOGGER.info(String.format("Searching products in %s. search-word: %s", siteName, searchKey));
+
     TrafficWebClient webClient = new TrafficWebClient(0, false);
 
     GeneralProductCrawler crawler = new GeneralProductCrawler(siteName, this.webpageService);

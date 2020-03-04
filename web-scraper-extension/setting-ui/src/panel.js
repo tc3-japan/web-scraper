@@ -1,0 +1,216 @@
+import swal from 'sweetalert';
+import ace from 'ace-builds/src-noconflict/ace';
+import 'ace-builds/src-noconflict/mode-groovy';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+import './panel.css';
+
+function storageGet(key) {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get([key], result => {
+      // runtime.lastError will be defined during an API method callback if there was an error
+      const error = chrome.runtime.lastError;
+      if (error) {
+        reject(error);
+      } else {
+        resolve(result[key]);
+      }
+    });
+  });
+}
+
+function storageSet(key, value) {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.set({[key]: value}, () => {
+      // runtime.lastError will be defined during an API method callback if there was an error
+      const error = chrome.runtime.lastError;
+      if (error) {
+        reject(error);
+      } else {
+        resolve();
+      }
+    });
+  });
+}
+
+// delete last '/' in api
+function normalizeUrl(url) {
+  if (url[url.length - 1] === '/') {
+    return url.substring(0, url.length - 1);
+  }
+  return url;
+}
+
+// read base api from extention storage
+async function getUrl() {
+  const site = 'amazon';
+  const type = 'purchase_history';
+  let baseApi = 'https://scraper-stub-api.herokuapp.com/scrapers';
+  
+  try {
+    const api = await storageGet('api');
+    if (api) {
+      baseApi = api;
+    }
+  } catch (error) {
+    logError(error);
+  }
+
+  return `${normalizeUrl(baseApi)}/${site}/${type}`;
+}
+
+async function fetchRequest(request) {
+  try {
+    const response = await fetch(request);
+    if (response.status === 200) {
+      return response.text();
+    }
+    return Promise.reject(`Script load failed with status code ${response.status}`);
+  } catch (error) {
+    return Promise.reject(`Script load exception ${error}`);
+  }
+}
+
+function logError(error) {
+  const messageBoard = document.getElementById('message');
+  const errElem = document.createElement('div');
+  errElem.classList.add('error');
+  errElem.textContent = error;
+  // new errors comes at top of message board
+  messageBoard.insertAdjacentElement('afterbegin', errElem);
+}
+
+function logSucceeded(message, data) {
+  const messageBoard = document.getElementById('message');
+
+  if (data) {
+    const dataElem = document.createElement('div');
+    dataElem.classList.add('data');
+    dataElem.textContent = data;
+    // new data comes at top of message board
+    messageBoard.insertAdjacentElement('afterbegin', dataElem);
+  }
+
+  const messageElem = document.createElement('div');
+  messageElem.classList.add('success');
+  messageElem.textContent = message;
+  // new message comes at top of message board
+  messageBoard.insertAdjacentElement('afterbegin', messageElem);
+}
+
+function spinnerHandler(button) {
+  button.disabled = true;
+  const spinner = button.querySelector('.hidden-spinner');
+  spinner.classList.toggle('hidden-spinner');
+
+  return function stopSpinner() {
+    spinner.classList.toggle('hidden-spinner');
+    button.disabled = false;
+  };
+}
+
+function addListeners(editor) {  
+  document.getElementById('load').addEventListener('click', async function() {
+    const result = await swal({
+      title: 'Are you sure to load the script?',
+      text: 'Unsaved changes will be lost.',
+      buttons: ['Cancel', 'Confirm'],
+    });
+    if (!result) {
+      return;
+    }
+
+    const url = await getUrl();
+    const request = new Request(url);
+    const stop = spinnerHandler(this);
+    try {
+      const code = await fetchRequest(request);
+      logSucceeded('Script load succeeded');
+      // 1 set cursor at end
+      editor.setValue(code, 1);
+    } catch (error) {
+      logError(error);
+    } finally {
+      stop();
+    }
+  });
+
+  document.getElementById('save').addEventListener('click', async function() {
+    const result = await swal({
+      title: 'Are you sure to save the script?',
+      buttons: ['Cancel', 'Confirm'],
+    });
+    if (!result) {
+      return;
+    }
+    
+    const url = await getUrl();
+    const request = new Request(url, {method: 'PUT', body: editor.getValue()});
+    const stop = spinnerHandler(this);
+    try {
+      await fetchRequest(request);
+      logSucceeded('Script save succeeded');
+    } catch (error) {
+      logError(error);
+    } finally {
+      stop();
+    }
+  });
+
+  document.getElementById('test').addEventListener('click', async function() {
+    const result = await swal({
+      title: 'Are you sure to test the script?',
+      buttons: ['Cancel', 'Confirm'],
+    });
+    if (!result) {
+      return;
+    }
+    
+    const url = (await getUrl()) + '/test';
+    const request = new Request(url, {method: 'POST', body: editor.getValue()});
+    const stop = spinnerHandler(this);
+    try {
+      const response = await fetchRequest(request);
+      try {
+        // beautiful json
+        logSucceeded('Script test succeeded', JSON.stringify(JSON.parse(response), null, 2));
+      } catch (_) {
+        // if json was not valid just simple response
+        logSucceeded('Script test succeeded', response);
+      }
+    } catch (error) {
+      logError(error);
+    } finally {
+      stop();
+    }
+  });
+
+  document.getElementById('settings').addEventListener('click', toggleSettingsPage);
+
+  document.getElementById('back').addEventListener('click', toggleSettingsPage);
+
+  document.getElementById('settings-form').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    const apiUrlBase = document.getElementById('api-url-base').value.trim();
+    if (apiUrlBase) {
+      // save api to storage extention
+      await storageSet('api', apiUrlBase);
+    }
+    toggleSettingsPage();
+  });
+}
+
+function toggleSettingsPage() {
+  document.getElementById('main-page').classList.toggle('hidden');
+  document.getElementById('settings-page').classList.toggle('hidden');
+}
+
+async function main() {
+  // create editor from <div id="editor" />
+  const editor = ace.edit('editor');
+  editor.session.setMode('ace/mode/groovy');
+
+  addListeners(editor);
+}
+
+main();

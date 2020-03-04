@@ -1,0 +1,6 @@
+CREATE TABLE scraper (
+  id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+  site VARCHAR (32),
+  type VARCHAR (32),
+  script TEXT
+);

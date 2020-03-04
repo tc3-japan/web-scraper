@@ -1,0 +1,123 @@
+/* Style of the DevTools panel. */
+
+#alert {
+  background: pink; 
+}
+
+body {
+  margin: 0;
+}
+
+.CodeMirror {
+  flex: 1;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.controls {
+  background: whitesmoke;
+  border-bottom: 1px solid lightgray;
+  padding: 6px;
+  z-index: 1;
+}
+
+.dialog {
+  background: whitesmoke;
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100;
+}
+
+#editor {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  overflow: auto;
+}
+
+:focus {
+  outline: 1px solid dodgerblue;
+}
+
+#console {
+  background: whitesmoke;
+  border-left: 1px solid lightgray;
+  flex: 1;
+  overflow: auto;
+  position: relative;
+}
+
+#console-content {
+  position: absolute;
+  width: 100%;
+  max-height: 100%;
+}
+
+#console-content .entry {
+  border-top: 1px solid lightgray;
+  padding: 6px;
+}
+
+#console-content .entry:first-child {
+  border-top: none;
+}
+
+.group {
+  align-items: center;
+  display: flex;
+  margin: 6px 0;
+}
+
+.group input {
+  flex: 1;
+  margin-left: 6px;
+}
+
+.main {
+  display: flex;
+  flex: 1;
+}
+
+.margin {
+  margin: 6px;
+}
+
+.right {
+  float: right;
+}
+
+.settings {
+  background: whitesmoke;
+  border-bottom: 1px solid lightgray;
+  box-sizing: border-box;
+  max-height: 0;
+  margin-top: -1px;
+  overflow: hidden;
+  padding: 0 6px;
+  transition: max-height 0.3s;
+}
+
+.settings.open {
+  max-height: 100%;
+}
+
+#throbber {
+  align-items: center;
+  display: none;
+  justify-content: center;
+}
+
+.throbber-circle {
+  animation: bouncing 0.4s ease-in infinite alternate;
+  background: black;
+  border-radius: 0.3em;
+  height: 0.6em;
+  margin: 0 0.1em;
+  position: relative;
+  width: 0.6em;
+}

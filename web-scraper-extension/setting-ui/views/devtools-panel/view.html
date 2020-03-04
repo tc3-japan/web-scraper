@@ -1,0 +1,75 @@
+<!-- CodeMirror (Code Editor) loading. -->
+<script src="/node_modules/codemirror/lib/codemirror.js"></script>
+<link href="/node_modules/codemirror/lib/codemirror.css" rel="stylesheet" />
+<script src="/node_modules/codemirror/mode/javascript/javascript.js"></script>
+
+<!-- Loading of extension styles and scripts. -->
+<link href="styles.css" rel="stylesheet"/>
+<script src="/js/devtools-panel.js"></script>
+
+<!-- Layout. -->
+<dialog class="dialog" id="alert">
+  <div class="message margin"></div>
+  <button class="right">Close</button>
+</dialog>
+<dialog class="dialog" id="throbber">
+  Please wait
+  <div class="throbber-circle"></div>
+  <div class="throbber-circle"></div>
+  <div class="throbber-circle"></div>
+</dialog>
+<dialog id="loading-confirmation-dialog" class="dialog">
+  <div class="margin">
+    Are you sure to load the script? Unsaved changes will be lost.
+  </div>
+  <div class="right">
+  <button class="cancel">Cancel</button>
+  <button class="load">Load</button>
+  </div>
+</dialog>
+<dialog id="save-confirmation-dialog" class="dialog">
+  <div class="margin">
+    Are you sure to save the script?
+  </div>
+  <div class="right">
+  <button class="cancel">Cancel</button>
+  <button class="save">Save</button>
+  </div>
+</dialog>
+<dialog id="test-confirmation-dialog" class="dialog">
+  <div class="margin">
+    Are you sure to test the script?
+  </div>
+  <div class="right">
+  <button class="cancel">Cancel</button>
+  <button class="test">Test</button>
+  </div>
+</dialog>
+<div class="container">
+  <div class="controls">
+    <button id="load">Load</button>
+    <button id="save">Save</button>
+    <button id="test">Test</button>
+    <button
+      class="right"
+      id="settings"
+    >
+      Settings
+    </button>
+  </div>
+  <div class="settings ">
+    <div class="group">
+      Base API URL
+      <input id="base-api-url-input" />
+    </div>
+    <div class="group">
+      <button id="save-settings" tabindex="1">Save Settings</button>
+    </div>
+  </div>
+  <div class="main">
+    <div id="editor"></div>
+    <div id="console">
+      <div id="console-content"></div>
+    </div>
+  </div>
+</div>

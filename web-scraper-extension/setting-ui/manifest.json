@@ -1,0 +1,27 @@
+{
+  "name": "Web Scraper",
+  "version": "1.0",
+  "description": "Web Scraper DevTools Extension",
+  "manifest_version": 2,
+  "devtools_page": "views/loader.html",
+  "background": {
+    "scripts": [
+      "js/background.js"
+    ],
+    "persistent": false
+  },
+  "content_scripts": [{
+    "all_frames": true,
+    "matches": ["*://*/*"],
+    "js": [
+      "/node_modules/optimal-select/dist/optimal-select.min.js",
+      "/js/injection.js"
+    ]
+  }],
+  "permissions": [
+    "contextMenus",
+    "storage",
+    "tabs",
+    "*://*/*"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "name": "web-scraper",
+  "version": "1.0.0",
+  "description": "Web Scraper Dev Tools Extension",
+  "main": "index.js",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "codemirror": "^5.52.0",
+    "optimal-select": "^4.0.1"
+  }
+}

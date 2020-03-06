@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+	<div class="d-flex">
+		<button id="load" type="button" class="btn btn-secondary btn-sm mr-1">
+			<span class="spinner-border spinner-border-sm hidden-spinner" role="status" aria-hidden="true"></span>
+			<span>Load</span>
+		</button>
+		<button id="save" type="button" class="btn btn-secondary btn-sm mr-1">
+			<span class="spinner-border spinner-border-sm hidden-spinner" role="status" aria-hidden="true"></span>
+			<span>Save</span>
+		</button>
+		<button id="test" type="button" class="btn btn-secondary btn-sm mr-1">
+			<span class="spinner-border spinner-border-sm hidden-spinner" role="status" aria-hidden="true"></span>
+			<span>Test</span>
+		</button>
+
+		<button id="settings" type="button" class="btn btn-secondary btn-sm ml-auto">Settings</button>
+	</div>
+
+	<div id="main-page" class="wrapper">
+		<div class="editor-wrapper">
+			<div id="editor"></div>
+		</div>
+		<div id="message" class="message"></div>
+	</div>
+
+	<div id="settings-page" class="hidden settings-page">
+		<div class="d-flex align-items-start">
+			<h3>Settings</h3>
+			<button id="back" type="button" class="btn btn-secondary btn-sm ml-auto">Back</button>
+		</div>
+		<form id="settings-form" class="settings-form">
+			<div class="form-group">
+				<label for="api-url-base">API Url Base</label>
+				<input class="form-control" id="api-url-base">
+			</div>
+			<button type="submit" class="btn btn-primary">Update</button>
+		</form>
+	</div>
+
+	<script src="panel.js" type="text/javascript" charset="utf-8"></script>
+</body>
+
+</html>

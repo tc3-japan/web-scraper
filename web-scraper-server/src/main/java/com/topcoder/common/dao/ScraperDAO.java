@@ -1,29 +1,11 @@
 package com.topcoder.common.dao;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
-import org.hibernate.annotations.UpdateTimestamp;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.topcoder.common.model.ProductInfo;
-import com.topcoder.common.util.Common;
-import com.topcoder.scraper.converter.JpaConverterPurchaseInfoJson;
 
 @Entity
 @Table(name = "scraper")
@@ -43,13 +25,13 @@ public class ScraperDAO {
   private String site;
 
   /**
-   * type(logic) name
+   * Logic type name
    */
   @Column(name = "type", length = 32)
   private String type;
 
   /**
-   * script
+   * Sscript
    */
   @Column(name = "script", columnDefinition = "TEXT")
   private String script;
@@ -67,7 +49,7 @@ public class ScraperDAO {
     this.id = id;
   }
 
-  public void seSite(String site) {
+  public void setSite(String site) {
     this.site = site;
   }
 

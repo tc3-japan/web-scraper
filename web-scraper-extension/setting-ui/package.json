@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "NODE_ENV=production webpack",
-    "dev": "NODE_ENV=development webpack -w",
+    "build": "webpack",
+    "dev": "webpack -w",
     "package": "npm run build && web-ext build -s build -a artifacts --overwrite-dest",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -16,7 +16,8 @@
     "ace-builds": "^1.4.8",
     "bootstrap": "^4.4.1",
     "copy-to-clipboard": "^3.3.1",
-    "css-selector-generator": "^2.0.1",
+    "optimal-select": "^4.0.1",
+    "split.js": "^1.5.11",
     "sweetalert": "^2.1.2"
   },
   "devDependencies": {

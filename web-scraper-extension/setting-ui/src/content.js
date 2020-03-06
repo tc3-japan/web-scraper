@@ -2,7 +2,7 @@
 // they are able to read details of the web pages
 // and pass information to their parent extension.
 // Content scripts declared in manifest.json
-import getCssSelector from 'css-selector-generator';
+import {select} from 'optimal-select';
 import copy from 'copy-to-clipboard';
 
 // right clicked element (opend context menu on)
@@ -15,9 +15,7 @@ document.addEventListener('contextmenu', event => {
 // notified when "Copy Css Selector" in context menu clicked
 chrome.runtime.onMessage.addListener(request => {
   if (request && request.target === 'copy') {
-    const cssSelector = getCssSelector(selectedElement, {
-      includeTag: true,
-    });
+    const cssSelector = select(selectedElement);
     copy(cssSelector);
   }
 });

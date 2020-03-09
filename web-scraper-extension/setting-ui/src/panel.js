@@ -1,9 +1,12 @@
 import swal from 'sweetalert';
+import Split from 'split.js';
 import ace from 'ace-builds/src-noconflict/ace';
 import 'ace-builds/src-noconflict/mode-groovy';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import './panel.css';
+
+let isSettingsPageOpen = false;
 
 function storageGet(key) {
   return new Promise((resolve, reject) => {
@@ -41,22 +44,27 @@ function normalizeUrl(url) {
   return url;
 }
 
+async function getApi() {
+  let baseApi = 'https://scraper-stub-api.herokuapp.com/scrapers';
+  const api = await storageGet('api');
+  if (api) {
+    baseApi = api;
+  }
+  return baseApi;
+}
+
 // read base api from extention storage
 async function getUrl() {
   const site = 'amazon';
   const type = 'purchase_history';
-  let baseApi = 'https://scraper-stub-api.herokuapp.com/scrapers';
   
   try {
-    const api = await storageGet('api');
-    if (api) {
-      baseApi = api;
-    }
+    const api = await getApi();
+    return `${normalizeUrl(api)}/${site}/${type}`;
   } catch (error) {
     logError(error);
+    return '';
   }
-
-  return `${normalizeUrl(baseApi)}/${site}/${type}`;
 }
 
 async function fetchRequest(request) {
@@ -109,15 +117,18 @@ function spinnerHandler(button) {
   };
 }
 
-function addListeners(editor) {  
+function addListeners(editor) {
   document.getElementById('load').addEventListener('click', async function() {
-    const result = await swal({
-      title: 'Are you sure to load the script?',
-      text: 'Unsaved changes will be lost.',
-      buttons: ['Cancel', 'Confirm'],
-    });
-    if (!result) {
-      return;
+    // doesn't show message when editor is empty
+    if (editor.getValue() !== '') {
+      const result = await swal({
+        title: 'Are you sure to load the script?',
+        text: 'Unsaved changes will be lost.',
+        buttons: ['Cancel', 'Confirm'],
+      });
+      if (!result) {
+        return;
+      }
     }
 
     const url = await getUrl();
@@ -200,7 +211,16 @@ function addListeners(editor) {
   });
 }
 
-function toggleSettingsPage() {
+async function toggleSettingsPage() {
+  isSettingsPageOpen = !isSettingsPageOpen;
+  if (isSettingsPageOpen) {
+    try {
+      const api = await getApi();
+      document.getElementById('api-url-base').value = api;
+    } catch (error) {
+      logError(error);
+    }
+  }
   document.getElementById('main-page').classList.toggle('hidden');
   document.getElementById('settings-page').classList.toggle('hidden');
 }
@@ -209,6 +229,11 @@ async function main() {
   // create editor from <div id="editor" />
   const editor = ace.edit('editor');
   editor.session.setMode('ace/mode/groovy');
+
+  Split(['#editor-wrapper', '#message'], {
+    sizes: [75, 25],
+    onDragEnd: () => editor.resize(),
+  });
 
   addListeners(editor);
 }

@@ -88,6 +88,11 @@ public class GeneralPurchaseHistoryCrawler {
     }
   }
 
+  public void setScript(String script) {
+	LOGGER.debug("[setScript] in");
+    this.scriptText = script;
+  }
+
   private String getScriptSupportClassName() {
     return GeneralPurchaseHistoryCrawlerScriptSupport.class.getName();
   }

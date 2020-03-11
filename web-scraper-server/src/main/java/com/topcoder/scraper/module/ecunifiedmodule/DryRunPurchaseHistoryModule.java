@@ -28,7 +28,7 @@ import com.topcoder.scraper.service.WebpageService;
 @Component
 public class DryRunPurchaseHistoryModule implements IPurchaseHistoryModule {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(GeneralPurchaseHistoryModule.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(DryRunPurchaseHistoryModule.class);
 
   private final PurchaseHistoryService purchaseHistoryService;
   private final WebpageService webpageService;
@@ -57,7 +57,7 @@ public class DryRunPurchaseHistoryModule implements IPurchaseHistoryModule {
 
   @Override
   public String getModuleType() {
-    return "general";
+    return "dryrun";
   }
 
   @Override
@@ -90,7 +90,7 @@ public class DryRunPurchaseHistoryModule implements IPurchaseHistoryModule {
 
           GeneralPurchaseHistoryCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClient,
               lastPurchaseHistory.orElse(null), true);
-          webClient.finishTraffic();
+          //webClient.finishTraffic();
 
           this.list = crawlerResult.getPurchaseHistoryList();
 
@@ -116,7 +116,7 @@ public class DryRunPurchaseHistoryModule implements IPurchaseHistoryModule {
   }
 
   public List<PurchaseHistory> getPurchaseHistoryList() {
-	  return list;
+	  return this.list;
   }
 
 }

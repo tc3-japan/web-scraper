@@ -35,17 +35,17 @@ public class ScraperController {
   }
 
   /**
-   * update script by site and type
+   * create or update script by site and type
    *
    * @param site the ec site
    * @param type the logic type
    * @param entity the scraper request entity
+   * @return the result message text
    * @throws ApiException if any error happened
    */
   @PutMapping("/{site}/{type}")
-  @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void updateScript(@PathVariable("site") String site, @PathVariable("type") String type, @RequestBody ScraperDAO entity) throws ApiException {
-    scraperService.updateScript(site, type, entity);
+  public String createOrUpdateScript(@PathVariable("site") String site, @PathVariable("type") String type, @RequestBody ScraperDAO entity) throws ApiException {
+    return scraperService.createOrUpdateScript(site, type, entity);
   }
 
   /**
@@ -58,7 +58,11 @@ public class ScraperController {
    */
   @PostMapping("/{site}/{type}/test")
   public List<PurchaseHistory> executeScript(@PathVariable("site") String site, @PathVariable("type") String type, @RequestBody ScraperRequest request) throws ApiException {
-    return scraperService.executeScript(site, type, request);
+	List<PurchaseHistory> list = scraperService.executeScript(site, type, request);
+	if (list == null || list.size() == 0) {
+	  throw new ApiException("scraped purchase history not found");
+    }
+    return list;
   }
 
 }

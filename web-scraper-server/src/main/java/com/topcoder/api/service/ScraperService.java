@@ -55,23 +55,46 @@ public class ScraperService {
    * @throws EntityNotFoundException if not found
    */
   public String getScript(String site, String type) throws EntityNotFoundException {
-	  return get(site, type).getScript();
+	ScraperDAO scraperDAO = get(site, type);
+    if (scraperDAO == null) {
+      throw new EntityNotFoundException("Cannot found script where site = " + site + " and " + type);
+    }
+	return get(site, type).getScript();
   }
 
   /**
-   * update ScraperDAO
+   * create or update ScraperDAO
    *
    * @param site the ec site
    * @param type the logic type
    * @param entity the request entity
-   * @throws ApiException if ScraperDAO not found
+   * @return the result message text
+   * @throws ApiException if any error happened
    */
-  public void updateScript(String site, String type, ScraperDAO entity) throws ApiException {
+  public String createOrUpdateScript(String site, String type, ScraperDAO entity) throws ApiException {
+	try {
+	  String resultText = "success ";
+
 	  ScraperDAO scraperDAO = get(site, type);
-	  scraperDAO.setSite(site);
-	  scraperDAO.setType(type);
-	  scraperDAO.setScript(entity.getScript());
-	  scraperRepository.save(scraperDAO);
+
+	  if (scraperDAO == null) {
+	    scraperDAO = new ScraperDAO();
+	    resultText += "create record to scraper table";
+	  } else {
+	    resultText += "update record to scraper table";
+	  }
+
+      scraperDAO.setSite(site);
+      scraperDAO.setType(type);
+      scraperDAO.setScript(entity.getScript());
+      scraperRepository.save(scraperDAO);
+
+      return resultText;
+
+    } catch(Exception e) {
+      e.printStackTrace();
+	  throw new ApiException("failed to create or update script");
+    }
   }
 
   /**
@@ -80,12 +103,12 @@ public class ScraperService {
    * @param site the ec site
    * @param type the logic type
    * @param request to executable script
-   * @throws ApiException if ScraperDAO not found
+   * @throws ApiException if any error happened
    */
   public List<PurchaseHistory> executeScript(String site, String type, ScraperRequest request) throws ApiException {
     try {
       String script = request.getScript();
-      //String script = getScript(site, type);
+      //String script = getScript(site, type); // from DB table [scraper]
 	  dryRunPurchaseHistoryModule.setScript(script);
 
 	  List<String> sites = new ArrayList();
@@ -107,13 +130,10 @@ public class ScraperService {
    *
    * @param site the ec site
    * @param site the logic type
-   * @return the entity
+   * @return the ScraperDAO
    */
-  public ScraperDAO get(String site, String type) throws EntityNotFoundException {
+  public ScraperDAO get(String site, String type) {
 	ScraperDAO scraperDAO = scraperRepository.findBySiteAndType(site, type);
-    if (scraperDAO == null) {
-      throw new EntityNotFoundException("Cannot found script where site = " + site + " and " + type);
-    }
     return scraperDAO;
   }
 

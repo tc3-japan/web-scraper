@@ -33,7 +33,7 @@ public class ScraperDAO {
   /**
    * Sscript
    */
-  @Column(name = "script", columnDefinition = "TEXT")
+  @Column(name = "script", columnDefinition = "LONGTEXT")
   private String script;
 
   public ScraperDAO() {

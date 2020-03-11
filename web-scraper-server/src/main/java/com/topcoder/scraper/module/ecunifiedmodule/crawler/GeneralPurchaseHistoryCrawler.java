@@ -90,7 +90,10 @@ public class GeneralPurchaseHistoryCrawler {
 
   public void setScript(String script) {
 	LOGGER.debug("[setScript] in");
-    this.scriptText = script;
+	LOGGER.debug("script = " + script);
+	if (script != null && script != "") {
+      this.scriptText = script;
+    }
   }
 
   private String getScriptSupportClassName() {

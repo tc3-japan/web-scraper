@@ -26,7 +26,11 @@ import java.util.Objects;
 /**
  * This will group product information of all products where group_status is null or uninitialized,
  * to the appropriate product_group table.
+ * This is older version of grouping products between several EC sites.
+ * Now you should use GroupECProductsCommand(--batch=group_product) for this purpose.
+ * This class will be deleted in the future.
  */
+// TODO: delete this class in the future.
 @Component
 @Transactional
 public class CrossECProductCommand {

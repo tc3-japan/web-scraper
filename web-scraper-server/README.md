@@ -21,18 +21,6 @@ The following variables need to be configured correctly:
 - `spring.datasource.password` mysql password
 
 
-the app traffic contro file can be changed in `web-scraper-server/src/main/resources/tactic.yaml`
-
-the `proxy_server` must be a vaild value, other values can be default value
-
-- you also can load external tactic config file when run, just like this 
-
-  `./gradlew bootRun -PjvmArgs=-DtacticFile=tactic.yaml -Pargs=--rest`
-
-  `java -DtacticFile=tactic.yaml -jar ./build/libs/web-scraper-server-0.0.1.jar  --rest`
-
-  note :  `-DtacticFile=tactic.yaml ` must be before `-jar`
-
 ### arguments
 
 Values could be configured by providing arguments:
@@ -48,35 +36,81 @@ For example
 There are several ways to update configuration, for detail, please check spring boot official docs:
 https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html
 
-## Monitor target definition and check items definition
+### Monitor target definition and check items definition
 
-Please check `resources/monitor-target-definition.yaml`
-and `resources/check-items-definition.yaml`
+Please check `resources/monitor-target-definition.yaml` and `resources/check-items-definition.yaml`.
 
-It is required to have environment variable `AMAZON_CHECK_TARGET_KEYS_PASSWORDS`,
-which contains comma separated passwords, which match `check_target_keys` for `purchase_history_list` page.
-The order matters!
+This configutration is used in batch `change_detection_init` and `change_detection_check` that is described lator.
+
+### Traffic control
+The app traffic control file can be changed in `web-scraper-server/src/main/resources/tactic.yaml`
+
+The `proxy_server` must be a vaild value, other values can be default value
+
+- You also can load external tactic config file when run, just like this 
+
+  `./gradlew bootRun -PjvmArgs=-DtacticFile=tactic.yaml -Pargs=--rest`
+
+  `java -DtacticFile=tactic.yaml -jar ./build/libs/web-scraper-server-0.0.1.jar  --rest`
+
+  note :  `-DtacticFile=tactic.yaml ` must be before `-jar`
+
 
 ## Local run from source code
 
-First, run mysql inside docker
+### First, run mysql inside docker
 
 `docker-compose up`
 
-In a new terminal, run
+### In a new terminal, run
 
 `./gradlew bootRun -Pargs=--batch=purchase_history` to fetch purchase histories
 
-`./gradlew bootRun -Pargs=--batch=product ` to fetch products (purchased products)
+`./gradlew bootRun -Pargs=--batch=product ` to fetch products which is stored when purchase history has been scraped
+
+`./gradlew bootRun -Pargs=--batch=change_detection_init` to fetch initial data of purchase history and product to detect site change.
+
+`./gradlew bootRun -Pargs=--batch=change_detection_check` to fetch current data of history and product and check them, comparing them to initital data.
+
+`./gradlew bootRun -Pargs=--batch=group_products` to group each EC sites' products in product table.
+
+`./gradlew bootRun -Pargs=--batch=load_product_index` to create Solr index for the feature, grouping products by name, in batch `group_product`. You usually run it before running batch `group_product`.
 
 `./gradlew bootRun -Pargs=--rest ` to run rest api server
 
 
-To specify site, specify site argument
+#### To specify site, specify `site` argument
 
 `./gradlew bootRun -Pargs=--batch=purchase_history,--site=amazon`
 
-If no site is specified, all sites will be run (currently only amazon is implemented)
+If no `site` is specified, all sites will be run
+
+#### To specify which module type will be selected in running, spedify `module` argument  
+
+`./gradlew bootRun -Pargs=--batch=purchase_history,--module=unified`
+
+If no `module` is specified, `unified` module is selected in running.
+This argument is used only when some batch runs such as `purchase_history`, `product`, `change_detection_init`, and `change_detection_check`.
+ 
+
+##### Module Types:
+
+Module type is implementation architecture of scraping modules.
+
+* unified(default): Each EC sites' scraping modules are unified in single series of classes named such as `GeneralProductModule` or so.
+* isolated: Each EC sites' scraping modules are separated in multiple series of classes named such as `<EC-Name>ProductModule` or so. And common features of them are gathered in such as `AbstarctProductModule`.
+
+#### API for scraper supporting features
+
+This project includes API that provides supporting features for scraping and works together with Screeen features.
+(see also web-scraper/web-scraper-front/README.md)
+
+You can do below features using scraper supporting features like follows.
+ 
+* Managing Login for each EC sites. 
+
+* Managing product grouping by showing products grouped already, grouping products and ungrouping products.
+
 
 ## Local run from jar
 

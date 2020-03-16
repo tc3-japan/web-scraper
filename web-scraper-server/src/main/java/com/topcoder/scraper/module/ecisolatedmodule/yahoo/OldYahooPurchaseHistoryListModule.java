@@ -1,9 +1,19 @@
 package com.topcoder.scraper.module.ecisolatedmodule.yahoo;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.topcoder.api.service.login.yahoo.YahooLoginHandler;
 import com.topcoder.common.dao.ECSiteAccountDAO;
 import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.common.repository.ECSiteAccountRepository;
+import com.topcoder.common.repository.ScraperRepository;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.common.util.Common;
 import com.topcoder.scraper.module.IPurchaseHistoryModule;
@@ -11,14 +21,6 @@ import com.topcoder.scraper.module.ecisolatedmodule.yahoo.crawler.OldYahooPurcha
 import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistoryCrawlerResult;
 import com.topcoder.scraper.service.PurchaseHistoryService;
 import com.topcoder.scraper.service.WebpageService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
 
 @Component
 public class OldYahooPurchaseHistoryListModule implements IPurchaseHistoryModule {
@@ -29,17 +31,20 @@ public class OldYahooPurchaseHistoryListModule implements IPurchaseHistoryModule
   private final WebpageService webpageService;
   private final ECSiteAccountRepository ecSiteAccountRepository;
   private final YahooLoginHandler loginHandler;
+  private final ScraperRepository scraperRepository;
 
   @Autowired
   public OldYahooPurchaseHistoryListModule(
     PurchaseHistoryService purchaseHistoryService,
     ECSiteAccountRepository ecSiteAccountRepository,
     WebpageService webpageService,
+    ScraperRepository scraperRepository,
     YahooLoginHandler loginHandler) {
     this.purchaseHistoryService = purchaseHistoryService;
     this.webpageService = webpageService;
     this.ecSiteAccountRepository = ecSiteAccountRepository;
     this.loginHandler = loginHandler;
+    this.scraperRepository = scraperRepository;
   }
 
   @Override
@@ -49,7 +54,7 @@ public class OldYahooPurchaseHistoryListModule implements IPurchaseHistoryModule
 
   @Override
   public void fetchPurchaseHistoryList(List<String> sites) throws IOException {
-    
+
     Iterable<ECSiteAccountDAO> accountDAOS = ecSiteAccountRepository.findAllByEcSite(getModuleType());
     for (ECSiteAccountDAO ecSiteAccountDAO : accountDAOS) {
 
@@ -66,9 +71,9 @@ public class OldYahooPurchaseHistoryListModule implements IPurchaseHistoryModule
         LOGGER.error("skip ecSite id = " + ecSiteAccountDAO.getId() + ", restore cookies failed");
         continue;
       }
-      
+
       try {
-        OldYahooPurchaseHistoryListCrawler crawler = new OldYahooPurchaseHistoryListCrawler(getModuleType(), webpageService, ecSiteAccountDAO);
+        OldYahooPurchaseHistoryListCrawler crawler = new OldYahooPurchaseHistoryListCrawler(getModuleType(), webpageService, ecSiteAccountDAO, this.scraperRepository);
 
         GeneralPurchaseHistoryCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClient, lastPurchaseHistory.orElse(null), true);
         webClient.finishTraffic();

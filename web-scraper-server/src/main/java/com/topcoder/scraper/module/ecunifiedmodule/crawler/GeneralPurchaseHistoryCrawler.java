@@ -1,31 +1,31 @@
 package com.topcoder.scraper.module.ecunifiedmodule.crawler;
 
+import java.io.IOException;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Properties;
+
+import org.codehaus.groovy.control.CompilerConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.topcoder.common.dao.ScraperDAO;
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.model.PurchaseHistory;
+import com.topcoder.common.repository.ScraperRepository;
 import com.topcoder.common.traffic.TrafficWebClient;
-import com.topcoder.scraper.Consts;
 import com.topcoder.scraper.lib.navpage.NavigablePurchaseHistoryPage;
 import com.topcoder.scraper.service.WebpageService;
+
 import groovy.lang.Binding;
 import groovy.lang.Closure;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.codehaus.groovy.control.CompilerConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Properties;
 
 public class GeneralPurchaseHistoryCrawler {
 
@@ -49,21 +49,23 @@ public class GeneralPurchaseHistoryCrawler {
   @Getter@Setter private ProductInfo           currentProduct;
   @Getter@Setter private List<PurchaseHistory> purchaseHistoryList;
 
-  public GeneralPurchaseHistoryCrawler(String siteName, WebpageService webpageService) {
+  public GeneralPurchaseHistoryCrawler(String siteName, WebpageService webpageService, ScraperRepository scraperRepository) {
     LOGGER.debug("[constructor] in");
 
     this.siteName = siteName;
     this.webpageService = webpageService;
 
-    String scriptPath = this.getScriptPath();
-    this.scriptText   = this.getScriptText(scriptPath);
+    //String scriptPath = this.getScriptPath();
+    //this.scriptText   = this.getScriptText(scriptPath);
+
+    this.scriptText   = this.getScriptFromDB(siteName, "purchase_history", scraperRepository);
 
     Properties configProps = new Properties();
     configProps.setProperty("groovy.script.base", this.getScriptSupportClassName());
     this.scriptConfig  = new CompilerConfiguration(configProps);
     this.scriptBinding = new Binding();
   }
-
+/*
   private String getScriptPath() {
     LOGGER.debug("[getScriptPath] in");
 
@@ -87,7 +89,15 @@ public class GeneralPurchaseHistoryCrawler {
       return null;
     }
   }
+*/
 
+  private String getScriptFromDB(String site, String type, ScraperRepository scraperRepository) {
+	LOGGER.debug("[getScriptFromDB] in");
+	LOGGER.debug("[getScriptFromDB] site:" + site + " type:" + type);
+	ScraperDAO scraperDAO = scraperRepository.findBySiteAndType(site, type);
+	return scraperDAO.getScript();
+  }
+/*
   public void setScript(String script) {
 	LOGGER.debug("[setScript] in");
 	LOGGER.debug("script = " + script);
@@ -95,6 +105,7 @@ public class GeneralPurchaseHistoryCrawler {
       this.scriptText = script;
     }
   }
+*/
 
   private String getScriptSupportClassName() {
     return GeneralPurchaseHistoryCrawlerScriptSupport.class.getName();

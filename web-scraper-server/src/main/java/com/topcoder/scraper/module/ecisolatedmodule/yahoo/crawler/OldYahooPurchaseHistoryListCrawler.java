@@ -1,19 +1,22 @@
 package com.topcoder.scraper.module.ecisolatedmodule.yahoo.crawler;
 
 import static com.topcoder.common.util.HtmlUtils.*;
+
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.topcoder.common.dao.ECSiteAccountDAO;
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.model.PurchaseHistory;
+import com.topcoder.common.repository.ScraperRepository;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.lib.navpage.NavigablePurchaseHistoryPage;
 import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistoryCrawler;
@@ -26,27 +29,30 @@ public class OldYahooPurchaseHistoryListCrawler extends GeneralPurchaseHistoryCr
 
   private final String siteName;
   private final WebpageService webpageService;
+  private final ScraperRepository scraperRepository;
 
   // for testing only
   private String username; // Actually email?
   private String password;
 
   public OldYahooPurchaseHistoryListCrawler(String siteName, WebpageService webpageService,
-                                            ECSiteAccountDAO ecSiteAccountDAO) {
-    super(siteName, webpageService);
+                                            ECSiteAccountDAO ecSiteAccountDAO, ScraperRepository scraperRepository) {
+    super(siteName, webpageService, scraperRepository);
     this.siteName = siteName;
     this.webpageService = webpageService;
     this.username = ecSiteAccountDAO.getLoginEmail();
     this.password = ecSiteAccountDAO.getPassword();
+    this.scraperRepository = scraperRepository;
   }
 
   public OldYahooPurchaseHistoryListCrawler(String siteName, WebpageService webpageService, String username,
-                                            String password) {
-    super(siteName, webpageService);
+                                            String password, ScraperRepository scraperRepository) {
+    super(siteName, webpageService, scraperRepository);
     this.siteName = siteName;
     this.webpageService = webpageService;
     this.username = username;
     this.password = password;
+    this.scraperRepository = scraperRepository;
   }
 
   public GeneralPurchaseHistoryCrawlerResult fetchPurchaseHistoryList(TrafficWebClient webClient,
@@ -72,7 +78,7 @@ public class OldYahooPurchaseHistoryListCrawler extends GeneralPurchaseHistoryCr
 
   private boolean parsePurchaseHistory(List<PurchaseHistory> list, HtmlPage page, TrafficWebClient webClient,
       WebpageService webpageService, PurchaseHistory last, boolean saveHtml, List<String> pathList) {
- 
+
     //LOGGER.debug("Parsing page url " + page.getUrl().toString());
 
     List<DomNode> orders = new ArrayList<DomNode>();
@@ -133,7 +139,7 @@ public class OldYahooPurchaseHistoryListCrawler extends GeneralPurchaseHistoryCr
 
 
 
-  
+
   private ProductInfo parseProduct(DomNode orderLineNode) {
 
     DomNode itemNameNode = orderLineNode.querySelector(".itemname");

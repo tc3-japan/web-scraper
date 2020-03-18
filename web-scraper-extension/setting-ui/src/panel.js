@@ -7,6 +7,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './panel.css';
 
 let isSettingsPageOpen = false;
+let baseApi = 'http://127.0.0.1:8085/api/v1/scrapers';
+const site = 'rakuten';
+const type = 'purchase_history';
 
 function storageGet(key) {
   return new Promise((resolve, reject) => {
@@ -45,7 +48,6 @@ function normalizeUrl(url) {
 }
 
 async function getApi() {
-  let baseApi = 'https://scraper-stub-api.herokuapp.com/scrapers';
   const api = await storageGet('api');
   if (api) {
     baseApi = api;
@@ -55,9 +57,7 @@ async function getApi() {
 
 // read base api from extention storage
 async function getUrl() {
-  const site = 'amazon';
-  const type = 'purchase_history';
-  
+
   try {
     const api = await getApi();
     return `${normalizeUrl(api)}/${site}/${type}`;

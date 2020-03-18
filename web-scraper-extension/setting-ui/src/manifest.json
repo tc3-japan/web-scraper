@@ -10,7 +10,15 @@
       "background.js"
     ]
   },
-  "permissions": ["contextMenus", "activeTab", "clipboardWrite", "<all_urls>", "storage"],
+  "permissions": [
+    "contextMenus",
+    "activeTab",
+    "clipboardWrite",
+    "<all_urls>",
+    "storage",
+    "tabs",
+    "http://127.0.0.1:8085/*"
+  ],
   "content_scripts": [{
     "all_frames": true,
     "matches": ["<all_urls>"],

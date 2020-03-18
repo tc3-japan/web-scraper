@@ -17,6 +17,7 @@ import com.topcoder.common.model.PurchaseHistory;
  */
 @RestController
 @RequestMapping("/scrapers")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class ScraperController {
 
   @Autowired

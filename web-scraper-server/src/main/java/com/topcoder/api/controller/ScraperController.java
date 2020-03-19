@@ -44,9 +44,9 @@ public class ScraperController {
    * @return the result message text
    * @throws ApiException if any error happened
    */
-  @PutMapping("/{site}/{type}")
-  public String createOrUpdateScript(@PathVariable("site") String site, @PathVariable("type") String type, @RequestBody ScraperDAO entity) throws ApiException {
-    return scraperService.createOrUpdateScript(site, type, entity);
+  @PutMapping(path = "/{site}/{type}", consumes = "text/plain")
+  public String createOrUpdateScript(@PathVariable("site") String site, @PathVariable("type") String type, @RequestBody String script) throws ApiException {
+    return scraperService.createOrUpdateScript(site, type, script);
   }
 
   /**
@@ -57,9 +57,9 @@ public class ScraperController {
    * @return scraping result
    * @throws ApiException if any error happened
    */
-  @PostMapping("/{site}/{type}/test")
-  public List<PurchaseHistory> executeScript(@PathVariable("site") String site, @PathVariable("type") String type, @RequestBody ScraperRequest request) throws ApiException {
-	List<PurchaseHistory> list = scraperService.executeScript(site, type, request);
+  @PostMapping(path = "/{site}/{type}/test", consumes = "text/plain")
+  public List<PurchaseHistory> executeScript(@PathVariable("site") String site, @PathVariable("type") String type, @RequestBody String script) throws ApiException {
+	List<PurchaseHistory> list = scraperService.executeScript(site, type, script);
 	if (list == null || list.size() == 0) {
 	  throw new ApiException("scraped purchase history not found");
     }

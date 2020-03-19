@@ -71,7 +71,7 @@ public class ScraperService {
    * @return the result message text
    * @throws ApiException if any error happened
    */
-  public String createOrUpdateScript(String site, String type, ScraperDAO entity) throws ApiException {
+  public String createOrUpdateScript(String site, String type, String script) throws ApiException {
 	try {
 	  String resultText = "success ";
 
@@ -86,7 +86,7 @@ public class ScraperService {
 
       scraperDAO.setSite(site);
       scraperDAO.setType(type);
-      scraperDAO.setScript(entity.getScript());
+      scraperDAO.setScript(script);
       scraperRepository.save(scraperDAO);
 
       return resultText;
@@ -105,9 +105,8 @@ public class ScraperService {
    * @param request to executable script
    * @throws ApiException if any error happened
    */
-  public List<PurchaseHistory> executeScript(String site, String type, ScraperRequest request) throws ApiException {
+  public List<PurchaseHistory> executeScript(String site, String type, String script) throws ApiException {
     try {
-      String script = request.getScript();
       //String script = getScript(site, type); // from DB table [scraper]
 	  dryRunPurchaseHistoryModule.setScript(script);
 

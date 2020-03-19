@@ -146,6 +146,9 @@ function addListeners(editor) {
     }
   });
 
+//  const head = new Headers({ 'Content-Type': 'application/json' });
+//  const head = new Headers({ 'Content-Type': 'text/json' });
+
   document.getElementById('save').addEventListener('click', async function() {
     const result = await swal({
       title: 'Are you sure to save the script?',

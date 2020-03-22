@@ -89,7 +89,7 @@ public class DryRunPurchaseHistoryModule implements IPurchaseHistoryModule {
         try {
           GeneralPurchaseHistoryCrawler crawler = new GeneralPurchaseHistoryCrawler(sites.get(i), this.webpageService, this.scraperRepository);
 
-          //crawler.setScript(this.script);
+          crawler.setScript(this.script);
 
           GeneralPurchaseHistoryCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClient,
               lastPurchaseHistory.orElse(null), true);

@@ -1,29 +1,18 @@
 package com.topcoder.api.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.topcoder.api.exception.ApiException;
 import com.topcoder.api.exception.EntityNotFoundException;
-import com.topcoder.common.dao.ECSiteAccountDAO;
 import com.topcoder.common.dao.ScraperDAO;
-import com.topcoder.common.model.ScraperRequest;
+import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.common.repository.ECSiteAccountRepository;
 import com.topcoder.common.repository.ScraperRepository;
-import com.topcoder.common.traffic.TrafficWebClient;
-import com.topcoder.common.util.Common;
-import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistoryCrawler;
-import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistoryCrawlerResult;
-import org.slf4j.Logger;
-import com.topcoder.common.model.PurchaseHistory;
-import java.util.List;
-import com.topcoder.common.model.CrawlerContext;
-
-import com.topcoder.scraper.service.impl.FileBasedWebpageService;
-
 import com.topcoder.scraper.module.ecunifiedmodule.DryRunPurchaseHistoryModule;
-
-import java.util.ArrayList;
 
 /**
  * scraper service
@@ -110,7 +99,7 @@ public class ScraperService {
       //String script = getScript(site, type); // from DB table [scraper]
 	  dryRunPurchaseHistoryModule.setScript(script);
 
-	  List<String> sites = new ArrayList();
+	  List<String> sites = new ArrayList<String>();
 	  sites.add(site);
 
 	  dryRunPurchaseHistoryModule.fetchPurchaseHistoryList(sites);

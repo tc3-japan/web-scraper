@@ -51,45 +51,14 @@ public class GeneralPurchaseHistoryCrawler {
 
   public GeneralPurchaseHistoryCrawler(String siteName, WebpageService webpageService, ScraperRepository scraperRepository) {
     LOGGER.debug("[constructor] in");
-
     this.siteName = siteName;
     this.webpageService = webpageService;
-
-    //String scriptPath = this.getScriptPath();
-    //this.scriptText   = this.getScriptText(scriptPath);
-
     this.scriptText   = this.getScriptFromDB(siteName, "purchase_history", scraperRepository);
-
     Properties configProps = new Properties();
     configProps.setProperty("groovy.script.base", this.getScriptSupportClassName());
     this.scriptConfig  = new CompilerConfiguration(configProps);
     this.scriptBinding = new Binding();
   }
-/*
-  private String getScriptPath() {
-    LOGGER.debug("[getScriptPath] in");
-
-    String scriptPath = System.getenv(Consts.SCRAPING_SCRIPT_PATH);
-    if (StringUtils.isEmpty(scriptPath)) {
-      scriptPath = System.getProperty("user.dir") + "/scripts/scraping";
-    }
-    scriptPath  += "/unified/" + this.siteName + "-purchase-history-list.groovy";
-
-    LOGGER.debug("[getScriptPath] scriptPath: " + scriptPath);
-    return scriptPath;
-  }
-
-  private String getScriptText(String scriptPath) {
-    LOGGER.debug("[getScriptText] in");
-
-    try {
-      return FileUtils.readFileToString(new File(scriptPath), "utf-8");
-    } catch (IOException e) {
-      LOGGER.debug("[getScriptText] Could not read script file: " + scriptPath);
-      return null;
-    }
-  }
-*/
 
   private String getScriptFromDB(String site, String type, ScraperRepository scraperRepository) {
 	LOGGER.debug("[getScriptFromDB] in");
@@ -97,7 +66,7 @@ public class GeneralPurchaseHistoryCrawler {
 	ScraperDAO scraperDAO = scraperRepository.findBySiteAndType(site, type);
 	return scraperDAO.getScript();
   }
-/*
+
   public void setScript(String script) {
 	LOGGER.debug("[setScript] in");
 	LOGGER.debug("script = " + script);
@@ -105,7 +74,6 @@ public class GeneralPurchaseHistoryCrawler {
       this.scriptText = script;
     }
   }
-*/
 
   private String getScriptSupportClassName() {
     return GeneralPurchaseHistoryCrawlerScriptSupport.class.getName();

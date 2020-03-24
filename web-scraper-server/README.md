@@ -50,8 +50,10 @@ The `proxy_server` must be a vaild value, other values can be default value
 - You also can load external tactic config file when run, just like this 
 
   `./gradlew bootRun -PjvmArgs=-DtacticFile=tactic.yaml -Pargs=--rest`
+  `./gradlew bootRun -Pargs=--batch=product `
 
   `java -DtacticFile=tactic.yaml -jar ./build/libs/web-scraper-server-0.0.1.jar  --rest`
+  `java -DtacticFile=tactic.yaml -jar ./build/libs/web-scraper-server-0.0.1.jar  --batch=product`
 
   note :  `-DtacticFile=tactic.yaml ` must be before `-jar`
 
@@ -160,4 +162,5 @@ Run the script using the --batch=encrypt_user option.
 - set output file with --output_file=\<file>. If no output_file is specified, a file called encryptedUsers.txt will be created.
 - set flag to limit users who have login failure ec site with get_failed_logins, If no get_failed_logins is specified, all users will be processed.
 
+./gradlew bootRun -Pargs=--batch=encrypt_user,--url_base=http://127.0.0.1:8085,--output_file=output.txt,--get_failed_logins
 java -jar build/libs/web-scraper-server-0.0.1.jar --batch=encrypt_user --url_base=http://127.0.0.1:8085 --output_file=output.txt --get_failed_logins

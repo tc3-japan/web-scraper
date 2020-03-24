@@ -2,18 +2,22 @@ check-sites:
   - ec-site: amazon
     check-pages:
       - page_name: purchase_history_list
+        # id of ec_site_account table
         check_target_keys:
           - 1
           - 2
       - page_name: product_detail
+        # product code of product table
         check_target_keys:
           - B002C4KL88
           - B006GQYSC8
   - ec-site: kojima
     check-pages:
       - page_name: purchase_history_list
+        # id of ec_site_account table
         check_target_keys:
-          - test
+          - 1
       - page_name: product_detail
+        # product code of product table
         check_target_keys:
           - 4041134

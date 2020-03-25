@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.topcoder.api.exception.ApiException;
+import com.topcoder.api.exception.BadRequestException;
 import com.topcoder.api.service.ScraperService;
 import com.topcoder.common.model.PurchaseHistory;
 
@@ -65,7 +66,7 @@ public class ScraperController {
   public List<PurchaseHistory> executeScript(@PathVariable("site") String site, @PathVariable("type") String type, @RequestBody String script) throws ApiException {
 	List<PurchaseHistory> list = scraperService.executeScript(site, type, script);
 	if (list == null || list.size() == 0) {
-	  throw new ApiException("scraped purchase history not found");
+	  throw new BadRequestException("scraped purchase history not found");
     }
     return list;
   }

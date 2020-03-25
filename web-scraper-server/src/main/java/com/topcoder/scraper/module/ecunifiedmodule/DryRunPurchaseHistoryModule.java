@@ -2,7 +2,6 @@ package com.topcoder.scraper.module.ecunifiedmodule;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +13,7 @@ import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.common.repository.ECSiteAccountRepository;
 import com.topcoder.common.repository.ScraperRepository;
 import com.topcoder.common.traffic.TrafficWebClient;
+import com.topcoder.common.traffic.TrafficWebClient.TrafficWebClientForDryRun;
 import com.topcoder.common.util.Common;
 import com.topcoder.scraper.module.IPurchaseHistoryModule;
 import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistoryCrawler;
@@ -66,56 +66,44 @@ public class DryRunPurchaseHistoryModule implements IPurchaseHistoryModule {
   @Override
   public void fetchPurchaseHistoryList(List<String> sites) throws IOException {
 
-    for (int i = 0; i < sites.size(); i++) {
+    // reset list
+    list = null;
+    ECSiteAccountDAO accountDAO = null;
+    String site = sites.get(0);
 
-      Iterable<ECSiteAccountDAO> accountDAOS = ecSiteAccountRepository.findAllByEcSite(sites.get(i));
-      for (ECSiteAccountDAO ecSiteAccountDAO : accountDAOS) {
-
-        if (ecSiteAccountDAO.getEcUseFlag() != Boolean.TRUE) {
-          LOGGER.info("EC Site [" + ecSiteAccountDAO.getId() + ":" + ecSiteAccountDAO.getEcSite()
-              + "] is not active. Skipped.");
-          continue;
-        }
-        Optional<PurchaseHistory> lastPurchaseHistory = purchaseHistoryService.fetchLast(ecSiteAccountDAO.getId());
-
-        TrafficWebClient webClient = new TrafficWebClient(ecSiteAccountDAO.getUserId(), true);
-        LOGGER.info("web client version = " + webClient.getWebClient().getBrowserVersion());
-        boolean restoreRet = Common.restoreCookies(webClient.getWebClient(), ecSiteAccountDAO);
-        if (!restoreRet) {
-          LOGGER.error("skip ecSite id = " + ecSiteAccountDAO.getId() + ", restore cookies failed");
-          continue;
-        }
-
-        try {
-          GeneralPurchaseHistoryCrawler crawler = new GeneralPurchaseHistoryCrawler(sites.get(i), this.webpageService, this.scraperRepository);
-
-          crawler.setScript(this.script);
-
-          GeneralPurchaseHistoryCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClient,
-              lastPurchaseHistory.orElse(null), true);
-          //webClient.finishTraffic();
-
-          this.list = crawlerResult.getPurchaseHistoryList();
-
-          if (list != null && list.size() > 0) {
-            final String accountId = "" + ecSiteAccountDAO.getId();
-            list.forEach(purchaseHistory -> {
-              purchaseHistory.setAccountId(accountId);
-              LOGGER.info(String.format("purchaseHistory#%s accountid: %s", purchaseHistory.getOrderNumber(),
-                  purchaseHistory.getAccountId()));
-            });
-
-            //purchaseHistoryService.save(ecSiteAccountDAO.getEcSite(), list);
-          }
-          LOGGER.info("succeed fetch purchaseHistory for ecSite id = " + ecSiteAccountDAO.getId());
-        } catch (Exception e) { // here catch all exception and did not throw it
-          // TODO: arrange login handler
-          //this.loginHandler.saveFailedResult(ecSiteAccountDAO, e.getMessage());
-          LOGGER.error("failed to PurchaseHistory for ecSite id = " + ecSiteAccountDAO.getId());
-          e.printStackTrace();
-        }
+    Iterable<ECSiteAccountDAO> accountDAOS = ecSiteAccountRepository.findAllByEcSite(site);
+    for (ECSiteAccountDAO ecSiteAccountDAO : accountDAOS) {
+      if (ecSiteAccountDAO.getEcUseFlag() == Boolean.TRUE) {
+        accountDAO = ecSiteAccountDAO;
+        break;
       }
     }
+
+    if (accountDAO == null) {
+      LOGGER.error("failed to get ecSite account");
+      return;
+    }
+
+    TrafficWebClient webClient = new TrafficWebClient(accountDAO.getUserId(), true);
+    TrafficWebClientForDryRun webClientForDryRun = webClient.new TrafficWebClientForDryRun(accountDAO.getUserId(), true);
+    LOGGER.info("web client version = " + webClient.getWebClient().getBrowserVersion());
+    boolean restoreRet = Common.restoreCookies(webClientForDryRun.getWebClient(), accountDAO);
+    if (!restoreRet) {
+      LOGGER.error("skip ecSite id = " + accountDAO.getId() + ", restore cookies failed");
+      return;
+    }
+
+    try {
+      GeneralPurchaseHistoryCrawler crawler = new GeneralPurchaseHistoryCrawler(site, this.webpageService, this.scraperRepository);
+      crawler.setScript(this.script);
+      GeneralPurchaseHistoryCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClientForDryRun, null, false);
+      this.list = crawlerResult.getPurchaseHistoryList();
+      LOGGER.info("succeed fetch purchaseHistory for ecSite id = " + accountDAO.getId());
+    } catch (Exception e) {
+      LOGGER.error("failed to PurchaseHistory for ecSite id = " + accountDAO.getId());
+      e.printStackTrace();
+    }
+
   }
 
   public List<PurchaseHistory> getPurchaseHistoryList() {

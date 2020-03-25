@@ -1,6 +1,17 @@
 package com.topcoder.common.traffic;
 
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.util.Date;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.ProxyConfig;
@@ -17,17 +28,8 @@ import com.topcoder.common.repository.RequestEventRepository;
 import com.topcoder.common.repository.TacticEventRepository;
 import com.topcoder.common.util.Common;
 import com.topcoder.common.util.SpringTool;
-import lombok.Data;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.time.Instant;
-import java.time.ZonedDateTime;
-import java.util.Date;
+import lombok.Data;
 
 /**
  * wrap webclient to add traffic controller
@@ -99,9 +101,7 @@ public class TrafficWebClient {
       webClient = new WebClient();
     }
     //webClient.getOptions().setJavaScriptEnabled(false);
-    webClient.getOptions().setThrowExceptionOnScriptError(false);
-    webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
-    webClient.getOptions().setJavaScriptEnabled(false);
+    webClient.getOptions().setJavaScriptEnabled(true);
     tacticEventRepository = SpringTool.getApplicationContext().getBean(TacticEventRepository.class);
     requestEventRepository = SpringTool.getApplicationContext().getBean(RequestEventRepository.class);
 
@@ -282,7 +282,7 @@ public class TrafficWebClient {
     TacticEventDAO tacticEventDAO = new TacticEventDAO();
     tacticEventDAO.setContents(tactic.toString());
     tacticEventDAO.setCreateAt(Date.from(Instant.now()));
-    tacticEventRepository.save(tacticEventDAO);
+    saveTacticEventDAO(tacticEventDAO);
     this.tacticEventDAO = tacticEventDAO;
   }
 
@@ -297,7 +297,7 @@ public class TrafficWebClient {
     }
     this.tacticEventDAO.setFinishAt(Date.from(Instant.now()));
     this.tacticEventDAO.setStatus(succeed ? TacticEventStatus.SUCCESS : TacticEventStatus.FAILED);
-    tacticEventRepository.save(this.tacticEventDAO);
+    saveTacticEventDAO(this.tacticEventDAO);
   }
 
   /**
@@ -370,7 +370,7 @@ public class TrafficWebClient {
 
     requestEventDAO.setContents(content);
     requestEventDAO.setTacticEventId(this.tacticEventDAO.getId());
-    requestEventRepository.save(requestEventDAO);
+    saveRequestEventDAO(requestEventDAO);
 
     return requestEventDAO;
   }
@@ -411,6 +411,50 @@ public class TrafficWebClient {
     }
     requestEventDAO.setFinishAt(Date.from(ZonedDateTime.now().toInstant()));
     requestEventDAO.setStatus(succeed ? TacticEventStatus.SUCCESS : TacticEventStatus.FAILED);
+    saveRequestEventDAO(requestEventDAO);
+  }
+
+  /**
+   * save TacticEventDAO to DB
+   * this method overwride by TrafficWebClientForDryRun
+   * @param tacticEventDAO
+   */
+  //TODO do not write to tactic_event table.
+  protected void saveTacticEventDAO(TacticEventDAO tacticEventDAO) {
+    tacticEventRepository.save(tacticEventDAO);
+  }
+
+  /**
+   * save RequestEventDAO to DB
+   * this method overwride by TrafficWebClientForDryRun
+   * @param requestEventDAO
+   */
+  protected void saveRequestEventDAO(RequestEventDAO requestEventDAO) {
     requestEventRepository.save(requestEventDAO);
   }
+
+  /**
+   * this class only used for DryRunPurchaseHistoryModule
+   */
+  public class TrafficWebClientForDryRun extends TrafficWebClient {
+
+    public TrafficWebClientForDryRun(int userId, boolean isNeedAuth) {
+      super(userId, isNeedAuth);
+    }
+
+    //TODO do not write to tactic_event table.
+    /*
+    @Override
+    protected void saveTacticEventDAO(TacticEventDAO tacticEventDAO) {
+      // do not save tacticEventDAO
+    }
+    */
+
+    @Override
+    protected void saveRequestEventDAO(RequestEventDAO requestEventDAO) {
+      // do not save requestEventDAO
+    }
+
+  }
+
 }

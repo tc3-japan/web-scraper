@@ -1,5 +1,18 @@
 package com.topcoder.scraper.module.ecisolatedmodule.crawler;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Properties;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.codehaus.groovy.control.CompilerConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.topcoder.common.model.ProductInfo;
@@ -8,24 +21,13 @@ import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.Consts;
 import com.topcoder.scraper.lib.navpage.NavigablePurchaseHistoryPage;
 import com.topcoder.scraper.service.WebpageService;
+
 import groovy.lang.Binding;
 import groovy.lang.Closure;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.codehaus.groovy.control.CompilerConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Properties;
 
 public abstract class AbstractPurchaseHistoryCrawler {
 
@@ -50,7 +52,7 @@ public abstract class AbstractPurchaseHistoryCrawler {
   @Getter@Setter protected List<PurchaseHistory> purchaseHistoryList;
 
   public AbstractPurchaseHistoryCrawler(String siteName, WebpageService webpageService) {
-    LOGGER.info("[constructor] in");
+    LOGGER.debug("[constructor] in");
 
     this.siteName       = siteName;
     this.webpageService = webpageService;
@@ -65,7 +67,7 @@ public abstract class AbstractPurchaseHistoryCrawler {
   }
 
   protected String getScriptPath() {
-    LOGGER.info("[getScriptPath] in");
+    LOGGER.debug("[getScriptPath] in");
 
     String scriptPath = System.getenv(Consts.SCRAPING_SCRIPT_PATH);
     if (StringUtils.isEmpty(scriptPath)) {
@@ -73,17 +75,17 @@ public abstract class AbstractPurchaseHistoryCrawler {
     }
     scriptPath  += "/isolated/" + this.siteName + "-purchase-history-list.groovy";
 
-    LOGGER.info("[getScriptPath] scriptPath: " + scriptPath);
+    LOGGER.debug("[getScriptPath] scriptPath: " + scriptPath);
     return scriptPath;
   }
 
   protected String getScriptText(String scriptPath) {
-    LOGGER.info("[getScriptText] in");
+    LOGGER.debug("[getScriptText] in");
 
     try {
       return FileUtils.readFileToString(new File(scriptPath), "utf-8");
     } catch (IOException e) {
-      LOGGER.info("[getScriptText] Could not read script file: " + scriptPath);
+      LOGGER.debug("[getScriptText] Could not read script file: " + scriptPath);
       return null;
     }
   }
@@ -91,7 +93,7 @@ public abstract class AbstractPurchaseHistoryCrawler {
   protected abstract String getScriptSupportClassName();
 
   protected String executeScript() {
-    LOGGER.info("[executeScript] in");
+    LOGGER.debug("[executeScript] in");
     this.scriptShell = new GroovyShell(this.scriptBinding, this.scriptConfig);
     Script script = this.scriptShell.parse(this.scriptText);
     script.invokeMethod("setCrawler", this);
@@ -100,7 +102,7 @@ public abstract class AbstractPurchaseHistoryCrawler {
   }
 
   public AbstractPurchaseHistoryCrawlerResult fetchPurchaseHistoryList(TrafficWebClient webClient, PurchaseHistory lastPurchaseHistory, boolean saveHtml) throws IOException {
-    LOGGER.info("[fetchPurchaseHistoryList] in");
+    LOGGER.debug("[fetchPurchaseHistoryList] in");
 
     this.webClient = webClient;
     this.saveHtml  = saveHtml;
@@ -121,16 +123,16 @@ public abstract class AbstractPurchaseHistoryCrawler {
 
   // TODO: re-consider Closure<HERE>, now temporarily Boolean
   public void processPurchaseHistory(Closure<Boolean> closure) throws IOException {
-    LOGGER.info("[processPurchaseHistory] in");
+    LOGGER.debug("[processPurchaseHistory] in");
 
     this.webpageService.save(this.siteName + "-purchase-history", this.siteName, this.historyPage.getPage().getWebResponse().getContentAsString(), this.saveHtml);
     // TODO : implement
     /*
     if (page.getBaseURI().contains("?autoLogin")) {
-      throw new SessionExpiredException("Session has been expired.");      
+      throw new SessionExpiredException("Session has been expired.");
     }
      */
-    
+
     while (true) {
       if (this.historyPage.getPage() == null) {
         break;
@@ -141,7 +143,7 @@ public abstract class AbstractPurchaseHistoryCrawler {
   }
 
   public void processOrders(List<DomNode> orderList, Closure<Boolean> closure) {
-    LOGGER.info("[processOrders] in");
+    LOGGER.debug("[processOrders] in");
     LOGGER.debug("Parsing page url " + historyPage.getPage().getUrl().toString());
 
     for (DomNode orderNode : orderList) {
@@ -155,7 +157,7 @@ public abstract class AbstractPurchaseHistoryCrawler {
   }
 
   public void processProducts(List<DomNode> productList, Closure<Boolean> closure) {
-    LOGGER.info("[processProducts] in");
+    LOGGER.debug("[processProducts] in");
 
     for (DomNode productNode : productList) {
       this.currentProduct = new ProductInfo();
@@ -170,7 +172,7 @@ public abstract class AbstractPurchaseHistoryCrawler {
   }
 
   public boolean isNew() {
-    LOGGER.info("[isNew] in");
+    LOGGER.debug("[isNew] in");
     PurchaseHistory curr = this.currentPurchaseHistory;
     PurchaseHistory last = this.lastPurchaseHistory;
 
@@ -186,7 +188,7 @@ public abstract class AbstractPurchaseHistoryCrawler {
   }
 
   protected HtmlPage gotoNextPage(HtmlPage page, TrafficWebClient webClient) throws IOException {
-    LOGGER.info("[gotoNextPage] in");
+    LOGGER.debug("[gotoNextPage] in");
     return null;
   }
 }

@@ -6,28 +6,30 @@
 </head>
 
 <body>
-	<div class="d-flex">
-		<button id="load" type="button" class="btn btn-secondary btn-sm mr-1">
-			<span class="spinner-border spinner-border-sm hidden-spinner" role="status" aria-hidden="true"></span>
-			<span>Load</span>
-		</button>
-		<button id="save" type="button" class="btn btn-secondary btn-sm mr-1">
-			<span class="spinner-border spinner-border-sm hidden-spinner" role="status" aria-hidden="true"></span>
-			<span>Save</span>
-		</button>
-		<button id="test" type="button" class="btn btn-secondary btn-sm mr-1">
-			<span class="spinner-border spinner-border-sm hidden-spinner" role="status" aria-hidden="true"></span>
-			<span>Test</span>
-		</button>
-
-		<button id="settings" type="button" class="btn btn-secondary btn-sm ml-auto">Settings</button>
-	</div>
-
-	<div id="main-page" class="wrapper">
-		<div class="editor-wrapper">
-			<div id="editor"></div>
+	<div id="main-page" class="main-page">
+		<div class="d-flex">
+			<button id="load" type="button" class="btn btn-secondary btn-sm mr-1">
+				<span class="spinner-border spinner-border-sm hidden-spinner" role="status" aria-hidden="true"></span>
+				<span>Load</span>
+			</button>
+			<button id="save" type="button" class="btn btn-secondary btn-sm mr-1">
+				<span class="spinner-border spinner-border-sm hidden-spinner" role="status" aria-hidden="true"></span>
+				<span>Save</span>
+			</button>
+			<button id="test" type="button" class="btn btn-secondary btn-sm mr-1">
+				<span class="spinner-border spinner-border-sm hidden-spinner" role="status" aria-hidden="true"></span>
+				<span>Test</span>
+			</button>
+	
+			<button id="settings" type="button" class="btn btn-secondary btn-sm ml-auto">Settings</button>
 		</div>
-		<div id="message" class="message"></div>
+	
+		<div class="wrapper">
+			<div id="editor-wrapper" class="editor-wrapper">
+				<div id="editor"></div>
+			</div>
+			<div id="message" class="message"></div>
+		</div>
 	</div>
 
 	<div id="settings-page" class="hidden settings-page">

@@ -79,11 +79,25 @@ async function fetchRequest(request) {
   }
 }
 
+function padZero(num) {
+    return num.toString().padStart(2, "0")
+}
+
+function getLocalDatetime() {
+  const d = new Date();
+  return d.getFullYear()
+         + padZero(d.getMonth() + 1)
+         + padZero(d.getDate())
+         + padZero(d.getHours())
+         + padZero(d.getMinutes())
+         + padZero(d.getSeconds());
+}
+
 function logError(error) {
   const messageBoard = document.getElementById('message');
   const errElem = document.createElement('div');
   errElem.classList.add('error');
-  errElem.textContent = error;
+  errElem.textContent = getLocalDatetime() + " " + error;
   // new errors comes at top of message board
   messageBoard.insertAdjacentElement('afterbegin', errElem);
 }
@@ -94,7 +108,7 @@ function logSucceeded(message, data) {
   if (data) {
     const dataElem = document.createElement('div');
     dataElem.classList.add('data');
-    dataElem.textContent = data;
+    dataElem.textContent = getLocalDatetime() + " " + data;
     // new data comes at top of message board
     messageBoard.insertAdjacentElement('afterbegin', dataElem);
   }

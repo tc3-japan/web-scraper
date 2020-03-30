@@ -8,6 +8,7 @@ import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralProductCrawler
 import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralProductCrawlerResult;
 import com.topcoder.scraper.service.ProductService;
 import com.topcoder.scraper.service.WebpageService;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ public class GeneralProductModule implements IProductModule {
   // private final AmazonProperty property;
   private final ProductService productService;
   private final WebpageService webpageService;
+  private GeneralProductCrawler crawler;
 
   @Autowired
   public GeneralProductModule(
@@ -51,11 +53,9 @@ public class GeneralProductModule implements IProductModule {
     for (String site : sites) {
       List<ProductDAO> products = this.productService.getAllFetchInfoStatusIsNull(site);
 
-      GeneralProductCrawler crawler = new GeneralProductCrawler(site, webpageService);
-
       products.forEach(product -> {
         try {
-          fetchProductDetail(crawler, product.getId(), product.getProductCode());
+          this.processProductDetail(site, product.getId(), product.getProductCode());
         } catch (IOException | IllegalStateException e) {
           LOGGER.error(String.format("Fail to fetch product %s, please try again.", product.getProductCode()));
         }
@@ -66,35 +66,37 @@ public class GeneralProductModule implements IProductModule {
   /**
    * Fetch product information from yahoo and save in database
    *
-   * @param crawler     the crawler
    * @param productId   the product id
    * @param productCode the product code
    * @throws IOException webclient exception
    */
-  private void fetchProductDetail(GeneralProductCrawler crawler, int productId, String productCode) throws IOException {
-    LOGGER.debug("[fetchProductDetail] in");
-
-    TrafficWebClient webClient = new TrafficWebClient(0, false);
-    GeneralProductCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productCode);
-    webClient.finishTraffic();
+  private void processProductDetail(String site, int productId, String productCode) throws IOException {
+    if (StringUtils.isBlank(productCode)) {
+      LOGGER.info(String.format("Skipping Product#%d - no product code", productId));
+      return;
+    }
+    GeneralProductCrawlerResult crawlerResult = this.fetchProductDetail(site, productCode);
     ProductInfo productInfo = crawlerResult.getProductInfo();
 
     if (productInfo != null) {
       // save updated information
       productService.updateProduct(productId, productInfo);
-      for (int i = 0; i < productInfo.getCategoryList().size(); i++) { //ERROR: product info is null
-        System.out.println();
-        System.out.println("WARNING: IGNORING CATEGORY AND RANK FOR TESTING PURPOSES!");
-        System.out.println();
-        // TODO: implement below (MUST)
-        /*
+      for (int i = 0; i < productInfo.getCategoryList().size(); i++) {
         String category = productInfo.getCategoryList().get(i);
-        Integer rank = productInfo.getRankingList().get(i);
+        Integer rank    = productInfo.getRankingList().get(i);
         productService.addCategoryRanking(productId, category, rank);
-        */
       }
       productService.updateFetchInfoStatus(productId, "updated");
     }
+  }
+
+  public GeneralProductCrawlerResult fetchProductDetail(String site, String productCode) throws IOException {
+    this.crawler = new GeneralProductCrawler(site, webpageService);
+
+    TrafficWebClient webClient = new TrafficWebClient(0, false);
+    GeneralProductCrawlerResult crawlerResult = this.crawler.fetchProductInfo(webClient, productCode);
+    webClient.finishTraffic();
+    return crawlerResult;
   }
 
   @Override
@@ -116,6 +118,6 @@ public class GeneralProductModule implements IProductModule {
       return null;
     }
 
-    return new ProductDAO(getModuleType(), productInfo);
+    return new ProductDAO(siteName, productInfo);
   }
 }

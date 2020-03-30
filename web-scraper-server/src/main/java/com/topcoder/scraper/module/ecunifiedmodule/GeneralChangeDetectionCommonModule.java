@@ -1,4 +1,4 @@
-package com.topcoder.scraper.module.ecisolatedmodule;
+package com.topcoder.scraper.module.ecunifiedmodule;
 
 import com.topcoder.common.config.MonitorTargetDefinitionProperty;
 import com.topcoder.common.dao.ECSiteAccountDAO;
@@ -6,8 +6,8 @@ import com.topcoder.common.repository.ECSiteAccountRepository;
 import com.topcoder.common.repository.NormalDataRepository;
 import com.topcoder.scraper.Consts;
 import com.topcoder.scraper.module.IBasicModule;
-import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractProductCrawlerResult;
-import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractPurchaseHistoryCrawlerResult;
+import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralProductCrawlerResult;
+import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistoryCrawlerResult;
 import com.topcoder.scraper.service.WebpageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,26 +17,26 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Common class of AbstractChangeDetectionInitModule and AbstractChangeDetectionCheckModule
+ * Common class of GeneralChangeDetectionInitModule and GeneralChangeDetectionCheckModule
  */
-public abstract class AbstractChangeDetectionCommonModule implements IBasicModule {
+public abstract class GeneralChangeDetectionCommonModule implements IBasicModule {
 
-  private static Logger LOGGER = LoggerFactory.getLogger(AbstractChangeDetectionCommonModule.class);
+  private static Logger LOGGER = LoggerFactory.getLogger(GeneralChangeDetectionCommonModule.class);
 
   protected final MonitorTargetDefinitionProperty monitorTargetDefinitionProperty;
   protected final WebpageService                  webpageService;
   protected final ECSiteAccountRepository         ecSiteAccountRepository;
   protected final NormalDataRepository            normalDataRepository;
-  protected final AbstractPurchaseHistoryModule   purchaseHistoryModule;
-  protected final AbstractProductModule           productModule;
+  protected final GeneralPurchaseHistoryModule    purchaseHistoryModule;
+  protected final GeneralProductModule            productModule;
 
-  public AbstractChangeDetectionCommonModule(
+  public GeneralChangeDetectionCommonModule(
           MonitorTargetDefinitionProperty monitorTargetDefinitionProperty,
           WebpageService                  webpageService,
           ECSiteAccountRepository         ecSiteAccountRepository,
           NormalDataRepository            normalDataRepository,
-          AbstractPurchaseHistoryModule   purchaseHistoryModule,
-          AbstractProductModule           productModule
+          GeneralPurchaseHistoryModule    purchaseHistoryModule,
+          GeneralProductModule            productModule
   ) {
     this.monitorTargetDefinitionProperty = monitorTargetDefinitionProperty;
     this.webpageService                  = webpageService;
@@ -46,15 +46,18 @@ public abstract class AbstractChangeDetectionCommonModule implements IBasicModul
     this.productModule                   = productModule;
   }
 
-  abstract public String getModuleType();
+  @Override
+  public String getModuleType() {
+    return "general";
+  }
 
   /**
    * Implementation of check method
    */
-  protected void processMonitorTarget() throws IOException {
+  protected void processMonitorTarget(List<String> sites) throws IOException {
     LOGGER.debug("[processMonitorTarget] in");
     for (MonitorTargetDefinitionProperty.MonitorTargetCheckSite checkSite : monitorTargetDefinitionProperty.getCheckSites()) {
-      if (!this.getModuleType().equalsIgnoreCase(checkSite.getEcSite())) {
+      if (!sites.contains(checkSite.getEcSite())) {
         continue;
       }
 
@@ -66,17 +69,18 @@ public abstract class AbstractChangeDetectionCommonModule implements IBasicModul
           List<Integer> userIdList = monitorTargetCheckPage.getCheckTargetKeys()
                   .stream().map(e -> Integer.valueOf(e)).collect(Collectors.toList());
           LOGGER.debug("[processMonitorTarget] account ids: " + userIdList);
-          Iterable<ECSiteAccountDAO> accountDAOS = ecSiteAccountRepository.findAllByEcSiteAndUserIdIn(this.getModuleType(), userIdList);
+          Iterable<ECSiteAccountDAO> accountDAOS = ecSiteAccountRepository.findAllByEcSiteAndUserIdIn(checkSite.getEcSite(), userIdList);
 
           for (ECSiteAccountDAO ecSiteAccountDAO : accountDAOS) {
-            AbstractPurchaseHistoryCrawlerResult crawlerResult =
+            GeneralPurchaseHistoryCrawlerResult crawlerResult =
                     this.purchaseHistoryModule.fetchPurchaseHistoryListForECSiteAccount(ecSiteAccountDAO, null);
             if (crawlerResult != null) {
               String key = Integer.toString(ecSiteAccountDAO.getId());
-              this.processPurchaseHistory(crawlerResult, key);
+              this.processPurchaseHistory(checkSite.getEcSite(), crawlerResult, key);
             }
           }
 
+          // process puchase history
         } else if (monitorTargetCheckPage.getPageName().equalsIgnoreCase(Consts.PRODUCT_DETAIL_PAGE_NAME)) {
           LOGGER.debug("[processMonitorTarget] processProductDetail for target products");
 
@@ -84,10 +88,10 @@ public abstract class AbstractChangeDetectionCommonModule implements IBasicModul
           if (monitorTargetCheckPage.getCheckTargetKeys() == null) continue;
 
           for (String productCode : monitorTargetCheckPage.getCheckTargetKeys()) {
-            AbstractProductCrawlerResult crawlerResult =
-                    this.productModule.fetchProductDetail(productCode);
+            GeneralProductCrawlerResult crawlerResult =
+                    this.productModule.fetchProductDetail(checkSite.getEcSite(), productCode);
             if (crawlerResult != null) {
-              this.processProductInfo(crawlerResult);
+              this.processProductInfo(checkSite.getEcSite(), crawlerResult);
             }
           }
 
@@ -100,14 +104,16 @@ public abstract class AbstractChangeDetectionCommonModule implements IBasicModul
 
   /**
    * Process purchase history crawler result
+   * @param site ec site
    * @param crawlerResult the crawler result
    * @param pageKey the page key
    */
-  abstract protected void processPurchaseHistory(AbstractPurchaseHistoryCrawlerResult crawlerResult, String pageKey);
+  abstract protected void processPurchaseHistory(String site, GeneralPurchaseHistoryCrawlerResult crawlerResult, String pageKey);
 
   /**
    * Process product info crawler result
+   * @param site ec site
    * @param crawlerResult the crawler result
    */
-  abstract protected void processProductInfo(AbstractProductCrawlerResult crawlerResult);
+  abstract protected void processProductInfo(String site, GeneralProductCrawlerResult crawlerResult);
 }

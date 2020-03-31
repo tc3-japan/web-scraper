@@ -1,5 +1,18 @@
 package com.topcoder.scraper.module.ecisolatedmodule.crawler;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Properties;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.codehaus.groovy.control.CompilerConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.topcoder.common.model.ProductInfo;
@@ -8,24 +21,13 @@ import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.Consts;
 import com.topcoder.scraper.lib.navpage.NavigablePurchaseHistoryPage;
 import com.topcoder.scraper.service.WebpageService;
+
 import groovy.lang.Binding;
 import groovy.lang.Closure;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.codehaus.groovy.control.CompilerConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Properties;
 
 public abstract class AbstractPurchaseHistoryCrawler {
 

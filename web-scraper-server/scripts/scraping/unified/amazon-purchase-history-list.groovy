@@ -17,7 +17,8 @@ processPurchaseHistory() {
         if (!isNew()) { return false; }
 
         // scrape product dom node list
-        productList = scrapeDomList "div.shipment > div > div > div > div:nth-of-type(1) > div > div.a-fixed-left-grid" // productsBox
+        //productList = scrapeDomList orderNode, "div.shipment > div > div > div > div:nth-of-type(1) > div > div.a-fixed-left-grid" // productsBox
+        productList = scrapeDomList orderNode, "div.shipment > div > div > div > div:nth-of-type(1) > div.a-row" // productsBox
         // loop each product
         processProducts(productList) { productNode ->
             // scrape product details

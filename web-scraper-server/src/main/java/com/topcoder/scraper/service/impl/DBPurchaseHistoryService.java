@@ -35,9 +35,12 @@ public class DBPurchaseHistoryService implements PurchaseHistoryService {
   @Override
   public void save(String site, List<PurchaseHistory> list) {
     for (PurchaseHistory purchaseHistory : list) {
+      if (purchaseHistory == null) continue;
+
       // Save PurchaseHistoryDAO
       PurchaseHistoryDAO dao = historyRepository.save(new PurchaseHistoryDAO(site, purchaseHistory));
 
+      if (purchaseHistory.getProducts() == null) continue;
       for (ProductInfo productInfo : purchaseHistory.getProducts()) {
         // Save PurchaseProductDAO
         PurchaseProductDAO purchaseProductDAO = new PurchaseProductDAO(productInfo, dao);

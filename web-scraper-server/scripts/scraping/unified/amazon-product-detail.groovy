@@ -100,12 +100,13 @@ scrapeName(Vars.name)
 // model-no experimanet 2
 scrapeModelNo(Vars.modelNoSelectors)
 
-/*
+// scraping category ranking trial 1.
 categoryInfoList = scrapeCategoryInfoListBySalesRank(Vars.salesRank) { props ->
     props.put("1st_line_regex", "(.*?) - (.*?)位")
     props.put("rest_ranks_selector", "ul > li > span:nth-of-type(1)")
     props.put("rest_paths_selector", "ul > li > span:nth-of-type(2)")
 }
+// scraping category ranking trial 2 if trial 1 is failed.
 if (categoryInfoList.size() <= 0) {
     categoryInfoList = scrapeCategoryInfoListByProductInfoTable(Vars.productInfoTable, { props ->
         props.put("lines_selector", "tbody > tr")
@@ -116,6 +117,5 @@ if (categoryInfoList.size() <= 0) {
     })
 }
 scrapeCategoryRanking(categoryInfoList)
-*/
 
 debug "--------------script end--------------"

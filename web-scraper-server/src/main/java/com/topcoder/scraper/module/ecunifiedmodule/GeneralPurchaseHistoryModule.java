@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import com.topcoder.common.dao.ECSiteAccountDAO;
 import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.common.repository.ECSiteAccountRepository;
-import com.topcoder.common.repository.ScraperRepository;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.common.util.Common;
 import com.topcoder.scraper.module.IPurchaseHistoryModule;
@@ -20,6 +19,7 @@ import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistor
 import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistoryCrawlerResult;
 import com.topcoder.scraper.service.PurchaseHistoryService;
 import com.topcoder.scraper.service.WebpageService;
+import com.topcoder.common.repository.ConfigurationRepository;
 
 /**
  * General implementation of ecisolatedmodule .. PurchaseHistoryModule
@@ -35,7 +35,7 @@ public class GeneralPurchaseHistoryModule implements IPurchaseHistoryModule {
   private final ECSiteAccountRepository ecSiteAccountRepository;
 
   @Autowired
-  ScraperRepository scraperRepository;
+  ConfigurationRepository configurationRepository;
 
   // TODO: arrange login handler
   //private final LoginHandlerBase loginHandler;
@@ -80,7 +80,7 @@ public class GeneralPurchaseHistoryModule implements IPurchaseHistoryModule {
         }
 
         try {
-          GeneralPurchaseHistoryCrawler crawler = new GeneralPurchaseHistoryCrawler(sites.get(i), this.webpageService, this.scraperRepository);
+          GeneralPurchaseHistoryCrawler crawler = new GeneralPurchaseHistoryCrawler(sites.get(i), this.webpageService, this.configurationRepository);
 
           GeneralPurchaseHistoryCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClient,
               lastPurchaseHistory.orElse(null), true);

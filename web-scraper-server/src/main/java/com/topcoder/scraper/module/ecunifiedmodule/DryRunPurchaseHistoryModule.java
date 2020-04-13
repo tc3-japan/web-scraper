@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import com.topcoder.common.dao.ECSiteAccountDAO;
 import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.common.repository.ECSiteAccountRepository;
-import com.topcoder.common.repository.ScraperRepository;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.common.traffic.TrafficWebClient.TrafficWebClientForDryRun;
 import com.topcoder.common.util.Common;
@@ -20,6 +19,7 @@ import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistor
 import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistoryCrawlerResult;
 import com.topcoder.scraper.service.PurchaseHistoryService;
 import com.topcoder.scraper.service.WebpageService;
+import com.topcoder.common.repository.ConfigurationRepository;
 
 /**
  * General implementation of ecisolatedmodule .. PurchaseHistoryModule
@@ -34,11 +34,11 @@ public class DryRunPurchaseHistoryModule implements IPurchaseHistoryModule {
   private final WebpageService webpageService;
   private final ECSiteAccountRepository ecSiteAccountRepository;
 
-  private String script;
+  private String config;
   private List<PurchaseHistory> list;
 
   @Autowired
-  ScraperRepository scraperRepository;
+  ConfigurationRepository configurationRepository;
 
   // TODO: arrange login handler
   //private final LoginHandlerBase loginHandler;
@@ -54,8 +54,8 @@ public class DryRunPurchaseHistoryModule implements IPurchaseHistoryModule {
     //this.loginHandler = loginHandler;
   }
 
-  public void setScript(String script) {
-	this.script = script;
+  public void setConfig(String config) {
+	this.config = config;
   }
 
   @Override
@@ -94,8 +94,8 @@ public class DryRunPurchaseHistoryModule implements IPurchaseHistoryModule {
     }
 
     try {
-      GeneralPurchaseHistoryCrawler crawler = new GeneralPurchaseHistoryCrawler(site, this.webpageService, this.scraperRepository);
-      crawler.setScript(this.script);
+      GeneralPurchaseHistoryCrawler crawler = new GeneralPurchaseHistoryCrawler(site, this.webpageService, this.configurationRepository);
+      crawler.setConfig(this.config);
       GeneralPurchaseHistoryCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClientForDryRun, null, false);
       this.list = crawlerResult.getPurchaseHistoryList();
       LOGGER.info("succeed fetch purchaseHistory for ecSite id = " + accountDAO.getId());

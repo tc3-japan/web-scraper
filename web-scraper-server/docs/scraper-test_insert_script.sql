@@ -2,7 +2,7 @@
 
 SET SQL_SAFE_UPDATES = 0;
 
-delete from web_scraper.scraper;
+delete from web_scraper.configuration;
 
 SET
 @amazon_purchase_history_script = '
@@ -136,7 +136,7 @@ processPurchaseHistory() {
 }
 ';
 
-insert into web_scraper.scraper (id,site,type,script) values
+insert into web_scraper.configuration (id,site,type,config) values
  (1,'amazon','purchase_history',@amazon_purchase_history_script)
 ,(2,'rakuten','purchase_history',@rakuten_purchase_history_script)
 ,(3,'yahoo','purchase_history',@yahoo_purchase_history_script);

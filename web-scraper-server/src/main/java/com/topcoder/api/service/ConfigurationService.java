@@ -8,23 +8,23 @@ import org.springframework.stereotype.Service;
 
 import com.topcoder.api.exception.ApiException;
 import com.topcoder.api.exception.EntityNotFoundException;
-import com.topcoder.common.dao.ScraperDAO;
 import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.common.repository.ECSiteAccountRepository;
-import com.topcoder.common.repository.ScraperRepository;
 import com.topcoder.scraper.module.ecunifiedmodule.DryRunPurchaseHistoryModule;
+import com.topcoder.common.dao.ConfigurationDAO;
+import com.topcoder.common.repository.ConfigurationRepository;
 
 /**
  * scraper service
  */
 @Service
-public class ScraperService {
+public class ConfigurationService {
 
   /**
    * the scraper Repository
    */
   @Autowired
-  ScraperRepository scraperRepository;
+  ConfigurationRepository configurationRepository;
 
   /**
    * ec site account repository
@@ -36,19 +36,19 @@ public class ScraperService {
   DryRunPurchaseHistoryModule dryRunPurchaseHistoryModule;
 
   /**
-   * get script by site and type
+   * get config by site and type
    *
    * @param site the ec site
    * @param type the logic type
-   * @return the script text
+   * @return the config text
    * @throws EntityNotFoundException if not found
    */
-  public String getScript(String site, String type) throws EntityNotFoundException {
-	ScraperDAO scraperDAO = get(site, type);
-    if (scraperDAO == null) {
-      throw new EntityNotFoundException("Cannot found script where site = " + site + " and " + type);
+  public String getConfig(String site, String type) throws EntityNotFoundException {
+	ConfigurationDAO configurationDAO = get(site, type);
+    if (configurationDAO == null) {
+      throw new EntityNotFoundException("Cannot found config where site = " + site + " and " + type);
     }
-	return get(site, type).getScript();
+	return get(site, type).getConfig();
   }
 
   /**
@@ -60,44 +60,43 @@ public class ScraperService {
    * @return the result message text
    * @throws ApiException if any error happened
    */
-  public String createOrUpdateScript(String site, String type, String script) throws ApiException {
+  public String createOrUpdateConfiguration(String site, String type, String conf) throws ApiException {
 	try {
 	  String resultText = "success ";
 
-	  ScraperDAO scraperDAO = get(site, type);
+	  ConfigurationDAO configurationDAO = get(site, type);
 
-	  if (scraperDAO == null) {
-	    scraperDAO = new ScraperDAO();
+	  if (configurationDAO == null) {
+	    configurationDAO = new ConfigurationDAO();
 	    resultText += "create record to scraper table";
 	  } else {
 	    resultText += "update record to scraper table";
 	  }
 
-      scraperDAO.setSite(site);
-      scraperDAO.setType(type);
-      scraperDAO.setScript(script);
-      scraperRepository.save(scraperDAO);
+      configurationDAO.setSite(site);
+      configurationDAO.setType(type);
+      configurationDAO.setConfig(conf);
+      configurationRepository.save(configurationDAO);
 
       return resultText;
 
     } catch(Exception e) {
       e.printStackTrace();
-	  throw new ApiException("failed to create or update script");
+	  throw new ApiException("failed to create or update conf");
     }
   }
 
   /**
-   * execute script
+   * execute conf
    *
    * @param site the ec site
    * @param type the logic type
-   * @param request to executable script
+   * @param request to executable conf
    * @throws ApiException if any error happened
    */
-  public List<PurchaseHistory> executeScript(String site, String type, String script) throws ApiException {
+  public List<PurchaseHistory> executeConfiguration(String site, String type, String conf) throws ApiException {
     try {
-      //String script = getScript(site, type); // from DB table [scraper]
-	  dryRunPurchaseHistoryModule.setScript(script);
+	  dryRunPurchaseHistoryModule.setConfig(conf);
 
 	  List<String> sites = new ArrayList<String>();
 	  sites.add(site);
@@ -109,7 +108,7 @@ public class ScraperService {
 	  return list;
     } catch(Exception e) {
       e.printStackTrace();
-	  throw new ApiException("failed to execute script");
+	  throw new ApiException("failed to execute conf");
     }
   }
 
@@ -120,9 +119,9 @@ public class ScraperService {
    * @param site the logic type
    * @return the ScraperDAO
    */
-  public ScraperDAO get(String site, String type) {
-	ScraperDAO scraperDAO = scraperRepository.findBySiteAndType(site, type);
-    return scraperDAO;
+  public ConfigurationDAO get(String site, String type) {
+	ConfigurationDAO configurationDAO = configurationRepository.findBySiteAndType(site, type);
+    return configurationDAO;
   }
 
 }

@@ -12,13 +12,13 @@ import org.slf4j.LoggerFactory;
 
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.topcoder.common.dao.ScraperDAO;
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.model.PurchaseHistory;
-import com.topcoder.common.repository.ScraperRepository;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.lib.navpage.NavigablePurchaseHistoryPage;
 import com.topcoder.scraper.service.WebpageService;
+import com.topcoder.common.dao.ConfigurationDAO;
+import com.topcoder.common.repository.ConfigurationRepository;
 
 import groovy.lang.Binding;
 import groovy.lang.Closure;
@@ -31,10 +31,10 @@ public class GeneralPurchaseHistoryCrawler {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(GeneralPurchaseHistoryCrawler.class);
 
-  private final Binding               scriptBinding;
-  private final CompilerConfiguration scriptConfig;
+  private final Binding               configBinding;
+  private final CompilerConfiguration compConfig;
   private GroovyShell                 scriptShell;
-  private String                      scriptText = "";
+  private String                      configText = "";
 
   private PurchaseHistory       lastPurchaseHistory;
   private List<String>          savedPathList;
@@ -49,29 +49,29 @@ public class GeneralPurchaseHistoryCrawler {
   @Getter@Setter private ProductInfo           currentProduct;
   @Getter@Setter private List<PurchaseHistory> purchaseHistoryList;
 
-  public GeneralPurchaseHistoryCrawler(String siteName, WebpageService webpageService, ScraperRepository scraperRepository) {
+  public GeneralPurchaseHistoryCrawler(String siteName, WebpageService webpageService, ConfigurationRepository configurationRepository) {
     LOGGER.debug("[constructor] in");
     this.siteName = siteName;
     this.webpageService = webpageService;
-    this.scriptText   = this.getScriptFromDB(siteName, "purchase_history", scraperRepository);
+    this.configText = this.getConfigFromDB(siteName, "purchase_history", configurationRepository);
     Properties configProps = new Properties();
     configProps.setProperty("groovy.script.base", this.getScriptSupportClassName());
-    this.scriptConfig  = new CompilerConfiguration(configProps);
-    this.scriptBinding = new Binding();
+    this.compConfig = new CompilerConfiguration(configProps);
+    this.configBinding = new Binding();
   }
 
-  private String getScriptFromDB(String site, String type, ScraperRepository scraperRepository) {
-	LOGGER.debug("[getScriptFromDB] in");
-	LOGGER.debug("[getScriptFromDB] site:" + site + " type:" + type);
-	ScraperDAO scraperDAO = scraperRepository.findBySiteAndType(site, type);
-	return scraperDAO.getScript();
+  private String getConfigFromDB(String site, String type, ConfigurationRepository configurationRepository) {
+	LOGGER.debug("[getConfigFromDB] in");
+	LOGGER.debug("[getConfigFromDB] site:" + site + " type:" + type);
+	ConfigurationDAO configurationDAO = configurationRepository.findBySiteAndType(site, type);
+	return configurationDAO.getConfig();
   }
 
-  public void setScript(String script) {
-	LOGGER.debug("[setScript] in");
-	LOGGER.debug("script = " + script);
-	if (script != null && script != "") {
-      this.scriptText = script;
+  public void setConfig(String conf) {
+	LOGGER.debug("[setConfig] in");
+	LOGGER.debug("conf = " + conf);
+	if (conf != null && conf != "") {
+      this.configText = conf;
     }
   }
 
@@ -79,10 +79,10 @@ public class GeneralPurchaseHistoryCrawler {
     return GeneralPurchaseHistoryCrawlerScriptSupport.class.getName();
   }
 
-  private String executeScript() {
-    LOGGER.debug("[executeScript] in");
-    this.scriptShell = new GroovyShell(this.scriptBinding, this.scriptConfig);
-    Script script = scriptShell.parse(this.scriptText);
+  private String executeConfig() {
+    LOGGER.debug("[executeConfig] in");
+    this.scriptShell = new GroovyShell(this.configBinding, this.compConfig);
+    Script script = scriptShell.parse(this.configText);
     script.invokeMethod("setCrawler", this);
     String resStr = (String)script.run();
     return resStr;
@@ -99,11 +99,11 @@ public class GeneralPurchaseHistoryCrawler {
     this.purchaseHistoryList = new LinkedList<>();
     this.savedPathList       = new LinkedList<>();
 
-    // binding variables for scraping script
+    // binding variables for scraping config
     // TODO: re-consider whether this is necessary
-    this.scriptBinding.setProperty("purchaseHistoryList", this.purchaseHistoryList);
+    this.configBinding.setProperty("purchaseHistoryList", this.purchaseHistoryList);
 
-    this.executeScript();
+    this.executeConfig();
 
     return new GeneralPurchaseHistoryCrawlerResult(this.purchaseHistoryList, this.savedPathList);
   }

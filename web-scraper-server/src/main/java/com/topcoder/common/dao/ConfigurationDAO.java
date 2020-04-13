@@ -8,8 +8,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "scraper")
-public class ScraperDAO {
+@Table(name = "configuration")
+public class ConfigurationDAO {
 
   /**
    * Id
@@ -31,18 +31,18 @@ public class ScraperDAO {
   private String type;
 
   /**
-   * Sscript
+   * Config
    */
-  @Column(name = "script", columnDefinition = "LONGTEXT")
-  private String script;
+  @Column(name = "config", columnDefinition = "LONGTEXT")
+  private String config;
 
-  public ScraperDAO() {
+  public ConfigurationDAO() {
   }
 
-  public ScraperDAO(String site, String type, String script) {
+  public ConfigurationDAO(String site, String type, String config) {
 	this.site = site;
 	this.type = type;
-	this.script = script;
+	this.config = config;
   }
 
   public void setId(int id) {
@@ -57,8 +57,8 @@ public class ScraperDAO {
     this.type = type;
   }
 
-  public void setScript(String script) {
-    this.script = script;
+  public void setConfig(String config) {
+    this.config = config;
   }
 
   public int getId() {
@@ -73,8 +73,8 @@ public class ScraperDAO {
     return type;
   }
 
-  public String getScript() {
-    return script;
+  public String getConfig() {
+    return config;
   }
 
 }

@@ -29,7 +29,7 @@ processPurchaseHistory() {
         // loop each product
         processProducts(productList) { productNode ->
             // scrape product details
-            scrapeProductCodeFromAnchor productNode, "div > div:nth-of-type(2) > div:nth-of-type(1) > a", "\\/gp\\/product\\/([A-Z0-9]+)\\/" // productAnchor, pattern
+            scrapeProductCodeFromAnchor productNode, "div > div:nth-of-type(2) > div:nth-of-type(1) > a", "\\\\/gp\\\\/product\\\\/([A-Z0-9]+)\\\\/" // productAnchor, pattern
             scrapeProductNameFromAnchor productNode, "div > div:nth-of-type(2) > div:nth-of-type(1) > a"                                     // productAnchor
             scrapeProductQuantity       productNode, "span.item-view-qty"                                                                    // productQuantity
             scrapeUnitPrice             productNode, "span.a-color-price"                                                                    // unitPrice
@@ -116,7 +116,7 @@ processPurchaseHistory() {
 
                 // get product code from the URL like https://store.shopping.yahoo.co.jp/bookfan/BK-481540657X.html
                 //#orddtl > div.elItem > ul > li > div > ul > li > form > input[name=".autodone"]
-                scrapeProductCodeFromInput productNode, "div > ul > li > form > input[name=\".autodone\"]", "https:\\/\\/.*?\\/(.*)\\.html"
+                scrapeProductCodeFromInput productNode, "div > ul > li > form > input[name=\\".autodone\\"]", "https:\\\\/\\\\/.*?\\\\/(.*)\\\\.html"
 
                 //#orddtl > div.elItem > ul > li > div > dl > dd.elName > a > span
                 scrapeProductName          productNode, "div > dl > dd.elName > a > span"

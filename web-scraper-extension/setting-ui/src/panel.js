@@ -1,14 +1,14 @@
 import swal from 'sweetalert';
 import Split from 'split.js';
 import ace from 'ace-builds/src-noconflict/ace';
-import 'ace-builds/src-noconflict/mode-groovy';
+import 'ace-builds/src-noconflict/mode-json';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import './panel.css';
 
 let isSettingsPageOpen = false;
-let baseApi = 'http://127.0.0.1:8085/api/v1/scrapers';
-const site = 'rakuten';
+let baseApi = 'https://scraper-stub-api.herokuapp.com/scrapers';
+const site = 'amazon';
 const type = 'purchase_history';
 
 function storageGet(key) {
@@ -73,9 +73,9 @@ async function fetchRequest(request) {
     if (response.status === 200) {
       return response.text();
     }
-    return Promise.reject(`Script load failed with status code ${response.status}`);
+    return Promise.reject(`JSON load failed with status code ${response.status}`);
   } catch (error) {
-    return Promise.reject(`Script load exception ${error}`);
+    return Promise.reject(`JSON load exception ${error}`);
   }
 }
 
@@ -136,7 +136,7 @@ function addListeners(editor) {
     // doesn't show message when editor is empty
     if (editor.getValue() !== '') {
       const result = await swal({
-        title: 'Are you sure to load the script?',
+        title: 'Are you sure to load the JSON?',
         text: 'Unsaved changes will be lost.',
         buttons: ['Cancel', 'Confirm'],
       });
@@ -150,7 +150,7 @@ function addListeners(editor) {
     const stop = spinnerHandler(this);
     try {
       const code = await fetchRequest(request);
-      logSucceeded('Script load succeeded');
+      logSucceeded('JSON load succeeded');
       // 1 set cursor at end
       editor.setValue(code, 1);
     } catch (error) {
@@ -165,7 +165,7 @@ function addListeners(editor) {
 
   document.getElementById('save').addEventListener('click', async function() {
     const result = await swal({
-      title: 'Are you sure to save the script?',
+      title: 'Are you sure to save the JSON?',
       buttons: ['Cancel', 'Confirm'],
     });
     if (!result) {
@@ -177,7 +177,7 @@ function addListeners(editor) {
     const stop = spinnerHandler(this);
     try {
       await fetchRequest(request);
-      logSucceeded('Script save succeeded');
+      logSucceeded('JSON save succeeded');
     } catch (error) {
       logError(error);
     } finally {
@@ -187,7 +187,7 @@ function addListeners(editor) {
 
   document.getElementById('test').addEventListener('click', async function() {
     const result = await swal({
-      title: 'Are you sure to test the script?',
+      title: 'Are you sure to test the JSON?',
       buttons: ['Cancel', 'Confirm'],
     });
     if (!result) {
@@ -201,10 +201,10 @@ function addListeners(editor) {
       const response = await fetchRequest(request);
       try {
         // beautiful json
-        logSucceeded('Script test succeeded', JSON.stringify(JSON.parse(response), null, 2));
+        logSucceeded('JSON test succeeded', JSON.stringify(JSON.parse(response), null, 2));
       } catch (_) {
         // if json was not valid just simple response
-        logSucceeded('Script test succeeded', response);
+        logSucceeded('JSON test succeeded', response);
       }
     } catch (error) {
       logError(error);
@@ -245,7 +245,7 @@ async function toggleSettingsPage() {
 async function main() {
   // create editor from <div id="editor" />
   const editor = ace.edit('editor');
-  editor.session.setMode('ace/mode/groovy');
+  editor.session.setMode('ace/mode/json');
 
   Split(['#editor-wrapper', '#message'], {
     sizes: [75, 25],

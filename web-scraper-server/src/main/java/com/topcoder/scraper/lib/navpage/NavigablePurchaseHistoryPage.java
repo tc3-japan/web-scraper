@@ -6,6 +6,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlHiddenInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.model.PurchaseHistory;
+import com.topcoder.common.model.scraper.Selector;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.common.util.DateUtils;
 import lombok.Getter;
@@ -154,6 +155,23 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
   public void scrapeDeliveryStatus(DomNode node, String selector) {
     LOGGER.debug("[scrapeDeliveryStatus] in");
     String str = getText(node, selector);
+    LOGGER.debug("[scrapeDeliveryStatus] >>> Setting Delivery Status >>>" + str);
+    if (str != null) {
+      purchaseHistory.setDeliveryStatus(str);
+    }
+  }
+
+  public void scrapeDeliveryStatus(DomNode node, Selector selector) {
+    LOGGER.debug("[scrapeDeliveryStatus] in");
+    String str = null;
+    if (selector.getAttribute() == null) {
+      str = getText(node, selector.getElement());
+    } else {
+      HtmlElement element = node.querySelector(selector.getElement());
+      if (element != null) {
+        str = element.getAttribute(selector.getAttribute());
+      }
+    }
     LOGGER.debug("[scrapeDeliveryStatus] >>> Setting Delivery Status >>>" + str);
     if (str != null) {
       purchaseHistory.setDeliveryStatus(str);

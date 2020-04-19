@@ -6,36 +6,71 @@ delete from web_scraper.configuration;
 
 SET
 @amazon_purchase_history_script = '
-// set scraping page
-setPage "https://www.amazon.co.jp/gp/your-account/order-history?opt=ab&digitalOrders=1&unifiedOrders=1&returnTo=&orderFilter="
-
-// start to process purchase history
-processPurchaseHistory() {
-
-    // scrape order dom node list
-    orderList = scrapeDomList "#ordersContainer > div.order" // ordersBox
-    // loop each order
-    processOrders(orderList) { orderNode ->
-        // scrape order details
-        scrapeOrderNumber    orderNode, "div.order-info > div > div > div > div:nth-of-type(2) > div:nth-of-type(1) > span:nth-of-type(2)"             // orderNumber
-        scrapeOrderDate      orderNode, "div.order-info > div > div > div > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(2) > span" // orderDate
-        scrapeTotalAmount    orderNode, "div.order-info > div > div > div > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(2) > span" // totalAmount
-        scrapeDeliveryStatus orderNode, "div.shipment > div > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) > span:nth-of-type(1)"      // deliveryStatus
-
-        if (!isNew()) { return false; }
-
-        // scrape product dom node list
-        productList = scrapeDomList orderNode, "div.shipment > div > div > div > div:nth-of-type(1) > div > div.a-fixed-left-grid" // productsBox
-        // loop each product
-        processProducts(productList) { productNode ->
-            // scrape product details
-            scrapeProductCodeFromAnchor productNode, "div > div:nth-of-type(2) > div:nth-of-type(1) > a", "\\\\/gp\\\\/product\\\\/([A-Z0-9]+)\\\\/" // productAnchor, pattern
-            scrapeProductNameFromAnchor productNode, "div > div:nth-of-type(2) > div:nth-of-type(1) > a"                                     // productAnchor
-            scrapeProductQuantity       productNode, "span.item-view-qty"                                                                    // productQuantity
-            scrapeUnitPrice             productNode, "span.a-color-price"                                                                    // unitPrice
-            scrapeProductDistributor    productNode, "span.a-color-secondary"                                                                // productDistributor
-        }
-    }
+{
+    "url": "https://www.amazon.co.jp/gp/your-account/order-history?opt=ab&digitalOrders=1&unifiedOrders=1&returnTo=&orderFilter=",
+    "purchase_order": {
+        "url_element": "",
+        "parent": "html > body > div > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(5) > div.a-box-group.a-spacing-base.order",
+        "order_number": {
+            "element": "div:nth-of-type(1) > div > div > div > div:nth-of-type(2) > div:nth-of-type(1) > span:nth-of-type(2).a-color-secondary.value",
+            "full_path": false,
+            "attribute": "",
+            "regex": ""
+        },
+        "order_date": {
+            "element": "div:nth-of-type(1) > div > div > div > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(2) > span.a-color-secondary.value",
+            "full_path": false,
+            "attribute": "",
+            "regex": ""
+        },
+        "total_amount": {
+            "element": "div:nth-of-type(1) > div > div > div > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(2) > span.a-color-secondary.value",
+            "full_path": false,
+            "attribute": "",
+            "regex": ""
+        },
+        "delivery_status": {
+            "element": "div:nth-of-type(2) > div > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) > span.js-shipment-info.aok-hidden",
+            "full_path": false,
+            "attribute": "data-yoshortstatuscode",
+            "regex": ""
+        },
+        "purchase_product": {
+            "url_element": "",
+            "parent": "div > div > div > div > div:nth-of-type(1) > div > div > div.a-fixed-left-grid-inner",
+            "product_code": {
+                "element": "div:nth-of-type(2) > div:nth-of-type(1) > a.a-link-normal",
+                "full_path": false,
+                "attribute": "href",
+                "regex": "\/gp\/product\/([A-Z0-9]+)\/"
+            },
+            "product_name": {
+                "element": "div:nth-of-type(2) > div:nth-of-type(1) > a.a-link-normal",
+                "full_path": false,
+                "attribute": "",
+                "regex": ""
+            },
+            "product_quantity": {
+                "element": "div:nth-of-type(1) > div > span.item-view-qty",
+                "full_path": false,
+                "attribute": "",
+                "regex": ""
+            },
+            "unit_price": {
+                "element": "div:nth-of-type(2) > div:nth-of-type(4) > span.a-size-small.a-color-price",
+                "full_path": false,
+                "attribute": "",
+                "regex": ""
+            },
+            "product_distributor": {
+                "element": "div:nth-of-type(2) > div:nth-of-type(2) > span.a-size-small.a-color-secondary",
+                "full_path": false,
+                "attribute": "",
+                "regex": ""
+            }
+       }
+    },
+    "next_url_element": ".a-last [href]"
 }
 ',
 @rakuten_purchase_history_script = '

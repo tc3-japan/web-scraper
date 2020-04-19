@@ -3,6 +3,7 @@ package com.topcoder.scraper.module.ecunifiedmodule;
 import java.io.IOException;
 import java.util.List;
 
+import com.topcoder.common.repository.PurchaseHistoryRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,7 +97,7 @@ public class DryRunPurchaseHistoryModule implements IPurchaseHistoryModule {
     try {
       GeneralPurchaseHistoryCrawler crawler = new GeneralPurchaseHistoryCrawler(site, this.webpageService, this.configurationRepository);
       crawler.setConfig(this.config);
-      GeneralPurchaseHistoryCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClientForDryRun, null, false);
+      GeneralPurchaseHistoryCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClientForDryRun, false);
       this.list = crawlerResult.getPurchaseHistoryList();
       LOGGER.info("succeed fetch purchaseHistory for ecSite id = " + accountDAO.getId());
     } catch (Exception e) {

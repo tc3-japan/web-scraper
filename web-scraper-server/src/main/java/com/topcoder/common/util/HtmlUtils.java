@@ -88,6 +88,24 @@ public class HtmlUtils {
     return Integer.valueOf(intText.replaceAll(",", ""));
   }
 
+  /**
+   * extract float value from text
+   * @param text the text value
+   * @return the float value
+   */
+  public static Float extractFloat(String text) {
+    String intText = extract(text, PAT_NUM);
+    if (intText == null || intText.length() == 0) {
+      return null;
+    }
+    String numberTxt = intText.replaceAll(",", "").replaceAll("-", "");
+    try {
+      return Float.valueOf(numberTxt);
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
   // TODO: delete (code for experiment)
   public static String foo(String[] args) {
     String ret = "";

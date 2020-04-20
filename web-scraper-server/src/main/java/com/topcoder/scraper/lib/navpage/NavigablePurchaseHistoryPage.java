@@ -320,4 +320,75 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
     }
   }
 
+
+  /**
+   * scrape number value by sector
+   *
+   * @param root     the page root
+   * @param parent   the parent node
+   * @param selector the selector object
+   * @return final value
+   */
+  public Float scrapeFloat(HtmlPage root, DomNode parent, Selector selector) {
+    return extractFloat(scrapeString(root, parent, selector));
+  }
+
+  /**
+   * scrape date value by sector
+   *
+   * @param root     the page root
+   * @param parent   the parent node
+   * @param selector the selector object
+   * @return final value
+   */
+  public Date scrapeDate(HtmlPage root, DomNode parent, Selector selector) {
+    try {
+      return DateUtils.fromString(scrapeString(root, parent, selector));
+    } catch (java.text.ParseException e) {
+      LOGGER.debug("[scrapeOrderDate] Could not set date in NavigablePurchaseHistoryPage.java");
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  /**
+   * check text is valid selector property
+   *
+   * @param property the value
+   * @return the result
+   */
+  public boolean isValid(String property) {
+    return property != null && !property.trim().equals("");
+  }
+
+  /**
+   * scrape value by sector
+   *
+   * @param root     the page root
+   * @param parent   the parent node
+   * @param selector the selector object
+   * @return final value
+   */
+  public String scrapeString(HtmlPage root, DomNode parent, Selector selector) {
+    HtmlElement element;
+    if (selector == null) {
+      return null;
+    }
+    if (selector.getFullPath()) {
+      element = (root == null ? page : root).querySelector(selector.getElement());
+    } else {
+      element = parent.querySelector(selector.getElement());
+    }
+    if (element == null) {
+      return null;
+    }
+    String content = getTextContent(element);
+    if (isValid(selector.getAttribute())) {
+      content = element.getAttribute(selector.getAttribute());
+    }
+    if (isValid(selector.getRegex())) {
+      content = extract1(content, Pattern.compile(selector.getRegex()));
+    }
+    return content;
+  }
 }

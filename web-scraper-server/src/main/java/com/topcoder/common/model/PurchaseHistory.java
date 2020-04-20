@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.topcoder.common.util.CipherUtils;
+import lombok.ToString;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import java.util.List;
 /**
  * Purchase History model
  */
+@ToString
 public class PurchaseHistory {
 
   private final static ObjectMapper OB = new ObjectMapper();

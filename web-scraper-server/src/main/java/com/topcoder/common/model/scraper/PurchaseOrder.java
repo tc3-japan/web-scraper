@@ -2,30 +2,15 @@ package com.topcoder.common.model.scraper;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 
 /**
  * PurchaseOrder config class
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class PurchaseOrder {
-  @JsonProperty("url_element")
-  private String urlElement;
-
-  private String parent;
-
-  @JsonProperty("order_number")
-  private Selector orderNumber;
-
-  @JsonProperty("order_date")
-  private Selector orderDate;
-
-  @JsonProperty("total_amount")
-  private Selector totalAmount;
-
-  @JsonProperty("delivery_status")
-  private Selector deliveryStatus;
-
+public class PurchaseOrder extends PurchaseCommon {
   @JsonProperty("purchase_product")
   private PurchaseProduct purchaseProduct;
 }

@@ -6,10 +6,12 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
+import com.topcoder.common.model.scraper.PurchaseCommon;
 import com.topcoder.common.model.scraper.PurchaseHistoryConfig;
 import com.topcoder.common.model.scraper.PurchaseOrder;
 import com.topcoder.common.model.scraper.PurchaseProduct;
 import com.topcoder.common.repository.PurchaseHistoryRepository;
+import com.topcoder.common.util.Common;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +27,7 @@ import com.topcoder.common.repository.ConfigurationRepository;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.BeanUtils;
 
 public class GeneralPurchaseHistoryCrawler {
 
@@ -144,8 +147,13 @@ public class GeneralPurchaseHistoryCrawler {
         savedPathList.add(savedPath);
       }
 
-      List<DomNode> orderList = historyPage.scrapeDomList(purchaseHistoryConfig.getPurchaseOrder().getParent());
-      processOrders(orderList);
+      HtmlPage rootPage = historyPage.getPage();
+      if (historyPage.isValid(purchaseHistoryConfig.getPurchaseOrder().getUrlElement())) {
+        HtmlAnchor urlLink = historyPage.getPage().querySelector(purchaseHistoryConfig.getPurchaseOrder().getUrlElement());
+        rootPage = urlLink.click();
+      }
+      List<DomNode> orderList = rootPage.querySelectorAll(purchaseHistoryConfig.getPurchaseOrder().getParent());
+      processOrders(orderList, rootPage);
       this.historyPage.setPage(this.gotoNextPage(this.historyPage.getPage(), webClient));
     }
   }
@@ -154,8 +162,9 @@ public class GeneralPurchaseHistoryCrawler {
    * process purchase order
    *
    * @param orderList the order list
+   * @param rootPage  the page that need scrape
    */
-  private void processOrders(List<DomNode> orderList) {
+  private void processOrders(List<DomNode> orderList, HtmlPage rootPage) throws IOException {
     LOGGER.debug("[processOrders] in");
     LOGGER.debug("[processOrders] Parsing page url " + historyPage.getPage().getUrl().toString());
     LOGGER.debug("[processOrders] Purchase list size =  " + orderList.size());
@@ -164,48 +173,103 @@ public class GeneralPurchaseHistoryCrawler {
     for (DomNode orderNode : orderList) {
       this.currentPurchaseHistory = new PurchaseHistory();
       this.historyPage.setPurchaseHistory(this.currentPurchaseHistory);
-      historyPage.scrapeOrderNumber(orderNode, orderConfig.getOrderNumber().getElement());
-
+      scrapeOrder(rootPage, orderNode, orderConfig, currentPurchaseHistory);
       // skip process is database exist
       if (!isNew()) {
         LOGGER.debug(String.format("[processOrders] [%s] order %s already exist, skip this",
             siteName, currentPurchaseHistory.getOrderNumber()));
         continue;
       }
-      historyPage.scrapeOrderDate(orderNode, orderConfig.getOrderDate().getElement());
-      historyPage.scrapeTotalAmount(orderNode, orderConfig.getTotalAmount().getElement());
-      historyPage.scrapeDeliveryStatus(orderNode, orderConfig.getDeliveryStatus());
 
-      List<DomNode> productList = historyPage.scrapeDomList(orderNode, orderConfig.getPurchaseProduct().getParent());
-      processProducts(productList);
+      HtmlPage orderPage = rootPage;
+      if (historyPage.isValid(orderConfig.getPurchaseProduct().getUrlElement())) {
+        HtmlAnchor anchor = orderNode.querySelector(orderConfig.getPurchaseProduct().getUrlElement());
+        orderPage = anchor.click();
+      }
+      List<DomNode> productList = orderPage.querySelectorAll(orderConfig.getPurchaseProduct().getParent());
+      LOGGER.debug("[processOrders] productList.size() = " + productList.size());
+
+      // On the contrast if a field for purchase_product appears under purchase_order, please reuse and set the scraped value to purchase_product
+      ProductInfo reuseProduct = scrapeProduct(orderPage, orderNode, orderConfig);
+      processProducts(productList, orderPage, reuseProduct);
       this.purchaseHistoryList.add(this.currentPurchaseHistory);
     }
     LOGGER.info("[processOrders] done, size = " + this.purchaseHistoryList.size());
   }
 
+
+  /**
+   * scrape order
+   * @param urlElementPage the root page
+   * @param orderNode the order node
+   * @param config the selector config
+   * @param history the history item
+   */
+  private void scrapeOrder(HtmlPage urlElementPage, DomNode orderNode, PurchaseCommon config, PurchaseHistory history) {
+    if (config.getOrderNumber() != null) {
+      history.setOrderNumber(historyPage.scrapeString(urlElementPage, orderNode, config.getOrderNumber()));
+    }
+    if (config.getOrderDate() != null) {
+      history.setOrderDate(historyPage.scrapeDate(urlElementPage, orderNode, config.getOrderDate()));
+    }
+    if (config.getTotalAmount() != null) {
+      Float totalAmount = historyPage.scrapeFloat(urlElementPage, orderNode, config.getTotalAmount());
+      history.setTotalAmount(totalAmount == null ? null : totalAmount.toString());
+    }
+    if (config.getDeliveryStatus() != null) {
+      history.setDeliveryStatus(historyPage.scrapeString(urlElementPage, orderNode, config.getDeliveryStatus()));
+    }
+  }
+
+  /**
+   * scrape product
+   * @param orderPage the page
+   * @param productNode the product node
+   * @param config the product selector config
+   * @return the product
+   */
+  private ProductInfo scrapeProduct(HtmlPage orderPage, DomNode productNode, PurchaseCommon config) {
+    ProductInfo info = new ProductInfo();
+    if (config.getProductCode() != null) {
+      info.setCode(historyPage.scrapeString(orderPage, productNode, config.getProductCode()));
+    }
+    if (config.getProductName() != null) {
+      info.setName(historyPage.scrapeString(orderPage, productNode, config.getProductName()));
+    }
+    if (config.getProductQuantity() != null) {
+      Float quantity = historyPage.scrapeFloat(orderPage, productNode, config.getProductQuantity());
+      info.setQuantity(quantity == null ? null : quantity.intValue());
+    }
+    if (config.getUnitPrice() != null) {
+      Float price = historyPage.scrapeFloat(orderPage, productNode, config.getUnitPrice());
+      info.setPrice(price == null ? null : price.toString());
+    }
+    if (config.getProductDistributor() != null) {
+      info.setDistributor(historyPage.scrapeString(orderPage, productNode, config.getProductDistributor()));
+    }
+    return info;
+  }
+
   /**
    * process products in order row
    *
-   * @param productList the product list
+   * @param productList  the product list
+   * @param orderPage    the order page, this order page maybe is root history page
+   * @param reuseProduct the reuse product
    */
-  private void processProducts(List<DomNode> productList) {
+  private void processProducts(List<DomNode> productList, HtmlPage orderPage, ProductInfo reuseProduct) throws IOException {
     LOGGER.debug("[processProducts] in");
 
     PurchaseProduct productConfig = purchaseHistoryConfig.getPurchaseOrder().getPurchaseProduct();
     for (DomNode productNode : productList) {
-      this.currentProduct = new ProductInfo();
-      this.historyPage.setProductInfo(this.currentProduct);
-
-      historyPage.scrapeProductCodeFromAnchor(productNode, productConfig.getProductCode().getElement(),
-          productConfig.getProductCode().getRegex());
-      historyPage.scrapeProductNameFromAnchor(productNode, productConfig.getProductName().getElement());
-      historyPage.scrapeProductQuantity(productNode, productConfig.getProductQuantity().getElement());
-      historyPage.scrapeUnitPrice(productNode, productConfig.getUnitPrice().getElement());
-      historyPage.scrapeProductDistributor(productNode, productConfig.getProductDistributor().getElement());
+      this.currentProduct = scrapeProduct(orderPage, productNode, productConfig);
+      BeanUtils.copyProperties(reuseProduct, currentProduct, Common.getNullPropertyNames(reuseProduct));
 
       if (this.currentProduct.getName() != null) {
         this.currentPurchaseHistory.addProduct(this.currentProduct);
       }
+      //if a field for purchase_order appears under purchase_product, please set the scraped value to purchase_order.
+      scrapeOrder(orderPage, productNode, productConfig, currentPurchaseHistory);
     }
   }
 

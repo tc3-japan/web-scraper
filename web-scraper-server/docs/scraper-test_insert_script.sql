@@ -75,123 +75,65 @@ SET
 ',
 @rakuten_purchase_history_script = '
 {
-    "url": "https://order.my.rakuten.co.jp/?l-id=top_normal_function04&fidomy=1",
-    "purchase_order": {
-        "parent": "html > body > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(3) > div > table > tbody > tr",
-        "order_number": {
-            "element": "td:nth-of-type(1) > div > ul:nth-of-type(1) > li:nth-of-type(2) > span.idNum",
-            "full_path": false,
-            "attribute": "",
-            "regex": ""
-        },
-        "order_date": {
-            "element": "td:nth-of-type(1) > div > ul:nth-of-type(1) > li.purchaseDate",
-            "full_path": false,
-            "attribute": "",
-            "regex": ""
-        },
-        "purchase_product": {
-            "url_element": "td:nth-of-type(1) > div > ul:nth-of-type(1) > li:nth-of-type(4) > a.detail",
-            "parent": "html > body > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-type(2) > div > div:nth-of-type(3) > table:nth-of-type(1) > tbody > tr",
-            "total_amount": {
-                "element": "html > body > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-type(2) > div > div:nth-of-type(3) > table:nth-of-type(2) > tbody > tr > td:nth-of-type(3) > table > tbody > tr:nth-of-type(4) > td.netTot",
-                "full_path": true,
-                "attribute": "",
-                "regex": ""
-            },
-            "product_code": {
-                "element": "td > table > tbody > tr > td:nth-of-type(2) > a.itemLink",
-                "full_path": false,
-                "attribute": "href",
-                "regex": ".+item.rakuten.co.jp/([^/]+/[^/]+)/.*"
-            },
-            "product_name": {
-                "element": "td > table > tbody > tr > td:nth-of-type(2) > a.itemLink",
-                "full_path": false,
-                "attribute": "",
-                "regex": ""
-            },
-            "product_quantity": {
-                "element": "td.widthQuantity.taRight",
-                "full_path": false,
-                "attribute": "",
-                "regex": ""
-            },
-            "unit_price": {
-                "element": "td.widthPrice.taRight",
-                "full_path": false,
-                "attribute": "",
-                "regex": ""
-            },
-            "product_distributor": {
-                "element": "html > body > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-type(2) > div > div:nth-of-type(1) > table > tbody > tr:nth-of-type(1) > td:nth-of-type(2) > p > a",
-                "full_path": true,
-                "attribute": "",
-                "regex": ""
-            }
-       }
+  "url": "https://order.my.rakuten.co.jp/?l-id=top_normal_function04&fidomy=1",
+  "purchase_order": {
+    "parent": "html > body > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(3) > div > table > tbody > tr",
+    "order_number": {
+      "element": "td:nth-of-type(1) > div > ul:nth-of-type(1) > li:nth-of-type(2) > span.idNum",
+      "full_path": false,
+      "attribute": "",
+      "regex": ""
     },
-    "next_url_element": "#oDrCenterContents .clfx:nth-child(11) [data-ratid=\\\"ph_pc_pagi_next\\\"]"
-}{
-     "url": "https://order.my.rakuten.co.jp/?l-id=top_normal_function04&fidomy=1",
-     "purchase_order": {
-         "parent": "html > body > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(3) > div > table > tbody > tr",
-         "order_number": {
-             "element": "td:nth-of-type(1) > div > ul:nth-of-type(1) > li:nth-of-type(2) > span.idNum",
-             "full_path": false,
-             "attribute": "",
-             "regex": ""
-         },
-         "order_date": {
-             "element": "td:nth-of-type(1) > div > ul:nth-of-type(1) > li.purchaseDate",
-             "full_path": false,
-             "attribute": "",
-             "regex": ""
-         },
-         "purchase_product": {
-             "url_element": "td:nth-of-type(1) > div > ul:nth-of-type(1) > li:nth-of-type(4) > a.detail",
-             "parent": "html > body > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-type(2) > div > div:nth-of-type(3) > table:nth-of-type(1) > tbody > tr",
-             "total_amount": {
-                 "element": "html > body > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-type(2) > div > div:nth-of-type(3) > table:nth-of-type(2) > tbody > tr > td:nth-of-type(3) > table > tbody > tr:nth-of-type(4) > td.netTot",
-                 "full_path": true,
-                 "attribute": "",
-                 "regex": ""
-             },
-             "product_code": {
-                 "element": "td > table > tbody > tr > td:nth-of-type(2) > a.itemLink",
-                 "full_path": false,
-                 "attribute": "href",
-                 "regex": ".+item.rakuten.co.jp/([^/]+/[^/]+)/.*"
-             },
-             "product_name": {
-                 "element": "td > table > tbody > tr > td:nth-of-type(2) > a.itemLink",
-                 "full_path": false,
-                 "attribute": "",
-                 "regex": ""
-             },
-             "product_quantity": {
-                 "element": "td.widthQuantity.taRight",
-                 "full_path": false,
-                 "attribute": "",
-                 "regex": ""
-             },
-             "unit_price": {
-                 "element": "td.widthPrice.taRight",
-                 "full_path": false,
-                 "attribute": "",
-                 "regex": ""
-             },
-             "product_distributor": {
-                 "element": "html > body > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-type(2) > div > div:nth-of-type(1) > table > tbody > tr:nth-of-type(1) > td:nth-of-type(2) > p > a",
-                 "full_path": true,
-                 "attribute": "",
-                 "regex": ""
-             }
-        }
-     },
-     "next_url_element": "#oDrCenterContents .clfx:nth-child(11) [data-ratid=\\\"ph_pc_pagi_next\\\"]"
- }
- ',
+    "order_date": {
+      "element": "td:nth-of-type(1) > div > ul:nth-of-type(1) > li.purchaseDate",
+      "full_path": false,
+      "attribute": "",
+      "regex": ""
+    },
+    "purchase_product": {
+      "url_element": "td:nth-of-type(1) > div > ul:nth-of-type(1) > li:nth-of-type(4) > a.detail",
+      "parent": "html > body > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-type(2) > div > div:nth-of-type(3) > table:nth-of-type(1) > tbody > tr",
+      "total_amount": {
+        "element": "html > body > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-type(2) > div > div:nth-of-type(3) > table:nth-of-type(2) > tbody > tr > td:nth-of-type(3) > table > tbody > tr > td.netTot",
+        "full_path": true,
+        "attribute": "",
+        "regex": ""
+      },
+      "product_code": {
+        "element": "td > table > tbody > tr > td:nth-of-type(2) > a.itemLink",
+        "full_path": false,
+        "attribute": "href",
+        "regex": ".+item.rakuten.co.jp/([^/]+/[^/]+)/.*"
+      },
+      "product_name": {
+        "element": "td > table > tbody > tr > td:nth-of-type(2) > a.itemLink",
+        "full_path": false,
+        "attribute": "",
+        "regex": ""
+      },
+      "product_quantity": {
+        "element": "td.widthQuantity.taRight",
+        "full_path": false,
+        "attribute": "",
+        "regex": ""
+      },
+      "unit_price": {
+        "element": "td.widthPrice.taRight",
+        "full_path": false,
+        "attribute": "",
+        "regex": ""
+      },
+      "product_distributor": {
+        "element": "html > body > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-type(2) > div > div:nth-of-type(1) > table > tbody > tr:nth-of-type(1) > td:nth-of-type(2) > p > a",
+        "full_path": true,
+        "attribute": "",
+        "regex": ""
+      }
+    }
+  },
+  "next_url_element": "#oDrCenterContents .clfx:nth-child(11) [data-ratid=\"ph_pc_pagi_next\"]"
+}
+',
 @yahoo_purchase_history_script = '
 {
     "url": "https://odhistory.shopping.yahoo.co.jp/cgi-bin/history-list?sc_i=shp_pc_my_MHD_order_history",

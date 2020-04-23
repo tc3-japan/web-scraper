@@ -182,11 +182,17 @@ public class GeneralPurchaseHistoryCrawler {
       }
 
       HtmlPage orderPage = rootPage;
+      List<DomNode> productList;
       if (historyPage.isValid(orderConfig.getPurchaseProduct().getUrlElement())) {
         HtmlAnchor anchor = orderNode.querySelector(orderConfig.getPurchaseProduct().getUrlElement());
         orderPage = anchor.click();
+        // fetch product by page root
+        productList = orderPage.querySelectorAll(orderConfig.getPurchaseProduct().getParent());
+      } else {
+        // fetch product by order node
+        productList = orderNode.querySelectorAll(orderConfig.getPurchaseProduct().getParent());
       }
-      List<DomNode> productList = orderPage.querySelectorAll(orderConfig.getPurchaseProduct().getParent());
+
       LOGGER.debug("[processOrders] productList.size() = " + productList.size());
 
       // On the contrast if a field for purchase_product appears under purchase_order, please reuse and set the scraped value to purchase_product

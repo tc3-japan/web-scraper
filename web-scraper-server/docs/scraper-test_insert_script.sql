@@ -131,7 +131,7 @@ SET
       }
     }
   },
-  "next_url_element": "#oDrCenterContents .clfx:nth-child(11) [data-ratid=\"ph_pc_pagi_next\"]"
+  "next_url_element": "#oDrCenterContents .clfx:nth-child(11) [data-ratid=\\\"ph_pc_pagi_next\\\"]"
 }
 ',
 @yahoo_purchase_history_script = '

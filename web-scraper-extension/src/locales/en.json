@@ -9,6 +9,7 @@
     "saveDialogTitle": "Are you sure to save the JSON?",
     "dialogBtnYes": "Sure",
     "dialogBtnNo": "Cancel",
+    "dialogBtnOK": "OK",
     "header": {
       "load": "Load",
       "save": "Save",
@@ -34,7 +35,8 @@
       "rootPath": "Root path",
       "attribute": "Attribute",
       "regex": "Regex",
-      "url": "URL"
+      "url": "URL",
+      "differentType": "Different type elements are selected."
     }
   }
 }

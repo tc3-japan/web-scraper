@@ -119,6 +119,7 @@ public class GeneralPurchaseHistoryCrawler {
   public GeneralPurchaseHistoryCrawlerResult fetchPurchaseHistoryList(TrafficWebClient webClient, boolean saveHtml) throws IOException {
     LOGGER.debug("[fetchPurchaseHistoryList] in");
 
+    webClient.getWebClient().getOptions().setJavaScriptEnabled(true);
     this.webClient = webClient;
     this.saveHtml = saveHtml;
     this.historyPage = new NavigablePurchaseHistoryPage(this.webClient);

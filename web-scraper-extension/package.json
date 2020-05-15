@@ -1,0 +1,52 @@
+{
+  "name": "configuration-extension",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "i18next": "^19.4.3",
+    "lodash": "^4.17.15",
+    "node-sass": "^4.14.0",
+    "nprogress": "^0.2.0",
+    "prop-types": "^15.7.2",
+    "react": "^16.13.1",
+    "npm-watch": "^0.6.0",
+    "react-dom": "^16.13.1",
+    "react-dropdown": "^1.7.0",
+    "react-i18next": "^11.3.5",
+    "react-scripts": "3.4.1",
+    "sweetalert2": "^9.10.12"
+  },
+  "scripts": {
+    "watch": "npm-watch",
+    "start": "react-scripts start",
+    "package": "npm run build && web-ext build -s build -a artifacts --overwrite-dest",
+    "build": "INLINE_RUNTIME_CHUNK=false react-scripts build"
+  },
+  "devDependencies": {
+    "web-ext": "^4.1.0"
+  },
+  "watch": {
+    "build": {
+      "patterns": [
+        "src",
+        "public"
+      ],
+      "extensions": "js,jsx,json,scss,html"
+    }
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "translation": {
+    "loadJsonTip": "请选择EC网站和Scraping类型，然后单击“加载”以加载json内容。",
+    "loadJsonFailed": "加载json失败",
+    "loadingJson": "加载中，请稍后。。。",
+    "loadDialogTitle": "你确定要加载吗？",
+    "loadDialogContent": "没有保存的将会丢失",
+    "testDialogTitle": "你确定要测试吗？",
+    "saveDialogTitle": "你确定要保存吗?",
+    "dialogBtnYes": "确定",
+    "dialogBtnNo": "取消",
+    "header": {
+      "load": "加载",
+      "save": "保存",
+      "test": "测试",
+      "log": "日志",
+      "scrapingType": "爬虫类型",
+      "ecSite": "EC 网站",
+      "setting": "设置"
+    },
+    "setting": {
+      "title": "设置",
+      "back": "返回",
+      "update": "更新",
+      "baseUrl": "服务根路径"
+    },
+    "editor": {
+      "addItem": "添加条目",
+      "advanced": "高级",
+      "selector": "选择器",
+      "urlSelector": "网址选择器",
+      "parentSelector": "父节点选择器",
+      "currentUrl": "当前网址",
+      "rootPath": "根路径",
+      "attribute": "属性",
+      "regex": "正则表达式",
+      "url": "网址"
+    }
+  }
+}

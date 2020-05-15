@@ -19,10 +19,16 @@
     "tabs",
     "http://127.0.0.1:8085/*"
   ],
-  "content_scripts": [{
-    "all_frames": true,
-    "matches": ["<all_urls>"],
-    "js": ["content.js"]
-  }],
+  "content_scripts": [
+    {
+      "all_frames": true,
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ]
+    }
+  ],
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
 }

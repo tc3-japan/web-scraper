@@ -1,0 +1,40 @@
+{
+  "translation": {
+    "loadJsonTip": "Please select EC site and Scraping type, then click \"Load\" to load json content.",
+    "loadJsonFailed": "Load content failed",
+    "loadingJson": "Loading json content, please waiting..",
+    "loadDialogTitle": "Are you sure to load the JSON?",
+    "loadDialogContent": "Unsaved changes will be lost.",
+    "testDialogTitle": "Are you sure to test the JSON?",
+    "saveDialogTitle": "Are you sure to save the JSON?",
+    "dialogBtnYes": "Sure",
+    "dialogBtnNo": "Cancel",
+    "header": {
+      "load": "Load",
+      "save": "Save",
+      "test": "Test",
+      "log": "Log",
+      "scrapingType": "Scraping Type",
+      "ecSite": "EC Site",
+      "setting": "Setting"
+    },
+    "setting": {
+      "title": "Settings",
+      "back": "back",
+      "update": "Update",
+      "baseUrl": "API Url base"
+    },
+    "editor": {
+      "addItem": "Add Item",
+      "advanced": "Advanced",
+      "selector": "Selector",
+      "urlSelector": "URL Selector",
+      "parentSelector": "Parent Selector",
+      "currentUrl": "Current URL",
+      "rootPath": "Root path",
+      "attribute": "Attribute",
+      "regex": "Regex",
+      "url": "URL"
+    }
+  }
+}

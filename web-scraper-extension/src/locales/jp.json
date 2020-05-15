@@ -1,0 +1,6 @@
+{
+  "translation": {
+    "loadJsonTip": "ECサイトとスクレイピングタイプを選択し、[ロード]をクリックしてjsonコンテンツをロードしてください。",
+    "loadJsonFailed": "Load content failed"
+  }
+}

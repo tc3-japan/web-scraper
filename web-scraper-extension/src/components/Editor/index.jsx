@@ -14,6 +14,7 @@ import {
   getPathParent, getCommonClass, removeDifferentAndAdditional,
 } from "../../services/utils";
 import Swal from 'sweetalert2'
+
 const iconP = require('../../assets/icon_+.png');
 
 
@@ -67,14 +68,58 @@ class Editor extends React.Component {
    * @param action the action
    */
   toggleSelectorBtn(path, action) {
-    const {siteObj} = this.props;
     if (action === 'start') {
       this.props.onUpdate('meta.highlight', path);
-      sendMessageToPage({action: 'startInspector', selector: _.get(siteObj, path)});
-      this.selectors = [];
-      this.totalSelectorTimes = this.getTotalOfSelectorTimes(path);
+      setTimeout(() => {
+        sendMessageToPage({
+          action: 'startInspector',
+          selector: this.getHighlight(path),
+          path
+        });
+        this.selectors = [];
+        this.totalSelectorTimes = this.getTotalOfSelectorTimes(path);
+      }); // next tick
     } else {
       this.stopInspector('toggleSelectorBtn');
+    }
+  }
+
+  /**
+   * get highlight element by parent
+   * @param path the path
+   * @return {string|*}
+   */
+  getHighlight(path) {
+    const {siteObj} = this.props;
+    const basePath = _.get(siteObj, path)
+
+    const pathParts = path.split('.')
+    pathParts.pop();
+    pathParts.push('full_path')
+    const rootPathValue = _.get(siteObj, pathParts.join('.')) // check full_path checked
+
+    if (_.isNil(basePath)
+      || _.isEmpty(basePath)
+      || rootPathValue
+      || path === 'purchase_order.parent'
+    ) {
+      return basePath
+    }
+
+    const orderParent = _.get(siteObj, 'purchase_order.parent')
+    const productUrlElement = _.get(siteObj, 'purchase_order.purchase_product.url_element')
+    const productParent = _.get(siteObj, 'purchase_order.purchase_product.parent')
+
+    if (path.indexOf('product') > 0) {
+      const isParent = path === 'purchase_order.purchase_product.parent'
+      const haveEle = !(_.isNil(productUrlElement) || _.isEmpty(productUrlElement))
+      if (isParent) {
+        return haveEle ? basePath : `${orderParent} > ${basePath}`
+      } else {
+        return haveEle ? `${productParent} > ${basePath}` : `${orderParent} > ${productParent} > ${basePath}`
+      }
+    } else {
+      return `${orderParent} > ${basePath}`
     }
   }
 
@@ -82,6 +127,7 @@ class Editor extends React.Component {
    * stop inspector
    */
   stopInspector(reason) {
+    this.selectors = [];
     setTimeout(() => {
       sendMessageToPage({action: 'stopInspector', reason});
       window.log('stopInspector,reason=' + reason);
@@ -100,6 +146,7 @@ class Editor extends React.Component {
 
     // check it is root path
     const pathParts = path.split('.')
+    window.log(`calculate path = ` + path)
     pathParts.pop();
     pathParts.push('full_path')
     const rootPathValue = _.get(siteObj, pathParts.join('.'))
@@ -192,6 +239,10 @@ class Editor extends React.Component {
       logInfo('got an event from page')
       logInfo('message = ' + JSON.stringify(message));
       if (message.action === 'click') {
+        if (!that.props.siteObj.meta.highlight) {
+          window.log('ignore message, because of not in highlight mode')
+          return
+        }
         that.selectors.push(message);
         logInfo('current selector length = ' + that.selectors.length);
         that.calculate()

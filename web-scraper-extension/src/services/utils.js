@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import {getI18T} from "../i18nSetup";
 
+const selector = require('./selector-helper')
 let chrome = window.chrome;
 let browser = window.browser;
 
@@ -171,117 +172,12 @@ export function sendMessageToPage(args) {
   });
 }
 
-/**
- * get common parent
- * @param p1 path 1
- * @param p2 path 2
- */
-export function getCommonParent(p1, p2) {
-  const parts1 = p1.split('>')
-  const parts2 = p2.split('>')
-  const minLength = Math.min(parts1.length, parts2.length)
-  const commonParts = [];
-
-  for (let i = 0; i < minLength; i++) {
-    const tag1 = parts1[i].split(':').shift().trim()
-    const tag2 = parts2[i].split(':').shift().trim()
-    if (tag1 !== tag2) {
-      throw new Error(getI18T()('editor.differentType'))
-    }
-  }
-  for (let i = 0; i < minLength; i++) {
-    if (parts1[i] === parts2[i]) {
-      commonParts.push(parts1[i])
-    } else {
-      commonParts.push((parts1[i] || parts2[i]).split(':')[0])
-      break;
-    }
-  }
-  return commonParts.map(p => p.trim()).join(' > ')
-}
 
 /**
- * get p1 parent (common part + p1 part, common part + p2 part)
- * @param p1 the path 1
- * @param p2 the path 2
+ * selector methods
  */
-export function getPathParent(p1, p2) {
-  const parts1 = p1.split('>')
-  const parts2 = p2.split('>')
-  const minLength = Math.min(parts1.length, parts2.length)
-  const commonParts = [];
-  const results = [];
-  for (let i = 0; i < minLength; i++) {
-    if (parts1[i] === parts2[i]) {
-      commonParts.push(parts1[i])
-    } else {
-      results[0] = commonParts.concat([parts1[i]]).map(p => p.trim()).join(' > ')
-      results[1] = commonParts.concat([parts2[i]]).map(p => p.trim()).join(' > ')
-      break;
-    }
-  }
-  return results;
-}
-
-/**
- * remove parent
- * @param parent the parent path
- * @param path the current path
- */
-export function removeParent(parent, path) {
-  const parentParts = parent.split('>')
-  const parts = path.split('>')
-  for (let i = 0; i < parentParts.length; i++) {
-    const tag1 = parts[0].split(':').shift().trim()
-    const tag2 = parentParts[i].split(':').shift().trim()
-    if (tag1 === tag2) {
-      parts.shift();
-    }
-  }
-  return parts.map(p => p.trim()).join(' > ')
-}
-
-/**
- * get common class
- * @param classes the classes
- * @return {string}
- */
-export function getCommonClass(classes) {
-  if (!classes || classes.length <= 0) {
-    return ''
-  }
-  let common = (classes[0] || '').split('.')
-  for (let i = 1; i < classes.length; i++) {
-    const parts = (classes[i] || '').split('.')
-    const newCommon = []
-    for (let i = 0; i < common.length; i++) {
-      if (common[i] === parts[i]) {
-        newCommon.push(common[i])
-      }
-    }
-    common = newCommon
-  }
-  return common.join('.')
-}
-
-/**
- * Remove different and additional ‘:nth-of-type()’ array number in pair of selectors
- * @param p1 the path 1
- * @param p2 the path 2
- * @return {string}
- */
-export function removeDifferentAndAdditional (p1,p2) {
-  const parts1 = p1.split('>')
-  const parts2 = p2.split('>')
-  // part2 length should = part2 length
-  for (let i = 0; i < parts1.length; i++) {
-    const tag1 = parts1[i].split(':').shift().trim()
-    const tag2 = parts2[i].split(':').shift().trim()
-    if (tag1 === tag2 && parts1[i] !== parts2[i]) {
-      // Remove different and additional `:nth-of-type()` array number in pair of selectors
-      parts1[i] = tag1
-      parts2[i] = tag2
-    }
-  }
-  return parts2.map(p => p.trim()).join(' > ')
-}
+export const getCommonParent = (p1, p2) => selector.getCommonParent(p1, p2, getI18T)
+export const getPathParent = selector.getPathParent
+export const removeParent = selector.removeParent
+export const getCommonClass = selector.getCommonClass
+export const removeDifferentAndAdditional = selector.removeDifferentAndAdditional

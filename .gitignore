@@ -38,3 +38,4 @@ input.txt
 web-scraper-server/.st*
 web-scraper-server/hs*
 .attac*
+web-scraper-extension/node_modules

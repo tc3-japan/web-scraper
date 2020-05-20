@@ -102,6 +102,8 @@ class Editor extends React.Component {
       || _.isEmpty(basePath)
       || rootPathValue
       || path === 'purchase_order.parent'
+      || path === 'next_url_element'
+      || path === 'purchase_order.url_element'
     ) {
       return basePath
     }
@@ -109,17 +111,22 @@ class Editor extends React.Component {
     const orderParent = _.get(siteObj, 'purchase_order.parent')
     const productUrlElement = _.get(siteObj, 'purchase_order.purchase_product.url_element')
     const productParent = _.get(siteObj, 'purchase_order.purchase_product.parent')
+    const appendPath = (paths) => {
+      return (paths || []).filter(p => (p || '').trim() !== '').join(' > ')
+    }
 
     if (path.indexOf('product') > 0) {
-      const isParent = path === 'purchase_order.purchase_product.parent'
+      const isParent =
+        path === 'purchase_order.purchase_product.parent'
+        || path === 'purchase_order.purchase_product.url_element'
       const haveEle = !(_.isNil(productUrlElement) || _.isEmpty(productUrlElement))
       if (isParent) {
-        return haveEle ? basePath : `${orderParent} > ${basePath}`
+        return haveEle ? basePath : appendPath([orderParent, basePath])
       } else {
-        return haveEle ? `${productParent} > ${basePath}` : `${orderParent} > ${productParent} > ${basePath}`
+        return haveEle ? appendPath([basePath, basePath]) : appendPath([orderParent, productParent, basePath])
       }
     } else {
-      return `${orderParent} > ${basePath}`
+      return appendPath([orderParent, basePath])
     }
   }
 
@@ -170,58 +177,79 @@ class Editor extends React.Component {
       // product items
       if (path.indexOf('product') > 0) {
         const urlElement = _.get(siteObj, 'purchase_order.purchase_product.url_element')
-        const productParent = _.get(siteObj, 'purchase_order.purchase_product.parent')
+        let productParent = _.get(siteObj, 'purchase_order.purchase_product.parent')
         const isElement = path.indexOf('url_element') >= 0
         // same page, need clean order parent
-        if (_.isNil(urlElement) || _.isEmpty(urlElement)) {
+        // and purchase_product.url_element always need calculate from order parent
+        if (_.isNil(urlElement)
+          || _.isEmpty(urlElement)
+          || isElement) {
           sp1 = removeParent(orderParent, sp1)
           sp2 = removeParent(orderParent, sp2)
         }
-        const parent = getCommonParent(sp1, sp2)
-        // update parent
-        if ((path.indexOf('parent') > 0
-          || _.isEmpty(productParent)
-          || _.isNil(productParent)
-        ) && !isElement) {
+        window.log('sp1 = ' + sp1)
+        window.log('sp2 = ' + sp2)
+        const isProductParentNull = _.isNil(productParent) || _.isEmpty(productParent)
+        // calculate new product parent
+        productParent = isProductParentNull ? getCommonParent(sp1, sp2) : productParent
 
+        // update parent, only if product parent is null/selector is parent and not in url_element selector
+        if ((path.indexOf('parent') > 0
+          || isProductParentNull
+        ) && !isElement) {
           const pPath = getPathParent(sp1, sp2)
           const c1 = await this.getClass(pPath[0])
           const c2 = await this.getClass(pPath[1])
           const classStr = getCommonClass([c1, c2])
           window.log(`${c1} , ${c2} , ${classStr}`)
-          this.props.onUpdate('purchase_order.purchase_product.parent', (parent) + classStr)
+          this.props.onUpdate('purchase_order.purchase_product.parent', (productParent) + classStr)
         }
 
-        const s1 = removeParent(parent, sp1)
-        const s2 = removeParent(parent, sp2)
+        let s1 = sp1
+        let s2 = sp2
+        if (isElement) {
+          window.log('skip remove product parent, because of this is purchase_product.url_element')
+        } else {
+          s1 = removeParent(productParent, sp1)
+          s2 = removeParent(productParent, sp2)
+        }
+        window.log('s1 = ' + s1)
+        window.log('s2 = ' + s2)
         const selector = removeDifferentAndAdditional(s1, s2)
+        window.log('after removeDifferentAndAdditional, selector = ' + selector)
         // update other product fields
         if (path.indexOf('parent') < 0) {
           this.props.onUpdate(path, selector + (getCommonClass([selectors[0].class, selectors[1].class])));
         }
       } else { // order items
-        const parent = getCommonParent(sp1, sp2)
+        const newParent = getCommonParent(sp1, sp2)
         const isElement = path.indexOf('url_element') >= 0
+        let orderParent = _.get(siteObj, 'purchase_order.parent')
+        const isOrderParentNull = _.isNil(orderParent) || _.isEmpty(orderParent)
+        orderParent = isOrderParentNull ? newParent : orderParent
         let selector = null
-        if (isElement) { // use common parent for url_element
-          selector = parent
-        } else {
-          const s1 = removeParent(parent, sp1)
-          const s2 = removeParent(parent, sp2)
-          selector = removeDifferentAndAdditional(s1, s2)
+
+        // order.url_element will always use new parent, not the existing parent
+        if(isElement){
+          orderParent = newParent
         }
+        const s1 = removeParent(orderParent, sp1)
+        const s2 = removeParent(orderParent, sp2)
+        window.log('s1 = ' + s1)
+        window.log('s2 = ' + s2)
+        selector = removeDifferentAndAdditional(s1, s2)
+
         // update parent if needed
         if ((path.indexOf('parent') > 0
-          || _.isNil(orderParent)
-          || _.isEmpty(orderParent))
-          && !isElement // element not need update parent
+          || isOrderParentNull
+        ) && !isElement // element not need update parent
         ) {
           const pPath = getPathParent(sp1, sp2)
           const c1 = await this.getClass(pPath[0])
           const c2 = await this.getClass(pPath[1])
           const classStr = getCommonClass([c1, c2])
           window.log(`${c1} , ${c2} , ${classStr}`)
-          this.props.onUpdate('purchase_order.parent', parent + classStr)
+          this.props.onUpdate('purchase_order.parent', orderParent + classStr)
         }
 
         // update property

@@ -15,7 +15,7 @@ function getCommonParent(p1, p2, getI18T) {
   const minLength = Math.min(parts1.length, parts2.length)
   const commonParts = [];
 
-  if (parts1.length !== parts1.length) {
+  if (parts1.length !== parts2.length) {
     throw new Error(getI18T()('editor.differentType'))
   }
   for (let i = 0; i < minLength; i++) {

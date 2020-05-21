@@ -197,9 +197,11 @@ class Editor extends React.Component {
         if ((path.indexOf('parent') > 0
           || isProductParentNull
         ) && !isElement) {
-          const pPath = getPathParent(sp1, sp2)
+          const pPath = getPathParent(selectors[0].path, selectors[1].path)
           const c1 = await this.getClass(pPath[0])
           const c2 = await this.getClass(pPath[1])
+          window.log('parent path1 = ' + pPath[0])
+          window.log('parent path2 = ' + pPath[1])
           const classStr = getCommonClass([c1, c2])
           window.log(`${c1} , ${c2} , ${classStr}`)
           this.props.onUpdate('purchase_order.purchase_product.parent', (productParent) + classStr)
@@ -227,18 +229,23 @@ class Editor extends React.Component {
         let orderParent = _.get(siteObj, 'purchase_order.parent')
         const isOrderParentNull = _.isNil(orderParent) || _.isEmpty(orderParent)
         orderParent = isOrderParentNull ? newParent : orderParent
-        let selector = null
 
-        // order.url_element will always use new parent, not the existing parent
-        if(isElement){
+        let selector = null
+        // order.url_element not need use parent
+        // only need removeDifferentAndAdditional
+        let s1 = sp1
+        let s2 = sp2
+        if (isElement) {
           orderParent = newParent
+        } else {
+          s1 = removeParent(orderParent, sp1)
+          s2 = removeParent(orderParent, sp2)
         }
-        const s1 = removeParent(orderParent, sp1)
-        const s2 = removeParent(orderParent, sp2)
+
         window.log('s1 = ' + s1)
         window.log('s2 = ' + s2)
         selector = removeDifferentAndAdditional(s1, s2)
-
+        window.log('final selector = ' + selector)
         // update parent if needed
         if ((path.indexOf('parent') > 0
           || isOrderParentNull

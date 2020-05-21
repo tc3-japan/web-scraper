@@ -11,9 +11,9 @@ import {
   sendMessageToPage,
   getCommonParent,
   removeParent,
-  getPathParent,
-  cleanNOfTh
+  getPathParent, getCommonClass, removeDifferentAndAdditional,
 } from "../../services/utils";
+import Swal from 'sweetalert2'
 
 const iconP = require('../../assets/icon_+.png');
 
@@ -27,6 +27,7 @@ class Editor extends React.Component {
     this.state = {}
     this.toggleSelectorBtn = this.toggleSelectorBtn.bind(this);
     this.promises = {};
+    this.t = getI18T();
   }
 
   /**
@@ -43,7 +44,7 @@ class Editor extends React.Component {
    * @return {number}
    */
   getTotalOfSelectorTimes(path) {
-    if (_.includes(['next_url_element', 'purchase_order.url_element'], path)) {
+    if (_.includes(['next_url_element'], path)) {
       return 1;
     }
     return 2;
@@ -67,23 +68,76 @@ class Editor extends React.Component {
    * @param action the action
    */
   toggleSelectorBtn(path, action) {
-    const {siteObj} = this.props;
     if (action === 'start') {
       this.props.onUpdate('meta.highlight', path);
-      sendMessageToPage({action: 'startInspector', selector: _.get(siteObj, path)});
-      this.selectors = [];
-      this.totalSelectorTimes = this.getTotalOfSelectorTimes(path);
+      setTimeout(() => {
+        sendMessageToPage({
+          action: 'startInspector',
+          selector: this.getHighlight(path),
+          path
+        });
+        this.selectors = [];
+        this.totalSelectorTimes = this.getTotalOfSelectorTimes(path);
+      }); // next tick
     } else {
-      this.stopInspector();
+      this.stopInspector('toggleSelectorBtn');
+    }
+  }
+
+  /**
+   * get highlight element by parent
+   * @param path the path
+   * @return {string|*}
+   */
+  getHighlight(path) {
+    const {siteObj} = this.props;
+    const basePath = _.get(siteObj, path)
+
+    const pathParts = path.split('.')
+    pathParts.pop();
+    pathParts.push('full_path')
+    const rootPathValue = _.get(siteObj, pathParts.join('.')) // check full_path checked
+
+    if (_.isNil(basePath)
+      || _.isEmpty(basePath)
+      || rootPathValue
+      || path === 'purchase_order.parent'
+      || path === 'next_url_element'
+      || path === 'purchase_order.url_element'
+    ) {
+      return basePath
+    }
+
+    const orderParent = _.get(siteObj, 'purchase_order.parent')
+    const productUrlElement = _.get(siteObj, 'purchase_order.purchase_product.url_element')
+    const productParent = _.get(siteObj, 'purchase_order.purchase_product.parent')
+    const appendPath = (paths) => {
+      return (paths || []).filter(p => (p || '').trim() !== '').join(' > ')
+    }
+
+    if (path.indexOf('product') > 0) {
+      const isParent =
+        path === 'purchase_order.purchase_product.parent'
+        || path === 'purchase_order.purchase_product.url_element'
+      const haveEle = !(_.isNil(productUrlElement) || _.isEmpty(productUrlElement))
+      if (isParent) {
+        return haveEle ? basePath : appendPath([orderParent, basePath])
+      } else {
+        return haveEle ? appendPath([basePath, basePath]) : appendPath([orderParent, productParent, basePath])
+      }
+    } else {
+      return appendPath([orderParent, basePath])
     }
   }
 
   /**
    * stop inspector
    */
-  stopInspector() {
+  stopInspector(reason) {
+    this.selectors = [];
     setTimeout(() => {
-      sendMessageToPage({action: 'stopInspector'});
+      sendMessageToPage({action: 'stopInspector', reason});
+      window.log('stopInspector,reason=' + reason);
       this.props.onUpdate('meta.highlight', null)
     }, 200)
   }
@@ -91,7 +145,7 @@ class Editor extends React.Component {
   /**
    * calculate and set path for json
    */
-  calculate() {
+  async calculate() {
 
     const {siteObj} = this.props;
     const selectors = this.selectors;
@@ -99,12 +153,13 @@ class Editor extends React.Component {
 
     // check it is root path
     const pathParts = path.split('.')
+    window.log(`calculate path = ` + path)
     pathParts.pop();
     pathParts.push('full_path')
     const rootPathValue = _.get(siteObj, pathParts.join('.'))
     if (rootPathValue) {
       this.props.onUpdate(path, selectors[selectors.length - 1].path);
-      this.stopInspector();
+      this.stopInspector('rootPathValue');
       return;
     }
 
@@ -122,38 +177,95 @@ class Editor extends React.Component {
       // product items
       if (path.indexOf('product') > 0) {
         const urlElement = _.get(siteObj, 'purchase_order.purchase_product.url_element')
-        const productParent = _.get(siteObj, 'purchase_order.purchase_product.parent')
+        let productParent = _.get(siteObj, 'purchase_order.purchase_product.parent')
+        const isElement = path.indexOf('url_element') >= 0
         // same page, need clean order parent
-        if (_.isNil(urlElement) || _.isEmpty(urlElement)) {
+        // and purchase_product.url_element always need calculate from order parent
+        if (_.isNil(urlElement)
+          || _.isEmpty(urlElement)
+          || isElement) {
           sp1 = removeParent(orderParent, sp1)
           sp2 = removeParent(orderParent, sp2)
         }
-        const parent = getCommonParent(sp1, sp2)
-        const selector = removeParent(parent, sp1)
-        // update parent
-        if (path.indexOf('parent') > 0 || _.isEmpty(productParent) || _.isNil(productParent)) {
-          this.getClass(getPathParent(selectors[0].path, selectors[1].path)).then(classStr => {
-            this.props.onUpdate('purchase_order.purchase_product.parent', cleanNOfTh(parent) + classStr)
-          })
+        window.log('sp1 = ' + sp1)
+        window.log('sp2 = ' + sp2)
+        const isProductParentNull = _.isNil(productParent) || _.isEmpty(productParent)
+        // calculate new product parent
+        productParent = isProductParentNull ? getCommonParent(sp1, sp2) : productParent
+
+        // update parent, only if product parent is null/selector is parent and not in url_element selector
+        if ((path.indexOf('parent') > 0
+          || isProductParentNull
+        ) && !isElement) {
+          const pPath = getPathParent(selectors[0].path, selectors[1].path)
+          const c1 = await this.getClass(pPath[0])
+          const c2 = await this.getClass(pPath[1])
+          window.log('parent path1 = ' + pPath[0])
+          window.log('parent path2 = ' + pPath[1])
+          const classStr = getCommonClass([c1, c2])
+          window.log(`${c1} , ${c2} , ${classStr}`)
+          this.props.onUpdate('purchase_order.purchase_product.parent', (productParent) + classStr)
         }
+
+        let s1 = sp1
+        let s2 = sp2
+        if (isElement) {
+          window.log('skip remove product parent, because of this is purchase_product.url_element')
+        } else {
+          s1 = removeParent(productParent, sp1)
+          s2 = removeParent(productParent, sp2)
+        }
+        window.log('s1 = ' + s1)
+        window.log('s2 = ' + s2)
+        const selector = removeDifferentAndAdditional(s1, s2)
+        window.log('after removeDifferentAndAdditional, selector = ' + selector)
         // update other product fields
         if (path.indexOf('parent') < 0) {
-          this.props.onUpdate(path, selector + selectors[0].class);
+          this.props.onUpdate(path, selector + (getCommonClass([selectors[0].class, selectors[1].class])));
         }
       } else { // order items
-        const parent = getCommonParent(sp1, sp2)
-        const selector = removeParent(parent, sp1)
-        if (path.indexOf('parent') > 0 || _.isNil(orderParent) || _.isEmpty(orderParent)) {
-          this.getClass(getPathParent(sp1, sp2)).then(classStr => {
-            this.props.onUpdate('purchase_order.parent', parent + classStr)
-          })
+        const newParent = getCommonParent(sp1, sp2)
+        const isElement = path.indexOf('url_element') >= 0
+        let orderParent = _.get(siteObj, 'purchase_order.parent')
+        const isOrderParentNull = _.isNil(orderParent) || _.isEmpty(orderParent)
+        orderParent = isOrderParentNull ? newParent : orderParent
+
+        let selector = null
+        // order.url_element not need use parent
+        // only need removeDifferentAndAdditional
+        let s1 = sp1
+        let s2 = sp2
+        if (isElement) {
+          orderParent = newParent
+        } else {
+          s1 = removeParent(orderParent, sp1)
+          s2 = removeParent(orderParent, sp2)
         }
+
+        window.log('s1 = ' + s1)
+        window.log('s2 = ' + s2)
+        selector = removeDifferentAndAdditional(s1, s2)
+        window.log('final selector = ' + selector)
+        // update parent if needed
+        if ((path.indexOf('parent') > 0
+          || isOrderParentNull
+        ) && !isElement // element not need update parent
+        ) {
+          const pPath = getPathParent(sp1, sp2)
+          const c1 = await this.getClass(pPath[0])
+          const c2 = await this.getClass(pPath[1])
+          const classStr = getCommonClass([c1, c2])
+          window.log(`${c1} , ${c2} , ${classStr}`)
+          this.props.onUpdate('purchase_order.parent', orderParent + classStr)
+        }
+
+        // update property
         if (path.indexOf('parent') < 0) {
-          this.props.onUpdate(path, selector + selectors[0].class);
+          this.props.onUpdate(path, selector + (getCommonClass([selectors[0].class, selectors[1].class])));
         }
       }
     }
-    this.stopInspector();
+    this.stopInspector('calculate-finished');
   }
 
   componentDidMount() {
@@ -162,9 +274,24 @@ class Editor extends React.Component {
       logInfo('got an event from page')
       logInfo('message = ' + JSON.stringify(message));
       if (message.action === 'click') {
+        if (!that.props.siteObj.meta.highlight) {
+          window.log('ignore message, because of not in highlight mode')
+          return
+        }
         that.selectors.push(message);
         logInfo('current selector length = ' + that.selectors.length);
-        that.calculate();
+        that.calculate()
+          .then(() => window.log('calculate done'))
+          .catch(e => {
+            // if failed, here need stop inspector
+            this.stopInspector('calculate-error');
+            Swal.fire({
+              text: e.message,
+              showConfirmButton: true,
+              confirmButtonText: this.t('dialogBtnOK'),
+            });
+            window.log(e)
+          });
       } else if (message.action === 'currentUrl') {
         that.props.onUpdate('url', message.url)
       } else if (message.action === 'getClass') {
@@ -179,7 +306,7 @@ class Editor extends React.Component {
 
   componentWillUnmount() {
     window.onMessage = _.noop
-    sendMessageToPage({action: 'stopInspector'});
+    this.stopInspector('componentWillUnmount')
   }
 
   render() {

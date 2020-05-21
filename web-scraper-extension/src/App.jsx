@@ -11,6 +11,7 @@ import 'nprogress/nprogress.css';
 import Swal from 'sweetalert2'
 import Api from "./services/api";
 import {getI18T} from "./i18nSetup";
+import Button from "./components/Button";
 
 class App extends React.Component {
   constructor(props, context) {
@@ -178,7 +179,10 @@ class App extends React.Component {
                  {...this.state}/>
         <Editor ref={ref => this.editor = ref} {...this.state} onUpdate={this.onUpdate}/>
         {log && <div className='log-container'>
-          {_.map(logTxt, (text, i) => (<div key={`log-${i}`}>{text}</div>))}
+          <div className='log-container'>
+            {_.map(logTxt, (text, i) => (<div key={`log-${i}`}>{text}</div>))}
+          </div>
+          <Button title={"Close Log"} onClick={()=>this.onLog()}/>
         </div>}
       </div>
     );

@@ -35,7 +35,7 @@
   opacity: 0;
 }
 .block-event{
-  pointer-events: none;
+  pointer-events: none !important;
 }
 </style>
 <div class="tl-wrap">
@@ -129,36 +129,56 @@
       }
       return classStr;
     },
+
+    blockEvent: function (target) {
+      let next = target
+      const elements = [];
+      while (next) {
+        if (next.classList && !next.classList.contains(blockEvent)) {
+          if(next === target){
+            next.classList.add(blockEvent);
+          }
+          const context = {e: next};
+          if (next.tagName.toLowerCase() === 'a') {
+            context.href = next.href
+            next.href = 'javascript:;'
+          }
+          elements.push(context)
+        }
+        next = next.parentNode
+      }
+      setTimeout(() => {
+        for (let i = 0; i < elements.length; i++) {
+          const ele = elements[i].e
+          const context = elements[i]
+          ele.classList.remove(blockEvent);
+          if (context.href) {
+            ele.href = context.href
+          }
+        }
+      }, 2000)
+    },
     mousedown: function (e) {
       e.preventDefault();
       e.stopPropagation();
       e.stopImmediatePropagation();
 
-      if (!e.target.classList.contains(blockEvent)) {
-        e.target.classList.add(blockEvent);
-      }
+      this.blockEvent(e.target)
       const classStr = this.getClass(this.$target);
       const fullPath = this.getFullPath(this.$target);
       console.log('selector path = ' + fullPath);
-      native.runtime.sendMessage({
-        action: 'click',
-        path: fullPath,
-        class: classStr
-      });
-      setTimeout(() => {
-        e.target.classList.remove(blockEvent);
-      }, 2000)
+      try {
+        native.runtime.sendMessage({
+          action: 'click',
+          path: fullPath,
+          class: classStr
+        });
+      } catch (e) {
+        console.log(e)
+      }
       return false;
     },
-    registerEvents: function () {
-      document.addEventListener('mousemove', this.log);
-      document.addEventListener('mousedown', this.mousedown, false);
-      document.addEventListener('scroll', this.layout);
-      window.addEventListener('resize', function () {
-        this.handleResize();
-        this.layout();
-      }.bind(this));
-    },
+
 
     log: function (e) {
       this.$target = e.target;
@@ -286,14 +306,12 @@
     },
 
     highlight: function (selector) {
+      if (!selector || selector.trim() === '') {
+        return;
+      }
       this.highlightNodes = document.querySelectorAll(selector);
       this.layout();
     },
-    clearHighlight() {
-      this.highlightNodes = [];
-      this.layout();
-    },
-
     handleResize: function () {
       this.width = this.$canvas.width = window.innerWidth;
       this.height = this.$canvas.height = window.innerHeight;
@@ -304,11 +322,20 @@
       this.getNodes();
     },
 
+    registerEvents: function () {
+      document.addEventListener('mousemove', this.log);
+      window.addEventListener('mouseup', this.mousedown);
+      document.addEventListener('scroll', this.layout);
+      window.addEventListener('resize', function () {
+        this.handleResize();
+        this.layout();
+      }.bind(this));
+    },
     deactivate: function () {
       if (this.$host) {
         this.$wrap.classList.add('-out');
         document.removeEventListener('mousemove', this.log);
-        document.removeEventListener('mousedown', this.mousedown, false);
+        window.removeEventListener('mouseup', this.mousedown);
         document.body.removeChild(this.$host);
         this.highlightNodes = [];
         this.$target = null;
@@ -333,16 +360,15 @@
     } else if (request.action === 'stopInspector') {
       inspector.deactivate();
     } else if (request.action === 'currentUrl') {
-      console.log('current url = ' + document.location.href);
       native.runtime.sendMessage({
         action: 'currentUrl',
         url: document.location.href,
       });
     } else if (request.action === 'getClass') {
       const element = document.querySelector(request.selector)
-      const classStr = inspector.getClass(element, true)
-      if (!element) {
-        return;
+      let classStr = ''
+      if (element) {
+        classStr = inspector.getClass(element)
       }
       native.runtime.sendMessage({
         action: 'getClass',
@@ -353,5 +379,8 @@
   }
 
   window.inspector = window.inspector || new Inspector();
-  native.runtime.onMessage.addListener(onMessage);
+  if (native.runtime.onMessage && native.runtime.onMessage.addListener) {
+    native.runtime.onMessage.addListener(onMessage);
+  }
+
 })();

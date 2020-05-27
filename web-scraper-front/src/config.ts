@@ -1,5 +1,5 @@
 export default class AppConfig {
-  public static lang    = 'ja';
+  public static lang    = 'en';
   public static baseApi = 'http://127.0.0.1:8085/api/v1';
   public static productLinkBase = {
     amazon: 'https://www.amazon.co.jp/gp/product/',

@@ -13,7 +13,6 @@ import com.topcoder.api.service.login.yahoo.YahooLoginHandler;
 import com.topcoder.common.dao.ECSiteAccountDAO;
 import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.common.repository.ECSiteAccountRepository;
-import com.topcoder.common.repository.ScraperRepository;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.common.util.Common;
 import com.topcoder.scraper.module.IPurchaseHistoryModule;
@@ -21,6 +20,7 @@ import com.topcoder.scraper.module.ecisolatedmodule.yahoo.crawler.OldYahooPurcha
 import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistoryCrawlerResult;
 import com.topcoder.scraper.service.PurchaseHistoryService;
 import com.topcoder.scraper.service.WebpageService;
+import com.topcoder.common.repository.ConfigurationRepository;
 
 @Component
 public class OldYahooPurchaseHistoryListModule implements IPurchaseHistoryModule {
@@ -31,20 +31,20 @@ public class OldYahooPurchaseHistoryListModule implements IPurchaseHistoryModule
   private final WebpageService webpageService;
   private final ECSiteAccountRepository ecSiteAccountRepository;
   private final YahooLoginHandler loginHandler;
-  private final ScraperRepository scraperRepository;
+  private final ConfigurationRepository configurationRepository;
 
   @Autowired
   public OldYahooPurchaseHistoryListModule(
     PurchaseHistoryService purchaseHistoryService,
     ECSiteAccountRepository ecSiteAccountRepository,
     WebpageService webpageService,
-    ScraperRepository scraperRepository,
+    ConfigurationRepository configurationRepository,
     YahooLoginHandler loginHandler) {
     this.purchaseHistoryService = purchaseHistoryService;
     this.webpageService = webpageService;
     this.ecSiteAccountRepository = ecSiteAccountRepository;
     this.loginHandler = loginHandler;
-    this.scraperRepository = scraperRepository;
+    this.configurationRepository = configurationRepository;
   }
 
   @Override
@@ -73,7 +73,7 @@ public class OldYahooPurchaseHistoryListModule implements IPurchaseHistoryModule
       }
 
       try {
-        OldYahooPurchaseHistoryListCrawler crawler = new OldYahooPurchaseHistoryListCrawler(getModuleType(), webpageService, ecSiteAccountDAO, this.scraperRepository);
+        OldYahooPurchaseHistoryListCrawler crawler = new OldYahooPurchaseHistoryListCrawler(getModuleType(), webpageService, ecSiteAccountDAO, this.configurationRepository);
 
         GeneralPurchaseHistoryCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClient, lastPurchaseHistory.orElse(null), true);
         webClient.finishTraffic();

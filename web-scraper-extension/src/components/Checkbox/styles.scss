@@ -1,0 +1,25 @@
+@import "../../common";
+
+.checkbox-container {
+  width: 24px;
+  height: 24px;
+  border: 1px solid $borderColor;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  .checked {
+    width: 14px;
+    height: 14px;
+    background-color: $borderColor;
+  }
+
+  &:hover {
+    opacity: 0.6;
+  }
+
+  &:active {
+    opacity: 0.6;
+  }
+}

@@ -41,7 +41,7 @@ public class PurchaseProductDAO {
    * Product quantity
    */
   @Column(name = "product_quantity")
-  private int productQuantity;
+  private Integer productQuantity;
 
   /**
    * Unit price
@@ -94,7 +94,7 @@ public class PurchaseProductDAO {
     this.productName = productName;
   }
 
-  public void setProductQuantity(int productQuantity) {
+  public void setProductQuantity(Integer productQuantity) {
     this.productQuantity = productQuantity;
   }
 
@@ -122,7 +122,7 @@ public class PurchaseProductDAO {
     return productName;
   }
 
-  public int getProductQuantity() {
+  public Integer getProductQuantity() {
     return productQuantity;
   }
 

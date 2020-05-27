@@ -36,12 +36,15 @@ public class DBPurchaseHistoryService implements PurchaseHistoryService {
   public void save(String site, List<PurchaseHistory> list) {
     for (PurchaseHistory purchaseHistory : list) {
       if (purchaseHistory == null) continue;
+      if (purchaseHistory.getOrderNumber() == null && purchaseHistory.getOrderDate() == null) continue;
 
       // Save PurchaseHistoryDAO
       PurchaseHistoryDAO dao = historyRepository.save(new PurchaseHistoryDAO(site, purchaseHistory));
 
       if (purchaseHistory.getProducts() == null) continue;
       for (ProductInfo productInfo : purchaseHistory.getProducts()) {
+        if (productInfo.getName() == null && productInfo.getCode() == null) continue;
+
         // Save PurchaseProductDAO
         PurchaseProductDAO purchaseProductDAO = new PurchaseProductDAO(productInfo, dao);
         purchaseProductRepository.save(purchaseProductDAO);

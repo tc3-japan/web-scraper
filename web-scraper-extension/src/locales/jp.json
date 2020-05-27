@@ -1,6 +1,59 @@
 {
   "translation": {
-    "loadJsonTip": "ECサイトとスクレイピングタイプを選択し、[ロード]をクリックしてjsonコンテンツをロードしてください。",
-    "loadJsonFailed": "Load content failed"
+    "loadJsonTip": "ECサイトとスクレイパーを選択し、[Load]をクリックしてJSONをロードしてください。",
+    "loadJsonFailed": "JSONのロードに失敗しました。",
+    "loadingJson": "JSONをロードしています...",
+    "loadDialogTitle": "JSONをロードします。よろしいですか？",
+    "loadDialogContent": "変更は破棄されます。",
+    "testDialogTitle": "JSONをテストします。よろしいですか？",
+    "saveDialogTitle": "JSONを保存します。よろしいですか？",
+    "dialogBtnYes": "OK",
+    "dialogBtnNo": "Cancel",
+    "dialogBtnOK": "OK",
+    "header": {
+      "load": "Load",
+      "save": "Save",
+      "test": "Test",
+      "log": "Log",
+      "scrapingType": "スクレイパー",
+      "ecSite": "ECサイト",
+      "setting": "Setting",
+      "purchaseHistory": "購入履歴",
+      "productDetail": "商品詳細"
+    },
+    "setting": {
+      "title": "Settings",
+      "back": "戻る",
+      "update": "Update",
+      "baseUrl": "APIベースURL"
+    },
+    "editor": {
+      "items": {
+        "orderNumber": "注文番号",
+        "orderDate": "注文日",
+        "totalAmount": "合計金額",
+        "deliveryStatus": "配達状況",
+        "productCode": "商品番号",
+        "productName": "商品名",
+        "productQuantity": "注文数",
+        "unitPrice": "価格",
+        "productDistributor": "販売者"
+      },
+      "purchaseHistoryPage": "購入履歴ページ",
+      "purchaseOrder": "購入履歴",
+      "purchaseProduct": "購入商品",
+      "nextPage": "ページ移動",
+      "addItem": "項目追加",
+      "advanced": "Advanced",
+      "selector": "セレクタ",
+      "urlSelector": "URLセレクタ",
+      "parentSelector": "グループセレクタ",
+      "currentUrl": "現ページURL",
+      "rootPath": "フルパス",
+      "attribute": "属性",
+      "regex": "正規表現",
+      "url": "URL",
+      "differentType": "異なるDOMエレメントが選択されたため共通セレクタは取得できません。"
+    }
   }
 }

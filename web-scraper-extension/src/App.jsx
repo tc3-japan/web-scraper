@@ -3,7 +3,7 @@ import './App.scss';
 import HeadBar from "./components/HeadBar";
 import Editor from "./components/Editor";
 import {convertTOBackend, convertToFrontend, logInfo, processError} from "./services/utils";
-import {EC_SITES, SCRAPING_TYPE} from "./config/config";
+import {EC_SITES, SCRAPING_TYPE} from "./config/dropdown-list";
 import _ from 'lodash';
 import Setting from "./components/Setting";
 import 'sweetalert2/src/sweetalert2.scss';

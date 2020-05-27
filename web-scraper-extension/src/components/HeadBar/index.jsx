@@ -2,7 +2,7 @@ import React from 'react';
 import Button from "../Button";
 import './styles.scss'
 import ReactDropdown from 'react-dropdown';
-import {EC_SITES, SCRAPING_TYPE} from "../../config/config";
+import {EC_SITES, SCRAPING_TYPE} from "../../config/dropdown-list";
 import PT from 'prop-types'
 import {getI18T} from "../../i18nSetup";
 

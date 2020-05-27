@@ -4,7 +4,7 @@ import './style.scss'
 import ReactDropdown from 'react-dropdown';
 import Checkbox from "../Checkbox";
 import PT from 'prop-types';
-import {JSON_DROPDOWN} from "../../config/config";
+import {JSON_DROPDOWN} from "../../config/dropdown-list";
 import _ from 'lodash';
 import {getI18T} from "../../i18nSetup";
 

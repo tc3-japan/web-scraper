@@ -2,6 +2,7 @@ package com.topcoder.scraper.module.ecunifiedmodule.crawler;
 
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,11 +32,16 @@ import org.springframework.beans.BeanUtils;
 
 public class GeneralPurchaseHistoryCrawler {
 
+  private class DuplicatedException extends Exception {}
+
   private static final Logger LOGGER = LoggerFactory.getLogger(GeneralPurchaseHistoryCrawler.class);
   private String jsonConfigText = "";
 
   private List<String> savedPathList;
   private boolean saveHtml;
+
+  private List<String> scrapedPageList;
+  private List<String> scrapedOrderNumberList;
 
   @Getter
   @Setter
@@ -126,10 +132,18 @@ public class GeneralPurchaseHistoryCrawler {
 
     this.purchaseHistoryList = new LinkedList<>();
     this.savedPathList = new LinkedList<>();
+    this.scrapedPageList = new ArrayList<>();
+    this.scrapedOrderNumberList = new ArrayList<>();
 
     purchaseHistoryConfig = new ObjectMapper().readValue(this.jsonConfigText, PurchaseHistoryConfig.class);
     historyPage.setPage(purchaseHistoryConfig.getUrl());
-    processPurchaseHistory();
+    scrapedPageList.add(purchaseHistoryConfig.getUrl());
+
+    try {
+      processPurchaseHistory();
+    } catch (DuplicatedException de) {
+      LOGGER.info("Scraping duplicated Order Number detected.");
+    }
 
     return new GeneralPurchaseHistoryCrawlerResult(this.purchaseHistoryList, this.savedPathList);
   }
@@ -139,7 +153,7 @@ public class GeneralPurchaseHistoryCrawler {
    *
    * @throws IOException if save html failed
    */
-  private void processPurchaseHistory() throws IOException {
+  private void processPurchaseHistory() throws IOException, DuplicatedException {
     LOGGER.debug("[processPurchaseHistory] in");
     while (this.historyPage.getPage() != null) {
 
@@ -165,7 +179,7 @@ public class GeneralPurchaseHistoryCrawler {
    * @param orderList the order list
    * @param rootPage  the page that need scrape
    */
-  private void processOrders(List<DomNode> orderList, HtmlPage rootPage) throws IOException {
+  private void processOrders(List<DomNode> orderList, HtmlPage rootPage) throws IOException, DuplicatedException {
     LOGGER.debug("[processOrders] in");
     LOGGER.debug("[processOrders] Parsing page url " + historyPage.getPage().getUrl().toString());
     LOGGER.debug("[processOrders] Purchase list size =  " + orderList.size());
@@ -212,9 +226,13 @@ public class GeneralPurchaseHistoryCrawler {
    * @param config the selector config
    * @param history the history item
    */
-  private void scrapeOrder(HtmlPage urlElementPage, DomNode orderNode, PurchaseCommon config, PurchaseHistory history) {
+  private void scrapeOrder(HtmlPage urlElementPage, DomNode orderNode, PurchaseCommon config, PurchaseHistory history) throws DuplicatedException {
     if (config.getOrderNumber() != null) {
-      history.setOrderNumber(historyPage.scrapeString(urlElementPage, orderNode, config.getOrderNumber()));
+      String orderNumber = historyPage.scrapeString(urlElementPage, orderNode, config.getOrderNumber());
+      if (scrapedOrderNumberList.contains(orderNumber)) throw new DuplicatedException();
+
+      history.setOrderNumber(orderNumber);
+      scrapedOrderNumberList.add(orderNumber);
     }
     if (config.getOrderDate() != null) {
       history.setOrderDate(historyPage.scrapeDate(urlElementPage, orderNode, config.getOrderDate()));
@@ -264,7 +282,7 @@ public class GeneralPurchaseHistoryCrawler {
    * @param orderPage    the order page, this order page maybe is root history page
    * @param reuseProduct the reuse product
    */
-  private void processProducts(List<DomNode> productList, HtmlPage orderPage, ProductInfo reuseProduct) throws IOException {
+  private void processProducts(List<DomNode> productList, HtmlPage orderPage, ProductInfo reuseProduct) throws IOException, DuplicatedException {
     LOGGER.debug("[processProducts] in");
 
     PurchaseProduct productConfig = purchaseHistoryConfig.getPurchaseOrder().getPurchaseProduct();
@@ -302,8 +320,9 @@ public class GeneralPurchaseHistoryCrawler {
     LOGGER.debug("[gotoNextPage] in");
     // Try to click next page first
     HtmlAnchor nextPageAnchor = page.querySelector(purchaseHistoryConfig.getNextUrlElement());
-    if (nextPageAnchor != null) {
+    if (nextPageAnchor != null && !scrapedPageList.contains(nextPageAnchor.getHrefAttribute())) {
       LOGGER.info("[gotoNextPage] goto Next Page");
+      scrapedPageList.add(nextPageAnchor.getHrefAttribute());
       return nextPageAnchor.click();
     }
     return null;

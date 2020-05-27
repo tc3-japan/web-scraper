@@ -25,6 +25,10 @@
       "baseUrl": "服务根路径"
     },
     "editor": {
+      "purchaseHistoryPage": "购买记录页面",
+      "purchaseOrder": "购买记录",
+      "purchaseProduct": "购买商品",
+      "nextPage": "页面移动",
       "addItem": "添加条目",
       "advanced": "高级",
       "selector": "选择器",

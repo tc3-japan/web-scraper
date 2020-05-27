@@ -4,7 +4,7 @@ import './style.scss'
 import ExpandRow from "./ExpandRow";
 import PT from "prop-types";
 import _ from 'lodash'
-import {JSON_DROPDOWN} from "../../config/config";
+import {JSON_DROPDOWN} from "../../config/dropdown-list";
 import {getI18T} from "../../i18nSetup";
 import {
   logInfo,
@@ -123,7 +123,7 @@ class Editor extends React.Component {
       if (isParent) {
         return haveEle ? basePath : appendPath([orderParent, basePath])
       } else {
-        return haveEle ? appendPath([basePath, basePath]) : appendPath([orderParent, productParent, basePath])
+        return haveEle ? appendPath([productParent, basePath]) : appendPath([orderParent, productParent, basePath])
       }
     } else {
       return appendPath([orderParent, basePath])
@@ -339,17 +339,17 @@ class Editor extends React.Component {
     return <div className='editor-container'>
       <div className={`editor-row ${!!isExpanded('history')}`}>
         <div className='title' onClick={() => this.toggle('history')}>
-          {getEText(isExpanded('history'))}<span>Purchase History Page</span>
+          {getEText(isExpanded('history'))}<span>{t('editor.purchaseHistoryPage')}</span>
         </div>
         <div className='input-container'>
           <span>{t('editor.url')}</span>
           <input value={siteObj.url} onChange={e => onUpdate('url', e.target.value)}/>
         </div>
-        <Button title={'Current URL'} onClick={() => sendMessageToPage({action: 'currentUrl'})}/>
+        <Button title={t('editor.currentUrl')} onClick={() => sendMessageToPage({action: 'currentUrl'})}/>
       </div>
       {isExpanded('history') && <div className='indent'>
         <div className={`editor-row ${!!isExpanded('order')}`}>
-          <div className='title' onClick={() => this.toggle('order')}>{getEText(isExpanded('order'))}<span>Purchase Order</span>
+          <div className='title' onClick={() => this.toggle('order')}>{getEText(isExpanded('order'))}<span>{t('editor.purchaseOrder')}</span>
           </div>
           {renderInputRow('purchase_order.url_element')}
           <Button type={'selector'}
@@ -382,7 +382,7 @@ class Editor extends React.Component {
           ><img alt={'btn'} src={iconP}/><span>{t('editor.addItem')}</span></div>}
 
           <div className={`editor-row ${!!isExpanded('product')}`}>
-            <div className='title' onClick={() => this.toggle('product')}>{getEText(isExpanded('product'))}<span>Purchase Product</span>
+            <div className='title' onClick={() => this.toggle('product')}>{getEText(isExpanded('product'))}<span>{t('editor.purchaseProduct')}</span>
             </div>
             {renderInputRow('purchase_order.purchase_product.url_element')}
             <Button type={'selector'}
@@ -423,7 +423,7 @@ class Editor extends React.Component {
 
         <div className={`editor-row ${!!isExpanded('next')}`}>
           <div className='title'
-               onClick={() => this.toggle('next')}>{getEText(isExpanded('next'))}<span>Next Page</span></div>
+               onClick={() => this.toggle('next')}>{getEText(isExpanded('next'))}<span>{t('editor.nextPage')}</span></div>
           {renderInputRow('next_url_element', t('editor.selector'))}
           <Button type={'selector'} onClick={this.toggleSelectorBtn} path={'next_url_element'}
                   highlight={siteObj.meta.highlight}/>

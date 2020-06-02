@@ -16,12 +16,12 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.topcoder.common.dao.ECSiteAccountDAO;
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.model.PurchaseHistory;
-import com.topcoder.common.repository.ScraperRepository;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.lib.navpage.NavigablePurchaseHistoryPage;
 import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistoryCrawler;
 import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistoryCrawlerResult;
 import com.topcoder.scraper.service.WebpageService;
+import com.topcoder.common.repository.ConfigurationRepository;
 
 public class OldYahooPurchaseHistoryListCrawler extends GeneralPurchaseHistoryCrawler {
 
@@ -29,30 +29,30 @@ public class OldYahooPurchaseHistoryListCrawler extends GeneralPurchaseHistoryCr
 
   private final String siteName;
   private final WebpageService webpageService;
-  private final ScraperRepository scraperRepository;
+  private final ConfigurationRepository configurationRepository;
 
   // for testing only
   private String username; // Actually email?
   private String password;
 
   public OldYahooPurchaseHistoryListCrawler(String siteName, WebpageService webpageService,
-                                            ECSiteAccountDAO ecSiteAccountDAO, ScraperRepository scraperRepository) {
-    super(siteName, webpageService, scraperRepository);
+                                            ECSiteAccountDAO ecSiteAccountDAO, ConfigurationRepository configurationRepository) {
+    super(siteName, webpageService, configurationRepository);
     this.siteName = siteName;
     this.webpageService = webpageService;
     this.username = ecSiteAccountDAO.getLoginEmail();
     this.password = ecSiteAccountDAO.getPassword();
-    this.scraperRepository = scraperRepository;
+    this.configurationRepository = configurationRepository;
   }
 
   public OldYahooPurchaseHistoryListCrawler(String siteName, WebpageService webpageService, String username,
-                                            String password, ScraperRepository scraperRepository) {
-    super(siteName, webpageService, scraperRepository);
+                                            String password, ConfigurationRepository configurationRepository) {
+    super(siteName, webpageService, configurationRepository);
     this.siteName = siteName;
     this.webpageService = webpageService;
     this.username = username;
     this.password = password;
-    this.scraperRepository = scraperRepository;
+    this.configurationRepository = configurationRepository;
   }
 
   public GeneralPurchaseHistoryCrawlerResult fetchPurchaseHistoryList(TrafficWebClient webClient,

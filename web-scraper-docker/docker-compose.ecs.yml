@@ -24,7 +24,7 @@ services:
       - scraper-db
     volumes:
       - "/home/ec2-user/docker/scraper/logs:/root/scraper/logs"
-    command: bash -c "sleep 30; cd /root/scraper/; java -jar web-scraper-server-*.jar --rest --spring.config.location=file:application.yaml"
+    command: bash -c "sleep 10; cd /root/scraper/; java -jar web-scraper-server-*.jar --rest --spring.config.location=file:application.yaml"
     logging:
       driver: awslogs
       options:
@@ -56,8 +56,6 @@ services:
 
   scraper-solr:
     image: ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/scraper-solr:latest
-    build:
-      context: ./solr/
     ports:
       - 8983:8983
     volumes:
@@ -68,3 +66,6 @@ services:
         awslogs-group: scraper-solr-lg
         awslogs-region: ap-northeast-1
         awslogs-stream-prefix: scraper-solr
+
+volumes:
+  search-store:

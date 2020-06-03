@@ -47,7 +47,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: mypassword
       MYSQL_DATABASE: web_scraper
-      MYSQL_USER: root
+#      MYSQL_USER: root
       MYSQL_PASSWORD: mypassword
     volumes:
       - "./mysql/build/conf.d:/etc/mysql/conf.d"

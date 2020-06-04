@@ -1,6 +1,7 @@
 package com.topcoder.common.dao;
 
 import lombok.Data;
+import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -52,6 +53,7 @@ public class UserDAO {
   @Column(name = "update_at")
   private Date updateAt;
 
+  @ToString.Exclude
   @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
   private List<ECSiteAccountDAO> ecSiteAccountDAOS;
 

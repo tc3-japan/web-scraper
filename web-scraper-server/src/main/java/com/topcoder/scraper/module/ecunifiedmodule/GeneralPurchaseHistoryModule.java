@@ -90,7 +90,7 @@ public class GeneralPurchaseHistoryModule implements IPurchaseHistoryModule {
       LOGGER.info("EC Site [" + ecSiteAccountDAO.getId() + ":" + ecSiteAccountDAO.getEcSite() + "] is not active. Skipped.");
       return null;
     }
-    this.crawler = new GeneralPurchaseHistoryCrawler(ecSiteAccountDAO.getEcSite(), webpageService, this.scraperRepository);
+    this.crawler = new GeneralPurchaseHistoryCrawler(ecSiteAccountDAO.getEcSite(), webpageService, this.configurationRepository);
 
     TrafficWebClient webClient = new TrafficWebClient(ecSiteAccountDAO.getUserId(), true);
     LOGGER.info("web client version = " + webClient.getWebClient().getBrowserVersion());

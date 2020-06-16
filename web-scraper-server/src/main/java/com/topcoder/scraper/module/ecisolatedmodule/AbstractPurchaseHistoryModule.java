@@ -90,6 +90,7 @@ public abstract class AbstractPurchaseHistoryModule implements IPurchaseHistoryM
       webClient.finishTraffic();
       LOGGER.info("succeed fetch purchaseHistory for ec site account id = " + ecSiteAccountDAO.getId());
       return crawlerResult;
+
     } catch (Exception e) { // here catch all exception and did not throw it
       loginHandler.saveFailedResult(ecSiteAccountDAO, e.getMessage());
       LOGGER.error("failed to PurchaseHistory for ec site account id = " + ecSiteAccountDAO.getId());

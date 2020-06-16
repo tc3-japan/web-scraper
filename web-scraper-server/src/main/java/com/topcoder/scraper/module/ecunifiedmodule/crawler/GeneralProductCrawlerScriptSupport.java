@@ -111,6 +111,18 @@ public abstract class GeneralProductCrawlerScriptSupport extends Script {
     this.crawler.getDetailPage().scrapeModelNo(modelNoSelectors);
   }
 
+  void scrapeCategoryRanking(List<String> categoryInfoList) {
+    this.crawler.getDetailPage().scrapeCategoryRanking(categoryInfoList);
+  }
+
+  List<String> scrapeCategoryInfoListBySalesRank(String salesRankSelector, Closure<?> setProps) {
+    return this.crawler.getDetailPage().scrapeCategoryInfoListBySalesRank(salesRankSelector, setProps);
+  }
+
+  List<String> scrapeCategoryInfoListByProductInfoTable(String productInfoTableSelector, Closure<?> setProps, Closure<Boolean> rankLineTest) {
+    return this.crawler.getDetailPage().scrapeCategoryInfoListByProductInfoTable(productInfoTableSelector, setProps, rankLineTest);
+  }
+
   String scrapeProductCodeFromSearchResultByProductAttrName(String searchResultSelector, String productCodeAttribute, String adProductClass) {
     String productCode = this.crawler.getListPage().scrapeProductCodeFromSearchResultByProductAttrName(
             this.crawler.getSearchWord(), searchResultSelector, productCodeAttribute, adProductClass, null);

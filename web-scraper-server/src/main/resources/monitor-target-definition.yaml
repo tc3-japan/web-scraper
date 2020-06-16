@@ -5,7 +5,6 @@ check-sites:
         # id of ec_site_account table
         check_target_keys:
           - 1
-          - 2
       - page_name: product_detail
         # product code of product table
         check_target_keys:
@@ -16,8 +15,34 @@ check-sites:
       - page_name: purchase_history_list
         # id of ec_site_account table
         check_target_keys:
+          # TODO: set
           - 1
       - page_name: product_detail
         # product code of product table
         check_target_keys:
+          # TODO: set
+          - 4041134
+  - ec-site: yahoo
+    check-pages:
+      - page_name: purchase_history_list
+        # id of ec_site_account table
+        check_target_keys:
+          # TODO: set
+          - 1
+      - page_name: product_detail
+        # product code of product table
+        check_target_keys:
+          # TODO: set
+          - 4041134
+  - ec-site: rakuten
+    check-pages:
+      - page_name: purchase_history_list
+        # id of ec_site_account table
+        check_target_keys:
+          # TODO: set
+          - 1
+      - page_name: product_detail
+        # product code of product table
+        check_target_keys:
+          # TODO: set
           - 4041134

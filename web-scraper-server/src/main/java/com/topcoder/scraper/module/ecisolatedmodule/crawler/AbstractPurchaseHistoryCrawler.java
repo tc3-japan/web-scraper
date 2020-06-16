@@ -133,11 +133,16 @@ public abstract class AbstractPurchaseHistoryCrawler {
     }
      */
 
+
+    // Go to First Page
+    this.historyPage.setPage(this.gotoFirstPage(this.historyPage.getPage(), webClient));
+
     while (true) {
       if (this.historyPage.getPage() == null) {
         break;
       }
       closure.call();
+      // Go to Next Page
       this.historyPage.setPage(this.gotoNextPage(this.historyPage.getPage(), webClient));
     }
   }
@@ -185,6 +190,11 @@ public abstract class AbstractPurchaseHistoryCrawler {
       return false;
     }
     return true;
+  }
+
+  protected HtmlPage gotoFirstPage(HtmlPage page, TrafficWebClient webClient) throws IOException {
+    LOGGER.debug("[gotoFirstPage] in");
+    return null;
   }
 
   protected HtmlPage gotoNextPage(HtmlPage page, TrafficWebClient webClient) throws IOException {

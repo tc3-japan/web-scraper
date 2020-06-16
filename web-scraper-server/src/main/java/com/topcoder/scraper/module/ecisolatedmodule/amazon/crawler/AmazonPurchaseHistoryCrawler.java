@@ -35,12 +35,33 @@ public class AmazonPurchaseHistoryCrawler extends AbstractPurchaseHistoryCrawler
   }
 
   @Override
+  protected HtmlPage gotoFirstPage(HtmlPage page, TrafficWebClient webClient) throws IOException {
+    LOGGER.debug("[gotoFirstPage] in");
+
+    HtmlPage nextPage = null;
+    HtmlSelect select = page.querySelector("#orderFilter");
+
+    // if pagination reaches end, try to go next time period
+    if (select != null) {
+      if (select.getSelectedIndex() + 1 < select.getOptionSize()) {
+        String optionValue = select.getOption(select.getSelectedIndex() + 1).getValueAttribute();
+        String optionLabel = select.getOption(select.getSelectedIndex() + 1).getText();
+        LOGGER.info("goto " + optionLabel + ":" + optionValue + " Order Page");
+
+        nextPage = webClient.getPage("https://www.amazon.co.jp/gp/your-account/order-history?opt=ab&digitalOrders=1&unifiedOrders=1&returnTo=&orderFilter=" + optionValue);
+        webpageService.save("purchase-history_" + optionValue, siteName, nextPage.getWebResponse().getContentAsString(), this.saveHtml);
+        return nextPage;
+      }
+    }
+
+    return null;
+  }
+
+  @Override
   protected HtmlPage gotoNextPage(HtmlPage page, TrafficWebClient webClient) throws IOException {
     LOGGER.debug("[gotoNextPage] in");
 
     HtmlSelect select = page.querySelector("#orderFilter");
-    // XPath Version query
-    //String xxx      = page.getFirstByXPath(property.getCrawling().getPurchaseHistoryListPage().getXXX());
 
     String optionValue = "";
     String optionLabel = "";

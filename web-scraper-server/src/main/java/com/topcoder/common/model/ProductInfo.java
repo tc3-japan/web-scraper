@@ -8,11 +8,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.ToString;
 
 /**
  * Product information model
  */
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+@ToString
 public class ProductInfo {
   private final static ObjectMapper OB = new ObjectMapper();
   /**
@@ -37,7 +39,7 @@ public class ProductInfo {
    * Represents product quantity
    */
   @JsonProperty("product_quantity")
-  private int quantity;
+  private Integer quantity;
 
   /**
    * Represents product distributor
@@ -82,7 +84,7 @@ public class ProductInfo {
     return price;
   }
 
-  public int getQuantity() {
+  public Integer getQuantity() {
     return quantity;
   }
 
@@ -114,7 +116,7 @@ public class ProductInfo {
     this.price = price;
   }
 
-  public void setQuantity(int quantity) {
+  public void setQuantity(Integer quantity) {
     this.quantity = quantity;
   }
 

@@ -80,6 +80,7 @@ The `proxy_server` must be a vaild value, other values can be default value
 
 `./gradlew bootRun -Pargs=--rest ` to run rest api server
 
+`mysql --host 0.0.0.0 --port 3306 --user root --password web_scraper < docs/scraper-test_insert_script.sql` to import init config data
 
 #### To specify site, specify `site` argument
 

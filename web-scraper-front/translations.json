@@ -1,7 +1,7 @@
 {
   "en" : {
     "title"                 : "EC Site Home Page",
-    "ecsitelisttitle"       : "EC Site Settings",
+    "ecSiteSetting"         : "EC Site Settings",
     "clickHereFor"          : ": Click here for EC Site Settings",
     "noEcSitesFound"        : "No EC sites found for this user!",
     "getPurchaseHistory"    : "Get Purchase History",

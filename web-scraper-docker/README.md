@@ -113,6 +113,22 @@ web-scraper-docker
         "createdAt": 1555169254.0
     }
 }
+
+% aws ecr create-repository --repository-name scraper-solr
+{
+    "repository": {
+        "repositoryArn": "arn:aws:ecr:ap-northeast-1:xxxxxxxxxxxx:repository/scraper-solr",
+        "registryId": "xxxxxxxxxxxx",
+        "repositoryName": "scraper-solr",
+        "repositoryUri": "xxxxxxxxxxxx.dkr.ecr.ap-northeast-1.amazonaws.com/scraper-solr",
+        "createdAt": "2020-05-29T11:59:55+09:00",
+        "imageTagMutability": "MUTABLE",
+        "imageScanningConfiguration": {
+            "scanOnPush": false
+        }
+    }
+}
+
 ```
 __xxxxxxxxxxxx__ here is AWS\_ACCOUNT_ID. Please remember that.
 
@@ -131,9 +147,13 @@ REPOSITORY          TAG                 IMAGE ID            CREATED             
 scraper-web         latest              e3bd63f25585        9 days ago          176MB
 scraper-app         latest              012c1c90109f        9 days ago          357MB
 scraper-db          latest              e903ce5b62b0        9 days ago          543MB
+scraper-solr        latest              112d64950dfb        9 days ago          493MB
+
 % docker tag scraper-web:latest xxxxxxxxxxxx.dkr.ecr.ap-northeast-1.amazonaws.com/scraper-web
 % docker tag scraper-app:latest xxxxxxxxxxxx.dkr.ecr.ap-northeast-1.amazonaws.com/scraper-app
 % docker tag scraper-db:latest  xxxxxxxxxxxx.dkr.ecr.ap-northeast-1.amazonaws.com/scraper-db
+% docker tag scraper-solr:latest  xxxxxxxxxxxx.dkr.ecr.ap-northeast-1.amazonaws.com/scraper-solr
+
 % docker images
 REPOSITORY                                                      TAG                 IMAGE ID            CREATED             SIZE
 xxxxxxxxxxxx.dkr.ecr.ap-northeast-1.amazonaws.com/scraper-web   latest              e3bd63f25585        9 days ago          176MB
@@ -142,15 +162,15 @@ xxxxxxxxxxxx.dkr.ecr.ap-northeast-1.amazonaws.com/scraper-app   latest          
 scraper-app                                                     latest              012c1c90109f        9 days ago          357MB
 xxxxxxxxxxxx.dkr.ecr.ap-northeast-1.amazonaws.com/scraper-db    latest              e903ce5b62b0        9 days ago          543MB
 scraper-db                                                      latest              e903ce5b62b0        9 days ago          543MB
+xxxxxxxxxxxx.dkr.ecr.ap-northeast-1.amazonaws.com/scraper-solr  latest              112d64950dfb        9 days ago          493MB
+scraper-solr                                                    latest              112d64950dfb        9 days ago          493MB
 ```
 
 ### Step 4: Push Docker Image to ECR Repository
 
 #### Change terminal session into Docker-Login-State to Amazon ECR
 ```bash
-% aws ecr get-login --no-include-email
-docker login -u AWS -p eyJwYX...(SNIP)...MjAxfQ== https://xxxxxxxxxxxx.dkr.ecr.ap-northeast-1.amazonaws.com
-% (paste above here and run it)
+% aws ecr get-login-password | docker login --username AWS --password-stdin https://xxxxxxxxxxxx.dkr.ecr.ap-northeast-1.amazonaws.com
 
 ```
 #### Push Docker Image 
@@ -158,6 +178,7 @@ docker login -u AWS -p eyJwYX...(SNIP)...MjAxfQ== https://xxxxxxxxxxxx.dkr.ecr.a
 % docker push xxxxxxxxxxxx.dkr.ecr.ap-northeast-1.amazonaws.com/scraper-web
 % docker push xxxxxxxxxxxx.dkr.ecr.ap-northeast-1.amazonaws.com/scraper-app
 % docker push xxxxxxxxxxxx.dkr.ecr.ap-northeast-1.amazonaws.com/scraper-db
+% docker push xxxxxxxxxxxx.dkr.ecr.ap-northeast-1.amazonaws.com/scraper-solr
 ```
 
 
@@ -221,14 +242,12 @@ Cluster creation succeeded.
 #### Add SSH rule to AWS security group
 ```bash
 % aws ec2 authorize-security-group-ingress --group-id sg-xxxxxxxxxxxxxxxxx --ip-permissions IpProtocol=tcp,FromPort=22,ToPort=22,IpRanges='[{CidrIp=0.0.0.0/0,Description="ssh to docker engine"}]'
-(No description % aws ec2 authorize-security-group-ingress --group-id sg-xxxxxxxxxxxxxxxxx --protocol tcp --port 22 --cidr 0.0.0.0/0)
 
 % aws ec2 authorize-security-group-ingress --group-id sg-xxxxxxxxxxxxxxxxx --ip-permissions IpProtocol=tcp,FromPort=8080,ToPort=8080,IpRanges='[{CidrIp=0.0.0.0/0,Description="docker: scraper-web"}]'
-(No description % aws ec2 authorize-security-group-ingress --group-id sg-xxxxxxxxxxxxxxxxx --protocol tcp --port 8080 --cidr 0.0.0.0/0)
 
 % aws ec2 authorize-security-group-ingress --group-id sg-xxxxxxxxxxxxxxxxx --ip-permissions IpProtocol=tcp,FromPort=8085,ToPort=8085,IpRanges='[{CidrIp=0.0.0.0/0,Description="docker: scraper-app"}]'
-(No description % aws ec2 authorize-security-group-ingress --group-id sg-xxxxxxxxxxxxxxxxx --protocol tcp --port 8085 --cidr 0.0.0.0/0)
 
+% aws ec2 authorize-security-group-ingress --group-id sg-xxxxxxxxxxxxxxxxx --ip-permissions IpProtocol=tcp,FromPort=8983,ToPort=8983,IpRanges='[{CidrIp=0.0.0.0/0,Description="docker: scraper-solr"}]'
 ```
 
 ### Step 4: Deploy the Compose File to a Cluster 

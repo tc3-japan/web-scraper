@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+import com.topcoder.common.repository.PurchaseHistoryRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,6 @@ import com.topcoder.api.service.login.LoginHandlerBase;
 import com.topcoder.common.dao.ECSiteAccountDAO;
 import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.common.repository.ECSiteAccountRepository;
-import com.topcoder.common.repository.ScraperRepository;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.common.util.Common;
 import com.topcoder.scraper.module.IPurchaseHistoryModule;
@@ -21,6 +21,7 @@ import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistor
 import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistoryCrawlerResult;
 import com.topcoder.scraper.service.PurchaseHistoryService;
 import com.topcoder.scraper.service.WebpageService;
+import com.topcoder.common.repository.ConfigurationRepository;
 
 /**
  * General implementation of ecisolatedmodule .. PurchaseHistoryModule
@@ -37,7 +38,10 @@ public class GeneralPurchaseHistoryModule implements IPurchaseHistoryModule {
   private GeneralPurchaseHistoryCrawler crawler;
 
   @Autowired
-  ScraperRepository scraperRepository;
+  ConfigurationRepository configurationRepository;
+
+  @Autowired
+  PurchaseHistoryRepository historyRepository;
 
   // TODO: arrange login handler
   //private final LoginHandlerBase loginHandler;
@@ -97,7 +101,7 @@ public class GeneralPurchaseHistoryModule implements IPurchaseHistoryModule {
     }
 
     try {
-      GeneralPurchaseHistoryCrawlerResult crawlerResult = this.crawler.fetchPurchaseHistoryList(webClient, lastPurchaseHistory, true);
+      GeneralPurchaseHistoryCrawlerResult crawlerResult = this.crawler.fetchPurchaseHistoryList(webClient, true);
       webClient.finishTraffic();
       LOGGER.info("succeed fetch purchaseHistory for ec site account id = " + ecSiteAccountDAO.getId());
       return crawlerResult;

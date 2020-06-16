@@ -6,6 +6,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlHiddenInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.model.PurchaseHistory;
+import com.topcoder.common.model.scraper.Selector;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.common.util.DateUtils;
 import lombok.Getter;
@@ -160,6 +161,23 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
     }
   }
 
+  public void scrapeDeliveryStatus(DomNode node, Selector selector) {
+    LOGGER.debug("[scrapeDeliveryStatus] in");
+    String str = null;
+    if (selector.getAttribute() == null) {
+      str = getText(node, selector.getElement());
+    } else {
+      HtmlElement element = node.querySelector(selector.getElement());
+      if (element != null) {
+        str = element.getAttribute(selector.getAttribute());
+      }
+    }
+    LOGGER.debug("[scrapeDeliveryStatus] >>> Setting Delivery Status >>>" + str);
+    if (str != null) {
+      purchaseHistory.setDeliveryStatus(str);
+    }
+  }
+
   public void scrapeProductCodeFromInput(DomNode node, String inputSelector, String regexStr) {
     LOGGER.debug("[scrapeProductCodeFromInput] in");
     HtmlHiddenInput productCodeInput = (HtmlHiddenInput)node.querySelector(inputSelector);
@@ -302,4 +320,85 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
     }
   }
 
+
+  /**
+   * scrape number value by sector
+   *
+   * @param root     the page root
+   * @param parent   the parent node
+   * @param selector the selector object
+   * @return final value
+   */
+  public Float scrapeFloat(HtmlPage root, DomNode parent, Selector selector) {
+    return extractFloat(scrapeString(root, parent, selector));
+  }
+
+  /**
+   * scrape date value by sector
+   *
+   * @param root     the page root
+   * @param parent   the parent node
+   * @param selector the selector object
+   * @return final value
+   */
+  public Date scrapeDate(HtmlPage root, DomNode parent, Selector selector) {
+    try {
+      return DateUtils.fromString(scrapeString(root, parent, selector));
+    } catch (java.text.ParseException e) {
+      LOGGER.debug("[scrapeOrderDate] Could not set date in NavigablePurchaseHistoryPage.java");
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  /**
+   * check text is valid selector property
+   *
+   * @param property the value
+   * @return the result
+   */
+  public boolean isValid(String property) {
+    return property != null && !property.trim().equals("");
+  }
+
+  /**
+   * check text is valid selector property
+   *
+   * @param property the value
+   * @return the result
+   */
+  public boolean isValidBool(Boolean property) {
+    return property != null ? property : false;
+  }
+
+  /**
+   * scrape value by sector
+   *
+   * @param root     the page root
+   * @param parent   the parent node
+   * @param selector the selector object
+   * @return final value
+   */
+  public String scrapeString(HtmlPage root, DomNode parent, Selector selector) {
+    HtmlElement element;
+    if (selector == null) {
+      return null;
+    }
+    if (isValidBool(selector.getFullPath())) {
+      element = (root == null ? page : root).querySelector(selector.getElement());
+    } else {
+      element = parent.querySelector(selector.getElement());
+    }
+    if (element == null) {
+      return null;
+    }
+    String content = getTextContent(element);
+    if (isValid(selector.getAttribute())) {
+      content = element.getAttribute(selector.getAttribute());
+    }
+    if (isValid(selector.getRegex())) {
+      content = extract1(content, Pattern.compile(selector.getRegex()));
+    }
+    return content;
+  }
 }

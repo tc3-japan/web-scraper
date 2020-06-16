@@ -1,0 +1,61 @@
+@import "../../common";
+
+.editor-container {
+  display: flex;
+  flex-direction: column;
+  padding-right: 16px;
+  padding-left: 16px;
+
+  .icon-btn-line {
+    margin-top: 10px;
+  }
+
+}
+
+.expand-row {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.editor-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex: 1;
+  margin-top: 10px;
+  flex-wrap: wrap;
+  min-height: 28px;
+
+  &.false {
+    .input-container {
+      display: none
+    }
+
+    .btn-container {
+      display: none;
+    }
+
+    .parent-selector {
+      display: none;
+    }
+  }
+
+  .parent-selector {
+    width: 148px;
+  }
+
+
+  .title {
+    font-weight: bold;
+    color: $titleColor;
+    margin-right: 16px;
+    min-width: 145px;
+    cursor: pointer;
+
+    span {
+      text-decoration: underline;
+      margin-left: 4px;
+    }
+  }
+}

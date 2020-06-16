@@ -1,5 +1,6 @@
 package com.topcoder.common.util;
 
+import java.beans.FeatureDescriptor;
 import java.io.ByteArrayInputStream;
 import java.io.ObjectInputStream;
 import java.net.MalformedURLException;
@@ -7,6 +8,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +22,8 @@ import com.topcoder.common.dao.ECSiteAccountDAO;
 import com.topcoder.common.model.AuthStatusType;
 import com.topcoder.common.model.ECCookie;
 import com.topcoder.common.model.ECCookies;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 
 /**
  * common util class
@@ -180,6 +184,20 @@ public class Common {
       logger.error("Failed to convert object to JSON.", e);
       return null;
     }
+  }
+
+  /**
+   * Get the entity null properties names.
+   *
+   * @param source the entity
+   * @return the null properties names.
+   */
+  public static String[] getNullPropertyNames(Object source) {
+    final BeanWrapper wrappedSource = new BeanWrapperImpl(source);
+    return Stream.of(wrappedSource.getPropertyDescriptors())
+        .map(FeatureDescriptor::getName)
+        .filter(propertyName -> wrappedSource.getPropertyValue(propertyName) == null)
+        .toArray(String[]::new);
   }
 
   public static void main(String[] args) {

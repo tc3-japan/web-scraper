@@ -33,10 +33,10 @@ public abstract class AbstractPurchaseHistoryCrawler {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPurchaseHistoryCrawler.class);
 
-  protected final Binding               scriptBinding;
-  protected final CompilerConfiguration scriptConfig;
+  protected final Binding               configBinding;
+  protected final CompilerConfiguration compConfig;
   protected GroovyShell                 scriptShell;
-  protected String                      scriptText = "";
+  protected String                      configText = "";
 
   protected PurchaseHistory       lastPurchaseHistory;
   protected List<String>          savedPathList;
@@ -57,45 +57,45 @@ public abstract class AbstractPurchaseHistoryCrawler {
     this.siteName       = siteName;
     this.webpageService = webpageService;
 
-    String scriptPath = this.getScriptPath();
-    this.scriptText   = this.getScriptText(scriptPath);
+    String configPath = this.getConfigPath();
+    this.configText = this.getConfigText(configPath);
 
     Properties configProps = new Properties();
     configProps.setProperty("groovy.script.base", this.getScriptSupportClassName());
-    this.scriptConfig  = new CompilerConfiguration(configProps);
-    this.scriptBinding = new Binding();
+    this.compConfig = new CompilerConfiguration(configProps);
+    this.configBinding = new Binding();
   }
 
-  protected String getScriptPath() {
-    LOGGER.debug("[getScriptPath] in");
+  protected String getConfigPath() {
+    LOGGER.debug("[getConfigPath] in");
 
-    String scriptPath = System.getenv(Consts.SCRAPING_SCRIPT_PATH);
-    if (StringUtils.isEmpty(scriptPath)) {
-      scriptPath = System.getProperty("user.dir") + "/scripts/scraping";
+    String configPath = System.getenv(Consts.SCRAPING_SCRIPT_PATH);
+    if (StringUtils.isEmpty(configPath)) {
+      configPath = System.getProperty("user.dir") + "/scripts/scraping";
     }
-    scriptPath  += "/isolated/" + this.siteName + "-purchase-history-list.groovy";
+    configPath  += "/isolated/" + this.siteName + "-purchase-history-list.groovy";
 
-    LOGGER.debug("[getScriptPath] scriptPath: " + scriptPath);
-    return scriptPath;
+    LOGGER.debug("[getConfigPath] configPath: " + configPath);
+    return configPath;
   }
 
-  protected String getScriptText(String scriptPath) {
-    LOGGER.debug("[getScriptText] in");
+  protected String getConfigText(String configPath) {
+    LOGGER.debug("[getConfigText] in");
 
     try {
-      return FileUtils.readFileToString(new File(scriptPath), "utf-8");
+      return FileUtils.readFileToString(new File(configPath), "utf-8");
     } catch (IOException e) {
-      LOGGER.debug("[getScriptText] Could not read script file: " + scriptPath);
+      LOGGER.debug("[getConfigText] Could not read config file: " + configPath);
       return null;
     }
   }
 
   protected abstract String getScriptSupportClassName();
 
-  protected String executeScript() {
-    LOGGER.debug("[executeScript] in");
-    this.scriptShell = new GroovyShell(this.scriptBinding, this.scriptConfig);
-    Script script = this.scriptShell.parse(this.scriptText);
+  protected String executeConfig() {
+    LOGGER.debug("[executeConfig] in");
+    this.scriptShell = new GroovyShell(this.configBinding, this.compConfig);
+    Script script = this.scriptShell.parse(this.configText);
     script.invokeMethod("setCrawler", this);
     String resStr = (String)script.run();
     return resStr;
@@ -112,11 +112,11 @@ public abstract class AbstractPurchaseHistoryCrawler {
     this.purchaseHistoryList = new LinkedList<>();
     this.savedPathList       = new LinkedList<>();
 
-    // binding variables for scraping script
+    // binding variables for scraping config
     // TODO: re-consider whether this is necessary
-    this.scriptBinding.setProperty("purchaseHistoryList", this.purchaseHistoryList);
+    this.configBinding.setProperty("purchaseHistoryList", this.purchaseHistoryList);
 
-    this.executeScript();
+    this.executeConfig();
 
     return new AbstractPurchaseHistoryCrawlerResult(this.purchaseHistoryList, this.savedPathList);
   }

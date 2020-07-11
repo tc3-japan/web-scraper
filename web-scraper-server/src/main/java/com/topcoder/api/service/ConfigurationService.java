@@ -1,5 +1,9 @@
 package com.topcoder.api.service;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,11 +12,11 @@ import org.springframework.stereotype.Service;
 
 import com.topcoder.api.exception.ApiException;
 import com.topcoder.api.exception.EntityNotFoundException;
+import com.topcoder.common.dao.ConfigurationDAO;
 import com.topcoder.common.model.PurchaseHistory;
+import com.topcoder.common.repository.ConfigurationRepository;
 import com.topcoder.common.repository.ECSiteAccountRepository;
 import com.topcoder.scraper.module.ecunifiedmodule.DryRunPurchaseHistoryModule;
-import com.topcoder.common.dao.ConfigurationDAO;
-import com.topcoder.common.repository.ConfigurationRepository;
 
 /**
  * scraper service
@@ -110,6 +114,60 @@ public class ConfigurationService {
       e.printStackTrace();
 	  throw new ApiException("failed to execute conf");
     }
+  }
+
+  /**
+   *  get the html string
+   *
+   * @param the html file name
+   * @return the html data
+   * @throws ApiException if any error happened
+   */
+  public String getHtmlString(String htmlFileName) throws ApiException {
+    try {
+      String currentAbsolutePath = System.getProperty("user.dir");
+      String htmlFilePath = searchHtmlFilePath(currentAbsolutePath + "/logs", htmlFileName);
+      File htmlFile = new File(htmlFilePath);
+      FileReader fileReader = new FileReader(htmlFile);
+      BufferedReader bufferedReader = new BufferedReader(fileReader);
+      StringBuffer htmlData = new StringBuffer();
+      String tempHtmlData = "";
+      while ((tempHtmlData = bufferedReader.readLine()) != null) {
+        htmlData.append(tempHtmlData);
+      }
+      bufferedReader.close();
+      return htmlData.toString();
+    } catch(FileNotFoundException e) {
+      e.printStackTrace();
+      throw new ApiException(htmlFileName + " does not exist");
+    } catch(Exception e) {
+      e.printStackTrace();
+      throw new ApiException("failed to get html file data");
+    }
+  }
+
+  /**
+   * search html file from path
+   *
+   * @param the directory path
+   * @param the html file name
+   * @return the html file path
+   */
+  private String searchHtmlFilePath(String directoryPath, String htmlFileName) {
+    String htmlFilePath = "";
+    File directory = new File(directoryPath);
+    File files[] = directory.listFiles();
+    for (int i = 0; i < files.length; i++) {
+      String directoryOrFileName = files[i].getName();
+      if (files[i].isDirectory()){
+        htmlFilePath =  searchHtmlFilePath(directoryPath + "/" + directoryOrFileName, htmlFileName);
+      } else {
+        if (directoryOrFileName.equals(htmlFileName + ".html")) {
+          return directoryPath + "/" + directoryOrFileName;
+        }
+      }
+    }
+    return htmlFilePath;
   }
 
   /**

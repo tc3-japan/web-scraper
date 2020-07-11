@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.topcoder.api.exception.ApiException;
 import com.topcoder.api.exception.BadRequestException;
-import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.api.service.ConfigurationService;
+import com.topcoder.common.model.PurchaseHistory;
 
 /**
  * rest api for scraper
@@ -69,6 +69,18 @@ public class ConfigurationController {
 	  throw new BadRequestException("scraped purchase history not found");
     }
     return list;
+  }
+
+  /**
+   * get the html string
+   *
+   * @param the html file name
+   * @return the html string
+   * @throws ApiException if any error happened
+   */
+  @GetMapping("/html/{filename}")
+  public String getHtml(@PathVariable("filename") String htmlFileName) throws ApiException {
+    return configurationService.getHtmlString(htmlFileName);
   }
 
 }

@@ -3,7 +3,6 @@ package com.topcoder.scraper.module.ecunifiedmodule;
 import java.io.IOException;
 import java.util.List;
 
-import com.topcoder.common.repository.PurchaseHistoryRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import com.topcoder.common.dao.ECSiteAccountDAO;
 import com.topcoder.common.model.PurchaseHistory;
+import com.topcoder.common.repository.ConfigurationRepository;
 import com.topcoder.common.repository.ECSiteAccountRepository;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.common.traffic.TrafficWebClient.TrafficWebClientForDryRun;
@@ -20,7 +20,6 @@ import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistor
 import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistoryCrawlerResult;
 import com.topcoder.scraper.service.PurchaseHistoryService;
 import com.topcoder.scraper.service.WebpageService;
-import com.topcoder.common.repository.ConfigurationRepository;
 
 /**
  * General implementation of ecisolatedmodule .. PurchaseHistoryModule
@@ -36,7 +35,8 @@ public class DryRunPurchaseHistoryModule implements IPurchaseHistoryModule {
   private final ECSiteAccountRepository ecSiteAccountRepository;
 
   private String config;
-  private List<PurchaseHistory> list;
+  private List<PurchaseHistory> purchaseHistoryList;
+  private List<String> htmlPathList;
 
   @Autowired
   ConfigurationRepository configurationRepository;
@@ -68,7 +68,7 @@ public class DryRunPurchaseHistoryModule implements IPurchaseHistoryModule {
   public void fetchPurchaseHistoryList(List<String> sites) throws IOException {
 
     // reset list
-    list = null;
+    purchaseHistoryList = null;
     ECSiteAccountDAO accountDAO = null;
     String site = sites.get(0);
 
@@ -97,8 +97,9 @@ public class DryRunPurchaseHistoryModule implements IPurchaseHistoryModule {
     try {
       GeneralPurchaseHistoryCrawler crawler = new GeneralPurchaseHistoryCrawler(site, this.webpageService, this.configurationRepository);
       crawler.setConfig(this.config);
-      GeneralPurchaseHistoryCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClientForDryRun, false);
-      this.list = crawlerResult.getPurchaseHistoryList();
+      GeneralPurchaseHistoryCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClientForDryRun, true);
+      this.purchaseHistoryList = crawlerResult.getPurchaseHistoryList();
+      this.htmlPathList = crawlerResult.getHtmlPathList();
       LOGGER.info("succeed fetch purchaseHistory for ecSite id = " + accountDAO.getId());
     } catch (Exception e) {
       LOGGER.error("failed to PurchaseHistory for ecSite id = " + accountDAO.getId());
@@ -108,7 +109,18 @@ public class DryRunPurchaseHistoryModule implements IPurchaseHistoryModule {
   }
 
   public List<PurchaseHistory> getPurchaseHistoryList() {
-	  return this.list;
+	  return this.purchaseHistoryList;
+  }
+
+  public List<String> getHtmlPathList() {
+    // change path from abstract to relative that start at [logs] folder
+    for (int i = 0; i < htmlPathList.size(); i++) {
+      String htmlPath = htmlPathList.get(i);
+      int delimiterIntex = htmlPath.lastIndexOf("logs");
+      // number 4 means "logs" charactor count
+      htmlPathList.set(i, "html" + htmlPath.substring(delimiterIntex + 4, htmlPath.length()));
+    }
+    return this.htmlPathList;
   }
 
 }

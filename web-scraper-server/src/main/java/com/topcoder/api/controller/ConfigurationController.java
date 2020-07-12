@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.topcoder.api.exception.ApiException;
 import com.topcoder.api.exception.BadRequestException;
 import com.topcoder.api.service.ConfigurationService;
-import com.topcoder.common.model.PurchaseHistory;
 
 /**
  * rest api for scraper
@@ -63,10 +62,10 @@ public class ConfigurationController {
    * @throws ApiException if any error happened
    */
   @PostMapping(path = "/{site}/{type}/test", consumes = "text/plain")
-  public List<PurchaseHistory> executeConfig(@PathVariable("site") String site, @PathVariable("type") String type, @RequestBody String conf) throws ApiException {
-	List<PurchaseHistory> list = configurationService.executeConfiguration(site, type, conf);
-	if (list == null || list.size() == 0) {
-	  throw new BadRequestException("scraped purchase history not found");
+  public List<Object> executeConfig(@PathVariable("site") String site, @PathVariable("type") String type, @RequestBody String conf) throws ApiException {
+    List<Object> list = configurationService.executeConfiguration(site, type, conf);
+    if (list == null || list.size() == 0) {
+      throw new BadRequestException("scraped purchase history not found");
     }
     return list;
   }

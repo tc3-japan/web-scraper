@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.topcoder.api.exception.ApiException;
 import com.topcoder.api.exception.EntityNotFoundException;
 import com.topcoder.common.dao.ConfigurationDAO;
+import com.topcoder.common.model.HtmlPath;
 import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.common.repository.ConfigurationRepository;
 import com.topcoder.common.repository.ECSiteAccountRepository;
@@ -98,21 +100,35 @@ public class ConfigurationService {
    * @param request to executable conf
    * @throws ApiException if any error happened
    */
-  public List<PurchaseHistory> executeConfiguration(String site, String type, String conf) throws ApiException {
+  public List<Object> executeConfiguration(String site, String type, String conf) throws ApiException {
     try {
-	  dryRunPurchaseHistoryModule.setConfig(conf);
 
-	  List<String> sites = new ArrayList<String>();
-	  sites.add(site);
+      List<Object> result = new ArrayList<>();
 
-	  dryRunPurchaseHistoryModule.fetchPurchaseHistoryList(sites);
+      if (type.equals("purchase_history")) {
+        // the case for get purchase history
+    	  dryRunPurchaseHistoryModule.setConfig(conf);
+        dryRunPurchaseHistoryModule.fetchPurchaseHistoryList(Arrays.asList(site));
+        List<PurchaseHistory> purchaseHistoryList = dryRunPurchaseHistoryModule.getPurchaseHistoryList();
+        List<String> htmlPathList = dryRunPurchaseHistoryModule.getHtmlPathList();
+        result.add(purchaseHistoryList);
+        result.add(new HtmlPath(htmlPathList));
+      } else if (type.equals("product")) {
+        // the case for get product detail
 
-	  List<PurchaseHistory> list = dryRunPurchaseHistoryModule.getPurchaseHistoryList();
+      } else if (type.equals("")) {
+        // the case for get product search
 
-	  return list;
+      } else {
+        // other type
+        throw new ApiException("the type:" + type + " was not supported");
+      }
+
+      return result;
+
     } catch(Exception e) {
       e.printStackTrace();
-	  throw new ApiException("failed to execute conf");
+      throw new ApiException("failed to execute conf");
     }
   }
 

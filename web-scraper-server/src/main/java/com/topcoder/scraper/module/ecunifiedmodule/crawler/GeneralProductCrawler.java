@@ -122,6 +122,11 @@ public class GeneralProductCrawler {
     // execute script
     this.executeScript(this.siteName + "-product-detail.groovy");
 
+    String savedPath = this.webpageService.save(this.siteName + "-product-detail", this.siteName,  this.detailPage.getPage().getWebResponse().getContentAsString(), true);
+    if (savedPath != null) {
+      this.savedPath = savedPath;
+    }
+
     return new GeneralProductCrawlerResult(this.productInfo, this.savedPath);
   }
 

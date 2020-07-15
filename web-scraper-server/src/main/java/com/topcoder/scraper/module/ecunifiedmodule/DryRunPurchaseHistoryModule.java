@@ -56,7 +56,7 @@ public class DryRunPurchaseHistoryModule implements IPurchaseHistoryModule {
   }
 
   public void setConfig(String config) {
-	this.config = config;
+    this.config = config;
   }
 
   @Override
@@ -68,7 +68,9 @@ public class DryRunPurchaseHistoryModule implements IPurchaseHistoryModule {
   public void fetchPurchaseHistoryList(List<String> sites) throws IOException {
 
     // reset list
-    purchaseHistoryList = null;
+    this.purchaseHistoryList = null;
+    this.htmlPathList = null;
+
     ECSiteAccountDAO accountDAO = null;
     String site = sites.get(0);
 

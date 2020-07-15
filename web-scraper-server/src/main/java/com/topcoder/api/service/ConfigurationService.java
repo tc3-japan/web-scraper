@@ -15,9 +15,11 @@ import com.topcoder.api.exception.ApiException;
 import com.topcoder.api.exception.EntityNotFoundException;
 import com.topcoder.common.dao.ConfigurationDAO;
 import com.topcoder.common.model.HtmlPath;
+import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.common.repository.ConfigurationRepository;
 import com.topcoder.common.repository.ECSiteAccountRepository;
+import com.topcoder.scraper.module.ecunifiedmodule.DryRunProductModule;
 import com.topcoder.scraper.module.ecunifiedmodule.DryRunPurchaseHistoryModule;
 
 /**
@@ -40,6 +42,9 @@ public class ConfigurationService {
 
   @Autowired
   DryRunPurchaseHistoryModule dryRunPurchaseHistoryModule;
+
+  @Autowired
+  DryRunProductModule dryRunProductModule;
 
   /**
    * get config by site and type
@@ -104,21 +109,25 @@ public class ConfigurationService {
     try {
 
       List<Object> result = new ArrayList<>();
+      List<String> sites = Arrays.asList(site);
 
       if (type.equals("purchase_history")) {
         // the case for get purchase history
     	  dryRunPurchaseHistoryModule.setConfig(conf);
-        dryRunPurchaseHistoryModule.fetchPurchaseHistoryList(Arrays.asList(site));
+        dryRunPurchaseHistoryModule.fetchPurchaseHistoryList(sites);
         List<PurchaseHistory> purchaseHistoryList = dryRunPurchaseHistoryModule.getPurchaseHistoryList();
         List<String> htmlPathList = dryRunPurchaseHistoryModule.getHtmlPathList();
         result.add(purchaseHistoryList);
         result.add(new HtmlPath(htmlPathList));
       } else if (type.equals("product")) {
         // the case for get product detail
-
+        dryRunProductModule.fetchProductDetailList(sites);
+        List<ProductInfo> productInfoList = dryRunProductModule.getProductInfoList();
+        List<String> htmlPathList = dryRunProductModule.getHtmlPathList();
+        result.add(productInfoList);
+        result.add(new HtmlPath(htmlPathList));
       } else if (type.equals("")) {
         // the case for get product search
-
       } else {
         // other type
         throw new ApiException("the type:" + type + " was not supported");

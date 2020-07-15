@@ -65,7 +65,7 @@ public class ConfigurationController {
   public List<Object> executeConfig(@PathVariable("site") String site, @PathVariable("type") String type, @RequestBody String conf) throws ApiException {
     List<Object> list = configurationService.executeConfiguration(site, type, conf);
     if (list == null || list.size() == 0) {
-      throw new BadRequestException("scraped purchase history not found");
+      throw new BadRequestException("scraped type " + type + " is not found");
     }
     return list;
   }

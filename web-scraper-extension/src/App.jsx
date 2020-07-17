@@ -1,26 +1,28 @@
+/* global window */
+
 import React from 'react';
 import './App.scss';
-import HeadBar from "./components/HeadBar";
+import _ from 'lodash';
+import Swal from 'sweetalert2';
+import HeadBar from './components/HeadBar';
 import PurchaseHistoryEditor from './components/PurchaseHistoryEditor';
 import {
   convertToBackend,
   convertToFrontend,
   logInfo,
   processError,
-} from "./services/utils";
+} from './services/utils';
 import {
   EC_SITES,
   SCRAPING_TYPE,
   VALID_SCRAPING_TYPES,
-} from "./config/dropdown-list";
-import _ from 'lodash';
-import Setting from "./components/Setting";
+} from './config/dropdown-list';
+import Setting from './components/Setting';
 import 'sweetalert2/src/sweetalert2.scss';
 import 'nprogress/nprogress.css';
-import Swal from 'sweetalert2'
-import Api from "./services/api";
-import {getI18T} from "./i18nSetup";
-import Button from "./components/Button";
+import Api from './services/api';
+import getI18T from './i18nSetup';
+import Button from './components/Button';
 
 class App extends React.Component {
   constructor(props, context) {
@@ -33,11 +35,29 @@ class App extends React.Component {
       logTxt: [],
       log: false,
       setting: false,
-      loadType: 'pending'
-    }
+      loadType: 'pending',
+    };
     this.onHeaderDropDownChange = this.onHeaderDropDownChange.bind(this);
     this.onUpdate = this.onUpdate.bind(this);
-    this.t = getI18T()
+    this.t = getI18T();
+  }
+
+  async componentDidMount() {
+    const { logTxt } = this.state;
+    window.log = (text) => this.setState({ logTxt: [`[${new Date().toISOString()}]: ${text}`].concat(logTxt) });
+    window.log('extension load succeed');
+  }
+
+  componentWillUnmount() {
+    window.log = _.noop;
+  }
+
+  /**
+   * on log panel change
+   */
+  onLog() {
+    const { log } = this.state;
+    this.setState({ log: !log });
   }
 
   /**
@@ -46,51 +66,8 @@ class App extends React.Component {
    * @param option the option
    */
   onHeaderDropDownChange(key, option) {
-    this.setState({...this.state, [key]: option})
+    this.setState({ [key]: option });
   }
-
-  /**
-   * load site
-   */
-  async loadSite() {
-    const {siteObj, site, type} = this.state;
-    if (siteObj) {
-      const result = await Swal.fire({
-        title: this.t('loadDialogTitle'),
-        text: this.t('loadDialogContent'),
-        showCancelButton: true,
-        showConfirmButton: true,
-        confirmButtonText: this.t('dialogBtnYes'),
-        cancelButtonText: this.t('dialogBtnNo')
-      });
-      if (result.dismiss) {
-        return;
-      }
-    }
-    this.setState({loadType: 'loading'})
-    try {
-      const rsp = await Api.load(site.value, type.value)
-      console.log('LOADED >>>', rsp);
-      this.setState({
-        siteObj: convertToFrontend(rsp, type.value),
-        loadType: 'loaded',
-      })
-      logInfo('json loaded.')
-    } catch (e) {
-      this.setState({siteObj: null, loadType: 'loaded'})
-      processError(e)
-    }
-  }
-
-  async componentDidMount() {
-    window.log = (text) => this.setState({logTxt: [`[${new Date().toISOString()}]: ${text}`].concat(this.state.logTxt)});
-    window.log('extension load succeed')
-  }
-
-  componentWillUnmount() {
-    window.log = _.noop;
-  }
-
 
   /**
    * update json value
@@ -98,40 +75,74 @@ class App extends React.Component {
    * @param value the value
    */
   onUpdate(path, value) {
-    const siteObj = _.cloneDeep(this.state.siteObj)
+    let { siteObj } = this.state;
+    siteObj = _.cloneDeep(siteObj);
     if (value === null && path.indexOf('rows') >= 0) {
       const parts = path.split('.');
-      const index = parseInt(parts.pop())
-      _.get(siteObj, parts.join('.')).splice(index, 1)
+      const index = parseInt(parts.pop(), 10);
+      _.get(siteObj, parts.join('.')).splice(index, 1);
     } else {
-      _.set(siteObj, path, value)
+      _.set(siteObj, path, value);
     }
-    this.setState({siteObj})
+    this.setState({ siteObj });
+  }
+
+  /**
+   * load site
+   */
+  async loadSite() {
+    const { siteObj, site, type } = this.state;
+    if (siteObj) {
+      const result = await Swal.fire({
+        title: this.t('loadDialogTitle'),
+        text: this.t('loadDialogContent'),
+        showCancelButton: true,
+        showConfirmButton: true,
+        confirmButtonText: this.t('dialogBtnYes'),
+        cancelButtonText: this.t('dialogBtnNo'),
+      });
+      if (result.dismiss) {
+        return;
+      }
+    }
+    this.setState({ loadType: 'loading' });
+    try {
+      const rsp = await Api.load(site.value, type.value);
+      console.log('LOADED >>>', rsp);
+      this.setState({
+        siteObj: convertToFrontend(rsp, type.value),
+        loadType: 'loaded',
+      });
+      logInfo('json loaded.');
+    } catch (e) {
+      this.setState({ siteObj: null, loadType: 'loaded' });
+      processError(e);
+    }
   }
 
   /**
    * test site
    */
   async testSite() {
-    const {siteObj, site, type} = this.state;
+    const { siteObj, site, type } = this.state;
 
     const result = await Swal.fire({
       title: this.t('testDialogTitle'),
       showCancelButton: true,
       showConfirmButton: true,
       confirmButtonText: this.t('dialogBtnYes'),
-      cancelButtonText: this.t('dialogBtnNo')
+      cancelButtonText: this.t('dialogBtnNo'),
     });
     if (result.dismiss) {
       return;
     }
 
     try {
-      const rsp = await Api.test(site.value, type.value, convertToBackend(siteObj))
-      logInfo('test succeed')
-      logInfo(rsp)
+      const rsp = await Api.test(site.value, type.value, convertToBackend(siteObj));
+      logInfo('test succeed');
+      logInfo(rsp);
     } catch (e) {
-      processError(e)
+      processError(e);
     }
   }
 
@@ -140,14 +151,14 @@ class App extends React.Component {
    * @return {Promise<void>}
    */
   async saveSite() {
-    const {siteObj, site, type} = this.state;
+    const { siteObj, site, type } = this.state;
 
     const result = await Swal.fire({
       title: this.t('saveDialogTitle'),
       showCancelButton: true,
       showConfirmButton: true,
       confirmButtonText: this.t('dialogBtnYes'),
-      cancelButtonText: this.t('dialogBtnNo')
+      cancelButtonText: this.t('dialogBtnNo'),
     });
     if (result.dismiss) {
       return;
@@ -155,19 +166,12 @@ class App extends React.Component {
 
     try {
       const body = convertToBackend(siteObj);
-      logInfo(JSON.stringify(body))
-      await Api.save(site.value, type.value, body)
-      logInfo('json saved')
+      logInfo(JSON.stringify(body));
+      await Api.save(site.value, type.value, body);
+      logInfo('json saved');
     } catch (e) {
-      processError(e)
+      processError(e);
     }
-  }
-
-  /**
-   * on log panel change
-   */
-  onLog() {
-    this.setState({log: !this.state.log})
   }
 
   render() {
@@ -177,25 +181,28 @@ class App extends React.Component {
       logTxt,
       setting,
       siteObj,
+      type,
     } = this.state;
 
     if (setting) {
-      return <div className='app'>
-        <Setting onBack={() => this.setState({setting: false})}/>
-      </div>
+      return (
+        <div className="app">
+          <Setting onBack={() => this.setState({ setting: false })} />
+        </div>
+      );
     }
 
     // This selects the appropriate editor for the loaded type of data.
     let content;
-    switch (this.state.type.value) {
+    switch (type.value) {
       case VALID_SCRAPING_TYPES.PURCHASE_HISTORY:
         content = (
           <PurchaseHistoryEditor
-            ref={ref => this.editor = ref}
-            {...this.state}
+            ref={(ref) => { this.editor = ref; }}
+            {...this.state} // eslint-disable-line react/jsx-props-no-spreading
             onUpdate={this.onUpdate}
           />
-        )
+        );
         break;
       default:
     }
@@ -206,26 +213,31 @@ class App extends React.Component {
       case 'pending': tip = 'loadJsonTip'; break;
       case 'loading': tip = 'loadingJson'; break;
       case 'loaded': tip = siteObj ? null : 'loadJsonFailed'; break;
+      default:
     }
     if (tip) tip = <div className="tip">{this.t(tip)}</div>;
 
     return (
       <div className="app">
-        <HeadBar onChange={this.onHeaderDropDownChange}
-                 onLoad={() => this.loadSite()}
-                 onTest={() => this.testSite()}
-                 onSave={() => this.saveSite()}
-                 onLog={() => this.onLog()}
-                 onSetting={() => this.setState({setting: true})}
-                 {...this.state}/>
+        <HeadBar
+          onChange={this.onHeaderDropDownChange}
+          onLoad={() => this.loadSite()}
+          onTest={() => this.testSite()}
+          onSave={() => this.saveSite()}
+          onLog={() => this.onLog()}
+          onSetting={() => this.setState({ setting: true })}
+          {...this.state} // eslint-disable-line react/jsx-props-no-spreading
+        />
         { tip }
         { content }
-        {log && <div className='log-container'>
-          <div className='log-container'>
+        {log && (
+        <div className="log-container">
+          <div className="log-container">
             {_.map(logTxt, (text, i) => (<div key={`log-${i}`}>{text}</div>))}
           </div>
-          <Button title={"Close Log"} onClick={()=>this.onLog()}/>
-        </div>}
+          <Button title="Close Log" onClick={() => this.onLog()} />
+        </div>
+        )}
       </div>
     );
   }

@@ -6,11 +6,13 @@ $titleColor: #1c4587;
 
 @mixin setBgColorAndHover($baseColor) {
   background-color: $baseColor;
+
   &:hover {
-    background-color: darken($baseColor, 5%)
+    background-color: darken($baseColor, 5%);
   }
+
   &:active {
-    background-color: darken($baseColor, 8%)
+    background-color: darken($baseColor, 8%);
   }
 
   &:disabled {
@@ -91,7 +93,6 @@ $titleColor: #1c4587;
     width: 24px;
   }
 }
-
 
 .indent {
   padding-left: 8px;

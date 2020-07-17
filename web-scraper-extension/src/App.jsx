@@ -1,9 +1,13 @@
 import React from 'react';
 import './App.scss';
 import HeadBar from "./components/HeadBar";
-import Editor from "./components/Editor";
+import PurchaseHistoryEditor from './components/PurchaseHistoryEditor';
 import {convertTOBackend, convertToFrontend, logInfo, processError} from "./services/utils";
-import {EC_SITES, SCRAPING_TYPE} from "./config/dropdown-list";
+import {
+  EC_SITES,
+  SCRAPING_TYPE,
+  VALID_SCRAPING_TYPES,
+} from "./config/dropdown-list";
 import _ from 'lodash';
 import Setting from "./components/Setting";
 import 'sweetalert2/src/sweetalert2.scss';
@@ -61,6 +65,7 @@ class App extends React.Component {
     this.setState({loadType: 'loading'})
     try {
       const rsp = await Api.load(site.value, type.value)
+      console.log('LOADED >>>', rsp);
       this.setState({
         siteObj: convertToFrontend(rsp),
         loadType: 'loaded',
@@ -168,6 +173,22 @@ class App extends React.Component {
         <Setting onBack={() => this.setState({setting: false})}/>
       </div>
     }
+
+    // This selects the appropriate editor for the loaded type of data.
+    let content;
+    switch (this.state.type.value) {
+      case VALID_SCRAPING_TYPES.PURCHASE_HISTORY:
+        content = (
+          <PurchaseHistoryEditor
+            ref={ref => this.editor = ref}
+            {...this.state}
+            onUpdate={this.onUpdate}
+          />
+        )
+        break;
+      default:
+    }
+
     return (
       <div className="app">
         <HeadBar onChange={this.onHeaderDropDownChange}
@@ -177,7 +198,7 @@ class App extends React.Component {
                  onLog={() => this.onLog()}
                  onSetting={() => this.setState({setting: true})}
                  {...this.state}/>
-        <Editor ref={ref => this.editor = ref} {...this.state} onUpdate={this.onUpdate}/>
+        { content }
         {log && <div className='log-container'>
           <div className='log-container'>
             {_.map(logTxt, (text, i) => (<div key={`log-${i}`}>{text}</div>))}

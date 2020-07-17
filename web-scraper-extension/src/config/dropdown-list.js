@@ -12,11 +12,25 @@ export const EC_SITES = [
 ]
 
 /**
+ * Valid scraping type values.
+ */
+export const VALID_SCRAPING_TYPES = {
+  PURCHASE_HISTORY: 'purchase_history',
+  PRODUCT_DETAIL: 'product',
+};
+
+/**
  * scraping types
  */
 export const SCRAPING_TYPE = [
-  {label: t('header.purchaseHistory'), value: 'purchase_history'},
-  {label: t('header.productDetail'), value: 'product'},
+  {
+    label: t('header.purchaseHistory'),
+    value: VALID_SCRAPING_TYPES.PURCHASE_HISTORY,
+  },
+  {
+    label: t('header.productDetail'),
+    value: VALID_SCRAPING_TYPES.PRODUCT_DETAIL,
+  },
 ]
 
 /**

@@ -1,17 +1,17 @@
 import _ from 'lodash';
+import { VALID_SCRAPING_TYPES } from '../config/dropdown-list';
 import {getI18T} from "../i18nSetup";
 
 const selector = require('./selector-helper')
 let chrome = window.chrome;
 let browser = window.browser;
 
-
 /**
- * convert json to UI struct
+ * Convert purchase history JSON to UI data structure.
  * @param site the site
  * @return {{meta}|*}
  */
-export const convertToFrontend = (site) => {
+function convertPurchaseHistoryToFrontend(site) {
   if (site.meta) {
     return site;
   }
@@ -43,11 +43,24 @@ export const convertToFrontend = (site) => {
 }
 
 /**
+ * Converts JSON object from API to UI format.
+ * @param {object} data
+ * @param {string} type Data type (see VALID_SCRAPING_TYPES).
+ * @return {object}
+ */
+export function convertToFrontend(data, type) {
+  switch (type) {
+    case VALID_SCRAPING_TYPES.PURCHASE_HISTORY:
+      return convertPurchaseHistoryToFrontend(data);
+  }
+}
+
+/**
  * convert to backend struct
  * @param site the site
  * @return {*}
  */
-export const convertTOBackend = (site) => {
+export const convertToBackend = (site) => {
   const request = _.cloneDeep(site)
   delete request.meta
 

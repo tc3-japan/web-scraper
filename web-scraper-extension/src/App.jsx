@@ -2,7 +2,12 @@ import React from 'react';
 import './App.scss';
 import HeadBar from "./components/HeadBar";
 import PurchaseHistoryEditor from './components/PurchaseHistoryEditor';
-import {convertTOBackend, convertToFrontend, logInfo, processError} from "./services/utils";
+import {
+  convertToBackend,
+  convertToFrontend,
+  logInfo,
+  processError,
+} from "./services/utils";
 import {
   EC_SITES,
   SCRAPING_TYPE,
@@ -67,7 +72,7 @@ class App extends React.Component {
       const rsp = await Api.load(site.value, type.value)
       console.log('LOADED >>>', rsp);
       this.setState({
-        siteObj: convertToFrontend(rsp),
+        siteObj: convertToFrontend(rsp, type.value),
         loadType: 'loaded',
       })
       logInfo('json loaded.')
@@ -122,7 +127,7 @@ class App extends React.Component {
     }
 
     try {
-      const rsp = await Api.test(site.value, type.value, convertTOBackend(siteObj))
+      const rsp = await Api.test(site.value, type.value, convertToBackend(siteObj))
       logInfo('test succeed')
       logInfo(rsp)
     } catch (e) {
@@ -149,7 +154,7 @@ class App extends React.Component {
     }
 
     try {
-      const body = convertTOBackend(siteObj);
+      const body = convertToBackend(siteObj);
       logInfo(JSON.stringify(body))
       await Api.save(site.value, type.value, body)
       logInfo('json saved')
@@ -166,7 +171,13 @@ class App extends React.Component {
   }
 
   render() {
-    const {setting, log, logTxt} = this.state;
+    const {
+      loadType,
+      log,
+      logTxt,
+      setting,
+      siteObj,
+    } = this.state;
 
     if (setting) {
       return <div className='app'>
@@ -189,6 +200,15 @@ class App extends React.Component {
       default:
     }
 
+    // A little tip on our current state.
+    let tip;
+    switch (loadType) {
+      case 'pending': tip = 'loadJsonTip'; break;
+      case 'loading': tip = 'loadingJson'; break;
+      case 'loaded': tip = siteObj ? null : 'loadJsonFailed'; break;
+    }
+    if (tip) tip = <div className="tip">{this.t(tip)}</div>;
+
     return (
       <div className="app">
         <HeadBar onChange={this.onHeaderDropDownChange}
@@ -198,6 +218,7 @@ class App extends React.Component {
                  onLog={() => this.onLog()}
                  onSetting={() => this.setState({setting: true})}
                  {...this.state}/>
+        { tip }
         { content }
         {log && <div className='log-container'>
           <div className='log-container'>

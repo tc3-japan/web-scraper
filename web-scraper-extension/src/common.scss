@@ -4,7 +4,6 @@ $borderColor: #6d9eeb;
 $containerColor: #c9daf8;
 $titleColor: #1c4587;
 
-
 @mixin setBgColorAndHover($baseColor) {
   background-color: $baseColor;
   &:hover {
@@ -116,11 +115,6 @@ $titleColor: #1c4587;
     text-overflow: ellipsis;
     overflow: hidden;
   }
-}
-
-.tip {
-  padding-left: 16px;
-  padding-top: 16px;
 }
 
 .Dropdown-menu {

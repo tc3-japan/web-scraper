@@ -312,7 +312,7 @@ class Editor extends React.Component {
   render() {
     const {site, type, siteObj, loadType, onUpdate} = this.props;
     const t = getI18T();
-
+    
     if (!siteObj) return null;
 
     const isExpanded = key => siteObj.meta.expanded[key];

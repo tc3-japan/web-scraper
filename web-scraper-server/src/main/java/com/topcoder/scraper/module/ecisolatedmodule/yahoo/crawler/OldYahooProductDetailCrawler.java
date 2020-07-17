@@ -1,12 +1,13 @@
 package com.topcoder.scraper.module.ecisolatedmodule.yahoo.crawler;
 
+import java.io.IOException;
+
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.lib.navpage.NavigableProductDetailPage;
 import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralProductCrawler;
 import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralProductCrawlerResult;
 import com.topcoder.scraper.service.WebpageService;
-import java.io.IOException;
 
 /**
  * Crawl yahoo product detail page
@@ -20,7 +21,7 @@ public class OldYahooProductDetailCrawler extends GeneralProductCrawler {
   /**
    *
    * Fetch product information
-   * 
+   *
    * @param webClient   the web client
    * @param productCode the product code
    * @param saveHtml    true if product html page will be saved
@@ -30,7 +31,7 @@ public class OldYahooProductDetailCrawler extends GeneralProductCrawler {
 
   public GeneralProductCrawlerResult fetchProductInfo(TrafficWebClient webClient, String productCode, boolean saveHtml)
       throws IOException {
-        
+
     ProductInfo productInfo = new ProductInfo();
     String htmlPath = "https://store.shopping.yahoo.co.jp/" + productCode;
     System.out.println(" >>> Requesting Page >>> " + htmlPath);
@@ -61,8 +62,9 @@ public class OldYahooProductDetailCrawler extends GeneralProductCrawler {
    * @throws IOException
    */
   @Override
-  public String searchProduct(TrafficWebClient webClient, String searchWord) throws IOException {
+  public GeneralProductCrawlerResult searchProduct(TrafficWebClient webClient, String searchWord) throws IOException {
     System.out.println("\nPretending to searchProduct! Returning null!"); // TODO: Implement
     return null; // TODO: Implement
   }
+
 }

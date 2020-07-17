@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,13 +13,11 @@ import org.springframework.stereotype.Service;
 import com.topcoder.api.exception.ApiException;
 import com.topcoder.api.exception.EntityNotFoundException;
 import com.topcoder.common.dao.ConfigurationDAO;
-import com.topcoder.common.model.HtmlPath;
-import com.topcoder.common.model.ProductInfo;
-import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.common.repository.ConfigurationRepository;
 import com.topcoder.common.repository.ECSiteAccountRepository;
-import com.topcoder.scraper.module.ecunifiedmodule.DryRunProductModule;
-import com.topcoder.scraper.module.ecunifiedmodule.DryRunPurchaseHistoryModule;
+import com.topcoder.scraper.module.ecunifiedmodule.dryrun.DryRunProductModule;
+import com.topcoder.scraper.module.ecunifiedmodule.dryrun.DryRunProductSearchModule;
+import com.topcoder.scraper.module.ecunifiedmodule.dryrun.DryRunPurchaseHistoryModule;
 
 /**
  * scraper service
@@ -40,11 +37,23 @@ public class ConfigurationService {
   @Autowired
   ECSiteAccountRepository ecSiteAccountRepository;
 
+  /**
+   * dry run of PurchaseHistoryModule
+   */
   @Autowired
   DryRunPurchaseHistoryModule dryRunPurchaseHistoryModule;
 
+  /**
+   * dry run of ProductModule
+   */
   @Autowired
   DryRunProductModule dryRunProductModule;
+
+  /**
+   * dry run of ProductSearchModule
+   */
+  @Autowired
+  DryRunProductSearchModule dryRunProductSearchModule;
 
   /**
    * get config by site and type
@@ -107,34 +116,16 @@ public class ConfigurationService {
    */
   public List<Object> executeConfiguration(String site, String type, String conf) throws ApiException {
     try {
-
-      List<Object> result = new ArrayList<>();
-      List<String> sites = Arrays.asList(site);
-
-      if (type.equals("purchase_history")) {
-        // the case for get purchase history
-    	  dryRunPurchaseHistoryModule.setConfig(conf);
-        dryRunPurchaseHistoryModule.fetchPurchaseHistoryList(sites);
-        List<PurchaseHistory> purchaseHistoryList = dryRunPurchaseHistoryModule.getPurchaseHistoryList();
-        List<String> htmlPathList = dryRunPurchaseHistoryModule.getHtmlPathList();
-        result.add(purchaseHistoryList);
-        result.add(new HtmlPath(htmlPathList));
-      } else if (type.equals("product")) {
-        // the case for get product detail
-        dryRunProductModule.fetchProductDetailList(sites);
-        List<ProductInfo> productInfoList = dryRunProductModule.getProductInfoList();
-        List<String> htmlPathList = dryRunProductModule.getHtmlPathList();
-        result.add(productInfoList);
-        result.add(new HtmlPath(htmlPathList));
-      } else if (type.equals("")) {
-        // the case for get product search
-      } else {
-        // other type
+      switch(type){
+      case "purchase_history":
+        return dryRunPurchaseHistoryModule.fetchPurchaseHistoryList(site, conf);
+      case "product":
+        return dryRunProductModule.fetchProductDetailList(Arrays.asList(site));
+      case "search":
+        return dryRunProductSearchModule.searchProduct(site);
+      default:
         throw new ApiException("the type:" + type + " was not supported");
       }
-
-      return result;
-
     } catch(Exception e) {
       e.printStackTrace();
       throw new ApiException("failed to execute conf");

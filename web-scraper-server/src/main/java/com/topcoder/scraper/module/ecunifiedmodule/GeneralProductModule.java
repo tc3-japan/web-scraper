@@ -1,5 +1,15 @@
 package com.topcoder.scraper.module.ecunifiedmodule;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.topcoder.common.dao.ProductDAO;
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.traffic.TrafficWebClient;
@@ -8,15 +18,6 @@ import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralProductCrawler
 import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralProductCrawlerResult;
 import com.topcoder.scraper.service.ProductService;
 import com.topcoder.scraper.service.WebpageService;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * General implementation of ProductDetailModule
@@ -108,7 +109,7 @@ public class GeneralProductModule implements IProductModule {
     TrafficWebClient webClient = new TrafficWebClient(0, false);
 
     GeneralProductCrawler crawler = new GeneralProductCrawler(siteName, this.webpageService);
-    String productCode = crawler.searchProduct(webClient, searchKey);
+    String productCode = crawler.searchProduct(webClient, searchKey).getProductCode();
 
     ProductInfo productInfo = Objects.isNull(productCode) ? null : crawler.fetchProductInfo(webClient, productCode).getProductInfo();
     webClient.finishTraffic();

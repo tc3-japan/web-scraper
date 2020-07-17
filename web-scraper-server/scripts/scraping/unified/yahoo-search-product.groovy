@@ -2,7 +2,7 @@
 debug("--------------script begin--------------")
 
 searchProducts("https://shopping.yahoo.co.jp/search?p=")
-saveListPage("product-list")
+//saveListPage("product-list")
 
 eachProducts { index ->
     //#searchResults1 > div:nth-child(3) > ul > li:nth-child(1)

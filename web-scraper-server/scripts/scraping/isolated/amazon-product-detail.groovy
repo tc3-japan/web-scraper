@@ -82,7 +82,7 @@ debug("--------------script begin--------------")
 productUrl = Vars.productUrlBase + productCode;
 
 setPage(productUrl)
-savePage("product-detail")
+//savePage("product-detail")
 
 scrapePrices(Vars.prices)
 scrapeName(Vars.name)

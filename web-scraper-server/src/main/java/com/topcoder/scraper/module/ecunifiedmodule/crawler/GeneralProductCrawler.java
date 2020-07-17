@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.Consts;
+import com.topcoder.scraper.lib.navpage.NavigablePage;
 import com.topcoder.scraper.lib.navpage.NavigableProductDetailPage;
 import com.topcoder.scraper.lib.navpage.NavigableProductListPage;
 import com.topcoder.scraper.service.WebpageService;
@@ -35,8 +36,6 @@ public class GeneralProductCrawler {
   private CompilerConfiguration scriptConfig;
   private GroovyShell           scriptShell;
   private String                scriptText = "";
-
-  private String savedPath;
 
   @Getter@Setter private WebpageService   webpageService;
   @Getter@Setter private TrafficWebClient webClient;
@@ -122,15 +121,13 @@ public class GeneralProductCrawler {
     // execute script
     this.executeScript(this.siteName + "-product-detail.groovy");
 
-    String savedPath = this.webpageService.save(this.siteName + "-product-detail", this.siteName,  this.detailPage.getPage().getWebResponse().getContentAsString(), true);
-    if (savedPath != null) {
-      this.savedPath = savedPath;
-    }
+    // save html page
+    String savedPath = this.savePage(this.siteName, "product-detail", this.productCode, this.detailPage);
 
-    return new GeneralProductCrawlerResult(this.productInfo, this.savedPath);
+    return new GeneralProductCrawlerResult(this.productInfo, savedPath);
   }
 
-  public String searchProduct(TrafficWebClient webClient, String searchWord) throws IOException {
+  public GeneralProductCrawlerResult searchProduct(TrafficWebClient webClient, String searchWord) throws IOException {
     LOGGER.debug("[searchProduct] in");
 
     this.webClient = webClient;
@@ -142,7 +139,24 @@ public class GeneralProductCrawler {
     // execute script
     this.executeScript(this.siteName + "-search-product.groovy");
 
-    return this.productCode;
+    // save html page
+    String savedPath = this.savePage(this.siteName, "product-list", this.searchWord, this.listPage);
+
+    return new GeneralProductCrawlerResult(this.productCode, savedPath);
+  }
+
+  private String savePage(String siteName, String type, String keyword, NavigablePage navigablePage) {
+    String fileName = siteName + "-" + type + "-";
+    if (keyword.length() > 20) {
+      //20 characters from the top
+      fileName += keyword.substring(0, 20);
+    } else {
+      fileName += keyword;
+    }
+    //Characters that cannot be used in folder names are replaced as underscore
+    fileName = fileName.replaceAll("[/><?:\"\\*|;]", "_");
+    // save html page
+    return this.webpageService.save(fileName, this.siteName,  navigablePage.getPage().getWebResponse().getContentAsString(), true);
   }
 
   public String eachProducts(Closure<String> closure) {

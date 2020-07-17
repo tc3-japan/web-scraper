@@ -7,7 +7,6 @@
     "i18next": "^19.4.3",
     "lodash": "^4.17.19",
     "node-sass": "^4.14.0",
-    "npm-watch": "^0.6.0",
     "nprogress": "^0.2.0",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
@@ -18,12 +17,13 @@
     "sweetalert2": "^9.10.12"
   },
   "scripts": {
-    "watch": "npm-watch",
+    "watch": "cra-build-watch",
     "start": "react-scripts start",
     "package": "npm run build && web-ext build -s build -a artifacts --overwrite-dest",
     "build": "INLINE_RUNTIME_CHUNK=false react-scripts build"
   },
   "devDependencies": {
+    "cra-build-watch": "^3.2.0",
     "web-ext": "^4.3.0"
   },
   "watch": {

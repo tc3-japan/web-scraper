@@ -8,6 +8,7 @@ const selectorImg = require('../../assets/selector.png');
  * Button component
  */
 export default function Button({
+  className,
   title,
   children,
   onClick,
@@ -16,14 +17,17 @@ export default function Button({
   highlight,
   path,
 }) {
+  let buttonClass = 'btn-container';
+  if (className) buttonClass += ` ${className}`;
   const h = highlight === path && type === 'selector' && highlight;
+  if (h) buttonClass += ' high-light';
   return (
     <button
       disabled={disabled}
       onClick={() => {
         onClick(path, h ? 'stop' : 'start');
       }}
-      className={`btn-container ${type} ${h ? 'high-light' : ''}`}
+      className={buttonClass}
       type="button"
     >
       {title}
@@ -34,6 +38,7 @@ export default function Button({
 }
 
 Button.propTypes = {
+  className: PT.string,
   children: PT.node,
   onClick: PT.func,
   title: PT.string,
@@ -44,6 +49,7 @@ Button.propTypes = {
 };
 
 Button.defaultProps = {
+  className: undefined,
   children: null,
   onClick: undefined,
   title: undefined,

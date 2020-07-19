@@ -157,6 +157,7 @@
         }
       }, 2000);
     },
+
     mousedown(e) {
       e.preventDefault();
       e.stopPropagation();
@@ -167,10 +168,12 @@
       const fullPath = this.getFullPath(this.$target);
       console.log(`selector path = ${fullPath}`);
       try {
+        const optimalSelector = window.OptimalSelect.select(e.target);
         native.runtime.sendMessage({
           action: 'click',
           path: fullPath,
           class: classStr,
+          optimalSelector,
         });
       } catch (error) {
         console.log(error);
@@ -346,7 +349,6 @@
   };
 
   function onMessage(request) {
-    console.log(request);
     const { messageId } = request;
     if (messageId && inspector.messages[messageId]) {
       console.log(`skip same message, id = ${messageId}`);
@@ -362,6 +364,44 @@
       native.runtime.sendMessage({
         action: 'currentUrl',
         url: document.location.href,
+      });
+    } else if (request.action === 'execScript') {
+      let res;
+      try {
+        /* eslint-disable no-eval */
+        res = {
+          status: 'ok',
+          value: JSON.stringify(eval(request.script)) || ' ',
+        };
+        /* eslint-enable no-eval */
+      } catch (error) {
+        res = {
+          status: 'error',
+          value: error.toString(),
+        };
+      }
+      native.runtime.sendMessage({
+        action: 'execScriptResult',
+        result: res,
+        opid: request.opid,
+      });
+    } else if (request.action === 'getAttributes') {
+      // For each page element matching the selector it gets attrbiutes with
+      // their values, and returns them to the caller in an array, where each
+      // array element is a map of attribute/values of an individual matching
+      // page element.
+      const res = [];
+      document.querySelectorAll(request.selector).forEach((node) => {
+        const attrs = {};
+        node.getAttributeNames().forEach((attr) => {
+          attrs[attr] = node.getAttribute(attr);
+        });
+        res.push(attrs);
+      });
+      native.runtime.sendMessage({
+        action: 'getAttributesResult',
+        result: res,
+        opid: request.opid,
       });
     } else if (request.action === 'getClass') {
       const element = document.querySelector(request.selector);

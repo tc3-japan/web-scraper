@@ -1,11 +1,19 @@
 /* global window */
 
-import React from 'react';
+import React, {
+  useEffect,
+  useState,
+} from 'react';
+import { getGlobalState, useGlobalState } from '@dr.pogodin/react-global-state';
+
 import './App.scss';
 import _ from 'lodash';
 import Swal from 'sweetalert2';
 import HeadBar from './components/HeadBar';
+
+import ProductDetailsEditor from './components/ProductDetailsEditor';
 import PurchaseHistoryEditor from './components/PurchaseHistoryEditor';
+
 import {
   convertToBackend,
   convertToFrontend,
@@ -24,223 +32,201 @@ import Api from './services/api';
 import getI18T from './i18nSetup';
 import Button from './components/Button';
 
-class App extends React.Component {
-  constructor(props, context) {
-    super(props, context);
+export default function App() {
+  const [siteObj, setSiteObj] = useGlobalState('data', null);
 
-    this.state = {
-      site: EC_SITES[0],
-      type: SCRAPING_TYPE[0],
-      siteObj: null,
-      logTxt: [],
-      log: false,
-      setting: false,
-      loadType: 'pending',
+  // A direct access to the global state object is needed due to the way
+  // the existing code access and updates the data.
+  const globalState = getGlobalState();
+
+  const [site, setSite] = useState(EC_SITES[0]);
+  const [type, setType] = useState(SCRAPING_TYPE[0]);
+  const [logTxt, setLogTxt] = useState([]);
+  const [log, setLog] = useState(false);
+  const [setting, setSetting] = useState(false);
+  const [loadType, setLoadType] = useState('pending');
+
+  const [i18n] = useGlobalState('i18n', getI18T);
+
+  // The base code allows only a single component to listen the messages from
+  // the webpage. This is a quick workaround for the new editor.
+  useEffect(() => {
+    window.messageListeners = [];
+    return () => {
+      delete window.messageListeners;
     };
-    this.onHeaderDropDownChange = this.onHeaderDropDownChange.bind(this);
-    this.onUpdate = this.onUpdate.bind(this);
-    this.t = getI18T();
-  }
+  }, []);
 
-  async componentDidMount() {
-    const { logTxt } = this.state;
-    window.log = (text) => this.setState({ logTxt: [`[${new Date().toISOString()}]: ${text}`].concat(logTxt) });
+  useEffect(() => {
+    window.log = (text) => {
+      setLogTxt([`[${new Date().toISOString()}]: ${text}`].concat(logTxt));
+    };
     window.log('extension load succeed');
-  }
-
-  componentWillUnmount() {
-    window.log = _.noop;
-  }
-
-  /**
-   * on log panel change
-   */
-  onLog() {
-    const { log } = this.state;
-    this.setState({ log: !log });
-  }
-
-  /**
-   * header dropdown change
-   * @param key the key
-   * @param option the option
-   */
-  onHeaderDropDownChange(key, option) {
-    this.setState({ [key]: option });
-  }
+    return () => {
+      window.log = _.noop;
+    };
+  }, []);
 
   /**
    * update json value
    * @param path the path
    * @param value the value
    */
-  onUpdate(path, value) {
-    let { siteObj } = this.state;
-    siteObj = _.cloneDeep(siteObj);
-    if (value === null && path.indexOf('rows') >= 0) {
-      const parts = path.split('.');
-      const index = parseInt(parts.pop(), 10);
-      _.get(siteObj, parts.join('.')).splice(index, 1);
-    } else {
-      _.set(siteObj, path, value);
-    }
-    this.setState({ siteObj });
-  }
+  const onUpdate = (path, value) => {
+    globalState.set(`data.${path}`, value);
+  };
 
   /**
    * load site
    */
-  async loadSite() {
-    const { siteObj, site, type } = this.state;
-    if (siteObj) {
+  const loadSite = async () => {
+    if (siteObj && siteObj.dataType) {
       const result = await Swal.fire({
-        title: this.t('loadDialogTitle'),
-        text: this.t('loadDialogContent'),
+        title: i18n('loadDialogTitle'),
+        text: i18n('loadDialogContent'),
         showCancelButton: true,
         showConfirmButton: true,
-        confirmButtonText: this.t('dialogBtnYes'),
-        cancelButtonText: this.t('dialogBtnNo'),
+        confirmButtonText: i18n('dialogBtnYes'),
+        cancelButtonText: i18n('dialogBtnNo'),
       });
       if (result.dismiss) {
         return;
       }
     }
-    this.setState({ loadType: 'loading' });
+    setLoadType('loading');
     try {
-      const rsp = await Api.load(site.value, type.value);
-      console.log('LOADED >>>', rsp);
-      this.setState({
-        siteObj: convertToFrontend(rsp, type.value),
-        loadType: 'loaded',
-      });
+      let data = await Api.load(site.value, type.value);
+      data = convertToFrontend(data, type.value);
+      setSiteObj(data);
+      setLoadType('loaded');
       logInfo('json loaded.');
     } catch (e) {
-      this.setState({ siteObj: null, loadType: 'loaded' });
+      setSiteObj(null);
+      setLoadType('loaded');
       processError(e);
     }
-  }
+  };
 
   /**
    * test site
    */
-  async testSite() {
-    const { siteObj, site, type } = this.state;
-
+  const testSite = async () => {
     const result = await Swal.fire({
-      title: this.t('testDialogTitle'),
+      title: i18n('testDialogTitle'),
       showCancelButton: true,
       showConfirmButton: true,
-      confirmButtonText: this.t('dialogBtnYes'),
-      cancelButtonText: this.t('dialogBtnNo'),
+      confirmButtonText: i18n('dialogBtnYes'),
+      cancelButtonText: i18n('dialogBtnNo'),
     });
     if (result.dismiss) {
       return;
     }
 
     try {
-      const rsp = await Api.test(site.value, type.value, convertToBackend(siteObj));
+      const rsp = await Api.test(
+        site.value,
+        type.value,
+        convertToBackend(siteObj, type.value),
+      );
       logInfo('test succeed');
       logInfo(rsp);
     } catch (e) {
       processError(e);
     }
-  }
+  };
 
   /**
    * save site json
    * @return {Promise<void>}
    */
-  async saveSite() {
-    const { siteObj, site, type } = this.state;
-
+  const saveSite = async () => {
     const result = await Swal.fire({
-      title: this.t('saveDialogTitle'),
+      title: i18n('saveDialogTitle'),
       showCancelButton: true,
       showConfirmButton: true,
-      confirmButtonText: this.t('dialogBtnYes'),
-      cancelButtonText: this.t('dialogBtnNo'),
+      confirmButtonText: i18n('dialogBtnYes'),
+      cancelButtonText: i18n('dialogBtnNo'),
     });
     if (result.dismiss) {
       return;
     }
 
     try {
-      const body = convertToBackend(siteObj);
+      const body = convertToBackend(siteObj, type.value);
       logInfo(JSON.stringify(body));
       await Api.save(site.value, type.value, body);
       logInfo('json saved');
     } catch (e) {
       processError(e);
     }
-  }
+  };
 
-  render() {
-    const {
-      loadType,
-      log,
-      logTxt,
-      setting,
-      siteObj,
-      type,
-    } = this.state;
-
-    if (setting) {
-      return (
-        <div className="app">
-          <Setting onBack={() => this.setState({ setting: false })} />
-        </div>
-      );
-    }
-
-    // This selects the appropriate editor for the loaded type of data.
-    let content;
-    switch (type.value) {
-      case VALID_SCRAPING_TYPES.PURCHASE_HISTORY:
-        content = (
-          <PurchaseHistoryEditor
-            ref={(ref) => { this.editor = ref; }}
-            {...this.state} // eslint-disable-line react/jsx-props-no-spreading
-            onUpdate={this.onUpdate}
-          />
-        );
-        break;
-      default:
-    }
-
-    // A little tip on our current state.
-    let tip;
-    switch (loadType) {
-      case 'pending': tip = 'loadJsonTip'; break;
-      case 'loading': tip = 'loadingJson'; break;
-      case 'loaded': tip = siteObj ? null : 'loadJsonFailed'; break;
-      default:
-    }
-    if (tip) tip = <div className="tip">{this.t(tip)}</div>;
-
+  if (setting) {
     return (
       <div className="app">
-        <HeadBar
-          onChange={this.onHeaderDropDownChange}
-          onLoad={() => this.loadSite()}
-          onTest={() => this.testSite()}
-          onSave={() => this.saveSite()}
-          onLog={() => this.onLog()}
-          onSetting={() => this.setState({ setting: true })}
-          {...this.state} // eslint-disable-line react/jsx-props-no-spreading
-        />
-        { tip }
-        { content }
-        {log && (
-        <div className="log-container">
-          <div className="log-container">
-            {_.map(logTxt, (text, i) => (<div key={`log-${i}`}>{text}</div>))}
-          </div>
-          <Button title="Close Log" onClick={() => this.onLog()} />
-        </div>
-        )}
+        <Setting onBack={() => setSetting(false)} />
       </div>
     );
   }
-}
 
-export default App;
+  // This selects the appropriate editor for the loaded type of data.
+  let content;
+  switch (type.value) {
+    case VALID_SCRAPING_TYPES.PURCHASE_HISTORY:
+      content = (
+        <PurchaseHistoryEditor
+          siteObj={siteObj}
+          onUpdate={onUpdate}
+        />
+      );
+      break;
+    case VALID_SCRAPING_TYPES.PRODUCT_DETAIL:
+      content = (
+        <ProductDetailsEditor />
+      );
+      break;
+    default:
+  }
+
+  // A little tip on our current state.
+  let tip;
+  switch (loadType) {
+    case 'pending': tip = 'loadJsonTip'; break;
+    case 'loading': tip = 'loadingJson'; break;
+    case 'loaded': tip = siteObj ? null : 'loadJsonFailed'; break;
+    default:
+  }
+  if (siteObj && siteObj.dataType !== type.value) tip = 'loadJsonTip';
+  if (tip) tip = <div className="tip">{i18n(tip)}</div>;
+
+  return (
+    <div className="app">
+      <HeadBar
+        loadType={loadType}
+        onLoad={loadSite}
+        onLog={() => setLog(!log)}
+        onSave={saveSite}
+        onSetting={() => setSetting(true)}
+        onTest={testSite}
+        setSite={setSite}
+        setType={setType}
+        site={site}
+        type={type}
+      />
+      { tip }
+      { content }
+      {log && (
+      <div className="log-container">
+        <div className="log-container">
+          {_.map(logTxt, (text, i) => (<div key={`log-${i}`}>{text}</div>))}
+        </div>
+        <Button
+          className="closeLogButton"
+          title="Close Log"
+          onClick={() => setLog(!log)}
+        />
+      </div>
+      )}
+    </div>
+  );
+}

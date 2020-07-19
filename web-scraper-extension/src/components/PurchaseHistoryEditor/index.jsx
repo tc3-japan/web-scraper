@@ -6,10 +6,12 @@ import PT from 'prop-types';
 import Swal from 'sweetalert2';
 
 import Button from '../Button';
-import './style.scss';
 import ExpandRow from './ExpandRow';
+import InputField from '../InputField';
+import IconButton, { TYPES as IB_TYPES } from '../IconButton';
+import SectionTitle from '../SectionTitle';
 
-import { JSON_DROPDOWN } from '../../config/dropdown-list';
+import { JSON_DROPDOWN, VALID_SCRAPING_TYPES } from '../../config/dropdown-list';
 import getI18T from '../../i18nSetup';
 import {
   logInfo,
@@ -19,7 +21,7 @@ import {
   getPathParent, getCommonClass, removeDifferentAndAdditional,
 } from '../../services/utils';
 
-const iconP = require('../../assets/icon_+.png');
+import './style.scss';
 
 /**
  * get selector count
@@ -319,51 +321,49 @@ export default class Editor extends React.Component {
     } = this.props;
     const t = getI18T();
 
-    if (!siteObj) return null;
+    if (
+      !siteObj
+      || siteObj.dataType !== VALID_SCRAPING_TYPES.PURCHASE_HISTORY
+    ) return null;
 
     const isExpanded = (key) => siteObj.meta.expanded[key];
-    const getEText = (e) => (e ? '▼' : '▲');
+
     const orderRows = _.get(siteObj, 'purchase_order.rows') || [];
     const productRows = _.get(siteObj, 'purchase_order.purchase_product.rows') || [];
     const renderInputRow = (path, title) => (
-      <div className="input-container">
-        <span>{title || t('editor.urlSelector')}</span>
-        <input value={_.get(siteObj, path)} onChange={(e) => onUpdate(path, e.target.value)} />
-      </div>
+      <InputField
+        onChange={(value) => onUpdate(path, value)}
+        title={title || t('editor.urlSelector')}
+        value={_.get(siteObj, path)}
+      />
     );
 
     return (
       <div className="editor-container">
         <div className={`editor-row ${!!isExpanded('history')}`}>
-          <div
-            className="title"
+          <SectionTitle
+            arrowUp={!isExpanded('history')}
             onClick={() => this.toggle('history')}
-            onKeyPress={() => this.toggle('history')}
-            role="button"
-            tabIndex={0}
-          >
-            {getEText(isExpanded('history'))}
-            <span>{t('editor.purchaseHistoryPage')}</span>
-          </div>
-          <div className="input-container">
-            <span>{t('editor.url')}</span>
-            <input value={siteObj.url} onChange={(e) => onUpdate('url', e.target.value)} />
-          </div>
-          <Button title={t('editor.currentUrl')} onClick={() => sendMessageToPage({ action: 'currentUrl' })} />
+            title={t('editor.purchaseHistoryPage')}
+          />
+          <InputField
+            onChange={(value) => onUpdate('url', value)}
+            title={t('editor.url')}
+            value={siteObj.url}
+          />
+          <Button
+            title={t('editor.currentUrl')}
+            onClick={() => sendMessageToPage({ action: 'currentUrl' })}
+          />
         </div>
         {isExpanded('history') && (
         <div className="indent">
           <div className={`editor-row ${!!isExpanded('order')}`}>
-            <div
-              className="title"
+            <SectionTitle
+              arrowUp={!isExpanded('order')}
               onClick={() => this.toggle('order')}
-              onKeyPress={() => this.toggle('order')}
-              role="button"
-              tabIndex={0}
-            >
-              {getEText(isExpanded('order'))}
-              <span>{t('editor.purchaseOrder')}</span>
-            </div>
+              title={t('editor.purchaseOrder')}
+            />
             {renderInputRow('purchase_order.url_element')}
             <Button
               type="selector"
@@ -398,34 +398,27 @@ export default class Editor extends React.Component {
                 key={`order-${i}`}
               />
             ))}
-            {orderRows.length < JSON_DROPDOWN.length && (
-            <div
-              className="icon-btn icon-btn-line"
-              onClick={
-                () => onUpdate(`purchase_order.rows.${orderRows.length}`, {})
-              }
-              onKeyPress={
-                () => onUpdate(`purchase_order.rows.${orderRows.length}`, {})
-              }
-              role="button"
-              tabIndex={0}
-            >
-              <img alt="btn" src={iconP} />
-              <span>{t('editor.addItem')}</span>
-            </div>
-            )}
-
+            {
+              orderRows.length < JSON_DROPDOWN.length && (
+                <IconButton
+                  onClick={
+                    () => onUpdate(
+                      `purchase_order.rows.${orderRows.length}`,
+                      {},
+                    )
+                  }
+                  topMargin
+                  title={t('editor.addItem')}
+                  type={IB_TYPES.PLUS}
+                />
+              )
+            }
             <div className={`editor-row ${!!isExpanded('product')}`}>
-              <div
-                className="title"
+              <SectionTitle
+                arrowUp={!isExpanded('product')}
                 onClick={() => this.toggle('product')}
-                onKeyPress={() => this.toggle('product')}
-                role="button"
-                tabIndex={0}
-              >
-                {getEText(isExpanded('product'))}
-                <span>{t('editor.purchaseProduct')}</span>
-              </div>
+                title={t('editor.purchaseProduct')}
+              />
               {renderInputRow('purchase_order.purchase_product.url_element')}
               <Button
                 type="selector"
@@ -462,34 +455,32 @@ export default class Editor extends React.Component {
                   key={`product-${i}`}
                 />
               ))}
-              {productRows.length < JSON_DROPDOWN.length && (
-              <div
-                className="icon-btn icon-btn-line"
-                onClick={() => onUpdate(`purchase_order.purchase_product.rows.${productRows.length}`, {})}
-                onKeyPress={() => onUpdate(`purchase_order.purchase_product.rows.${productRows.length}`, {})}
-                role="button"
-                tabIndex={0}
-              >
-                <img alt="btn" src={iconP} />
-                <span>{t('editor.addItem')}</span>
-              </div>
-              )}
+              {
+                productRows.length < JSON_DROPDOWN.length && (
+                  <IconButton
+                    onClick={
+                      () => onUpdate(
+                        `purchase_order.purchase_product.rows.${productRows.length}`,
+                        {},
+                      )
+                    }
+                    topMargin
+                    title={t('editor.addItem')}
+                    type={IB_TYPES.PLUS}
+                  />
+                )
+              }
             </div>
             )}
           </div>
           )}
 
           <div className={`editor-row ${!!isExpanded('next')}`}>
-            <div
-              className="title"
+            <SectionTitle
+              arrowUp={!isExpanded('next')}
               onClick={() => this.toggle('next')}
-              onKeyPress={() => this.toggle('next')}
-              role="button"
-              tabIndex={0}
-            >
-              {getEText(isExpanded('next'))}
-              <span>{t('editor.nextPage')}</span>
-            </div>
+              title={t('editor.nextPage')}
+            />
             {renderInputRow('next_url_element', t('editor.selector'))}
             <Button
               type="selector"
@@ -507,6 +498,7 @@ export default class Editor extends React.Component {
 
 Editor.propTypes = {
   siteObj: PT.shape({
+    dataType: PT.string.isRequired,
     meta: PT.shape({
       advancedExpanded: PT.shape({}),
       expanded: PT.shape({}),

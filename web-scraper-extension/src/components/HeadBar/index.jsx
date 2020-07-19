@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDropdown from 'react-dropdown';
 import PT from 'prop-types';
+import { useGlobalState } from '@dr.pogodin/react-global-state';
 
 import Button from '../Button';
 import './styles.scss';
@@ -12,33 +13,52 @@ import getI18T from '../../i18nSetup';
  * head bar, buttons components
  */
 export default function HeadBar({
-  onLoad,
-  onSave,
-  onChange,
-  onLog,
-  onSetting,
   loadType,
+  onLoad,
+  onLog,
+  onSave,
+  onSetting,
   onTest,
+  setSite,
+  setType,
   site,
   type,
-  siteObj,
 }) {
+  const [dataType] = useGlobalState('data.dataType');
   const t = getI18T();
   return (
     <div className="header-container">
       <Button title={t('header.load')} onClick={onLoad} disabled={!site || !type || loadType === 'loading'} />
-      <Button title={t('header.save')} onClick={onSave} disabled={!siteObj} />
-      <Button title={t('header.test')} disabled={!siteObj} onClick={onTest} />
+      <Button
+        disabled={dataType !== type.value}
+        onClick={onSave}
+        title={t('header.save')}
+      />
+      <Button
+        disabled={dataType !== type.value}
+        onClick={onTest}
+        title={t('header.test')}
+      />
 
       <div className="seq" />
       <div className="selector-container">
         <span>{t('header.ecSite')}</span>
-        <ReactDropdown options={EC_SITES} onChange={(v) => onChange('site', v)} value={site} placeholder="" />
+        <ReactDropdown
+          options={EC_SITES}
+          onChange={setSite}
+          value={site}
+          placeholder=""
+        />
       </div>
       <div className="seq" />
       <div className="selector-container">
         <span>{t('header.scrapingType')}</span>
-        <ReactDropdown options={SCRAPING_TYPE} onChange={(v) => onChange('type', v)} value={type} placeholder="" />
+        <ReactDropdown
+          options={SCRAPING_TYPE}
+          onChange={setType}
+          value={type}
+          placeholder=""
+        />
       </div>
       <div className="seq" />
       <Button title={t('header.setting')} onClick={onSetting} />
@@ -54,9 +74,9 @@ HeadBar.propTypes = {
   onSave: PT.func,
   onTest: PT.func,
   onSetting: PT.func,
-  onChange: PT.func,
+  setSite: PT.func.isRequired,
+  setType: PT.func.isRequired,
   site: PT.string,
-  siteObj: PT.shape({}),
   type: PT.string,
 };
 
@@ -67,8 +87,6 @@ HeadBar.defaultProps = {
   onSave: undefined,
   onTest: undefined,
   onSetting: undefined,
-  onChange: undefined,
   site: undefined,
-  siteObj: undefined,
   type: undefined,
 };

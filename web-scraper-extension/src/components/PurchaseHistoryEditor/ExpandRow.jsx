@@ -4,15 +4,13 @@ import ReactDropdown from 'react-dropdown';
 import PT from 'prop-types';
 
 import Button from '../Button';
+import IconButton, { TYPES as IB_TYPES } from '../IconButton';
 import './style.scss';
 
 import Checkbox from '../Checkbox';
 
 import { JSON_DROPDOWN } from '../../config/dropdown-list';
 import getI18T from '../../i18nSetup';
-
-const iconP = require('../../assets/icon_+.png');
-const iconM = require('../../assets/icon_-.png');
 
 /**
  * the editor expandable row
@@ -46,16 +44,10 @@ export default function ExpandRow({
   return (
     <div className={`expand-row indent${indent}`}>
       <div className="editor-row">
-
-        <div
-          className="icon-btn"
+        <IconButton
           onClick={() => onUpdate(path, null)}
-          onKeyPress={() => onUpdate(path, null)}
-          role="button"
-          tabIndex={0}
-        >
-          <img alt="btn" className="btn-icon" src={iconM} />
-        </div>
+          type={IB_TYPES.MINUS}
+        />
         <ReactDropdown
           options={options}
           onChange={(op) => onUpdate(`${path}.type`, op.value)}
@@ -71,22 +63,11 @@ export default function ExpandRow({
           onClick={toggleSelectorBtn}
         />
         <div className="seq" />
-        <div
-          className="icon-btn"
+        <IconButton
           onClick={() => onUpdate(`meta.advancedExpanded.${path}`, !expanded)}
-          onKeyPress={
-            () => onUpdate(`meta.advancedExpanded.${path}`, !expanded)
-          }
-          role="button"
-          tabIndex={0}
-        >
-          <img
-            alt="btn"
-            className="btn-icon"
-            src={expanded ? iconM : iconP}
-          />
-          <span>{t('editor.advanced')}</span>
-        </div>
+          title={t('editor.advanced')}
+          type={expanded ? IB_TYPES.MINUS : IB_TYPES.PLUS}
+        />
       </div>
 
       {expanded && (
@@ -114,7 +95,7 @@ ExpandRow.propTypes = {
   highlight: PT.string,
   advancedExpanded: PT.shape({}),
   row: PT.shape({
-    full_path: PT.string,
+    full_path: PT.bool,
     type: PT.string,
   }),
 };

@@ -39,6 +39,9 @@
         "unitPrice": "Unit Price",
         "productDistributor": "Product Distributor"
       },
+      "check": "Check",
+      "currentUrlCodePlaceholder": "Please replace product code in URL with {code} placeholder so that the placeholder is replaced with each product code when scraping",
+      "productDetailPage": "Product Detail Page",
       "purchaseHistoryPage": "Purchase History Page",
       "purchaseOrder": "Purchase Order",
       "purchaseProduct": "Purchase Product",
@@ -52,8 +55,18 @@
       "rootPath": "Root path",
       "attribute": "Attribute",
       "regex": "Regex",
+      "script": "Script",
       "url": "URL",
       "differentType": "Different type elements are selected."
+    },
+    "productDetails": {
+      "productCode": "Product Code",
+      "productName": "Product Name",
+      "unitPrice": "Unit Price",
+      "modelNo": "Model No",
+      "modelNoLabel": "Model No (Label)",
+      "janCode": "Jan Code",
+      "productDistributer":"Product Distributer"
     }
   }
 }

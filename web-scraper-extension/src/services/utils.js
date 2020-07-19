@@ -1,6 +1,8 @@
 /* global window */
 
 import _ from 'lodash';
+import { v4 as uuid } from 'uuid';
+
 import { VALID_SCRAPING_TYPES } from '../config/dropdown-list';
 import getI18T from '../i18nSetup';
 
@@ -25,9 +27,6 @@ export function logInfo(msg) {
  * @return {{meta}|*}
  */
 function convertPurchaseHistoryToFrontend(site) {
-  if (site.meta) {
-    return site;
-  }
   const processRows = (obj) => {
     /* eslint-disable no-param-reassign */
     const keys = _.keys(_.omit(obj, ['url_element', 'parent', 'purchase_product']));
@@ -44,6 +43,7 @@ function convertPurchaseHistoryToFrontend(site) {
   processRows(site.purchase_order);
   processRows(site.purchase_order.purchase_product);
   return {
+    dataType: VALID_SCRAPING_TYPES.PURCHASE_HISTORY,
     ...site,
     meta: {
       expanded: {
@@ -59,26 +59,61 @@ function convertPurchaseHistoryToFrontend(site) {
 }
 
 /**
+ * Creates a deep copy of object with all keys turned into camelCase.
+ * @param {object} object
+ * @return {object}
+ */
+function camelCaseKeysDeep(object) {
+  if (_.isArray(object)) {
+    return object.map((item) => {
+      const res = camelCaseKeysDeep(item);
+
+      // UUID is attached to facilitate array rendering in JSX (uuid to be used
+      // as JSX keys).
+      res.uuid = uuid();
+
+      return res;
+    });
+  }
+  if (!_.isObject(object)) return object;
+
+  const res = {};
+  _.forOwn(object, (value, key) => {
+    res[_.camelCase(key)] = camelCaseKeysDeep(value);
+  });
+  return res;
+}
+
+/**
  * Converts JSON object from API to UI format.
  * @param {object} data
  * @param {string} type Data type (see VALID_SCRAPING_TYPES).
  * @return {object}
  */
 export function convertToFrontend(data, type) {
+  let res;
   switch (type) {
     case VALID_SCRAPING_TYPES.PURCHASE_HISTORY:
-      return convertPurchaseHistoryToFrontend(data);
-    default: return undefined;
+      res = convertPurchaseHistoryToFrontend(data);
+      break;
+    case VALID_SCRAPING_TYPES.PRODUCT_DETAIL:
+      res = camelCaseKeysDeep(data);
+      break;
+    default: res = {};
   }
+  res.dataType = type;
+  return res;
 }
 
 /**
- * convert to backend struct
- * @param site the site
- * @return {*}
+ * Converts purchase history scraper data from extension format to
+ * backend format.
+ * @param {object} data
+ * @return {object}
  */
-export const convertToBackend = (site) => {
-  const request = _.cloneDeep(site);
+function convertPurchaseHistoryToBackend(data) {
+  const request = _.cloneDeep(data);
+  delete request.dataType;
   delete request.meta;
 
   const processRows = (arr, path) => {
@@ -100,7 +135,45 @@ export const convertToBackend = (site) => {
   delete request.purchase_order.rows;
   delete request.purchase_order.purchase_product.rows;
   return request;
-};
+}
+
+/**
+ * Creates a deep copy of object with all keys turned into snake_case.
+ * @param {object} object
+ * @return {object}
+ */
+function snakeCaseKeysDeep(object) {
+  if (_.isArray(object)) {
+    return object.map((item) => snakeCaseKeysDeep(item));
+  }
+  if (!_.isObject(object)) return object;
+
+  const res = {};
+  _.forOwn(object, (value, key) => {
+    res[_.snakeCase(key)] = snakeCaseKeysDeep(value);
+  });
+  return res;
+}
+
+/**
+ * convert to backend struct
+ * @param site the site
+ * @return {*}
+ */
+export function convertToBackend(data, type) {
+  let res;
+  switch (type) {
+    case VALID_SCRAPING_TYPES.PRODUCT_DETAIL:
+      res = snakeCaseKeysDeep(data);
+      break;
+    case VALID_SCRAPING_TYPES.PURCHASE_HISTORY:
+      res = convertPurchaseHistoryToBackend(data);
+      break;
+    default: res = {};
+  }
+  delete res.dataType;
+  return res;
+}
 
 function getNative() {
   if (!chrome && !browser) {

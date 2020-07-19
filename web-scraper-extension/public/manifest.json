@@ -27,6 +27,7 @@
         "<all_urls>"
       ],
       "js": [
+        "optimal-select.min.js",
         "content.js"
       ]
     }

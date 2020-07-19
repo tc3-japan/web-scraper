@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@dr.pogodin/react-global-state": "^0.2.4",
+    "codemirror": "^5.55.0",
     "crx3": "^1.1.2",
     "i18next": "^19.4.3",
     "lodash": "^4.17.19",
@@ -14,7 +16,9 @@
     "react-dropdown": "^1.7.0",
     "react-i18next": "^11.3.5",
     "react-scripts": "3.4.1",
-    "sweetalert2": "^9.10.12"
+    "react-sortable-hoc": "^1.11.0",
+    "sweetalert2": "^9.10.12",
+    "uuid": "^8.2.0"
   },
   "scripts": {
     "dev": "cra-build-watch",

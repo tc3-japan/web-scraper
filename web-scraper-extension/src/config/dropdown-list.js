@@ -47,3 +47,19 @@ export const JSON_DROPDOWN = [
   { label: t('editor.items.unitPrice'), value: 'unit_price' },
   { label: t('editor.items.productDistributor'), value: 'product_distributor' },
 ];
+
+/**
+ * Configuration of the dropdown at product details page.
+ */
+export const PRODUCT_DETAILS_DROPDOWN = [
+  { label: t('productDetails.productCode'), value: 'product_code' },
+  { label: t('productDetails.productName'), value: 'product_name' },
+  { label: t('productDetails.unitPrice'), value: 'unit_price' },
+  { label: t('productDetails.modelNo'), value: 'model_no' },
+  { label: t('productDetails.modelNoLabel'), value: 'model_no_label' },
+  { label: t('productDetails.janCode'), value: 'jan_code' },
+  {
+    label: t('productDetails.productDistributer'),
+    value: 'product_distributer',
+  },
+];

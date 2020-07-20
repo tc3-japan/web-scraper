@@ -4,6 +4,8 @@ import PT from 'prop-types';
 import { useGlobalState } from '@dr.pogodin/react-global-state';
 
 import Button from '../Button';
+import Modal from '../Modal';
+
 import './styles.scss';
 
 import { EC_SITES, SCRAPING_TYPE } from '../../config/dropdown-list';
@@ -26,43 +28,108 @@ export default function HeadBar({
 }) {
   const [dataType] = useGlobalState('data.dataType');
   const t = getI18T();
-  return (
-    <div className="header-container">
-      <Button title={t('header.load')} onClick={onLoad} disabled={!site || !type || loadType === 'loading'} />
-      <Button
-        disabled={dataType !== type.value}
-        onClick={onSave}
-        title={t('header.save')}
-      />
-      <Button
-        disabled={dataType !== type.value}
-        onClick={onTest}
-        title={t('header.test')}
-      />
 
-      <div className="seq" />
-      <div className="selector-container">
-        <span>{t('header.ecSite')}</span>
-        <ReactDropdown
-          options={EC_SITES}
-          onChange={setSite}
-          value={site}
-          placeholder=""
+  const [showLoadModal, setShowLoadModal] = React.useState(false);
+  const [siteToLoad, setSiteToLoad] = React.useState(site);
+  const [typeToLoad, setTypeToLoad] = React.useState(type);
+
+  return (
+    <div
+      className="header-container"
+    >
+      {
+        showLoadModal ? (
+          <Modal onCancel={() => setShowLoadModal(false)}>
+            <div className="ModalInputRow">
+              <span>{t('header.ecSite')}</span>
+              <div className="seq" />
+              <ReactDropdown
+                options={EC_SITES}
+                onChange={setSiteToLoad}
+                value={siteToLoad}
+                placeholder=""
+              />
+            </div>
+            <div className="ModalInputRow">
+              <span>{t('header.scrapingType')}</span>
+              <div className="seq" />
+              <ReactDropdown
+                options={SCRAPING_TYPE}
+                onChange={setTypeToLoad}
+                value={typeToLoad}
+                placeholder=""
+              />
+            </div>
+            <div className="ModalInputRow_SpaceAround">
+              <Button
+                onClick={() => {
+                  setShowLoadModal(false);
+                  onLoad(siteToLoad, typeToLoad);
+                }}
+                title={t('dialogBtnOK')}
+              />
+              <Button
+                onClick={() => setShowLoadModal(false)}
+                title={t('dialogBtnNo')}
+              />
+            </div>
+          </Modal>
+        ) : null
+      }
+      <div className="fileMenuWrap">
+        <Button
+          className="button boldButton"
+          title={t('header.file')}
         />
+        <div className="fileMenu">
+          <Button
+            className="button"
+            disabled={!site || !type || loadType === 'loading'}
+            onClick={() => setShowLoadModal(true)}
+            title={t('header.load')}
+          />
+          <Button
+            className="button"
+            disabled={dataType !== type.value}
+            onClick={onSave}
+            title={t('header.save')}
+          />
+          <Button
+            className="button"
+            disabled={dataType !== type.value}
+            onClick={onTest}
+            title={t('header.test')}
+          />
+        </div>
+      </div>
+      <Button
+        className="button boldButton"
+        onClick={onLog}
+        title={t('header.log')}
+      />
+      <Button
+        className="button boldButton"
+        onClick={onSetting}
+        title={t('header.setting')}
+      />
+      <div className="seq big" />
+      <div className="selector-container">
+        <strong>
+          {t('header.ecSite')}
+          :
+        </strong>
+        &nbsp;
+        {site.label}
       </div>
       <div className="seq" />
       <div className="selector-container">
-        <span>{t('header.scrapingType')}</span>
-        <ReactDropdown
-          options={SCRAPING_TYPE}
-          onChange={setType}
-          value={type}
-          placeholder=""
-        />
+        <strong>
+          {t('header.scrapingType')}
+          :
+        </strong>
+        &nbsp;
+        {type.label}
       </div>
-      <div className="seq" />
-      <Button title={t('header.setting')} onClick={onSetting} />
-      <Button title={t('header.log')} onClick={onLog} />
     </div>
   );
 }

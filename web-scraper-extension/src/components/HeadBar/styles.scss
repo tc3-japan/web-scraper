@@ -1,7 +1,20 @@
 @import "../../common";
 
-.header-container {
+.ModalInputRow {
+  align-items: center;
+  display: flex;
+  justify-content: flex-end;
+  margin: 5px 0;
+}
 
+.ModalInputRow_SpaceAround {
+  align-items: center;
+  display: flex;
+  justify-content: space-evenly;
+  margin: 10px 0 5px;
+}
+
+.header-container {
   align-items: center;
   flex-direction: row;
   display: flex;
@@ -9,11 +22,47 @@
   padding-left: 16px;
   padding-right: 16px;
   padding-bottom: 10px;
-
   flex-wrap: wrap;
+
   .btn-container {
     margin-top: 10px;
     margin-right: 16px;
+  }
+
+  .button {
+    margin-right: 0;
+    width: 100px;
+  }
+
+  .boldButton {
+    @include setBgColorAndHover(darken($containerColor, 10%));
+
+    font-weight: bold;
+  }
+
+  .fileMenu {
+    display: none;
+    position: absolute;
+
+    .button {
+      margin-top: 0;
+    }
+  }
+
+  .fileMenuWrap {
+    position: relative;
+
+    > .button {
+      background-color: $containerColor;
+    }
+
+    .boldButton {
+      background-color: darken($containerColor, 10%);
+    }
+  }
+
+  .fileMenuWrap:hover .fileMenu {
+    display: block;
   }
 
   .selector-container {

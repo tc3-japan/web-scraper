@@ -11,6 +11,7 @@
     "dialogBtnNo": "Cancel",
     "dialogBtnOK": "OK",
     "header": {
+      "file": "File",
       "load": "Load",
       "save": "Save",
       "test": "Test",

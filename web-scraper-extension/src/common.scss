@@ -16,7 +16,9 @@ $titleColor: #1c4587;
   }
 
   &:disabled {
-    opacity: 0.6;
+    background-color: mix($baseColor, white, 50);
+
+    // opacity: 0.6;
     cursor: not-allowed;
   }
 }

@@ -80,7 +80,7 @@ export default function App() {
   /**
    * load site
    */
-  const loadSite = async () => {
+  const loadSite = async (siteToLoad, typeToLoad) => {
     if (siteObj && siteObj.dataType) {
       const result = await Swal.fire({
         title: i18n('loadDialogTitle'),
@@ -95,13 +95,14 @@ export default function App() {
       }
     }
     setLoadType('loading');
+    setSite(siteToLoad);
+    setType(typeToLoad);
     try {
-      let data = await Api.load(site.value, type.value);
-      data = convertToFrontend(data, type.value);
+      let data = await Api.load(siteToLoad.value, typeToLoad.value);
+      data = convertToFrontend(data, typeToLoad.value);
       setSiteObj(data);
       setLoadType('loaded');
       logInfo('json loaded.');
-      console.log('[DEBUG] LOADED JSON:', data);
     } catch (e) {
       setSiteObj(null);
       setLoadType('loaded');

@@ -11,6 +11,7 @@
 }
 
 .checkbox-container {
+  background: white;
   width: 24px;
   height: 24px;
   border: 1px solid $borderColor;
@@ -18,6 +19,11 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  outline: none;
+
+  &.disabled {
+    background: none;
+  }
 
   .checked {
     width: 14px;

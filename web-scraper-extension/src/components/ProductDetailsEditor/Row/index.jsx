@@ -1,22 +1,18 @@
 /* global window */
 
-import _ from 'lodash';
-import CodeMirror from 'codemirror';
-import 'codemirror/mode/javascript/javascript';
 import React, { useEffect, useState } from 'react';
 import ReactDropdown from 'react-dropdown';
 import { SortableElement, SortableHandle } from 'react-sortable-hoc';
-import { v4 as uuid } from 'uuid';
 import { useGlobalState } from '@dr.pogodin/react-global-state';
 
 import PT from 'prop-types';
 
 import AttributeField from '../../AttributeField';
-import Button from '../../Button';
 import Checkbox from '../../Checkbox';
 import { PRODUCT_DETAILS_DROPDOWN } from '../../../config/dropdown-list';
 import IconButton, { TYPES as IB_TYPES } from '../../IconButton';
 import InputField from '../../InputField';
+import JsEditor from '../../JsEditor';
 import RegexField from '../../RegexField';
 import TargetButton from '../../TargetButton';
 import { sendMessageToPage } from '../../../services/utils';
@@ -31,13 +27,10 @@ function Row({
   row,
   updateRow,
 }) {
-  const { current: heap } = React.useRef({});
-
   const [i18n] = useGlobalState('i18n');
   const [expanded, setExpanded] = useState(false);
   const [highlightOwner, setHighlightOwner] = useGlobalState('highlightOwner');
   const [scriptMode, setScriptMode] = useState(false);
-  const [scriptExecResult, setScriptExecResult] = useState();
 
   useEffect(() => {
     const onMessage = (message) => {
@@ -47,12 +40,6 @@ function Row({
             updateRow({ ...row, selector: message.optimalSelector });
             sendMessageToPage({ action: 'stopInspector' });
             setHighlightOwner(null);
-          }
-          break;
-        }
-        case 'execScriptResult': {
-          if (message.opid === heap.execScriptOpid) {
-            setScriptExecResult(message.result.value);
           }
           break;
         }
@@ -66,31 +53,6 @@ function Row({
       );
     };
   }, [highlightOwner, row, updateRow]);
-
-  /**
-   * Manages initialisation / teardown of the script editor. To work properly,
-   * it has to be a stand-alone function which is persistent across component
-   * re-renders by React.
-   */
-  const scriptEditorHandler = React.useCallback(
-    (node) => {
-      if (node && !heap.scriptEditor) {
-        heap.scriptEditor = CodeMirror.fromTextArea(node, {
-          lineNumbers: true,
-          mode: 'javascript',
-        });
-        heap.scriptEditor.on('change', () => {
-          const value = heap.scriptEditor.doc.getValue();
-          updateRow({ ...row, script: value });
-        });
-      } else if (!node && heap.scriptEditor) {
-        heap.scriptEditor.toTextArea();
-        setScriptExecResult(null);
-        delete heap.scriptEditor;
-      }
-    },
-    [],
-  );
 
   return (
     <div className="ProductDetailsEditor_Row">
@@ -156,44 +118,10 @@ function Row({
               </div>
               {
                 scriptMode ? (
-                  <>
-                    <textarea
-                      className="scriptEditor"
-                      onChange={_.noop}
-                      ref={scriptEditorHandler}
-                      value={row.script}
-                    />
-                    <div className="mainContentRow">
-                      <Button
-                        onClick={() => {
-                          let { script } = row;
-                          script = script.replace(
-                            /\{(orderIndex|productIndex)\}/g,
-                            1,
-                          );
-                          heap.execScriptOpid = uuid();
-                          setScriptExecResult(null);
-                          sendMessageToPage({
-                            action: 'execScript',
-                            script,
-                            opid: heap.execScriptOpid,
-                          });
-                        }}
-                        title={i18n('editor.check')}
-                      />
-                      {
-                        scriptExecResult ? (
-                          <div className="scriptExecResult">
-                            <span className="label">
-                              Script Execution Result:
-                            </span>
-                            <br />
-                            {scriptExecResult}
-                          </div>
-                        ) : null
-                      }
-                    </div>
-                  </>
+                  <JsEditor
+                    onChange={(script) => updateRow({ ...row, script })}
+                    script={row.script}
+                  />
                 ) : null
               }
             </>

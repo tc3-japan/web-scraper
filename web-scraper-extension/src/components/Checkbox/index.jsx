@@ -6,15 +6,19 @@ import './styles.scss';
  * check box component
  */
 export default function Checkbox({
+  disabled,
   label,
   onChange,
   value,
 }) {
+  let className = 'checkbox-container';
+  if (disabled) className += ' disabled';
+
   let res = (
     <div
-      className="checkbox-container"
-      onClick={() => onChange(!value)}
-      onKeyPress={() => onChange(!value)}
+      className={className}
+      onClick={() => disabled || onChange(!value)}
+      onKeyPress={() => disabled || onChange(!value)}
       role="button"
       tabIndex={0}
     >
@@ -33,12 +37,14 @@ export default function Checkbox({
 }
 
 Checkbox.propTypes = {
+  disabled: PT.bool,
   label: PT.string,
   onChange: PT.func,
   value: PT.bool,
 };
 
 Checkbox.defaultProps = {
+  disabled: false,
   label: '',
   onChange: () => {},
   value: false,

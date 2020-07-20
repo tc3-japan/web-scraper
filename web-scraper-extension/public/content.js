@@ -257,11 +257,15 @@
 
         if (highlight) {
           c.fillStyle = 'rgba(0,0,255,0.25)';
+          c.strokeStyle = 'rgb(0,0,255)';
         } else {
           c.fillStyle = 'rgba(255,165,85,0.25)';
+          c.strokeStyle = 'rgb(255,165,85)';
         }
+        c.setLineDash([]);
         c.clearRect(x, y, width, height);
         c.fillRect(x, y, width, height);
+        c.strokeRect(x, y, width, height);
 
         if (!highlight) {
           // rulers (horizontal - =)

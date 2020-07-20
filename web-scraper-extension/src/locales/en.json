@@ -11,6 +11,7 @@
     "dialogBtnNo": "Cancel",
     "dialogBtnOK": "OK",
     "header": {
+      "file": "File",
       "load": "Load",
       "save": "Save",
       "test": "Test",
@@ -19,7 +20,8 @@
       "ecSite": "EC Site",
       "setting": "Setting",
       "purchaseHistory": "Purchase History",
-      "productDetail": "Product Detail"
+      "productDetail": "Product Detail",
+      "searchProduct": "Search Product"
     },
     "setting": {
       "title": "Settings",
@@ -39,9 +41,15 @@
         "unitPrice": "Unit Price",
         "productDistributor": "Product Distributor"
       },
+      "check": "Check",
+      "currentUrlCodePlaceholder": "Please replace product code in URL with {code} placeholder so that the placeholder is replaced with each product code when scraping",
+      "currentUrlWordPlaceholder": "Please replace search word in URL with {word} placeholder so that the placeholder is replaced with each search word when scraping",
+      "excludedSelector": "Excluded Selector",
+      "productDetailPage": "Product Detail Page",
       "purchaseHistoryPage": "Purchase History Page",
       "purchaseOrder": "Purchase Order",
       "purchaseProduct": "Purchase Product",
+      "searchProductPage": "Search Product Page",
       "nextPage": "Next Page",
       "addItem": "Add Item",
       "advanced": "Advanced",
@@ -52,8 +60,18 @@
       "rootPath": "Root path",
       "attribute": "Attribute",
       "regex": "Regex",
+      "script": "Script",
       "url": "URL",
       "differentType": "Different type elements are selected."
+    },
+    "productDetails": {
+      "productCode": "Product Code",
+      "productName": "Product Name",
+      "unitPrice": "Unit Price",
+      "modelNo": "Model No",
+      "modelNoLabel": "Model No (Label)",
+      "janCode": "Jan Code",
+      "productDistributer":"Product Distributer"
     }
   }
 }

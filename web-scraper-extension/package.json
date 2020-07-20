@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@dr.pogodin/react-global-state": "^0.2.4",
+    "codemirror": "^5.55.0",
     "crx3": "^1.1.2",
     "i18next": "^19.4.3",
     "lodash": "^4.17.19",
     "node-sass": "^4.14.0",
-    "npm-watch": "^0.6.0",
     "nprogress": "^0.2.0",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
@@ -15,28 +16,31 @@
     "react-dropdown": "^1.7.0",
     "react-i18next": "^11.3.5",
     "react-scripts": "3.4.1",
-    "sweetalert2": "^9.10.12"
+    "react-sortable-hoc": "^1.11.0",
+    "sweetalert2": "^9.10.12",
+    "uuid": "^8.2.0"
   },
   "scripts": {
-    "watch": "npm-watch",
+    "dev": "cra-build-watch",
     "start": "react-scripts start",
     "package": "npm run build && web-ext build -s build -a artifacts --overwrite-dest",
-    "build": "INLINE_RUNTIME_CHUNK=false react-scripts build"
+    "build": "INLINE_RUNTIME_CHUNK=false react-scripts build",
+    "lint": "npm run lint:js && npm run lint:scss",
+    "lint:js": "./node_modules/.bin/eslint --ext .js,.jsx .",
+    "lint:scss": "./node_modules/.bin/stylelint **/*.scss --syntax scss",
+    "test": "npm run lint"
   },
   "devDependencies": {
+    "cra-build-watch": "^3.2.0",
+    "eslint": "^7.2.0",
+    "eslint-config-airbnb": "^18.2.0",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-jsx-a11y": "^6.3.1",
+    "eslint-plugin-react": "^7.20.3",
+    "eslint-plugin-react-hooks": "^4.0.0",
+    "stylelint": "^13.6.1",
+    "stylelint-config-standard": "^20.0.0",
     "web-ext": "^4.3.0"
-  },
-  "watch": {
-    "build": {
-      "patterns": [
-        "src",
-        "public"
-      ],
-      "extensions": "js,jsx,json,scss,html"
-    }
-  },
-  "eslintConfig": {
-    "extends": "react-app"
   },
   "browserslist": {
     "production": [

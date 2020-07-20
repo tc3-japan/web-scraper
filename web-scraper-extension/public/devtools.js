@@ -1,13 +1,16 @@
+/* global chrome */
+
 // Create a tab in the devtools area
-chrome.devtools.panels.create("Scraper Helper", "", "index.html", function (panel) {
+chrome.devtools.panels.create('Scraper Helper', '', 'index.html', () => {
 
 });
+
 // DevTools page -- devtools.js
 // Create a connection to the background page
-var backgroundPageConnection = chrome.runtime.connect({
-  name: "devtools-page"
+const backgroundPageConnection = chrome.runtime.connect({
+  name: 'devtools-page',
 });
 
-backgroundPageConnection.onMessage.addListener(function (message) {
+backgroundPageConnection.onMessage.addListener(() => {
   // Handle responses from the background page, if any
 });

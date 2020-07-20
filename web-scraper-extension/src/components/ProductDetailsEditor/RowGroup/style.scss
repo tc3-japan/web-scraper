@@ -1,0 +1,17 @@
+@import "../../../common.scss";
+
+.ProductDetailsEditor_RowGroup {
+  align-items: flex-start;
+  display: flex;
+
+  .addItem {
+    margin-left: 5px;
+  }
+
+  .frame {
+    border: 1px solid $borderColor;
+    flex: 1;
+    margin: 5px 0;
+    padding: 0 10px 10px;
+  }
+}

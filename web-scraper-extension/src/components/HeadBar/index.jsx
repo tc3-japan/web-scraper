@@ -21,8 +21,6 @@ export default function HeadBar({
   onSave,
   onSetting,
   onTest,
-  setSite,
-  setType,
   site,
   type,
 }) {
@@ -141,8 +139,6 @@ HeadBar.propTypes = {
   onSave: PT.func,
   onTest: PT.func,
   onSetting: PT.func,
-  setSite: PT.func.isRequired,
-  setType: PT.func.isRequired,
   site: PT.string,
   type: PT.string,
 };

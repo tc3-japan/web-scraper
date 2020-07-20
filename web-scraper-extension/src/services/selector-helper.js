@@ -42,7 +42,9 @@ function getCommonParent(
   const commonParts = [];
 
   if (parts1.length !== parts2.length) {
-    throw new Error(getI18T()('editor.differentType'));
+    throw new Error(
+      `${getI18T()('editor.differentType')}\n\nSelector 1:\n${p1}\n\nSelector 2:\n${p2}`,
+    );
   }
   const { length } = parts1;
 
@@ -50,7 +52,9 @@ function getCommonParent(
     const tag1 = getTag(parts1[i]);
     const tag2 = getTag(parts2[i]);
     if (tag1 !== tag2) {
-      throw new Error(getI18T()('editor.differentType'));
+      throw new Error(
+        `${getI18T()('editor.differentType')}\n${p1}\n${p2}`,
+      );
     }
   }
   switch (mode) {

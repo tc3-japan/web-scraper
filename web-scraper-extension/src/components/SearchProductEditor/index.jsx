@@ -121,7 +121,7 @@ export default function SearchProductEditor() {
       sendMessageToPage({ action: 'stopInspector' });
       setHighlightOwner(null);
       Swal.fire({
-        text: error.message,
+        html: error.message.replace(/\n/g, '<br />'),
         showConfirmButton: true,
         confirmButtonText: i18n('dialogBtnOK'),
       });

@@ -68,7 +68,7 @@ export default class Editor extends React.Component {
             // if failed, here need stop inspector
             this.stopInspector('calculate-error');
             Swal.fire({
-              text: e.message,
+              html: e.message.replace(/\n/g, '<br />'),
               showConfirmButton: true,
               confirmButtonText: this.t('dialogBtnOK'),
             });

@@ -239,8 +239,6 @@ export default function App() {
         onSave={saveSite}
         onSetting={() => setSetting(true)}
         onTest={testSite}
-        setSite={setSite}
-        setType={setType}
         site={site}
         type={type}
       />

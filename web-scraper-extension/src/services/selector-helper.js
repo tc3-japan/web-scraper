@@ -19,35 +19,61 @@ function getTag(element) {
   return e;
 }
 
+const GET_COMMON_PARENT_MODES = {
+  FROM_BEG: 'FROM_BEG',
+  FROM_END: 'FROM_END',
+};
+
 /**
  * get common parent
  * @param p1 path 1
  * @param p2 path 2
  * @param getI18T get i18t
+ * @param {GET_COMMON_PARENT_MODES} [mode=GET_COMMON_PARENT_MODES.FROM_BEG]
  */
-function getCommonParent(p1, p2, getI18T) {
+function getCommonParent(
+  p1,
+  p2,
+  getI18T,
+  mode = GET_COMMON_PARENT_MODES.FROM_BEG,
+) {
   const parts1 = p1.split('>');
   const parts2 = p2.split('>');
-  const minLength = Math.min(parts1.length, parts2.length);
   const commonParts = [];
 
   if (parts1.length !== parts2.length) {
     throw new Error(getI18T()('editor.differentType'));
   }
-  for (let i = 0; i < minLength; i++) {
+  const { length } = parts1;
+
+  for (let i = 0; i < length; i++) {
     const tag1 = getTag(parts1[i]);
     const tag2 = getTag(parts2[i]);
     if (tag1 !== tag2) {
       throw new Error(getI18T()('editor.differentType'));
     }
   }
-  for (let i = 0; i < minLength; i++) {
-    if (parts1[i] === parts2[i]) {
-      commonParts.push(parts1[i]);
-    } else {
-      commonParts.push(getTag((parts1[i] || parts2[i])));
+  switch (mode) {
+    case GET_COMMON_PARENT_MODES.FROM_BEG: {
+      for (let i = 0; i < length; i++) {
+        if (parts1[i] === parts2[i]) {
+          commonParts.push(parts1[i]);
+        } else {
+          commonParts.push(getTag(parts1[i]));
+          break;
+        }
+      }
       break;
     }
+    case GET_COMMON_PARENT_MODES.FROM_END: {
+      for (let i = length - 1; i >= 0; --i) {
+        if (parts1[i] !== parts2[i]) {
+          for (let j = 0; j <= i; ++j) commonParts.push(getTag(parts1[j]));
+        }
+      }
+      break;
+    }
+    default: throw Error(`Invalid mode: ${mode}`);
   }
   return commonParts.map((p) => p.trim()).join(' > ');
 }
@@ -139,5 +165,10 @@ function removeDifferentAndAdditional(p1, p2) {
 }
 
 module.exports = {
-  getCommonParent, getCommonClass, getPathParent, removeDifferentAndAdditional, removeParent,
+  GET_COMMON_PARENT_MODES,
+  getCommonParent,
+  getCommonClass,
+  getPathParent,
+  removeDifferentAndAdditional,
+  removeParent,
 };

@@ -52,6 +52,9 @@ export default class Editor extends React.Component {
     window.onMessage = (message) => {
       logInfo('got an event from page');
       logInfo(`message = ${JSON.stringify(message)}`);
+      if (window.messageListeners) {
+        window.messageListeners.forEach((listener) => listener(message));
+      }
       if (message.action === 'click') {
         if (!that.props.siteObj.meta.highlight) {
           window.log('ignore message, because of not in highlight mode');
@@ -330,6 +333,7 @@ export default class Editor extends React.Component {
 
     const orderRows = _.get(siteObj, 'purchase_order.rows') || [];
     const productRows = _.get(siteObj, 'purchase_order.purchase_product.rows') || [];
+
     const renderInputRow = (path, title) => (
       <InputField
         onChange={(value) => onUpdate(path, value)}

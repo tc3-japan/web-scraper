@@ -11,11 +11,14 @@ import { useGlobalState } from '@dr.pogodin/react-global-state';
 
 import PT from 'prop-types';
 
+import AttributeField from '../../AttributeField';
 import Button from '../../Button';
 import Checkbox from '../../Checkbox';
 import { PRODUCT_DETAILS_DROPDOWN } from '../../../config/dropdown-list';
 import IconButton, { TYPES as IB_TYPES } from '../../IconButton';
 import InputField from '../../InputField';
+import RegexField from '../../RegexField';
+import TargetButton from '../../TargetButton';
 import { sendMessageToPage } from '../../../services/utils';
 
 import './style.scss';
@@ -33,48 +36,7 @@ function Row({
   const [i18n] = useGlobalState('i18n');
   const [expanded, setExpanded] = useState(false);
   const [highlightOwner, setHighlightOwner] = useGlobalState('highlightOwner');
-
-  const [attrs, setAttrs] = useState();
-  const [showAttrsTip, setShowAttrsTip] = useState(false);
-  const [showRegexTip, setShowRegexTip] = useState(false);
   const [scriptMode, setScriptMode] = useState(false);
-
-  const attrsTip = React.useMemo(() => {
-    let res;
-    if (attrs && showAttrsTip) {
-      res = [];
-      attrs.forEach((item) => {
-        _.forOwn(item, (value, key) => {
-          res.push(`${key}="${value}"`);
-        });
-      });
-    }
-    return res;
-  }, [attrs, showAttrsTip]);
-
-  const regexTip = React.useMemo(() => {
-    let res;
-    if (attrs && showRegexTip && row.regex) {
-      res = [];
-      const regex = new RegExp(row.regex);
-      for (let i = 0; i < attrs.length; ++i) {
-        const keys = Object.keys(attrs[i]);
-        for (let j = 0; j < keys.length; ++j) {
-          const key = keys[j];
-          if (!row.attribute || row.attribute === key) {
-            const value = attrs[i][key];
-            const m = value && value.match(regex);
-            if (m) res.push(m[0]);
-            if (row.attribute || res.length === 3) { i = attrs.length; break; }
-          }
-        }
-      }
-    }
-    return res;
-  }, [attrs, showRegexTip, row.attribute, row.regex]);
-
-  const attrsTipRef = React.useRef();
-
   const [scriptExecResult, setScriptExecResult] = useState();
 
   useEffect(() => {
@@ -86,10 +48,6 @@ function Row({
             sendMessageToPage({ action: 'stopInspector' });
             setHighlightOwner(null);
           }
-          break;
-        }
-        case 'getAttributesResult': {
-          if (message.opid === heap.opid) setAttrs(message.result);
           break;
         }
         case 'execScriptResult': {
@@ -159,24 +117,10 @@ function Row({
             title={i18n('editor.selector')}
             value={row.selector}
           />
-          <Button
+          <TargetButton
             disabled={scriptMode}
-            type="selector"
-            highlight={highlightOwner}
-            onClick={() => {
-              if (row.uuid === highlightOwner) {
-                sendMessageToPage({ action: 'stopInspector' });
-                setHighlightOwner(null);
-              } else {
-                sendMessageToPage({
-                  action: 'startInspector',
-                  selector: row.selector,
-                  path: row.uuid,
-                });
-                setHighlightOwner(row.uuid);
-              }
-            }}
-            path={row.uuid}
+            selector={row.selector}
+            uuid={row.uuid}
           />
           <div className="seq" />
           <IconButton
@@ -195,109 +139,20 @@ function Row({
                   value={scriptMode}
                 />
                 <div className="seq" />
-                <div className="auxBlock">
-                  <InputField
-                    disabled={scriptMode}
-                    onChange={(attribute) => updateRow({ ...row, attribute })}
-                    onBlur={(e) => {
-                      // This hides the attributes tooltip, but only if the focus
-                      // was not lost to one of the tooltip elements. In the later
-                      // case removing it would interfere with handling the click
-                      // there, thus we leave it up to that handler to close the
-                      // tip.
-                      const tipNode = attrsTipRef.current;
-                      if (!tipNode || !tipNode.contains(e.relatedTarget)) {
-                        setShowAttrsTip(false);
-                      }
-                    }}
-                    onFocus={() => {
-                      heap.opid = uuid();
-                      setShowAttrsTip(true);
-                      sendMessageToPage({
-                        action: 'getAttributes',
-                        selector: row.selector,
-                        opid: heap.opid,
-                      });
-                    }}
-                    title={i18n('editor.attribute')}
-                    value={row.attribute}
-                  />
-                  {
-                    attrsTip ? (
-                      <div className="attrsTip" ref={attrsTipRef}>
-                        {
-                          attrsTip.length ? (
-                            attrsTip.map((tip) => {
-                              const fire = () => {
-                                const value = tip.match(/[^=]*/)[0];
-                                updateRow({
-                                  ...row,
-                                  attribute: value,
-                                });
-                                setShowAttrsTip(false);
-                              };
-                              return (
-                                <div
-                                  className="item"
-                                  onClick={fire}
-                                  onKeyPress={fire}
-                                  key={tip}
-                                  role="button"
-                                  tabIndex={0}
-                                >
-                                  {`• ${tip}`}
-                                </div>
-                              );
-                            })
-                          ) : (
-                            'No attributes'
-                          )
-                        }
-                      </div>
-                    ) : null
-                  }
-                </div>
+                <AttributeField
+                  attribute={row.attribute}
+                  disabled={scriptMode}
+                  onChange={(attribute) => updateRow({ ...row, attribute })}
+                  selector={row.selector}
+                />
                 <div className="seq" />
-                <div className="auxBlock">
-                  <InputField
-                    disabled={scriptMode}
-                    onBlur={() => setShowRegexTip(false)}
-                    onChange={(regex) => updateRow({ ...row, regex })}
-                    onFocus={() => {
-                      if (row.selector) {
-                        heap.opid = uuid();
-                        setShowRegexTip(true);
-                        sendMessageToPage({
-                          action: 'getAttributes',
-                          selector: row.selector,
-                          opid: heap.opid,
-                        });
-                      }
-                    }}
-                    title={i18n('editor.regex')}
-                    value={row.regex}
-                  />
-                  {
-                    regexTip ? (
-                      <div className="regexTip" ref={attrsTipRef}>
-                        {
-                          regexTip.length ? (
-                            regexTip.map((tip) => (
-                              <div
-                                className="item"
-                                key={tip}
-                              >
-                                {`• ${tip}`}
-                              </div>
-                            ))
-                          ) : (
-                            'No Match'
-                          )
-                        }
-                      </div>
-                    ) : null
-                  }
-                </div>
+                <RegexField
+                  attribute={row.attribute}
+                  disabled={scriptMode}
+                  onChange={(regex) => updateRow({ ...row, regex })}
+                  regex={row.regex}
+                  selector={row.selector}
+                />
               </div>
               {
                 scriptMode ? (

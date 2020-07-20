@@ -2,6 +2,7 @@ import React from 'react';
 import PT from 'prop-types';
 
 export default function InputField({
+  className,
   disabled,
   onChange,
   onBlur,
@@ -9,8 +10,10 @@ export default function InputField({
   title,
   value,
 }) {
+  let containerClass = 'input-container';
+  if (className) containerClass += ` ${className}`;
   return (
-    <div className="input-container">
+    <div className={containerClass}>
       <span>{title}</span>
       <input
         disabled={disabled}
@@ -24,6 +27,7 @@ export default function InputField({
 }
 
 InputField.propTypes = {
+  className: PT.string,
   disabled: PT.bool,
   onBlur: PT.func,
   onChange: PT.func,
@@ -33,6 +37,7 @@ InputField.propTypes = {
 };
 
 InputField.defaultProps = {
+  className: undefined,
   disabled: false,
   onBlur: undefined,
   onChange: undefined,

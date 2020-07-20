@@ -17,21 +17,22 @@ export const EC_SITES = [
 export const VALID_SCRAPING_TYPES = {
   PURCHASE_HISTORY: 'purchase_history',
   PRODUCT_DETAIL: 'product',
+  SEARCH_PRODUCT: 'search',
 };
 
 /**
  * scraping types
  */
-export const SCRAPING_TYPE = [
-  {
-    label: t('header.purchaseHistory'),
-    value: VALID_SCRAPING_TYPES.PURCHASE_HISTORY,
-  },
-  {
-    label: t('header.productDetail'),
-    value: VALID_SCRAPING_TYPES.PRODUCT_DETAIL,
-  },
-];
+export const SCRAPING_TYPE = [{
+  label: t('header.purchaseHistory'),
+  value: VALID_SCRAPING_TYPES.PURCHASE_HISTORY,
+}, {
+  label: t('header.productDetail'),
+  value: VALID_SCRAPING_TYPES.PRODUCT_DETAIL,
+}, {
+  label: t('header.searchProduct'),
+  value: VALID_SCRAPING_TYPES.SEARCH_PRODUCT,
+}];
 
 /**
  * common json dropdown options

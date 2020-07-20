@@ -3,8 +3,11 @@ import React from 'react';
 import ReactDropdown from 'react-dropdown';
 import PT from 'prop-types';
 
+import AttributeField from '../AttributeField';
 import Button from '../Button';
 import IconButton, { TYPES as IB_TYPES } from '../IconButton';
+import RegexField from '../RegexField';
+
 import './style.scss';
 
 import Checkbox from '../Checkbox';
@@ -77,9 +80,18 @@ export default function ExpandRow({
           <span>{t('editor.rootPath')}</span>
         </div>
         <div className="seq big" />
-        {renderInput('attribute', t('editor.attribute'))}
+        <AttributeField
+          attribute={row.attribute}
+          onChange={(value) => onUpdate(`${path}.attribute`, value)}
+          selector={row.element}
+        />
         <div className="seq big" />
-        {renderInput('regex', t('editor.regex'))}
+        <RegexField
+          attribute={row.attribute}
+          onChange={(value) => onUpdate(`${path}.regex`, value)}
+          regex={row.regex}
+          selector={row.element}
+        />
       </div>
       )}
     </div>
@@ -95,7 +107,10 @@ ExpandRow.propTypes = {
   highlight: PT.string,
   advancedExpanded: PT.shape({}),
   row: PT.shape({
+    attribute: PT.string,
+    element: PT.string,
     full_path: PT.bool,
+    regex: PT.string,
     type: PT.string,
   }),
 };

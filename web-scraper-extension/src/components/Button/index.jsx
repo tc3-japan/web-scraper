@@ -17,7 +17,7 @@ export default function Button({
   highlight,
   path,
 }) {
-  let buttonClass = 'btn-container';
+  let buttonClass = `btn-container ${type}`;
   if (className) buttonClass += ` ${className}`;
   const h = highlight === path && type === 'selector' && highlight;
   if (h) buttonClass += ' high-light';

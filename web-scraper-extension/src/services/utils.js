@@ -93,10 +93,15 @@ function camelCaseKeysDeep(object) {
 export function convertToFrontend(data, type) {
   let res;
   switch (type) {
+    // This case stands out because it was implemented in the original codebase,
+    // and it would take extra efforts to refactor it to a more convenient
+    // handling used for other cases.
     case VALID_SCRAPING_TYPES.PURCHASE_HISTORY:
       res = convertPurchaseHistoryToFrontend(data);
       break;
+
     case VALID_SCRAPING_TYPES.PRODUCT_DETAIL:
+    case VALID_SCRAPING_TYPES.SEARCH_PRODUCT:
       res = camelCaseKeysDeep(data);
       break;
     default: res = {};
@@ -164,6 +169,7 @@ export function convertToBackend(data, type) {
   let res;
   switch (type) {
     case VALID_SCRAPING_TYPES.PRODUCT_DETAIL:
+    case VALID_SCRAPING_TYPES.SEARCH_PRODUCT:
       res = snakeCaseKeysDeep(data);
       break;
     case VALID_SCRAPING_TYPES.PURCHASE_HISTORY:
@@ -270,7 +276,13 @@ export function sendMessageToPage(args) {
 /**
  * selector methods
  */
-export const getCommonParent = (p1, p2) => selector.getCommonParent(p1, p2, getI18T);
+const { GET_COMMON_PARENT_MODES } = selector;
+
+function getCommonParent(p1, p2, mode) {
+  return selector.getCommonParent(p1, p2, getI18T, mode);
+}
+
+export { GET_COMMON_PARENT_MODES, getCommonParent };
 export const { getPathParent } = selector;
 export const { removeParent } = selector;
 export const { getCommonClass } = selector;

@@ -13,6 +13,7 @@ import HeadBar from './components/HeadBar';
 
 import ProductDetailsEditor from './components/ProductDetailsEditor';
 import PurchaseHistoryEditor from './components/PurchaseHistoryEditor';
+import SearchProductEditor from './components/SearchProductEditor';
 
 import {
   convertToBackend,
@@ -100,6 +101,7 @@ export default function App() {
       setSiteObj(data);
       setLoadType('loaded');
       logInfo('json loaded.');
+      console.log('[DEBUG] LOADED JSON:', data);
     } catch (e) {
       setSiteObj(null);
       setLoadType('loaded');
@@ -181,9 +183,10 @@ export default function App() {
       );
       break;
     case VALID_SCRAPING_TYPES.PRODUCT_DETAIL:
-      content = (
-        <ProductDetailsEditor />
-      );
+      content = <ProductDetailsEditor />;
+      break;
+    case VALID_SCRAPING_TYPES.SEARCH_PRODUCT:
+      content = <SearchProductEditor />;
       break;
     default:
   }

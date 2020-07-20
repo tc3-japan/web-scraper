@@ -4,6 +4,7 @@ import React, {
   useEffect,
   useState,
 } from 'react';
+import { v4 as uuid } from 'uuid';
 import { getGlobalState, useGlobalState } from '@dr.pogodin/react-global-state';
 
 import './App.scss';
@@ -20,18 +21,21 @@ import {
   convertToFrontend,
   logInfo,
   processError,
+  storageGet,
+  sendMessageToPage,
 } from './services/utils';
 import {
   EC_SITES,
   SCRAPING_TYPE,
   VALID_SCRAPING_TYPES,
 } from './config/dropdown-list';
-import Setting from './components/Setting';
+import Setting, { BASE_API_KEY } from './components/Setting';
 import 'sweetalert2/src/sweetalert2.scss';
 import 'nprogress/nprogress.css';
 import Api from './services/api';
 import getI18T from './i18nSetup';
 import Button from './components/Button';
+import { DEFAULT_API } from './config/config';
 
 export default function App() {
   const [siteObj, setSiteObj] = useGlobalState('data', null);
@@ -58,10 +62,14 @@ export default function App() {
     };
   }, []);
 
+  window.log = (text, dontTimestamp) => {
+    let msg = text;
+    if (!dontTimestamp) msg = `[${new Date().toISOString()}]: ${msg}`;
+    if (_.isFunction(msg)) msg.uuid = uuid();
+    setLogTxt([msg].concat(logTxt));
+  };
+
   useEffect(() => {
-    window.log = (text) => {
-      setLogTxt([`[${new Date().toISOString()}]: ${text}`].concat(logTxt));
-    };
     window.log('extension load succeed');
     return () => {
       window.log = _.noop;
@@ -131,8 +139,27 @@ export default function App() {
         type.value,
         convertToBackend(siteObj, type.value),
       );
+      const baseUrl = await storageGet(BASE_API_KEY) || DEFAULT_API;
       logInfo('test succeed');
-      logInfo(rsp);
+      rsp.data[1].urls.forEach((url) => {
+        logInfo(() => (
+          <a
+            className="urlInLog"
+            href={`${baseUrl}/${url}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              sendMessageToPage({
+                action: 'openUrl',
+                url: `${baseUrl}/${url}`,
+              });
+            }}
+          >
+            {url}
+          </a>
+        ), true);
+      });
+      logInfo(rsp.data[0]);
     } catch (e) {
       processError(e);
     }
@@ -222,7 +249,14 @@ export default function App() {
       {log && (
       <div className="log-container">
         <div className="log-container">
-          {_.map(logTxt, (text, i) => (<div key={`log-${i}`}>{text}</div>))}
+          {
+            logTxt.map((Msg) => {
+              if (_.isFunction(Msg)) {
+                return <Msg key={Msg.uuid} />;
+              }
+              return <pre key={Msg.slice(0, 64)}>{Msg}</pre>;
+            })
+          }
         </div>
         <Button
           className="closeLogButton"

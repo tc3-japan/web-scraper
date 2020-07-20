@@ -364,6 +364,8 @@
       inspector.highlight(request.selector);
     } else if (request.action === 'stopInspector') {
       inspector.deactivate();
+    } else if (request.action === 'openUrl') {
+      document.location.href = request.url;
     } else if (request.action === 'currentUrl') {
       native.runtime.sendMessage({
         action: 'currentUrl',

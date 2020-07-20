@@ -13,12 +13,12 @@ const { browser, chrome } = window;
 /**
  * log info
  * @param msg
+ * @param {boolean} dontTimestamp
  */
-export function logInfo(msg) {
-  if (window.log) {
-    window.log(JSON.stringify(msg));
-  }
-  console.log(msg);
+export function logInfo(msg, dontTimestamp) {
+  const m = _.isFunction(msg) ? msg : JSON.stringify(msg, undefined, 2);
+  if (window.log) window.log(m, dontTimestamp);
+  console.log(m);
 }
 
 /**

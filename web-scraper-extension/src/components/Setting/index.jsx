@@ -24,6 +24,7 @@ export default class Setting extends React.Component {
 
   componentDidMount() {
     storageGet(BASE_API_KEY).then((api) => {
+      console.log(api)
       logInfo(`read from api from local ${api}`);
       this.setState({ api: api || DEFAULT_API });
     }).catch((e) => processError(e));

@@ -149,7 +149,11 @@ function convertPurchaseHistoryToBackend(data) {
  */
 function snakeCaseKeysDeep(object) {
   if (_.isArray(object)) {
-    return object.map((item) => snakeCaseKeysDeep(item));
+    return object.map((item) => {
+      const res = snakeCaseKeysDeep(item);
+      delete res.uuid;
+      return res;
+    });
   }
   if (!_.isObject(object)) return object;
 

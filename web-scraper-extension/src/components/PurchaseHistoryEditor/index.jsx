@@ -398,6 +398,7 @@ export default class Editor extends React.Component {
                 toggleSelectorBtn={this.toggleSelectorBtn}
                 highlight={siteObj.meta.highlight}
                 advancedExpanded={siteObj.meta.advancedExpanded}
+                selectorPrefix={_.get(siteObj, 'purchase_order.parent')}
                 onUpdate={onUpdate}
                 key={`order-${i}`}
               />
@@ -447,18 +448,48 @@ export default class Editor extends React.Component {
 
             {isExpanded('product') && (
             <div className="indent">
-              {_.map(productRows, (key, i) => (
-                <ExpandRow
-                  row={productRows[i]}
-                  rows={productRows}
-                  path={`purchase_order.purchase_product.rows.${i}`}
-                  toggleSelectorBtn={this.toggleSelectorBtn}
-                  highlight={siteObj.meta.highlight}
-                  advancedExpanded={siteObj.meta.advancedExpanded}
-                  onUpdate={onUpdate}
-                  key={`product-${i}`}
-                />
-              ))}
+              {
+                _.map(productRows, (key, i) => {
+                  let prefix = [];
+
+                  const productUrlSelector = _.get(
+                    siteObj,
+                    'purchase_order.purchase_product.url_element'
+                  );
+
+                  if (!productUrlSelector) {
+                    const orderParentSelector = _.get(
+                      siteObj,
+                      'purchase_order.parent',
+                    );
+                    if (orderParentSelector) prefix.push(orderParentSelector);
+                  }
+
+                  const purchaseParentSelector = _.get(
+                    siteObj,
+                    'purchase_order.purchase_product.parent',
+                  );
+                  if (purchaseParentSelector) {
+                    prefix.push(purchaseParentSelector);
+                  }
+
+                  prefix = prefix.join(' > ');
+
+                  return (
+                    <ExpandRow
+                      row={productRows[i]}
+                      rows={productRows}
+                      path={`purchase_order.purchase_product.rows.${i}`}
+                      toggleSelectorBtn={this.toggleSelectorBtn}
+                      highlight={siteObj.meta.highlight}
+                      selectorPrefix={prefix}
+                      advancedExpanded={siteObj.meta.advancedExpanded}
+                      onUpdate={onUpdate}
+                      key={`product-${i}`}
+                    />
+                  );
+                })
+              }
               {
                 productRows.length < JSON_DROPDOWN.length && (
                   <IconButton

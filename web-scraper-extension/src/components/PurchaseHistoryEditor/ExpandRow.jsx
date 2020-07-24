@@ -23,6 +23,7 @@ export default function ExpandRow({
   indent,
   advancedExpanded,
   highlight,
+  selectorPrefix,
   toggleSelectorBtn,
   rows,
   onUpdate,
@@ -32,6 +33,7 @@ export default function ExpandRow({
   const expanded = advancedExpanded ? _.get(advancedExpanded, path) : false;
 
   const [scriptMode, setScriptMode] = React.useState(false);
+  console.log(row);
 
   const options = _.filter(
     JSON_DROPDOWN,
@@ -97,7 +99,10 @@ export default function ExpandRow({
               attribute={row.attribute}
               disabled={scriptMode}
               onChange={(value) => onUpdate(`${path}.attribute`, value)}
-              selector={row.element}
+              selector={
+                selectorPrefix ? `${selectorPrefix} > ${row.element}`
+                  : row.element
+              }
             />
             <div className="seq big" />
             <RegexField
@@ -105,7 +110,10 @@ export default function ExpandRow({
               disabled={scriptMode}
               onChange={(value) => onUpdate(`${path}.regex`, value)}
               regex={row.regex}
-              selector={row.element}
+              selector={
+                selectorPrefix ? `${selectorPrefix} > ${row.element}`
+                  : row.element
+              }
             />
           </div>
           <div className="editor-row">
@@ -147,6 +155,7 @@ ExpandRow.propTypes = {
     script: PT.string,
     type: PT.string,
   }),
+  selectorPrefix: PT.string,
 };
 
 ExpandRow.defaultProps = {
@@ -158,4 +167,5 @@ ExpandRow.defaultProps = {
   toggleSelectorBtn: undefined,
   highlight: undefined,
   row: undefined,
+  selectorPrefix: '',
 };

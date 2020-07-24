@@ -233,7 +233,11 @@ export default function SearchProductEditor() {
                 attribute={data.attribute}
                 inputClassName="alignedInputFieldR"
                 onChange={(attribute) => setData({ ...data, attribute })}
-                selector={data.selector}
+                selector={
+                  data.groupSelector
+                    ? `${data.groupSelector} > ${data.selector}`
+                    : data.selector
+                }
                 tipClassName="alignedTipR"
               />
             </div>
@@ -256,7 +260,11 @@ export default function SearchProductEditor() {
                 inputClassName="alignedInputFieldR"
                 onChange={(regex) => setData({ ...data, regex })}
                 regex={data.regex}
-                selector={data.selector}
+                selector={
+                  data.groupSelector
+                    ? `${data.groupSelector} > ${data.selector}`
+                    : data.selector
+                }
                 tipClassName="alignedTipR"
               />
             </div>

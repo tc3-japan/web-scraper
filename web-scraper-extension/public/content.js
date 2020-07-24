@@ -132,6 +132,13 @@
     blockEvent(target) {
       let next = target;
       const elements = [];
+
+      const blocker = (e) => {
+        e.stopImmediatePropagation();
+        e.stopPropagation();
+        e.preventDefault();
+      };
+
       while (next) {
         if (next.classList && !next.classList.contains(blockEvent)) {
           if (next === target) {
@@ -139,8 +146,7 @@
           }
           const context = { e: next };
           if (next.tagName.toLowerCase() === 'a') {
-            context.href = next.href;
-            next.href = 'javascript:;'; // eslint-disable-line no-script-url
+            next.addEventListener('click', blocker);
           }
           elements.push(context);
         }
@@ -149,10 +155,9 @@
       setTimeout(() => {
         for (let i = 0; i < elements.length; i++) {
           const ele = elements[i].e;
-          const context = elements[i];
           ele.classList.remove(blockEvent);
-          if (context.href) {
-            ele.href = context.href;
+          if (ele.tagName.toLowerCase() === 'a') {
+            ele.removeEventListener('click', blocker);
           }
         }
       }, 2000);

@@ -57,9 +57,6 @@ export default function App() {
   // the webpage. This is a quick workaround for the new editor.
   useEffect(() => {
     window.messageListeners = [];
-    return () => {
-      delete window.messageListeners;
-    };
   }, []);
 
   window.log = (text, dontTimestamp) => {

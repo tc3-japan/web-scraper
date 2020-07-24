@@ -45,6 +45,7 @@
       "currentUrlCodePlaceholder": "Please replace product code in URL with {code} placeholder so that the placeholder is replaced with each product code when scraping",
       "currentUrlWordPlaceholder": "Please replace search word in URL with {word} placeholder so that the placeholder is replaced with each search word when scraping",
       "excludedSelector": "Excluded Selector",
+      "invalidRegex": "Invalid Regex",
       "productDetailPage": "Product Detail Page",
       "purchaseHistoryPage": "Purchase History Page",
       "purchaseOrder": "Purchase Order",

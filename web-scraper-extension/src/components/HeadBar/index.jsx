@@ -139,8 +139,14 @@ HeadBar.propTypes = {
   onSave: PT.func,
   onTest: PT.func,
   onSetting: PT.func,
-  site: PT.string,
-  type: PT.string,
+  site: PT.shape({
+    label: PT.string,
+    value: PT.string,
+  }),
+  type: PT.shape({
+    label: PT.string,
+    value: PT.string,
+  }),
 };
 
 HeadBar.defaultProps = {

@@ -24,9 +24,7 @@ export default function Button({
   return (
     <button
       disabled={disabled}
-      onClick={() => {
-        onClick(path, h ? 'stop' : 'start');
-      }}
+      onClick={() => onClick && onClick(path, h ? 'stop' : 'start')}
       className={buttonClass}
       type="button"
     >

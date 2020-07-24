@@ -10,6 +10,55 @@ import { sendMessageToPage } from '../../services/utils';
 
 import './style.scss';
 
+const INVALID_REGEX_CODE = 1;
+
+function Tip({ i18n, tip, tipClassName }) {
+  if (!tip) return null;
+
+  let tipClass = 'tip';
+  if (tipClassName) tipClass += ` ${tipClassName}`;
+
+  if (tip === INVALID_REGEX_CODE) {
+    return (
+      <div className={tipClass}>
+        <strong>
+          {i18n('editor.invalidRegex')}
+        </strong>
+      </div>
+    );
+  }
+
+  return (
+    <div className={tipClass}>
+      {
+        tip.length ? (
+          tip.map((item) => (
+            <div
+              className="item"
+              key={item}
+            >
+              {`• ${item}`}
+            </div>
+          ))
+        ) : (
+          'No Match'
+        )
+      }
+    </div>
+  );
+}
+
+Tip.propTypes = {
+  i18n: PT.func.isRequired,
+  tip: PT.oneOfType([PT.arrayOf(PT.string), PT.number]),
+  tipClassName: PT.string,
+};
+
+Tip.defaultProps = {
+  tip: undefined,
+  tipClassName: undefined,
+};
+
 export default function RegexField({
   attribute,
   disabled,
@@ -46,7 +95,13 @@ export default function RegexField({
     let res;
     if (attrs && showTip && regex) {
       res = [];
-      const rx = new RegExp(regex);
+
+      let rx;
+      try {
+        rx = new RegExp(regex);
+      } catch (error) {
+        return INVALID_REGEX_CODE;
+      }
       for (let i = 0; i < attrs.length; ++i) {
         const keys = Object.keys(attrs[i]);
         for (let j = 0; j < keys.length; ++j) {
@@ -62,9 +117,6 @@ export default function RegexField({
     }
     return res;
   }, [attrs, showTip, attribute, regex]);
-
-  let tipClass = 'tip';
-  if (tipClassName) tipClass += ` ${tipClassName}`;
 
   return (
     <div className="RegexField">
@@ -87,26 +139,11 @@ export default function RegexField({
         title={i18n('editor.regex')}
         value={regex}
       />
-      {
-        tip ? (
-          <div className={tipClass}>
-            {
-              tip.length ? (
-                tip.map((item) => (
-                  <div
-                    className="item"
-                    key={item}
-                  >
-                    {`• ${item}`}
-                  </div>
-                ))
-              ) : (
-                'No Match'
-              )
-            }
-          </div>
-        ) : null
-      }
+      <Tip
+        i18n={i18n}
+        tip={tip}
+        tipClassName={tipClassName}
+      />
     </div>
   );
 }

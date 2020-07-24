@@ -110,7 +110,7 @@ export default function RegexField({
             const value = attrs[i][key];
             const m = value && value.match(rx);
             if (m) res.push(m[0]);
-            if (attribute || res.length === 3) { i = attrs.length; break; }
+            if (res.length === 3) { i = attrs.length; break; }
           }
         }
       }

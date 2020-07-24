@@ -49,11 +49,18 @@ export default function AttributeField({
     let res;
     if (attrs && showTip) {
       res = [];
+      if (attrs[0]) {
+        _.forOwn(attrs[0], (value, key) => {
+          res.push(`${key}="${value}"`);
+        });
+      }
+      /*
       attrs.forEach((item) => {
         _.forOwn(item, (value, key) => {
           res.push(`${key}="${value}"`);
         });
       });
+      */
     }
     return res;
   }, [attrs, showTip]);

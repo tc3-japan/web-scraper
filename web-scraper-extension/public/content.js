@@ -398,15 +398,6 @@
       // array element is a map of attribute/values of an individual matching
       // page element.
       const res = [];
-      const el = document.querySelector(request.selector);
-      if (el) {
-        const attrs = {};
-        el.getAttributeNames().forEach((attr) => {
-          attrs[attr] = el.getAttribute(attr);
-        });
-        res.push(attrs);
-      }
-      /*
       document.querySelectorAll(request.selector).forEach((node) => {
         const attrs = {};
         node.getAttributeNames().forEach((attr) => {
@@ -414,7 +405,6 @@
         });
         res.push(attrs);
       });
-      */
       native.runtime.sendMessage({
         action: 'getAttributesResult',
         result: res,

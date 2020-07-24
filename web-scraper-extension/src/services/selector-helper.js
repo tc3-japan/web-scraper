@@ -72,7 +72,10 @@ function getCommonParent(
     case GET_COMMON_PARENT_MODES.FROM_END: {
       for (let i = length - 1; i >= 0; --i) {
         if (parts1[i] !== parts2[i]) {
-          for (let j = 0; j <= i; ++j) commonParts.push(getTag(parts1[j]));
+          for (let j = 0; j <= i; ++j) {
+            if (parts1[j] === parts2[j]) commonParts.push(parts1[j]);
+            else commonParts.push(getTag(parts1[j]));
+          }
         }
       }
       break;

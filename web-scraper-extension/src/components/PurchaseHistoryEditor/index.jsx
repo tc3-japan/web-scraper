@@ -454,7 +454,7 @@ export default class Editor extends React.Component {
 
                   const productUrlSelector = _.get(
                     siteObj,
-                    'purchase_order.purchase_product.url_element'
+                    'purchase_order.purchase_product.url_element',
                   );
 
                   if (!productUrlSelector) {

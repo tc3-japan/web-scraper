@@ -5,7 +5,7 @@ import React, {
   useState,
 } from 'react';
 import { v4 as uuid } from 'uuid';
-import { getGlobalState, useGlobalState } from '@dr.pogodin/react-global-state';
+import { useGlobalState } from '@dr.pogodin/react-global-state';
 
 import './App.scss';
 import _ from 'lodash';
@@ -39,10 +39,6 @@ import { DEFAULT_API } from './config/config';
 
 export default function App() {
   const [siteObj, setSiteObj] = useGlobalState('data', null);
-
-  // A direct access to the global state object is needed due to the way
-  // the existing code access and updates the data.
-  const globalState = getGlobalState();
 
   const [site, setSite] = useState(EC_SITES[0]);
   const [type, setType] = useState(SCRAPING_TYPE[0]);

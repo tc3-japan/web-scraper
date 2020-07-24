@@ -33,7 +33,6 @@ export default function ExpandRow({
   const expanded = advancedExpanded ? _.get(advancedExpanded, path) : false;
 
   const [scriptMode, setScriptMode] = React.useState(false);
-  console.log(row);
 
   const options = _.filter(
     JSON_DROPDOWN,

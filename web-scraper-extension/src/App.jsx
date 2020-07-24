@@ -79,7 +79,9 @@ export default function App() {
    * @param value the value
    */
   const onUpdate = (path, value) => {
-    globalState.set(`data.${path}`, value);
+    const newSiteObj = _.cloneDeep(siteObj);
+    _.set(newSiteObj, path, value);
+    setSiteObj(newSiteObj);
   };
 
   /**

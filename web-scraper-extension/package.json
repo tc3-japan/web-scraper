@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@dr.pogodin/react-global-state": "^0.2.4",
+    "@dr.pogodin/react-global-state": "^0.3.0",
     "codemirror": "^5.55.0",
     "crx3": "^1.1.2",
     "i18next": "^19.4.3",

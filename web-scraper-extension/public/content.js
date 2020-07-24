@@ -1,4 +1,4 @@
-/* global browser, chrome, document, inspector, window */
+/* global browser, chrome, document, window */
 
 (function () {
   /**
@@ -353,6 +353,7 @@
   };
 
   function onMessage(request) {
+    const { inspector } = window;
     const { messageId } = request;
     if (messageId && inspector.messages[messageId]) {
       console.log(`skip same message, id = ${messageId}`);

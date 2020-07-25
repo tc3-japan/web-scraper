@@ -173,7 +173,18 @@
       const fullPath = this.getFullPath(this.$target);
       console.log(`selector path = ${fullPath}`);
       try {
-        const optimalSelector = window.OptimalSelect.select(e.target);
+        const optimalSelector = window.OptimalSelect.select(e.target, {
+          ignore: {
+            // The way this extension works, `block-event` class is used to
+            // block user interaction with the page when elements are selected.
+            // OptimalSelect thus should be instructed to ignore this class.
+            // Note that OptimalSelect documentation on its configuration is
+            // wrong, and the code below is what actually seems to work.
+            class(name, value) {
+              return name === 'class' && value && value.includes('block-event');
+            },
+          },
+        });
         native.runtime.sendMessage({
           action: 'click',
           path: fullPath,
@@ -336,7 +347,7 @@
 
     registerEvents() {
       document.addEventListener('mousemove', this.log);
-      window.addEventListener('mouseup', this.mousedown);
+      window.addEventListener('mousedown', this.mousedown);
       document.addEventListener('scroll', this.layout);
       window.addEventListener('resize', () => {
         this.handleResize();
@@ -347,7 +358,7 @@
       if (this.$host) {
         this.$wrap.classList.add('-out');
         document.removeEventListener('mousemove', this.log);
-        window.removeEventListener('mouseup', this.mousedown);
+        window.removeEventListener('mousedown', this.mousedown);
         document.body.removeChild(this.$host);
         this.highlightNodes = [];
         this.$target = null;

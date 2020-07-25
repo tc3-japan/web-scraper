@@ -67,6 +67,7 @@ export default function RegexField({
   regex,
   selector,
   tipClassName,
+  title,
 }) {
   const { current: heap } = React.useRef({});
   const [attrs, setAttrs] = React.useState();
@@ -136,7 +137,7 @@ export default function RegexField({
             });
           }
         }}
-        title={i18n('editor.regex')}
+        title={title || i18n('editor.regex')}
         value={regex}
       />
       <Tip
@@ -156,6 +157,7 @@ RegexField.propTypes = {
   regex: PT.string,
   selector: PT.string,
   tipClassName: PT.string,
+  title: PT.string,
 };
 
 RegexField.defaultProps = {
@@ -165,4 +167,5 @@ RegexField.defaultProps = {
   regex: '',
   selector: '',
   tipClassName: '',
+  title: undefined,
 };

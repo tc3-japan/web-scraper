@@ -21,6 +21,7 @@ export default function AttributeField({
   onChange,
   selector,
   tipClassName,
+  title,
 }) {
   const { current: heap } = React.useRef({});
   const [attrs, setAttrs] = React.useState();
@@ -94,7 +95,7 @@ export default function AttributeField({
             opid: heap.opid,
           });
         }}
-        title={i18n('editor.attribute')}
+        title={title || i18n('editor.attribute')}
         value={attribute}
       />
       {
@@ -141,6 +142,7 @@ AttributeField.propTypes = {
   onChange: PT.func.isRequired,
   selector: PT.string,
   tipClassName: PT.string,
+  title: PT.string,
 };
 
 AttributeField.defaultProps = {
@@ -149,4 +151,5 @@ AttributeField.defaultProps = {
   inputClassName: '',
   selector: '',
   tipClassName: '',
+  title: undefined,
 };

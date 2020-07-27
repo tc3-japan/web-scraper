@@ -330,8 +330,12 @@
       if (!selector || selector.trim() === '') {
         return;
       }
-      this.highlightNodes = document.querySelectorAll(selector);
-      this.layout();
+      try {
+        this.highlightNodes = document.querySelectorAll(selector);
+        this.layout();
+      } catch (error) {
+        console.warn(error);
+      }
     },
     handleResize() {
       this.$canvas.width = window.innerWidth;
@@ -414,24 +418,30 @@
       // array element is a map of attribute/values of an individual matching
       // page element.
       const res = [];
-      document.querySelectorAll(request.selector).forEach((node) => {
-        const attrs = {};
-        node.getAttributeNames().forEach((attr) => {
-          attrs[attr] = node.getAttribute(attr);
+      try {
+        document.querySelectorAll(request.selector).forEach((node) => {
+          const attrs = {};
+          node.getAttributeNames().forEach((attr) => {
+            attrs[attr] = node.getAttribute(attr);
+          });
+          res.push(attrs);
         });
-        res.push(attrs);
-      });
+      } catch (error) {
+        console.warn(error);
+      }
       native.runtime.sendMessage({
         action: 'getAttributesResult',
         result: res,
         opid: request.opid,
       });
     } else if (request.action === 'getClass') {
-      const element = document.querySelector(request.selector);
-      let classStr = '';
-      if (element) {
-        classStr = inspector.getClass(element);
+      let element;
+      try {
+        element = document.querySelector(request.selector);
+      } catch (error) {
+        console.warn(error);
       }
+      const classStr = element ? inspector.getClass(element) : '';
       native.runtime.sendMessage({
         action: 'getClass',
         promiseId: request.promiseId,

@@ -9,8 +9,10 @@ import { v4 as uuid } from 'uuid';
 import { useGlobalState } from '@dr.pogodin/react-global-state';
 
 import AttributeField from '../AttributeField';
+import Checkbox from '../Checkbox';
 import Button from '../Button';
 import InputField from '../InputField';
+import JsEditor from '../JsEditor';
 import RegexField from '../RegexField';
 import SectionTitle from '../SectionTitle';
 import TargetButton from '../TargetButton';
@@ -36,6 +38,7 @@ export default function SearchProductEditor() {
   }
 
   const [data, setData] = useGlobalState('data');
+  const [scriptMode, setScriptMode] = React.useState(false);
 
   const [highlightOwner, setHighlightOwner] = useGlobalState('highlightOwner');
   if (!highlightOwner) heap.selectionsUuid = null;
@@ -206,6 +209,7 @@ export default function SearchProductEditor() {
             <div className="mainContentRow">
               <InputField
                 className="alignedInputFieldL"
+                disabled={scriptMode}
                 onChange={
                   (groupSelector) => setData({ ...data, groupSelector })
                 }
@@ -213,6 +217,7 @@ export default function SearchProductEditor() {
                 value={data.groupSelector}
               />
               <TargetButton
+                disabled={scriptMode}
                 selector={data.groupSelector}
                 uuid={heap.uuid.parentSelector}
               />
@@ -220,17 +225,20 @@ export default function SearchProductEditor() {
             <div className="mainContentRow">
               <InputField
                 className="alignedInputFieldL"
+                disabled={scriptMode}
                 onChange={(selector) => setData({ ...data, selector })}
                 title={i18n('editor.selector')}
                 value={data.selector}
               />
               <TargetButton
+                disabled={scriptMode}
                 selector={data.selector}
                 uuid={heap.uuid.selector}
               />
               <div className="seq" />
               <AttributeField
                 attribute={data.attribute}
+                disabled={scriptMode}
                 inputClassName="alignedInputFieldR"
                 onChange={(attribute) => setData({ ...data, attribute })}
                 selector={
@@ -244,6 +252,7 @@ export default function SearchProductEditor() {
             <div className="mainContentRow">
               <InputField
                 className="alignedInputFieldL"
+                disabled={scriptMode}
                 onChange={
                   (excludedSelector) => setData({ ...data, excludedSelector })
                 }
@@ -251,12 +260,14 @@ export default function SearchProductEditor() {
                 value={data.excludedSelector}
               />
               <TargetButton
+                disabled={scriptMode}
                 selector={data.excludedSelector}
                 uuid={heap.uuid.excludedSelector}
               />
               <div className="seq" />
               <RegexField
                 attribute={data.attribute}
+                disabled={scriptMode}
                 inputClassName="alignedInputFieldR"
                 onChange={(regex) => setData({ ...data, regex })}
                 regex={data.regex}
@@ -268,6 +279,21 @@ export default function SearchProductEditor() {
                 tipClassName="alignedTipR"
               />
             </div>
+            <div className="mainContentRow">
+              <Checkbox
+                label={i18n('editor.script')}
+                onChange={() => setScriptMode(!scriptMode)}
+                value={scriptMode}
+              />
+            </div>
+            {
+              scriptMode ? (
+                <JsEditor
+                  onChange={(script) => setData({ ...data, script })}
+                  script={data.script}
+                />
+              ) : null
+            }
           </>
         ) : null
       }

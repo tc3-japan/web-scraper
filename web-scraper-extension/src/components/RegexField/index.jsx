@@ -35,7 +35,7 @@ function Tip({ i18n, tip, tipClassName }) {
           tip.map((item) => (
             <div
               className="item"
-              key={item}
+              key={item.uuid}
             >
               {`• ${item}`}
             </div>
@@ -71,6 +71,7 @@ export default function RegexField({
 }) {
   const { current: heap } = React.useRef({});
   const [attrs, setAttrs] = React.useState();
+  const [innerHtml, setInnerHtml] = React.useState();
   const [showTip, setShowTip] = React.useState(false);
   const [i18n] = useGlobalState('i18n');
 
@@ -79,6 +80,10 @@ export default function RegexField({
       switch (message.action) {
         case 'getAttributesResult': {
           if (message.opid === heap.opid) setAttrs(message.result);
+          break;
+        }
+        case 'getInnerHtmlResult': {
+          if (message.opid === heap.opid) setInnerHtml(message.result);
           break;
         }
         default:
@@ -94,7 +99,7 @@ export default function RegexField({
 
   const tip = React.useMemo(() => {
     let res;
-    if (attrs && showTip && regex) {
+    if (((attribute && attrs) || innerHtml) && showTip && regex) {
       res = [];
 
       let rx;
@@ -103,21 +108,35 @@ export default function RegexField({
       } catch (error) {
         return INVALID_REGEX_CODE;
       }
-      for (let i = 0; i < attrs.length; ++i) {
-        const keys = Object.keys(attrs[i]);
-        for (let j = 0; j < keys.length; ++j) {
-          const key = keys[j];
-          if (!attribute || attribute === key) {
-            const value = attrs[i][key];
-            const m = value && value.match(rx);
-            if (m) res.push(m[0]);
-            if (res.length === 3) { i = attrs.length; break; }
+      if (attribute) {
+        for (let i = 0; i < attrs.length; ++i) {
+          const keys = Object.keys(attrs[i]);
+          for (let j = 0; j < keys.length; ++j) {
+            const key = keys[j];
+            if (attribute === key) {
+              const value = attrs[i][key];
+              const m = value && value.match(rx);
+              if (m) {
+                m.uuid = uuid();
+                res.push(m[0]);
+              }
+              if (res.length === 3) { i = attrs.length; break; }
+            }
           }
+        }
+      } else {
+        for (let i = 0; i < innerHtml.length; ++i) {
+          const m = (innerHtml[i] || '').match(rx);
+          if (m) {
+            m.uuid = uuid();
+            res.push(m[0]);
+          }
+          if (res.length === 3) break;
         }
       }
     }
     return res;
-  }, [attrs, showTip, attribute, regex]);
+  }, [attrs, innerHtml, showTip, attribute, regex]);
 
   return (
     <div className="RegexField">
@@ -130,8 +149,10 @@ export default function RegexField({
           if (selector) {
             heap.opid = uuid();
             setShowTip(true);
+            setAttrs(null);
+            setInnerHtml(null);
             sendMessageToPage({
-              action: 'getAttributes',
+              action: attribute ? 'getAttributes' : 'getInnerHtml',
               selector,
               opid: heap.opid,
             });

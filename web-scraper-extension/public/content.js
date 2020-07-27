@@ -447,6 +447,19 @@
         promiseId: request.promiseId,
         class: classStr,
       });
+    } else if (request.action === 'getInnerHtml') {
+      const res = [];
+      try {
+        document.querySelectorAll(request.selector)
+          .forEach((node) => res.push(node.innerHTML));
+      } catch (error) {
+        console.warn(error);
+      }
+      native.runtime.sendMessage({
+        action: 'getInnerHtmlResult',
+        result: res,
+        opid: request.opid,
+      });
     }
   }
 

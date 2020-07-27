@@ -75,6 +75,20 @@ export default function App() {
    * @param value the value
    */
   const onUpdate = (path, value) => {
+    if (!value) {
+      const m = path.match(/(.*\.rows)\.(\d*)$/);
+      if (m) {
+        // The request is to remove i-th row from the array at the path `p`
+        // of data object. A special treatment is needed for this.
+        const p = m[1];
+        const i = Number(m[2]);
+        const newSiteObj = _.cloneDeep(siteObj);
+        _.get(newSiteObj, p).splice(i, 1);
+        setSiteObj(newSiteObj);
+        return;
+      }
+    }
+
     const newSiteObj = _.cloneDeep(siteObj);
     _.set(newSiteObj, path, value);
     setSiteObj(newSiteObj);

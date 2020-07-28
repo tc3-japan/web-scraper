@@ -71,7 +71,7 @@ export default function RegexField({
 }) {
   const { current: heap } = React.useRef({});
   const [attrs, setAttrs] = React.useState();
-  const [innerHtml, setInnerHtml] = React.useState();
+  const [innerText, setInnerText] = React.useState();
   const [showTip, setShowTip] = React.useState(false);
   const [i18n] = useGlobalState('i18n');
 
@@ -82,8 +82,8 @@ export default function RegexField({
           if (message.opid === heap.opid) setAttrs(message.result);
           break;
         }
-        case 'getInnerHtmlResult': {
-          if (message.opid === heap.opid) setInnerHtml(message.result);
+        case 'getInnerTextResult': {
+          if (message.opid === heap.opid) setInnerText(message.result);
           break;
         }
         default:
@@ -99,7 +99,7 @@ export default function RegexField({
 
   const tip = React.useMemo(() => {
     let res;
-    if (((attribute && attrs) || innerHtml) && showTip && regex) {
+    if (((attribute && attrs) || innerText) && showTip && regex) {
       res = [];
 
       let rx;
@@ -125,8 +125,8 @@ export default function RegexField({
           }
         }
       } else {
-        for (let i = 0; i < innerHtml.length; ++i) {
-          const m = (innerHtml[i] || '').match(rx);
+        for (let i = 0; i < innerText.length; ++i) {
+          const m = (innerText[i] || '').match(rx);
           if (m) {
             m.uuid = uuid();
             res.push(m[0]);
@@ -136,7 +136,7 @@ export default function RegexField({
       }
     }
     return res;
-  }, [attrs, innerHtml, showTip, attribute, regex]);
+  }, [attrs, innerText, showTip, attribute, regex]);
 
   return (
     <div className="RegexField">
@@ -150,9 +150,9 @@ export default function RegexField({
             heap.opid = uuid();
             setShowTip(true);
             setAttrs(null);
-            setInnerHtml(null);
+            setInnerText(null);
             sendMessageToPage({
-              action: attribute ? 'getAttributes' : 'getInnerHtml',
+              action: attribute ? 'getAttributes' : 'getInnerText',
               selector,
               opid: heap.opid,
             });

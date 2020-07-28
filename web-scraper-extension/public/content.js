@@ -447,16 +447,16 @@
         promiseId: request.promiseId,
         class: classStr,
       });
-    } else if (request.action === 'getInnerHtml') {
+    } else if (request.action === 'getInnerText') {
       const res = [];
       try {
         document.querySelectorAll(request.selector)
-          .forEach((node) => res.push(node.innerHTML));
+          .forEach((node) => res.push(node.innerText));
       } catch (error) {
         console.warn(error);
       }
       native.runtime.sendMessage({
-        action: 'getInnerHtmlResult',
+        action: 'getInnerTextResult',
         result: res,
         opid: request.opid,
       });

@@ -43,6 +43,10 @@ import { DEFAULT_API } from './config/config';
 export default function App() {
   const [siteObj, setSiteObj] = useGlobalState('data', null);
 
+  // This UUID alters each time the data are reloaded. It is intended to reset
+  // to zero state various components managed by local states.
+  const [, setDataUuid] = useGlobalState('dataUuid');
+
   const [site, setSite] = useState(EC_SITES[0]);
   const [type, setType] = useState(SCRAPING_TYPE[0]);
   const [logTxt, setLogTxt] = useState([]);
@@ -122,6 +126,7 @@ export default function App() {
     try {
       let data = await Api.load(siteToLoad.value, typeToLoad.value);
       data = convertToFrontend(data, typeToLoad.value);
+      setDataUuid(uuid());
       setSiteObj(data);
       setLoadType('loaded');
       logInfo('json loaded.');

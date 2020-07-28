@@ -28,6 +28,9 @@ import './style.scss';
 
 export default function SearchProductEditor() {
   const { current: heap } = React.useRef({});
+
+  const [dataUuid] = useGlobalState('dataUuid');
+
   if (!heap.uuid) {
     heap.uuid = {
       excludedSelector: uuid(),
@@ -45,6 +48,11 @@ export default function SearchProductEditor() {
 
   const [expanded, setExpanded] = React.useState(true);
   const [i18n] = useGlobalState('i18n');
+
+  React.useEffect(() => {
+    setScriptMode(!!(data && data.script));
+    setExpanded(true);
+  }, [dataUuid]);
 
   const getClass = (selector) => {
     const promiseId = uuid();

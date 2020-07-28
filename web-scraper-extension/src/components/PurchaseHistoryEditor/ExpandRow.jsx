@@ -2,6 +2,7 @@ import _ from 'lodash';
 import React from 'react';
 import ReactDropdown from 'react-dropdown';
 import PT from 'prop-types';
+import { useGlobalState } from '@dr.pogodin/react-global-state';
 
 import AttributeField from '../AttributeField';
 import Button from '../Button';
@@ -30,9 +31,15 @@ export default function ExpandRow({
   path,
   row,
 }) {
+  const [dataUuid] = useGlobalState('dataUuid');
+
   const expanded = advancedExpanded ? _.get(advancedExpanded, path) : false;
 
   const [scriptMode, setScriptMode] = React.useState(false);
+
+  React.useEffect(() => {
+    setScriptMode(!!row.script);
+  }, [dataUuid]);
 
   const options = _.filter(
     JSON_DROPDOWN,

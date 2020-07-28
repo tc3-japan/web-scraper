@@ -5,7 +5,10 @@ import React, {
   useState,
 } from 'react';
 import { v4 as uuid } from 'uuid';
-import { useGlobalState } from '@dr.pogodin/react-global-state';
+import {
+  getGlobalState,
+  useGlobalState,
+} from '@dr.pogodin/react-global-state';
 
 import './App.scss';
 import _ from 'lodash';
@@ -69,12 +72,16 @@ export default function App() {
     };
   }, []);
 
+  const globalState = getGlobalState();
+
   /**
    * update json value
    * @param path the path
    * @param value the value
    */
   const onUpdate = (path, value) => {
+    const newData = _.cloneDeep(globalState.state.data);
+
     if (!value) {
       const m = path.match(/(.*\.rows)\.(\d*)$/);
       if (m) {
@@ -82,16 +89,14 @@ export default function App() {
         // of data object. A special treatment is needed for this.
         const p = m[1];
         const i = Number(m[2]);
-        const newSiteObj = _.cloneDeep(siteObj);
-        _.get(newSiteObj, p).splice(i, 1);
-        setSiteObj(newSiteObj);
+        _.get(newData, p).splice(i, 1);
+        setSiteObj(newData);
         return;
       }
     }
 
-    const newSiteObj = _.cloneDeep(siteObj);
-    _.set(newSiteObj, path, value);
-    setSiteObj(newSiteObj);
+    _.set(newData, path, value);
+    setSiteObj(newData);
   };
 
   /**

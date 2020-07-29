@@ -1,0 +1,31 @@
+@import "../../common.scss";
+
+.SearchProductEditor {
+  display: flex;
+  flex-direction: column;
+  padding: 0 16px 15px;
+
+  .alignedInputFieldL span {
+    text-align: right;
+    width: 125px;
+  }
+
+  .alignedInputFieldR span {
+    text-align: right;
+    width: 60px;
+  }
+
+  .alignedTipR {
+    left: 66px;
+  }
+
+  .currentUrlWarning {
+    color: gray;
+    margin: 5px 0 5px 195px;
+  }
+
+  .mainContentRow {
+    display: flex;
+    margin: 5px 0;
+  }
+}

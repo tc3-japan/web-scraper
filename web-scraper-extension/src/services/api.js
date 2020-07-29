@@ -1,7 +1,9 @@
-import {logInfo, storageGet} from "./utils";
-import {DEFAULT_API} from "../config/config";
-import {BASE_API_KEY} from "../components/Setting";
-import * as NProgress from 'nprogress'
+/* global fetch, Request */
+
+import * as NProgress from 'nprogress';
+import { logInfo, storageGet } from './utils';
+import { DEFAULT_API } from '../config/config';
+import { BASE_API_KEY } from '../components/Setting';
 
 /**
  * get base url
@@ -10,7 +12,7 @@ async function getBaseUrl() {
   try {
     return await storageGet(BASE_API_KEY) || DEFAULT_API;
   } catch (e) {
-    logInfo(JSON.stringify(e))
+    logInfo(JSON.stringify(e));
     return Promise.resolve(DEFAULT_API);
   }
 }
@@ -23,7 +25,7 @@ async function fetchRequest(request) {
   NProgress.start();
   try {
     const response = await fetch(request);
-    NProgress.done()
+    NProgress.done();
     if (response.status === 200) {
       const text = await response.text();
       try {
@@ -32,10 +34,10 @@ async function fetchRequest(request) {
         return text;
       }
     }
-    return Promise.reject(`JSON load failed with status code ${response.status}`);
+    return Promise.reject(Error(`JSON load failed with status code ${response.status}`));
   } catch (error) {
-    NProgress.done()
-    return Promise.reject(`JSON load exception ${error}`);
+    NProgress.done();
+    return Promise.reject(Error(`JSON load exception ${error}`));
   }
 }
 
@@ -49,7 +51,7 @@ class Api {
    * @param type the scraping type
    */
   static async load(site, type) {
-    return fetchRequest(new Request(`${await getBaseUrl()}/${site}/${type}`))
+    return fetchRequest(new Request(`${await getBaseUrl()}/${site}/${type}`));
   }
 
   /**
@@ -61,8 +63,8 @@ class Api {
   static async save(site, type, body) {
     return fetchRequest(new Request(`${await getBaseUrl()}/${site}/${type}`, {
       method: 'PUT',
-      body: JSON.stringify(body)
-    }))
+      body: JSON.stringify(body),
+    }));
   }
 
   /**
@@ -74,9 +76,9 @@ class Api {
   static async test(site, type, body) {
     return fetchRequest(new Request(`${await getBaseUrl()}/${site}/${type}/test`, {
       method: 'POST',
-      body: JSON.stringify(body)
-    }))
+      body: JSON.stringify(body),
+    }));
   }
 }
 
-export default Api
+export default Api;

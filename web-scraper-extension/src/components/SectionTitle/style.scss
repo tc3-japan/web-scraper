@@ -1,0 +1,15 @@
+@import '../../common';
+
+.SectionTitle {
+  font-weight: bold;
+  color: $titleColor;
+  margin-right: 16px;
+  min-width: 145px;
+  cursor: pointer;
+  outline: none;
+
+  span {
+    text-decoration: underline;
+    margin-left: 4px;
+  }
+}

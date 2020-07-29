@@ -1,0 +1,8 @@
+@import "../../common.scss";
+
+// Here we rely on the .input-container style defined in the common.scss
+// before this code was written. The clean code style requires to move it
+// here, but the way the existing Purchase History Page relies on location
+// of .input-container class in the compiled CSS bundle does not allow
+// to just move the class without breaking that page and a need for further
+// refactoring. Thus, will keep it up there for now.

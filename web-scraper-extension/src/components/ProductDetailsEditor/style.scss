@@ -1,0 +1,12 @@
+@import "../../common.scss";
+
+.ProductDetailsEditor {
+  display: flex;
+  flex-direction: column;
+  padding: 0 16px 15px;
+
+  .currentUrlWarning {
+    color: gray;
+    margin: 5px 0 5px 190px;
+  }
+}

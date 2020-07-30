@@ -32,7 +32,7 @@ public class DryRunUtils {
    */
   public List<Object> toJsonOfDryRunProductModule(List<ProductInfo> productInfoList, List<String> htmlPathList) {
     List<Object> dryRunResultList = new ArrayList<>();
-    dryRunResultList.add(productInfoList);
+    dryRunResultList.add(new ProductInfoList(productInfoList));
     dryRunResultList.add(new HtmlPath(getRelativePathList(htmlPathList)));
     return dryRunResultList;
   }
@@ -67,6 +67,18 @@ public class DryRunUtils {
         this.productCodeList = Arrays.asList("");
       } else {
         this.productCodeList = productCodeList;
+      }
+    }
+  }
+
+  private class ProductInfoList {
+    @JsonProperty("product_infos")
+    List<ProductInfo> productInfoList;
+    public ProductInfoList(List<ProductInfo> productInfoList) {
+      if (productInfoList == null) {
+        this.productInfoList = new ArrayList<ProductInfo>();
+      } else {
+        this.productInfoList = productInfoList;
       }
     }
   }

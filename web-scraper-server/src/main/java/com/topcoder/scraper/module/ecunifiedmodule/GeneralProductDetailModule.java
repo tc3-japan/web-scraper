@@ -12,10 +12,11 @@ import org.springframework.stereotype.Component;
 
 import com.topcoder.common.dao.ProductDAO;
 import com.topcoder.common.model.ProductInfo;
+import com.topcoder.common.repository.ConfigurationRepository;
 import com.topcoder.common.traffic.TrafficWebClient;
-import com.topcoder.scraper.module.IProductModule;
-import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralProductCrawler;
-import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralProductCrawlerResult;
+import com.topcoder.scraper.module.IProductDetailModule;
+import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralProductDetailCrawler;
+import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralProductDetailCrawlerResult;
 import com.topcoder.scraper.service.ProductService;
 import com.topcoder.scraper.service.WebpageService;
 
@@ -23,20 +24,20 @@ import com.topcoder.scraper.service.WebpageService;
  * General implementation of ProductDetailModule
  */
 @Component
-public class GeneralProductModule implements IProductModule {
+public class GeneralProductDetailModule implements IProductDetailModule {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(GeneralProductModule.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GeneralProductDetailModule.class);
 
-  // private final AmazonProperty property;
   private final ProductService productService;
   private final WebpageService webpageService;
-  private GeneralProductCrawler crawler;
+  private GeneralProductDetailCrawler crawler;
+  private TrafficWebClient webClient;
 
   @Autowired
-  public GeneralProductModule(
-      // AmazonProperty property,
-      ProductService productService, WebpageService webpageService) {
-    // this.property = property;
+  ConfigurationRepository configurationRepository;
+
+  @Autowired
+  public GeneralProductDetailModule(ProductService productService, WebpageService webpageService) {
     this.productService = productService;
     this.webpageService = webpageService;
   }
@@ -50,10 +51,10 @@ public class GeneralProductModule implements IProductModule {
   public void fetchProductDetailList(List<String> sites) {
     LOGGER.debug("[fetchProductDetailList] in");
     LOGGER.debug("[fetchProductDetailList] sites:" + sites);
-
+    this.webClient = new TrafficWebClient(0, false);
     for (String site : sites) {
+      this.crawler = new GeneralProductDetailCrawler(site, "product", this.webpageService, this.configurationRepository);
       List<ProductDAO> products = this.productService.getAllFetchInfoStatusIsNull(site);
-
       products.forEach(product -> {
         try {
           this.processProductDetail(site, product.getId(), product.getProductCode());
@@ -62,24 +63,17 @@ public class GeneralProductModule implements IProductModule {
         }
       });
     }
+    this.webClient.finishTraffic();
   }
 
-  /**
-   * Fetch product information from yahoo and save in database
-   *
-   * @param productId   the product id
-   * @param productCode the product code
-   * @throws IOException webclient exception
-   */
   private void processProductDetail(String site, int productId, String productCode) throws IOException {
     if (StringUtils.isBlank(productCode)) {
       LOGGER.info(String.format("Skipping Product#%d - no product code", productId));
       return;
     }
-    GeneralProductCrawlerResult crawlerResult = this.fetchProductDetail(site, productCode);
+    GeneralProductDetailCrawlerResult crawlerResult = this.fetchProductDetail(site, productCode);
     ProductInfo productInfo = crawlerResult.getProductInfo();
-
-    if (productInfo != null) {
+    if (Objects.nonNull(productInfo)) {
       // save updated information
       productService.updateProduct(productId, productInfo);
       for (int i = 0; i < productInfo.getCategoryList().size(); i++) {
@@ -91,34 +85,8 @@ public class GeneralProductModule implements IProductModule {
     }
   }
 
-  public GeneralProductCrawlerResult fetchProductDetail(String site, String productCode) throws IOException {
-    this.crawler = new GeneralProductCrawler(site, webpageService);
-
-    TrafficWebClient webClient = new TrafficWebClient(0, false);
-    GeneralProductCrawlerResult crawlerResult = this.crawler.fetchProductInfo(webClient, productCode);
-    webClient.finishTraffic();
-    return crawlerResult;
+  public GeneralProductDetailCrawlerResult fetchProductDetail(String site, String productCode) throws IOException {
+    return this.crawler.fetchProductInfo(webClient, productCode);
   }
 
-  @Override
-  public ProductDAO searchProductInfo(String siteName, String searchKey) throws IOException {
-    LOGGER.debug("[searchProductInfo] in");
-
-    LOGGER.info(String.format("Searching products in %s. search-word: %s", siteName, searchKey));
-
-    TrafficWebClient webClient = new TrafficWebClient(0, false);
-
-    GeneralProductCrawler crawler = new GeneralProductCrawler(siteName, this.webpageService);
-    String productCode = crawler.searchProduct(webClient, searchKey).getProductCode();
-
-    ProductInfo productInfo = Objects.isNull(productCode) ? null : crawler.fetchProductInfo(webClient, productCode).getProductInfo();
-    webClient.finishTraffic();
-
-    if (Objects.isNull(productInfo)) {
-      LOGGER.warn("[searchProductInfo] Unable to obtain a product information about: " + searchKey);
-      return null;
-    }
-
-    return new ProductDAO(siteName, productInfo);
-  }
 }

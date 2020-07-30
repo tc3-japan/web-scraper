@@ -6,11 +6,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import groovy.lang.Closure;
+import org.apache.solr.common.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,10 +19,12 @@ import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.topcoder.common.model.ProductInfo;
+import com.topcoder.common.model.scraper.ProductDetail;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.common.util.Common;
 import com.topcoder.common.util.HtmlUtils;
 
+import groovy.lang.Closure;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -153,6 +156,24 @@ public class NavigableProductDetailPage extends NavigablePage {
 			}
 		}
 	}
+
+  public void scrapeJanCode(String selector) {
+    LOGGER.debug("[scrapeJanCode] in");
+    String str = getText(selector);
+    LOGGER.debug("[scrapeJanCode] JAN Code >>>> " + str);
+    if (str != null) {
+      productInfo.setJanCode(str);
+    }
+  }
+
+  public void scrapeJanCode(DomNode node, String selector) {
+    LOGGER.debug("[scrapeJanCode] in");
+    String str = getText(node, selector);
+    LOGGER.debug("[scrapeJanCode] JAN Code >>>> " + str);
+    if (str != null) {
+      productInfo.setJanCode(str);
+    }
+  }
 
 	public void scrapeModelNo(String selector) {
 		LOGGER.debug("[scrapeModelNo] in");
@@ -308,5 +329,83 @@ public class NavigableProductDetailPage extends NavigablePage {
 		}
 		return new ArrayList<>();
 	}
+
+  public String fetchScrapedResultAsString(String url, ProductDetail productDetail, String jsonPropertiyName) {
+    String result = null;
+    try {
+      if (Objects.equals(productDetail.getItem().replace("_label", ""), jsonPropertiyName)) {
+        // javascript
+        if (!StringUtils.isEmpty(productDetail.getScript())) {
+          executeJavaScript(productDetail.getScript());
+        } else {
+          setPage(url);
+        }
+        // label of model_no
+        if (!StringUtils.isEmpty(productDetail.getLabelSelector())) {
+          // scrape label
+          String labelValue = scrapeText(productDetail.getLabelSelector());
+          if (!StringUtils.isEmpty(labelValue)) {
+            if (Objects.equals(labelValue, productDetail.getLabelValue())) {
+              // attribute of label
+              if (!StringUtils.isEmpty(productDetail.getLabelAttribute())) {
+                result = getNodeAttribute(productDetail.getLabelSelector(), productDetail.getLabelAttribute());
+                if (Objects.isNull(result)) {
+                  return null;
+                }
+              }
+              // regex of label
+              String labelRegex = productDetail.getLabelRegex();
+              if (!StringUtils.isEmpty(labelRegex)) {
+                LOGGER.debug(String.format("regex=[%s]", labelRegex));
+                Pattern pattern = Pattern.compile(labelRegex);
+                if (labelRegex.contains("(") && labelRegex.contains(")")) {
+                  result = HtmlUtils.extract1(result, pattern);
+                } else {
+                  result = HtmlUtils.extract(result, pattern);
+                }
+                LOGGER.debug(String.format("regex result=[%s]", result));
+                if (Objects.isNull(result)) {
+                  return null;
+                }
+              }
+            } else {
+              return null;
+            }
+          } else {
+            return null;
+          }
+        }
+        // scrape target
+        result = scrapeText(productDetail.getSelector());
+        if (Objects.nonNull(result)) {
+          // attribute
+          if (!StringUtils.isEmpty(productDetail.getAttribute())) {
+            result = getNodeAttribute(productDetail.getSelector(), productDetail.getAttribute());
+            if (Objects.isNull(result)) {
+              return null;
+            }
+          }
+          // regex
+          String regex = productDetail.getRegex();
+          if (!StringUtils.isEmpty(regex)) {
+            LOGGER.debug(String.format("regex=[%s]", regex));
+            Pattern pattern = Pattern.compile(regex);
+            if (regex.contains("(") && regex.contains(")")) {
+              result = HtmlUtils.extract1(result, pattern);
+            } else {
+              result = HtmlUtils.extract(result, pattern);
+            }
+            LOGGER.debug(String.format("regex result=[%s]", result));
+          }
+        }
+      } else {
+        return null;
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
+    return result;
+  }
 
 }

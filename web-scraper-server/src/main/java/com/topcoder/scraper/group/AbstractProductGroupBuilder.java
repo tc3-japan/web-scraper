@@ -18,8 +18,8 @@ import com.topcoder.common.dao.ProductDAO;
 import com.topcoder.common.dao.ProductGroupDAO;
 import com.topcoder.common.repository.ProductGroupRepository;
 import com.topcoder.common.repository.ProductRepository;
-import com.topcoder.scraper.module.IProductModule;
-import com.topcoder.scraper.module.ecunifiedmodule.GeneralProductModule;
+import com.topcoder.scraper.module.IProductSearchModule;
+import com.topcoder.scraper.module.ecunifiedmodule.GeneralProductSearchModule;
 import com.topcoder.scraper.service.ECSiteService;
 
 public abstract class AbstractProductGroupBuilder {
@@ -33,7 +33,7 @@ public abstract class AbstractProductGroupBuilder {
   ProductRepository productRepository;
 
   @Autowired
-  GeneralProductModule productModule;
+  GeneralProductSearchModule productModule;
 
   @Autowired
   ECSiteService ecSiteService;
@@ -57,7 +57,7 @@ public abstract class AbstractProductGroupBuilder {
     Set<String> productEcSites = getECSites(sameProducts);
     targetECSites.forEach(site -> {
       if (!productEcSites.contains(site)) {
-        IProductModule productSearcher = getProjectModule(site);
+        IProductSearchModule productSearcher = getProjectModule(site);
         if (productSearcher == null) {
           logger.warn(String.format("'%s' is not supported.", site));
           return;
@@ -175,7 +175,7 @@ public abstract class AbstractProductGroupBuilder {
     return this.productGroupRepository.save(group);
   }
 
-  public IProductModule getProjectModule(String site) {
+  public IProductSearchModule getProjectModule(String site) {
     if (site == null) {
       throw new IllegalArgumentException("site must be specified.");
     }

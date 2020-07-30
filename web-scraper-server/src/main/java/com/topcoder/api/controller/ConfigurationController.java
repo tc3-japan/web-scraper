@@ -53,7 +53,7 @@ public class ConfigurationController {
   }
 
   /**
-   * search products
+   * execute conf as dry run
    *
    * @param site the ec site
    * @param type the logic type

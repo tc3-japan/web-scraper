@@ -6,10 +6,10 @@ import java.net.URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.gargoylesoftware.htmlunit.ScriptResult;
 import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
-import com.gargoylesoftware.htmlunit.html.HtmlButton;
 import com.gargoylesoftware.htmlunit.html.HtmlCheckBoxInput;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
@@ -274,7 +274,30 @@ public class NavigablePage {
         return webpageService.save(fileName, siteName, page.getWebResponse().getContentAsString());
     }
 
+    public String savePage(String siteName, String type, String keyword, NavigablePage navigablePage, WebpageService webpageService) {
+      String fileName = siteName + "-" + type + "-";
+      if (keyword.length() > 20) {
+        //20 characters from the top
+        fileName += keyword.substring(0, 20);
+      } else {
+        fileName += keyword;
+      }
+      //Characters that cannot be used in folder names are replaced as underscore
+      fileName = fileName.replaceAll("[/><?:\"\\*|;]", "_");
+      // save html page
+      //LOGGER.debug(navigablePage.getPage().getWebResponse().getContentAsString());
+      return webpageService.save(fileName, siteName, navigablePage.getPage().getWebResponse().getContentAsString(), true);
+    }
+
     public URL getPageUrl() {
       return this.page != null ? this.page.getUrl() : null;
     }
+
+    public void executeJavaScript(String script) {
+      ScriptResult scriptResult = page.executeJavaScript(script);
+      if (!ScriptResult.isFalse(scriptResult) && !ScriptResult.isUndefined(scriptResult)) {
+        this.page = (HtmlPage) this.page.getWebClient().getCurrentWindow().getEnclosedPage();
+      }
+    }
+
 }

@@ -6,7 +6,7 @@ import com.topcoder.common.repository.ECSiteAccountRepository;
 import com.topcoder.common.repository.NormalDataRepository;
 import com.topcoder.scraper.Consts;
 import com.topcoder.scraper.module.IBasicModule;
-import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralProductCrawlerResult;
+import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralProductDetailCrawlerResult;
 import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistoryCrawlerResult;
 import com.topcoder.scraper.service.WebpageService;
 import org.slf4j.Logger;
@@ -28,7 +28,7 @@ public abstract class GeneralChangeDetectionCommonModule implements IBasicModule
   protected final ECSiteAccountRepository         ecSiteAccountRepository;
   protected final NormalDataRepository            normalDataRepository;
   protected final GeneralPurchaseHistoryModule    purchaseHistoryModule;
-  protected final GeneralProductModule            productModule;
+  protected final GeneralProductDetailModule            productModule;
 
   public GeneralChangeDetectionCommonModule(
           MonitorTargetDefinitionProperty monitorTargetDefinitionProperty,
@@ -36,7 +36,7 @@ public abstract class GeneralChangeDetectionCommonModule implements IBasicModule
           ECSiteAccountRepository         ecSiteAccountRepository,
           NormalDataRepository            normalDataRepository,
           GeneralPurchaseHistoryModule    purchaseHistoryModule,
-          GeneralProductModule            productModule
+          GeneralProductDetailModule            productModule
   ) {
     this.monitorTargetDefinitionProperty = monitorTargetDefinitionProperty;
     this.webpageService                  = webpageService;
@@ -88,7 +88,7 @@ public abstract class GeneralChangeDetectionCommonModule implements IBasicModule
           if (monitorTargetCheckPage.getCheckTargetKeys() == null) continue;
 
           for (String productCode : monitorTargetCheckPage.getCheckTargetKeys()) {
-            GeneralProductCrawlerResult crawlerResult =
+            GeneralProductDetailCrawlerResult crawlerResult =
                     this.productModule.fetchProductDetail(checkSite.getEcSite(), productCode);
             if (crawlerResult != null) {
               this.processProductInfo(checkSite.getEcSite(), crawlerResult);
@@ -115,5 +115,5 @@ public abstract class GeneralChangeDetectionCommonModule implements IBasicModule
    * @param site ec site
    * @param crawlerResult the crawler result
    */
-  abstract protected void processProductInfo(String site, GeneralProductCrawlerResult crawlerResult);
+  abstract protected void processProductInfo(String site, GeneralProductDetailCrawlerResult crawlerResult);
 }

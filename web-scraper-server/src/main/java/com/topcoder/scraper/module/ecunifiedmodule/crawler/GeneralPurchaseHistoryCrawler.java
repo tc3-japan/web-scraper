@@ -1,41 +1,39 @@
 package com.topcoder.scraper.module.ecunifiedmodule.crawler;
 
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.topcoder.common.model.ProductInfo;
+import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.common.model.scraper.PurchaseCommon;
 import com.topcoder.common.model.scraper.PurchaseHistoryConfig;
 import com.topcoder.common.model.scraper.PurchaseOrder;
 import com.topcoder.common.model.scraper.PurchaseProduct;
+import com.topcoder.common.repository.ConfigurationRepository;
 import com.topcoder.common.repository.PurchaseHistoryRepository;
-import com.topcoder.common.util.Common;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.gargoylesoftware.htmlunit.html.DomNode;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.topcoder.common.model.ProductInfo;
-import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.common.traffic.TrafficWebClient;
+import com.topcoder.common.util.Common;
 import com.topcoder.scraper.lib.navpage.NavigablePurchaseHistoryPage;
 import com.topcoder.scraper.service.WebpageService;
-import com.topcoder.common.dao.ConfigurationDAO;
-import com.topcoder.common.repository.ConfigurationRepository;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.beans.BeanUtils;
 
-public class GeneralPurchaseHistoryCrawler {
+public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler{
 
   private class DuplicatedException extends Exception {}
 
   private static final Logger LOGGER = LoggerFactory.getLogger(GeneralPurchaseHistoryCrawler.class);
-  private String jsonConfigText = "";
 
   private List<String> savedPathList;
   private boolean saveHtml;
@@ -53,18 +51,6 @@ public class GeneralPurchaseHistoryCrawler {
 
   @Getter
   @Setter
-  private String siteName;
-
-  @Getter
-  @Setter
-  private WebpageService webpageService;
-
-  @Getter
-  @Setter
-  private PurchaseHistory currentPurchaseHistory; // OrderInfo (to be refactored)
-
-  @Getter
-  @Setter
   private ProductInfo currentProduct;
 
   @Getter
@@ -76,42 +62,12 @@ public class GeneralPurchaseHistoryCrawler {
   @Setter
   private PurchaseHistoryRepository historyRepository;
 
-  public GeneralPurchaseHistoryCrawler(String siteName,
-                                       WebpageService webpageService,
-                                       ConfigurationRepository configurationRepository
-  ) {
-    LOGGER.debug("[constructor] in");
-    this.siteName = siteName;
-    this.webpageService = webpageService;
-    this.jsonConfigText = this.getConfigFromDB(siteName, "purchase_history", configurationRepository);
-  }
+  @Getter
+  @Setter
+  private PurchaseHistory currentPurchaseHistory; // OrderInfo (to be refactored)
 
-  /**
-   * read json from database
-   *
-   * @param site                    the site name
-   * @param type                    the json type
-   * @param configurationRepository the database repository
-   * @return json text
-   */
-  private String getConfigFromDB(String site, String type, ConfigurationRepository configurationRepository) {
-    LOGGER.debug("[getConfigFromDB] in");
-    LOGGER.debug("[getConfigFromDB] site:" + site + " type:" + type);
-    ConfigurationDAO configurationDAO = configurationRepository.findBySiteAndType(site, type);
-    return configurationDAO.getConfig();
-  }
-
-  /**
-   * set config before run
-   *
-   * @param conf the config text
-   */
-  public void setConfig(String conf) {
-    LOGGER.debug("[setConfig] in");
-    LOGGER.debug("conf = " + conf);
-    if (conf != null && !conf.equals("")) {
-      this.jsonConfigText = conf;
-    }
+  public GeneralPurchaseHistoryCrawler(String site, WebpageService webpageService, ConfigurationRepository configurationRepository) {
+    super(site, "purchase_history", webpageService, configurationRepository);
   }
 
   /**
@@ -157,7 +113,7 @@ public class GeneralPurchaseHistoryCrawler {
     LOGGER.debug("[processPurchaseHistory] in");
     while (this.historyPage.getPage() != null) {
 
-      String savedPath = this.webpageService.save(this.siteName + "-purchase-history", this.siteName, this.historyPage.getPage().getWebResponse().getContentAsString(), this.saveHtml);
+      String savedPath = this.webpageService.save(this.site + "-purchase-history", this.site, this.historyPage.getPage().getWebResponse().getContentAsString(), this.saveHtml);
       if (savedPath != null) {
         savedPathList.add(savedPath);
       }
@@ -192,7 +148,7 @@ public class GeneralPurchaseHistoryCrawler {
       // skip process is database exist
       if (!isNew()) {
         LOGGER.debug(String.format("[processOrders] [%s] order %s already exist, skip this",
-            siteName, currentPurchaseHistory.getOrderNumber()));
+            site, currentPurchaseHistory.getOrderNumber()));
         continue;
       }
 
@@ -305,7 +261,7 @@ public class GeneralPurchaseHistoryCrawler {
    */
   protected boolean isNew() {
     return historyRepository == null
-        || historyRepository.getByEcSiteAndOrderNo(siteName, currentPurchaseHistory.getOrderNumber()) == null;
+        || historyRepository.getByEcSiteAndOrderNo(site, currentPurchaseHistory.getOrderNumber()) == null;
   }
 
   /**

@@ -1,5 +1,11 @@
 package com.topcoder.scraper.module.ecisolatedmodule.kojima.crawler;
 
+import java.io.IOException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.NamedNodeMap;
+
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlHiddenInput;
@@ -7,38 +13,34 @@ import com.gargoylesoftware.htmlunit.html.HtmlImageInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 import com.topcoder.common.model.ProductInfo;
+import com.topcoder.common.repository.ConfigurationRepository;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.lib.navpage.NavigableProductDetailPage;
 import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractProductCrawlerResult;
-import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralProductCrawler;
-import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralProductCrawlerResult;
+import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralProductDetailCrawler;
+import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralProductDetailCrawlerResult;
 import com.topcoder.scraper.service.WebpageService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.NamedNodeMap;
-
-import java.io.IOException;
 
 /**
  * Kojima implementation of ProductDetailCrawler
  */
-public class OldKojimaProductDetailCrawler extends GeneralProductCrawler {
+public class OldKojimaProductDetailCrawler extends GeneralProductDetailCrawler {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(OldKojimaProductDetailCrawler.class);
   private String siteName;
   private final WebpageService webpageService;
 
-  public OldKojimaProductDetailCrawler(String siteName, WebpageService webpageService) {
-	super(siteName, webpageService);
+  public OldKojimaProductDetailCrawler(String siteName, WebpageService webpageService, ConfigurationRepository configurationRepository) {
+	super(siteName, "product", webpageService, configurationRepository);
     this.siteName = siteName;
 	this.webpageService = webpageService;
-	
+
   }
-  
-  public GeneralProductCrawlerResult fetchProductInfo(TrafficWebClient webClient, String productName, boolean saveHtml) throws IOException {
+
+  public GeneralProductDetailCrawlerResult fetchProductInfo(TrafficWebClient webClient, String productName, boolean saveHtml) throws IOException {
 
     LOGGER.info("Product name " + productName);
-    
+
     ProductInfo productInfo = new ProductInfo();
 
     NavigableProductDetailPage detailPage = new NavigableProductDetailPage("https://www.kojima.net/ec/top/CSfTop.jsp", webClient, productInfo);
@@ -63,7 +65,7 @@ public class OldKojimaProductDetailCrawler extends GeneralProductCrawler {
     if (saveHtml) {
       savedPath = detailPage.savePage("kojima-product-details", siteName, webpageService);
     }
-    GeneralProductCrawlerResult result = new GeneralProductCrawlerResult(detailPage.getProductInfo(), savedPath);
+    GeneralProductDetailCrawlerResult result = new GeneralProductDetailCrawlerResult(detailPage.getProductInfo(), savedPath);
 
     LOGGER.info("Product name from Purchase history: [" + productName + "]");
     LOGGER.info("Product name from Product page    : [" + result.getProductInfo().getName()+ "] matched: " + (productName.equals(result.getProductInfo().getName())));

@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,7 @@ import com.topcoder.api.exception.EntityNotFoundException;
 import com.topcoder.common.dao.ConfigurationDAO;
 import com.topcoder.common.repository.ConfigurationRepository;
 import com.topcoder.common.repository.ECSiteAccountRepository;
-import com.topcoder.scraper.module.ecunifiedmodule.dryrun.DryRunProductModule;
+import com.topcoder.scraper.module.ecunifiedmodule.dryrun.DryRunProductDetailModule;
 import com.topcoder.scraper.module.ecunifiedmodule.dryrun.DryRunProductSearchModule;
 import com.topcoder.scraper.module.ecunifiedmodule.dryrun.DryRunPurchaseHistoryModule;
 
@@ -47,7 +46,7 @@ public class ConfigurationService {
    * dry run of ProductModule
    */
   @Autowired
-  DryRunProductModule dryRunProductModule;
+  DryRunProductDetailModule dryRunProductModule;
 
   /**
    * dry run of ProductSearchModule
@@ -120,9 +119,9 @@ public class ConfigurationService {
       case "purchase_history":
         return dryRunPurchaseHistoryModule.fetchPurchaseHistoryList(site, conf);
       case "product":
-        return dryRunProductModule.fetchProductDetailList(Arrays.asList(site));
+        return dryRunProductModule.fetchProductDetailList(site, conf);
       case "search":
-        return dryRunProductSearchModule.searchProduct(site);
+        return dryRunProductSearchModule.searchProduct(site, conf);
       default:
         throw new ApiException("the type:" + type + " was not supported");
       }

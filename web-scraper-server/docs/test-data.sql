@@ -233,3 +233,208 @@ insert into web_scraper.configuration (id,site,type,config) values
  (1,'amazon','purchase_history',@amazon_purchase_history_script)
 ,(2,'rakuten','purchase_history',@rakuten_purchase_history_script)
 ,(3,'yahoo','purchase_history',@yahoo_purchase_history_script);
+
+SET
+@amazon_product_detail_script = '{
+  "url": "https://www.amazon.co.jp/gp/product/{code}/",
+  "product_details": [
+    [
+      {
+        "item": "unit_price",
+        "selector": "#priceblock_ourprice",
+        "attribute": "",
+        "regex": "",
+        "script": ""
+      },
+      {
+        "item": "unit_price",
+        "selector": "#MediaMatrix > div > div > ul > li.selected > span > span.a-button-selected > span > a > span > span.a-color-price",
+        "attribute": "",
+        "regex": "",
+        "script": ""
+      }
+    ],
+    [
+      {
+        "item": "product_name",
+        "selector": "#productTitle",
+        "attribute": "",
+        "regex": "",
+        "script": ""
+      }
+    ],
+    [
+      {
+        "item": "model_no_label",
+        "selector": "#prodDetails > div.wrapper.JPlocale table > tbody > tr.item-model-number > td.value",
+        "attribute": "",
+        "regex": "",
+        "label_selector": "#prodDetails > div.wrapper.JPlocale table > tbody > tr.item-model-number > td.label",
+        "label_value": "メーカー型番",
+        "label_attribute": "",
+        "label_regex": "",
+        "script": ""
+      },
+      {
+        "item": "model_no_label",
+        "selector": "#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(3)",
+        "attribute": "",
+        "regex": "",
+        "label_selector": "#detail_bullets_id > table > tbody > tr > td > div > ul > li:nth-child(3) > b",
+        "label_value": "メーカー型番",
+        "label_attribute": "",
+        "label_regex": "",
+        "script": ""
+      },
+      {
+        "item": "model_no_label",
+        "selector": "#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(2)",
+        "attribute": "",
+        "regex": "",
+        "label_selector": "#detail_bullets_id > table > tbody > tr > td > div > ul > li:nth-child(2) > b",
+        "label_value": "メーカー型番",
+        "label_attribute": "",
+        "label_regex": "",
+        "script": ""
+      }
+    ]
+  ]
+}',
+@rakuten_product_detail_script = '{
+  "url": "https://item.rakuten.co.jp/{code}",
+  "product_details": [
+    [
+      {
+        "item": "unit_price",
+        "selector": ".price2",
+        "attribute": "",
+        "regex": "",
+        "script": ""
+      }
+    ],
+    [
+      {
+        "item": "product_name",
+        "selector": ".item_name",
+        "attribute": "",
+        "regex": "",
+        "script": ""
+      }
+    ],
+    [
+      {
+        "item": "jan_code",
+        "selector": ".item_number",
+        "attribute": "",
+        "regex": "[0-9]{13}",
+        "script": ""
+      },
+      {
+        "item": "model_no",
+        "selector": ".item_number",
+        "attribute": "",
+        "regex": "[\\\\p{ASCII}]+",
+        "script": ""
+      }
+    ]
+  ]
+}',
+@yahoo_product_detail_script = '{
+  "url": "https://store.shopping.yahoo.co.jp/{code}",
+  "product_details": [
+    [
+      {
+        "item": "product_code",
+        "selector": "head > link[rel='canonical']",
+        "attribute": "href",
+        "regex": "https:\\\\/\\\\/.*?\\\\/(.*).html",
+        "script": ""
+      }
+    ],
+    [
+      {
+        "item": "product_name",
+        "selector": ".mdItemInfoTitle > h2",
+        "attribute": "",
+        "regex": "",
+        "script": ""
+      }
+    ],
+    [
+      {
+        "item": "product_distributor",
+        "selector": "dt.elStore > a",
+        "attribute": "",
+        "regex": "",
+        "script": ""
+      }
+    ],
+    [
+      {
+        "item": "unit_price",
+        "selector": ".elNum",
+        "attribute": "",
+        "regex": "",
+        "script": ""
+      },
+      {
+        "item": "unit_price",
+        "selector": ".ItemPrice_price",
+        "attribute": "",
+        "regex": "",
+        "script": ""
+      },
+      {
+        "item": "unit_price",
+        "selector": "p.elPrice:nth-child(2) > em",
+        "attribute": "",
+        "regex": "",
+        "script": ""
+      }
+    ],
+    [
+      {
+        "item": "jan_code",
+        "selector": ".mdItemInfoCode > p",
+        "attribute": "",
+        "regex": "[0-9]{13}",
+        "script": ""
+      }
+    ]
+  ]
+}',
+@amazon_product_search_script = '{
+  "url": "https://www.amazon.co.jp/s?k={word}",
+  "group_selector": "html > body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(1) > div > div > span:nth-of-type(3) > div:nth-of-type(2)",
+  "selector": "div > div > span > div > div > div:nth-child(3) > h2 > a",
+  "attribute": "href",
+  "regex": "/dp/([A-Z0-9]+)/",
+  "script": "",
+  "excluded_selector": "div > span > div > div div:nth-of-type(2) > div > span > span > span:nth-of-type(1) > span"
+}',
+@rakuten_product_search_script = '{
+  "url": "https://search.rakuten.co.jp/search/mall/{word}",
+  "group_selector": "html > body > div.dui-container.main > div.dui-container.content > div.dui-container.searchresults > div",
+  "selector": "div > div:nth-of-type(2) > h2 > a",
+  "attribute": "href",
+  "regex": "item.rakuten.co.jp\\\\/(.+?\\\\/.+?)\\\\/",
+  "script": "",
+  "excluded_selector": ""
+}',
+@yahoo_product_search_script = '{
+  "url": "https://shopping.yahoo.co.jp/search?p={word}",
+  "group_selector": "#searchResults1",
+  "selector": "div > div:nth-of-type(2) > p > a",
+  "attribute": "data-beacon",
+  "regex": "targurl:store.shopping.yahoo.co.jp\\\\/(.+?\\\\/.+?)\\\\.html",
+  "script": "",
+  "excluded_selector": ""
+}';
+
+insert into web_scraper.configuration (id,site,type,config) values
+ (4,'amazon','product',@amazon_product_detail_script)
+,(5,'rakuten','product',@rakuten_product_detail_script)
+,(6,'yahoo','product',@yahoo_product_detail_script)
+,(7,'amazon','search',@amazon_product_search_script)
+,(8,'rakuten','search',@rakuten_product_search_script)
+,(9,'yahoo','search',@yahoo_product_search_script);

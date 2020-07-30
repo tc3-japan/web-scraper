@@ -4,45 +4,33 @@ $borderColor: #6d9eeb;
 $containerColor: #c9daf8;
 $titleColor: #1c4587;
 
-
 @mixin setBgColorAndHover($baseColor) {
   background-color: $baseColor;
+
   &:hover {
-    background-color: darken($baseColor, 5%)
+    background-color: darken($baseColor, 5%);
   }
+
   &:active {
-    background-color: darken($baseColor, 8%)
+    background-color: darken($baseColor, 8%);
   }
 
   &:disabled {
-    opacity: 0.6;
+    background-color: mix($baseColor, white, 50);
+
+    // opacity: 0.6;
     cursor: not-allowed;
   }
 }
 
-.icon-btn {
-  cursor: pointer;
+.editor-row {
   display: flex;
+  flex-direction: row;
   align-items: center;
-  max-width: 100px;
-
-  img {
-    margin-right: 6px;
-    width: 20px;
-    height: 20px;
-  }
-
-  &:hover {
-    opacity: 0.6;
-  }
-
-  &:active {
-    opacity: 0.5;
-  }
-
-  &:disabled {
-    opacity: 0.5;
-  }
+  flex: 1;
+  margin-top: 10px;
+  flex-wrap: wrap;
+  min-height: 28px;
 }
 
 .input-container {
@@ -93,7 +81,6 @@ $titleColor: #1c4587;
   }
 }
 
-
 .indent {
   padding-left: 8px;
 }
@@ -116,11 +103,6 @@ $titleColor: #1c4587;
     text-overflow: ellipsis;
     overflow: hidden;
   }
-}
-
-.tip {
-  padding-left: 16px;
-  padding-top: 16px;
 }
 
 .Dropdown-menu {

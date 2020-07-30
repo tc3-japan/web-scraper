@@ -1,0 +1,31 @@
+@import "../../common.scss";
+
+body.scrolling-disabled-by-modal {
+  overflow: hidden;
+}
+
+.ModalOverlay {
+  background: #eee;
+  height: 100%;
+  left: 0;
+  opacity: 0.8;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 998;
+}
+
+.ModalContainer {
+  background: #f3f3f3;
+  border: 1px solid $borderColor;
+  box-shadow: 0 0 14px 1px rgba(38, 38, 40, 0.15);
+  border-radius: 4;
+  max-height: 95vh;
+  max-width: 90vw;
+  padding: 0.6em 1.2em;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 999;
+}

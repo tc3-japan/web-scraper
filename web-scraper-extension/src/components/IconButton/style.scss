@@ -1,0 +1,29 @@
+.IconButton {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  max-width: 100px;
+  outline: none;
+
+  &.topMargin {
+    margin-top: 10px;
+  }
+
+  img {
+    margin-right: 6px;
+    width: 20px;
+    height: 20px;
+  }
+
+  &:hover {
+    opacity: 0.6;
+  }
+
+  &:active {
+    opacity: 0.5;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+  }
+}

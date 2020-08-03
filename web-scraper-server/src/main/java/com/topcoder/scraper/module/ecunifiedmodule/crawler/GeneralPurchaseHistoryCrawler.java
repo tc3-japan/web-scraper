@@ -23,6 +23,7 @@ import com.topcoder.common.repository.ConfigurationRepository;
 import com.topcoder.common.repository.PurchaseHistoryRepository;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.common.util.Common;
+import com.topcoder.scraper.lib.navpage.NavigablePage;
 import com.topcoder.scraper.lib.navpage.NavigablePurchaseHistoryPage;
 import com.topcoder.scraper.service.WebpageService;
 
@@ -141,10 +142,11 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler{
     LOGGER.debug("[processOrders] Purchase list size =  " + orderList.size());
 
     PurchaseOrder orderConfig = purchaseHistoryConfig.getPurchaseOrder();
+    int i = 1;
     for (DomNode orderNode : orderList) {
       this.currentPurchaseHistory = new PurchaseHistory();
       this.historyPage.setPurchaseHistory(this.currentPurchaseHistory);
-      scrapeOrder(rootPage, orderNode, orderConfig, currentPurchaseHistory);
+      scrapeOrder(rootPage, orderNode, orderConfig, currentPurchaseHistory, i);
       // skip process is database exist
       if (!isNew()) {
         LOGGER.debug(String.format("[processOrders] [%s] order %s already exist, skip this",
@@ -159,6 +161,7 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler{
         orderPage = anchor.click();
         // fetch product by page root
         productList = orderPage.querySelectorAll(orderConfig.getPurchaseProduct().getParent());
+        //this.webpageService.save(this.site + "-test-purchase-history", this.site,  orderPage.getPage().getWebResponse().getContentAsString(), this.saveHtml);
       } else {
         // fetch product by order node
         productList = orderNode.querySelectorAll(orderConfig.getPurchaseProduct().getParent());
@@ -167,9 +170,10 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler{
       LOGGER.debug("[processOrders] productList.size() = " + productList.size());
 
       // On the contrast if a field for purchase_product appears under purchase_order, please reuse and set the scraped value to purchase_product
-      ProductInfo reuseProduct = scrapeProduct(orderPage, orderNode, orderConfig);
+      ProductInfo reuseProduct = scrapeProduct(orderPage, orderNode, orderConfig, NavigablePage.DEFAULT_PLACEHOLDER_NO);
       processProducts(productList, orderPage, reuseProduct);
       this.purchaseHistoryList.add(this.currentPurchaseHistory);
+      i++;
     }
     LOGGER.info("[processOrders] done, size = " + this.purchaseHistoryList.size());
   }
@@ -182,23 +186,23 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler{
    * @param config the selector config
    * @param history the history item
    */
-  private void scrapeOrder(HtmlPage urlElementPage, DomNode orderNode, PurchaseCommon config, PurchaseHistory history) throws DuplicatedException {
+  private void scrapeOrder(HtmlPage urlElementPage, DomNode orderNode, PurchaseCommon config, PurchaseHistory history, int placeHolderNo) throws DuplicatedException {
     if (config.getOrderNumber() != null) {
-      String orderNumber = historyPage.scrapeString(urlElementPage, orderNode, config.getOrderNumber());
+      String orderNumber = historyPage.scrapeString(urlElementPage, orderNode, config.getOrderNumber(), placeHolderNo);
       if (scrapedOrderNumberList.contains(orderNumber)) throw new DuplicatedException();
 
       history.setOrderNumber(orderNumber);
       scrapedOrderNumberList.add(orderNumber);
     }
     if (config.getOrderDate() != null) {
-      history.setOrderDate(historyPage.scrapeDate(urlElementPage, orderNode, config.getOrderDate()));
+      history.setOrderDate(historyPage.scrapeDate(urlElementPage, orderNode, config.getOrderDate(), placeHolderNo));
     }
     if (config.getTotalAmount() != null) {
-      Float totalAmount = historyPage.scrapeFloat(urlElementPage, orderNode, config.getTotalAmount());
+      Float totalAmount = historyPage.scrapeFloat(urlElementPage, orderNode, config.getTotalAmount(), placeHolderNo);
       history.setTotalAmount(totalAmount == null ? null : totalAmount.toString());
     }
     if (config.getDeliveryStatus() != null) {
-      history.setDeliveryStatus(historyPage.scrapeString(urlElementPage, orderNode, config.getDeliveryStatus()));
+      history.setDeliveryStatus(historyPage.scrapeString(urlElementPage, orderNode, config.getDeliveryStatus(), placeHolderNo));
     }
   }
 
@@ -209,24 +213,24 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler{
    * @param config the product selector config
    * @return the product
    */
-  private ProductInfo scrapeProduct(HtmlPage orderPage, DomNode productNode, PurchaseCommon config) {
+  private ProductInfo scrapeProduct(HtmlPage orderPage, DomNode productNode, PurchaseCommon config, int placeHolderNo) {
     ProductInfo info = new ProductInfo();
     if (config.getProductCode() != null) {
-      info.setCode(historyPage.scrapeString(orderPage, productNode, config.getProductCode()));
+      info.setCode(historyPage.scrapeString(orderPage, productNode, config.getProductCode(), placeHolderNo));
     }
     if (config.getProductName() != null) {
-      info.setName(historyPage.scrapeString(orderPage, productNode, config.getProductName()));
+      info.setName(historyPage.scrapeString(orderPage, productNode, config.getProductName(), placeHolderNo));
     }
     if (config.getProductQuantity() != null) {
-      Float quantity = historyPage.scrapeFloat(orderPage, productNode, config.getProductQuantity());
+      Float quantity = historyPage.scrapeFloat(orderPage, productNode, config.getProductQuantity(), placeHolderNo);
       info.setQuantity(quantity == null ? null : quantity.intValue());
     }
     if (config.getUnitPrice() != null) {
-      Float price = historyPage.scrapeFloat(orderPage, productNode, config.getUnitPrice());
+      Float price = historyPage.scrapeFloat(orderPage, productNode, config.getUnitPrice(), placeHolderNo);
       info.setPrice(price == null ? null : price.toString());
     }
     if (config.getProductDistributor() != null) {
-      info.setDistributor(historyPage.scrapeString(orderPage, productNode, config.getProductDistributor()));
+      info.setDistributor(historyPage.scrapeString(orderPage, productNode, config.getProductDistributor(), placeHolderNo));
     }
     return info;
   }
@@ -242,15 +246,17 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler{
     LOGGER.debug("[processProducts] in");
 
     PurchaseProduct productConfig = purchaseHistoryConfig.getPurchaseOrder().getPurchaseProduct();
+    int i = 1;
     for (DomNode productNode : productList) {
-      this.currentProduct = scrapeProduct(orderPage, productNode, productConfig);
+      this.currentProduct = scrapeProduct(orderPage, productNode, productConfig, i);
       BeanUtils.copyProperties(reuseProduct, currentProduct, Common.getNullPropertyNames(reuseProduct));
 
       if (this.currentProduct.getName() != null) {
         this.currentPurchaseHistory.addProduct(this.currentProduct);
       }
       //if a field for purchase_order appears under purchase_product, please set the scraped value to purchase_order.
-      scrapeOrder(orderPage, productNode, productConfig, currentPurchaseHistory);
+      scrapeOrder(orderPage, productNode, productConfig, currentPurchaseHistory, i);
+      i++;
     }
   }
 

@@ -52,22 +52,23 @@ public class GeneralProductSearchModule implements IProductSearchModule {
     String productCode = "";
     GeneralProductSearchCrawlerResult searchCrawlerResult = searchCrawler.searchProduct(this.webClient, searchWord);
     if (Objects.isNull(searchCrawlerResult)) {
+      this.webClient.finishTraffic();
       return null;
     } else {
       productCode = searchCrawlerResult.getProductCode();
+      if (StringUtils.isEmpty(productCode)) {
+        this.webClient.finishTraffic();
+        return null;
+      }
     }
     GeneralProductDetailCrawler detailCrawler = new GeneralProductDetailCrawler(siteName, "product", this.webpageService, this.configurationRepository);
-    ProductInfo productInfo = null;
-    if (StringUtils.isEmpty(productCode)) {
-      return null;
-    } else {
-      productInfo = detailCrawler.fetchProductInfo(this.webClient, productCode).getProductInfo();
-    }
-    this.webClient.finishTraffic();
+    ProductInfo productInfo = detailCrawler.fetchProductInfo(this.webClient, productCode).getProductInfo();
     if (Objects.isNull(productInfo)) {
       LOGGER.warn("[searchProductInfo] Unable to obtain a product information about: " + searchWord);
+      this.webClient.finishTraffic();
       return null;
     }
+    this.webClient.finishTraffic();
     return new ProductDAO(siteName, productInfo);
   }
 }

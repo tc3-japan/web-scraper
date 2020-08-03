@@ -336,9 +336,7 @@ public class NavigableProductDetailPage extends NavigablePage {
       if (Objects.equals(productDetail.getItem().replace("_label", ""), jsonPropertiyName)) {
         // javascript
         if (!StringUtils.isEmpty(productDetail.getScript())) {
-          executeJavaScript(productDetail.getScript());
-        } else {
-          setPage(url);
+          return executeJavaScript(page, productDetail.getScript());
         }
         // label of model_no
         if (!StringUtils.isEmpty(productDetail.getLabelSelector())) {

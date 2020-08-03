@@ -27,6 +27,8 @@ public class NavigablePage {
     protected TrafficWebClient webClient;
     protected HtmlPage page;
 
+    public static int DEFAULT_PLACEHOLDER_NO = -1;
+
     public NavigablePage(HtmlPage page, TrafficWebClient webClient) {
         LOGGER.debug("[constructor] in");
         this.webClient = webClient;
@@ -293,11 +295,22 @@ public class NavigablePage {
       return this.page != null ? this.page.getUrl() : null;
     }
 
-    public void executeJavaScript(String script) {
-      ScriptResult scriptResult = page.executeJavaScript(script);
-      if (!ScriptResult.isFalse(scriptResult) && !ScriptResult.isUndefined(scriptResult)) {
-        this.page = (HtmlPage) this.page.getWebClient().getCurrentWindow().getEnclosedPage();
+    public String executeJavaScript(HtmlPage targetPage, String script) {
+      boolean enableJavaScript = webClient.getWebClient().getOptions().isJavaScriptEnabled();
+      webClient.getWebClient().getOptions().setJavaScriptEnabled(true);
+      ScriptResult scriptResult = targetPage.executeJavaScript(script);
+      if (ScriptResult.isFalse(scriptResult) || ScriptResult.isUndefined(scriptResult)) {
+        return null;
       }
+      String result = scriptResult.getJavaScriptResult().toString();
+      webClient.getWebClient().getOptions().setJavaScriptEnabled(enableJavaScript);
+      return result;
     }
+
+    public String createScriptWithPlaceHolderNo(String script, int placeHolderNo) {
+      String result = script.replace("{orderIndex}", String.valueOf(placeHolderNo));
+      return result.replace("{productIndex}", String.valueOf(placeHolderNo));
+    }
+
 
 }

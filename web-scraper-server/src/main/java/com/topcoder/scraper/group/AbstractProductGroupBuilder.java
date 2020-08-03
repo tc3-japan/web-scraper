@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -219,6 +220,9 @@ public abstract class AbstractProductGroupBuilder {
     Float rangeParam = basePrice * this.priceTolerance;
     if (basePrice != null) {
       Float price = candidateProduct.getUnitPriceAsNumber();
+      if (Objects.isNull(price)) {
+        return false;
+      }
       boolean result = basePrice - rangeParam <= price && price <= basePrice + rangeParam;
       logger.info(String.format("result of matching with unit-price: %f <= %f <= %f [range: +-%f]::%b",
           (basePrice - rangeParam), price, (basePrice + rangeParam), rangeParam, result));

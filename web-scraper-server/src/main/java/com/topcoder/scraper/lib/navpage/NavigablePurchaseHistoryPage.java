@@ -1,5 +1,15 @@
 package com.topcoder.scraper.lib.navpage;
 
+import static com.topcoder.common.util.HtmlUtils.*;
+
+import java.text.ParseException;
+import java.util.Date;
+import java.util.List;
+import java.util.regex.Pattern;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlHiddenInput;
@@ -9,17 +19,9 @@ import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.common.model.scraper.Selector;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.common.util.DateUtils;
+
 import lombok.Getter;
 import lombok.Setter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.text.ParseException;
-import java.util.Date;
-import java.util.List;
-import java.util.regex.Pattern;
-
-import static com.topcoder.common.util.HtmlUtils.*;
 
 public class NavigablePurchaseHistoryPage extends NavigablePage {
 
@@ -327,10 +329,11 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
    * @param root     the page root
    * @param parent   the parent node
    * @param selector the selector object
+   * @param placeHolderNo the placeholder no
    * @return final value
    */
-  public Float scrapeFloat(HtmlPage root, DomNode parent, Selector selector) {
-    return extractFloat(scrapeString(root, parent, selector));
+  public Float scrapeFloat(HtmlPage root, DomNode parent, Selector selector, int placeHolderNo) {
+    return extractFloat(scrapeString(root, parent, selector, placeHolderNo));
   }
 
   /**
@@ -339,11 +342,12 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
    * @param root     the page root
    * @param parent   the parent node
    * @param selector the selector object
+   * @param placeHolderNo the placeholder no
    * @return final value
    */
-  public Date scrapeDate(HtmlPage root, DomNode parent, Selector selector) {
+  public Date scrapeDate(HtmlPage root, DomNode parent, Selector selector, int placeHolderNo) {
     try {
-      return DateUtils.fromString(scrapeString(root, parent, selector));
+      return DateUtils.fromString(scrapeString(root, parent, selector, placeHolderNo));
     } catch (java.text.ParseException e) {
       LOGGER.debug("[scrapeOrderDate] Could not set date in NavigablePurchaseHistoryPage.java");
       e.printStackTrace();
@@ -377,12 +381,17 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
    * @param root     the page root
    * @param parent   the parent node
    * @param selector the selector object
+   * @param placeHolderNo the placeholder no
    * @return final value
    */
-  public String scrapeString(HtmlPage root, DomNode parent, Selector selector) {
+  public String scrapeString(HtmlPage root, DomNode parent, Selector selector, int placeHolderNo) {
     HtmlElement element;
     if (selector == null) {
       return null;
+    }
+    if (isValid(selector.getScript()) && placeHolderNo != DEFAULT_PLACEHOLDER_NO) {
+      String script = createScriptWithPlaceHolderNo(selector.getScript(), placeHolderNo);
+      return executeJavaScript(root, script);
     }
     if (isValidBool(selector.getFullPath())) {
       element = (root == null ? page : root).querySelector(selector.getElement());
@@ -401,4 +410,5 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
     }
     return content;
   }
+
 }

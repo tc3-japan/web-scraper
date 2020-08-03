@@ -17,9 +17,6 @@ import com.topcoder.common.util.HtmlUtils;
 import com.topcoder.scraper.lib.navpage.NavigableProductListPage;
 import com.topcoder.scraper.service.WebpageService;
 
-/**
- * General implementation of ProductSearchModule
- */
 public class GeneralProductSearchCrawler extends AbstractGeneralCrawler {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(GeneralProductSearchCrawler.class);
@@ -58,31 +55,33 @@ public class GeneralProductSearchCrawler extends AbstractGeneralCrawler {
     }
     listPage.setPage(url);
     LOGGER.debug(String.format("[url]=[%s]", url));
+    String productCode = "";
     // javascript
     if (!StringUtils.isEmpty(script)) {
-      listPage.executeJavaScript(script);
-    }
-    if (!StringUtils.isEmpty(excludedSelector)) {
-      DomNode node = listPage.getPage().querySelector(groupSelector);
-      if (Objects.nonNull(node)) {
-        node = node.querySelector(excludedSelector);
-        if (Objects.isNull(node)) {
-          return null;
+      productCode = listPage.executeJavaScript(listPage.getPage(), script);
+    } else {
+      if (!StringUtils.isEmpty(excludedSelector)) {
+        DomNode node = listPage.getPage().querySelector(groupSelector);
+        if (Objects.nonNull(node)) {
+          node = node.querySelector(excludedSelector);
+          if (Objects.isNull(node)) {
+            return null;
+          }
         }
       }
-    }
-    String productCode = listPage.getNodeAttribute(groupSelector + " > " + selector, attribute);
-    if (StringUtils.isEmpty(productCode)) {
-      DomNode node = listPage.getPage().querySelector(groupSelector);
-      if (Objects.nonNull(node)) {
-        node = node.querySelector(selector);
-        productCode = node.getAttributes().getNamedItem(attribute).getNodeValue();
+      productCode = listPage.getNodeAttribute(groupSelector + " > " + selector, attribute);
+      if (StringUtils.isEmpty(productCode)) {
+        DomNode node = listPage.getPage().querySelector(groupSelector);
+        if (Objects.nonNull(node)) {
+          node = node.querySelector(selector);
+          productCode = node.getAttributes().getNamedItem(attribute).getNodeValue();
+        }
       }
-    }
-    LOGGER.debug(String.format("attribute[%s]=[%s]", attribute, productCode));
-    if (Objects.nonNull(productCode) && Objects.nonNull(regex)) {
-      productCode = HtmlUtils.extract1(productCode, Pattern.compile(regex));
-      LOGGER.debug(String.format("regex=[%s]", regex));
+      LOGGER.debug(String.format("attribute[%s]=[%s]", attribute, productCode));
+      if (Objects.nonNull(productCode) && Objects.nonNull(regex)) {
+        productCode = HtmlUtils.extract1(productCode, Pattern.compile(regex));
+        LOGGER.debug(String.format("regex=[%s]", regex));
+      }
     }
     // for rakuten
     if (!StringUtils.isEmpty(productCode)) {

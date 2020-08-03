@@ -13,11 +13,11 @@ import org.springframework.stereotype.Component;
 import com.topcoder.common.dao.ProductDAO;
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.repository.ConfigurationRepository;
+import com.topcoder.common.repository.ProductRepository;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.common.traffic.TrafficWebClient.TrafficWebClientForDryRun;
 import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralProductDetailCrawler;
 import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralProductDetailCrawlerResult;
-import com.topcoder.scraper.service.ProductService;
 import com.topcoder.scraper.service.WebpageService;
 
 /**
@@ -28,7 +28,6 @@ public class DryRunProductDetailModule {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DryRunProductDetailModule.class);
 
-  private final ProductService productService;
   private final WebpageService webpageService;
   private GeneralProductDetailCrawler crawler;
   private TrafficWebClientForDryRun webClientDryRun;
@@ -39,8 +38,10 @@ public class DryRunProductDetailModule {
   ConfigurationRepository configurationRepository;
 
   @Autowired
-  public DryRunProductDetailModule(ProductService productService, WebpageService webpageService) {
-    this.productService = productService;
+  ProductRepository productRepository;
+
+  @Autowired
+  public DryRunProductDetailModule(WebpageService webpageService) {
     this.webpageService = webpageService;
   }
 
@@ -53,14 +54,17 @@ public class DryRunProductDetailModule {
     this.webClientDryRun = webClient.new TrafficWebClientForDryRun(0, false);
     this.crawler = new GeneralProductDetailCrawler(site, "product", this.webpageService, this.configurationRepository);
     crawler.setConfig(conf);
-    List<ProductDAO> products = this.productService.getAllFetchInfoStatusIsNull(site);
-    products.forEach(product -> {
+    List<ProductDAO> products = productRepository.findByECSite(site);
+    for (ProductDAO product :products) {
       try {
         this.processProductDetail(product.getId(), product.getProductCode());
       } catch (IOException | IllegalStateException e) {
         LOGGER.error(String.format("Fail to fetch product %s, please try again.", product.getProductCode()));
       }
-    });
+      if (DryRunUtils.checkCountOver(productInfoList)) {
+        break;
+      }
+    }
     return new DryRunUtils().toJsonOfDryRunProductModule(this.productInfoList, this.htmlPathList);
   }
 

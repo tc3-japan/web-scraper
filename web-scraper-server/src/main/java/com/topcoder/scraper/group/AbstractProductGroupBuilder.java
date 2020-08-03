@@ -217,8 +217,8 @@ public abstract class AbstractProductGroupBuilder {
     logger.info(String.format("price tolerance: %f", priceTolerance));
 
     Float basePrice = baseProduct.getUnitPriceAsNumber();
-    Float rangeParam = basePrice * this.priceTolerance;
-    if (basePrice != null) {
+    if (!Objects.isNull(basePrice)) {
+      Float rangeParam = basePrice * this.priceTolerance;
       Float price = candidateProduct.getUnitPriceAsNumber();
       if (Objects.isNull(price)) {
         return false;

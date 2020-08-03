@@ -287,8 +287,22 @@ public class NavigablePage {
       //Characters that cannot be used in folder names are replaced as underscore
       fileName = fileName.replaceAll("[/><?:\"\\*|;]", "_");
       // save html page
-      //LOGGER.debug(navigablePage.getPage().getWebResponse().getContentAsString());
-      return webpageService.save(fileName, siteName, navigablePage.getPage().getWebResponse().getContentAsString(), true);
+      String contents = navigablePage.getPage().getWebResponse().getContentAsString();
+      contents = convertHtmlCharset(contents);
+      contents = convertToAbsolutePath(contents);
+      return webpageService.save(fileName, siteName, contents, true);
+    }
+
+    private String convertHtmlCharset(String contents) {
+      return contents.replace("charset=euc-jp", "charset=utf-8")
+                     .replace("charset=EUC-JP", "charset=utf-8");
+    }
+
+    private String convertToAbsolutePath(String contents) {
+      return contents.replace("src=\"//", "src=\"https://")
+                     .replace("src='//", "src='https://")
+                     .replace("href=\"//", "href=\"https://")
+                     .replace("href='//", "href='https://");
     }
 
     public URL getPageUrl() {

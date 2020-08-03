@@ -1,6 +1,7 @@
 -- Usage: mysql --host 0.0.0.0 --port 3306 --user root --password web_scraper < test-data.sql
 
 SET SQL_SAFE_UPDATES = 0;
+/*
 -- initialize data for batch=purchase_history
 delete from web_scraper.purchase_product;
 delete from web_scraper.purchase_history;
@@ -18,7 +19,7 @@ delete from web_scraper.tactic_event;
 -- initialize user data
 delete from web_scraper.ec_site_account;
 delete from web_scraper.user;
-
+*/
 delete from web_scraper.configuration;
 
 SET
@@ -212,7 +213,7 @@ SET
     "next_url_element": "html > body > div:nth-of-type(1) > div > div:nth-of-type(2) > div > div:nth-of-type(1) > div > div:nth-of-type(2) > div > ul > li:nth-of-type(2) > a"
 }
 ';
-
+/*
 insert into web_scraper.user (id,email_for_contact,total_ec_status,id_expire_at,update_at) values
  (1,'email@gmail.com','status','2020-10-10 12:00:00','2019-10-14 12:00:00');
 insert into web_scraper.ec_site_account (id, ec_site, ec_use_flag, user_id, update_at) values
@@ -228,7 +229,7 @@ insert into web_scraper.ec_site_account (id, ec_site, ec_use_flag, user_id, upda
 ,(4, 'kojima',  0, 2,'2019-03-08 12:00:00')
 ,(6, 'yahoo',   0, 2,'2019-03-08 12:00:00')
 ,(8, 'rakuten', 0, 2,'2019-03-08 12:00:00');
-
+*/
 insert into web_scraper.configuration (id,site,type,config) values
  (1,'amazon','purchase_history',@amazon_purchase_history_script)
 ,(2,'rakuten','purchase_history',@rakuten_purchase_history_script)
@@ -333,7 +334,7 @@ SET
         "item": "model_no",
         "selector": ".item_number",
         "attribute": "",
-        "regex": "[\\\\p{ASCII}]+",
+        "regex": "[p{ASCII}]+",
         "script": ""
       }
     ]
@@ -345,9 +346,9 @@ SET
     [
       {
         "item": "product_code",
-        "selector": "head > link[rel='canonical']",
+        "selector": "head > link[rel=\\\"canonical\\\"]",
         "attribute": "href",
-        "regex": "https:\\\\/\\\\/.*?\\\\/(.*).html",
+        "regex": "https:\\\/\\\/.*?\\\/(.*).html",
         "script": ""
       }
     ],
@@ -417,7 +418,7 @@ SET
   "group_selector": "html > body > div.dui-container.main > div.dui-container.content > div.dui-container.searchresults > div",
   "selector": "div > div:nth-of-type(2) > h2 > a",
   "attribute": "href",
-  "regex": "item.rakuten.co.jp\\\\/(.+?\\\\/.+?)\\\\/",
+  "regex": "item.rakuten.co.jp\\\/(.+?\\\/.+?)\\\/",
   "script": "",
   "excluded_selector": ""
 }',
@@ -426,7 +427,7 @@ SET
   "group_selector": "#searchResults1",
   "selector": "div > div:nth-of-type(2) > p > a",
   "attribute": "data-beacon",
-  "regex": "targurl:store.shopping.yahoo.co.jp\\\\/(.+?\\\\/.+?)\\\\.html",
+  "regex": "targurl:store.shopping.yahoo.co.jp\\\/(.+?\\\/.+?).html",
   "script": "",
   "excluded_selector": ""
 }';

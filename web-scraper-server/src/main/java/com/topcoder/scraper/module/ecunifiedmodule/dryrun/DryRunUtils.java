@@ -13,9 +13,9 @@ import com.topcoder.common.model.PurchaseHistory;
  */
 public class DryRunUtils {
 
-  public final static String SEARCH_KEYWORD = "パソコン";
   private String ROOT_DIRECTORY = "logs";
   private String PREFIX_PATH = "html";
+  private static int DRY_RUN_MAX_COUNT = 10;
 
   /**
    * Called by DryRunPurchasehistoryModule
@@ -100,6 +100,20 @@ public class DryRunUtils {
   private String convertToRelativePath(String htmlPath) {
     int delimiterIntex = htmlPath.lastIndexOf(ROOT_DIRECTORY);
     return htmlPath.substring(delimiterIntex + ROOT_DIRECTORY.length(), htmlPath.length());
+  }
+
+  /**
+   * Check List count
+   * @return if true over count
+   */
+  public static boolean checkCountOver(List list) {
+    if (DRY_RUN_MAX_COUNT == 0) {
+      return false;
+    }
+    if (list.size() >= DRY_RUN_MAX_COUNT) {
+      return true;
+    }
+    return false;
   }
 
 }

@@ -60,6 +60,7 @@ public class GeneralProductDetailModule implements IProductDetailModule {
           this.processProductDetail(site, product.getId(), product.getProductCode());
         } catch (IOException | IllegalStateException e) {
           LOGGER.error(String.format("Fail to fetch product %s, please try again.", product.getProductCode()));
+          e.printStackTrace();
         }
       });
     }

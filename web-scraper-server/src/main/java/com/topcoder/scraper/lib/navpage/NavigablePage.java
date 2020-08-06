@@ -3,6 +3,7 @@ package com.topcoder.scraper.lib.navpage;
 import java.io.IOException;
 import java.net.URL;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -277,12 +278,15 @@ public class NavigablePage {
     }
 
     public String savePage(String siteName, String type, String keyword, NavigablePage navigablePage, WebpageService webpageService) {
-      String fileName = siteName + "-" + type + "-";
-      if (keyword.length() > 20) {
-        //20 characters from the top
-        fileName += keyword.substring(0, 20);
-      } else {
-        fileName += keyword;
+      String fileName = siteName + "-" + type;
+      if (!StringUtils.isEmpty(keyword)) {
+        fileName += "-";
+        if (keyword.length() > 20) {
+          //20 characters from the top
+          fileName += keyword.substring(0, 20);
+        } else {
+          fileName += keyword;
+        }
       }
       //Characters that cannot be used in folder names are replaced as underscore
       fileName = fileName.replaceAll("[/><?:\"\\*|;]", "_");

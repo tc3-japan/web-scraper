@@ -98,8 +98,8 @@ public class DryRunUtils {
    * @return relative html file path
    */
   private String convertToRelativePath(String htmlPath) {
-    int delimiterIntex = htmlPath.lastIndexOf(ROOT_DIRECTORY);
-    return htmlPath.substring(delimiterIntex + ROOT_DIRECTORY.length(), htmlPath.length());
+    int delimiterIntex = htmlPath.lastIndexOf("/");
+    return htmlPath.substring(delimiterIntex, htmlPath.length());
   }
 
   /**

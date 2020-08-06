@@ -114,7 +114,7 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler{
     LOGGER.debug("[processPurchaseHistory] in");
     while (this.historyPage.getPage() != null) {
 
-      String savedPath = this.webpageService.save(this.site + "-purchase-history", this.site, this.historyPage.getPage().getWebResponse().getContentAsString(), this.saveHtml);
+      String savedPath = historyPage.savePage(this.site, "purchase-history", "", historyPage, this.webpageService);
       if (savedPath != null) {
         savedPathList.add(savedPath);
       }

@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -176,6 +177,9 @@ public class ConfigurationService {
       String directoryOrFileName = files[i].getName();
       if (files[i].isDirectory()){
         htmlFilePath =  searchHtmlFilePath(directoryPath + "/" + directoryOrFileName, htmlFileName);
+        if (!StringUtils.isEmpty(htmlFilePath)) {
+          return htmlFilePath;
+        }
       } else {
         if (directoryOrFileName.equals(htmlFileName + ".html")) {
           return directoryPath + "/" + directoryOrFileName;

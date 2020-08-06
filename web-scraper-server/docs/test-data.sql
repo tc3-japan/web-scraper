@@ -182,7 +182,8 @@ SET
                 "element": "div > ul > li:nth-of-type(2) > p > a",
                 "full_path": false,
                 "attribute": "href",
-                "regex": "https://.*pagekey=(.*)"
+                "regex": "https://.*pagekey=(.*)",
+                "script": "document.querySelector(''#orddtl > div.elItem > ul > li:nth-child({productIndex}) > div > ul > li:nth-child(2) > p > a'').getAttribute(''href'').match(''https://.*order_id=(.*?)-'')[1] + ''/'' + document.querySelector(''#orddtl > div.elItem > ul > li:nth-child({productIndex}) > div > ul > li:nth-child(2) > p > a'').getAttribute(''href'').match(''https://.*pagekey=(.*)'')[1];"
             },
             "product_name": {
                 "element": "div > dl > dd:nth-of-type(1) > a > span",

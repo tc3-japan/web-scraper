@@ -160,7 +160,7 @@ export default function App() {
       );
       const baseUrl = await storageGet(BASE_API_KEY) || DEFAULT_API;
       logInfo('test succeed');
-      rsp.data[1].urls.forEach((url) => {
+      rsp[1].urls.forEach((url) => {
         logInfo(() => (
           <a
             className="urlInLog"
@@ -178,7 +178,7 @@ export default function App() {
           </a>
         ), true);
       });
-      logInfo(rsp.data[0]);
+      logInfo(rsp[0]);
     } catch (e) {
       processError(e);
     }

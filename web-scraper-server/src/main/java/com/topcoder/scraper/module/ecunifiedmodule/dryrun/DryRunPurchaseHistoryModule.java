@@ -67,7 +67,7 @@ public class DryRunPurchaseHistoryModule {
     try {
       GeneralPurchaseHistoryCrawler crawler = new GeneralPurchaseHistoryCrawler(site, this.webpageService, this.configurationRepository);
       crawler.setConfig(config);
-      GeneralPurchaseHistoryCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClientForDryRun, true);
+      GeneralPurchaseHistoryCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClientForDryRun, true, true);
       LOGGER.info("succeed fetch purchaseHistory for ecSite id = " + accountDAO.getId());
       return new DryRunUtils().toJsonOfDryRunPurchasehistoryModule(crawlerResult.getPurchaseHistoryList(), crawlerResult.getHtmlPathList());
     } catch (Exception e) {

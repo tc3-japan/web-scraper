@@ -274,10 +274,30 @@ public class NavigablePage {
         if (page == null || page.getWebResponse() == null) {
           return null;
         }
-        return webpageService.save(fileName, siteName, page.getWebResponse().getContentAsString());
+        return savePage(fileName, siteName, page.getWebResponse().getContentAsString(), webpageService);
+    }
+
+    public String savePage(String siteName, String type, HtmlPage htmlPage, WebpageService webpageService) {
+      String contents = htmlPage.getWebResponse().getContentAsString();
+      return savePage(siteName, type, "", contents, webpageService);
+    }
+
+    public String savePage(String siteName, String type, NavigablePage navigablePage, WebpageService webpageService) {
+      String contents = navigablePage.getPage().getWebResponse().getContentAsString();
+      return savePage(siteName, type, "", contents, webpageService);
     }
 
     public String savePage(String siteName, String type, String keyword, NavigablePage navigablePage, WebpageService webpageService) {
+      String contents = navigablePage.getPage().getWebResponse().getContentAsString();
+      return savePage(siteName, type, keyword, contents, webpageService);
+    }
+
+    public String savePage(String siteName, String type, String contents, WebpageService webpageService) {
+      return savePage(siteName, type, "", contents, webpageService);
+    }
+
+    public String savePage(String siteName, String type, String keyword, String contents, WebpageService webpageService) {
+      LOGGER.debug("[savePage] in");
       String fileName = siteName + "-" + type;
       if (!StringUtils.isEmpty(keyword)) {
         fileName += "-";
@@ -291,10 +311,9 @@ public class NavigablePage {
       //Characters that cannot be used in folder names are replaced as underscore
       fileName = fileName.replaceAll("[/><?:\"\\*|;]", "_");
       // save html page
-      String contents = navigablePage.getPage().getWebResponse().getContentAsString();
-      contents = convertHtmlCharset(contents);
-      contents = convertToAbsolutePath(contents);
-      return webpageService.save(fileName, siteName, contents, true);
+      String saveContents = convertHtmlCharset(contents);
+      saveContents = convertToAbsolutePath(saveContents);
+      return webpageService.save(fileName, siteName, saveContents, true);
     }
 
     private String convertHtmlCharset(String contents) {

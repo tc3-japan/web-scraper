@@ -25,6 +25,7 @@ import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.common.util.Common;
 import com.topcoder.scraper.lib.navpage.NavigablePage;
 import com.topcoder.scraper.lib.navpage.NavigablePurchaseHistoryPage;
+import com.topcoder.scraper.module.ecunifiedmodule.dryrun.DryRunUtils;
 import com.topcoder.scraper.service.WebpageService;
 
 import lombok.Getter;
@@ -37,7 +38,6 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler{
   private static final Logger LOGGER = LoggerFactory.getLogger(GeneralPurchaseHistoryCrawler.class);
 
   private List<String> savedPathList;
-  private boolean saveHtml;
 
   private List<String> scrapedPageList;
   private List<String> scrapedOrderNumberList;
@@ -79,12 +79,11 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler{
    * @return result
    * @throws IOException if save html failed/parse json failed/get page failed
    */
-  public GeneralPurchaseHistoryCrawlerResult fetchPurchaseHistoryList(TrafficWebClient webClient, boolean saveHtml) throws IOException {
+  public GeneralPurchaseHistoryCrawlerResult fetchPurchaseHistoryList(TrafficWebClient webClient, boolean saveHtml, boolean dryRun) throws IOException {
     LOGGER.debug("[fetchPurchaseHistoryList] in");
 
     webClient.getWebClient().getOptions().setJavaScriptEnabled(true);
     this.webClient = webClient;
-    this.saveHtml = saveHtml;
     this.historyPage = new NavigablePurchaseHistoryPage(this.webClient);
 
     this.purchaseHistoryList = new LinkedList<>();
@@ -97,7 +96,7 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler{
     scrapedPageList.add(purchaseHistoryConfig.getUrl());
 
     try {
-      processPurchaseHistory();
+      processPurchaseHistory(dryRun);
     } catch (DuplicatedException de) {
       LOGGER.info("Scraping duplicated Order Number detected.");
     }
@@ -110,11 +109,15 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler{
    *
    * @throws IOException if save html failed
    */
-  private void processPurchaseHistory() throws IOException, DuplicatedException {
+  private void processPurchaseHistory(boolean dryRun) throws IOException, DuplicatedException {
     LOGGER.debug("[processPurchaseHistory] in");
+    int i = 1;
     while (this.historyPage.getPage() != null) {
-
-      String savedPath = historyPage.savePage(this.site, "purchase-history", "", historyPage, this.webpageService);
+      // if called from dryrun module check over maxcount or not.
+      if (dryRun == true && i >= DryRunUtils.DRY_RUN_MAX_COUNT) {
+        break;
+      }
+      String savedPath = historyPage.savePage(this.site, "purchase-history-list", historyPage, this.webpageService);
       if (savedPath != null) {
         savedPathList.add(savedPath);
       }
@@ -127,6 +130,7 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler{
       List<DomNode> orderList = rootPage.querySelectorAll(purchaseHistoryConfig.getPurchaseOrder().getParent());
       processOrders(orderList, rootPage);
       this.historyPage.setPage(this.gotoNextPage(this.historyPage.getPage(), webClient));
+      i++;
     }
   }
 
@@ -161,7 +165,10 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler{
         orderPage = anchor.click();
         // fetch product by page root
         productList = orderPage.querySelectorAll(orderConfig.getPurchaseProduct().getParent());
-        //this.webpageService.save(this.site + "-test-purchase-history", this.site,  orderPage.getPage().getWebResponse().getContentAsString(), this.saveHtml);
+        String savedPath = this.historyPage.savePage(this.site, "purchase-history-detail", orderPage,  webpageService);
+        if (savedPath != null) {
+          savedPathList.add(savedPath);
+        }
       } else {
         // fetch product by order node
         productList = orderNode.querySelectorAll(orderConfig.getPurchaseProduct().getParent());

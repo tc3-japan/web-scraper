@@ -13,9 +13,8 @@ import com.topcoder.common.model.PurchaseHistory;
  */
 public class DryRunUtils {
 
-  private String ROOT_DIRECTORY = "logs";
   private String PREFIX_PATH = "html";
-  private static int DRY_RUN_MAX_COUNT = 10;
+  public static int DRY_RUN_MAX_COUNT = 10;
 
   /**
    * Called by DryRunPurchasehistoryModule

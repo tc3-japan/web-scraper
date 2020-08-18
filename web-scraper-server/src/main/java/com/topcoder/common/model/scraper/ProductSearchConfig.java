@@ -10,12 +10,13 @@ import lombok.Data;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "url",
-    "group_selector",
-    "selector",
-    "attribute",
-    "regex",
-    "script"
+        "url",
+        "group_selector",
+        "selector",
+        "excluded_selector",
+        "attribute",
+        "regex",
+        "script"
 })
 public class ProductSearchConfig {
     @JsonProperty("url")
@@ -24,12 +25,12 @@ public class ProductSearchConfig {
     private String groupSelector;
     @JsonProperty("selector")
     private String selector;
+    @JsonProperty("excluded_selector")
+    private String excludedSelector;
     @JsonProperty("attribute")
     private String attribute;
     @JsonProperty("regex")
     private String regex;
     @JsonProperty("script")
     private String script;
-    @JsonProperty("excluded_selector")
-    private String excludedSelector;
 }

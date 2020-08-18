@@ -76,7 +76,7 @@
       "modelNo": "Model No",
       "modelNoLabel": "Model No (Label)",
       "janCode": "Jan Code",
-      "productDistributer":"Product Distributer"
+      "productDistributor":"Product Distributor"
     }
   }
 }

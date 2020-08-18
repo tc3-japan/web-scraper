@@ -217,7 +217,6 @@ export default function SearchProductEditor() {
             <div className="mainContentRow">
               <InputField
                 className="alignedInputFieldL"
-                disabled={scriptMode}
                 onChange={
                   (groupSelector) => setData({ ...data, groupSelector })
                 }
@@ -225,7 +224,6 @@ export default function SearchProductEditor() {
                 value={data.groupSelector}
               />
               <TargetButton
-                disabled={scriptMode}
                 selector={data.groupSelector}
                 uuid={heap.uuid.parentSelector}
               />

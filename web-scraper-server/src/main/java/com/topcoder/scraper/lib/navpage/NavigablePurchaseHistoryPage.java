@@ -5,6 +5,7 @@ import static com.topcoder.common.util.HtmlUtils.*;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
@@ -332,8 +333,8 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
    * @param placeHolderNo the placeholder no
    * @return final value
    */
-  public Float scrapeFloat(HtmlPage root, DomNode parent, Selector selector, int placeHolderNo) {
-    return extractFloat(scrapeString(root, parent, selector, placeHolderNo));
+  public Float scrapeFloat(HtmlPage root, DomNode parent, Selector selector, Map<String, Integer> placeHolderNos) {
+    return extractFloat(scrapeString(root, parent, selector, placeHolderNos));
   }
 
   /**
@@ -345,24 +346,14 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
    * @param placeHolderNo the placeholder no
    * @return final value
    */
-  public Date scrapeDate(HtmlPage root, DomNode parent, Selector selector, int placeHolderNo) {
+  public Date scrapeDate(HtmlPage root, DomNode parent, Selector selector, Map<String, Integer> placeHolderNos) {
     try {
-      return DateUtils.fromString(scrapeString(root, parent, selector, placeHolderNo));
+      return DateUtils.fromString(scrapeString(root, parent, selector, placeHolderNos));
     } catch (java.text.ParseException e) {
       LOGGER.debug("[scrapeOrderDate] Could not set date in NavigablePurchaseHistoryPage.java");
       e.printStackTrace();
     }
     return null;
-  }
-
-  /**
-   * check text is valid selector property
-   *
-   * @param property the value
-   * @return the result
-   */
-  public boolean isValid(String property) {
-    return property != null && !property.trim().equals("");
   }
 
   /**
@@ -384,14 +375,14 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
    * @param placeHolderNo the placeholder no
    * @return final value
    */
-  public String scrapeString(HtmlPage root, DomNode parent, Selector selector, int placeHolderNo) {
+  public String scrapeString(HtmlPage root, DomNode parent, Selector selector, Map<String, Integer> placeHolderNos) {
     HtmlElement element;
     if (selector == null) {
       return null;
     }
-    if (isValid(selector.getScript()) && placeHolderNo != DEFAULT_PLACEHOLDER_NO) {
-      String script = createScriptWithPlaceHolderNo(selector.getScript(), placeHolderNo);
-      return executeJavaScript(root, script);
+    if (isValid(selector.getScript())) {
+      String script = selector.getScript();
+      return executeJavaScript(root, script, placeHolderNos);
     }
     if (isValidBool(selector.getFullPath())) {
       element = (root == null ? page : root).querySelector(selector.getElement());
@@ -406,7 +397,7 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
       content = element.getAttribute(selector.getAttribute());
     }
     if (isValid(selector.getRegex())) {
-      content = extract1(content, Pattern.compile(selector.getRegex()));
+      content = extract2(content, Pattern.compile(selector.getRegex()));
     }
     return content;
   }

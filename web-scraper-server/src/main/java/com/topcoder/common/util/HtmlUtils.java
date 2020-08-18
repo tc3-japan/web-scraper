@@ -59,7 +59,7 @@ public class HtmlUtils {
     return null;
   }
   
-  public static String extract(int pos, String text, Pattern pat) {
+  private static String extract(int pos, String text, Pattern pat) {
     if (text == null) {
       return "";
     }
@@ -76,6 +76,17 @@ public class HtmlUtils {
 
   public static String extract1(String text, Pattern pat) {
     return extract(1, text, pat);
+  }
+
+  public static String extract2(String text, Pattern pat) {
+    if (text == null) {
+      return "";
+    }
+    Matcher m = pat.matcher(text);
+    if(m.find()) {
+      return m.group(m.groupCount());
+    }
+    return "";
   }
 
   private static final Pattern PAT_NUM = Pattern.compile("([\\d,-.]+)", Pattern.DOTALL);

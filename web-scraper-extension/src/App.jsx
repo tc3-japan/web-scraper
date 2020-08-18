@@ -160,7 +160,8 @@ export default function App() {
       );
       const baseUrl = await storageGet(BASE_API_KEY) || DEFAULT_API;
       logInfo('test succeed');
-      rsp[1].urls.forEach((url) => {
+      rsp[1].urls.reverse().forEach((url) => {
+        const enocoded = encodeURI(url);
         logInfo(() => (
           <a
             className="urlInLog"
@@ -170,7 +171,7 @@ export default function App() {
               e.preventDefault();
               sendMessageToPage({
                 action: 'openUrl',
-                url: `${baseUrl}/${url}`,
+                url: `${baseUrl}/${enocoded}`,
               });
             }}
           >

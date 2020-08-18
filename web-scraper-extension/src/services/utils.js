@@ -181,7 +181,8 @@ export function convertToBackend(data, type) {
       break;
     default: res = {};
   }
-  delete res.dataType;
+  delete res.data_type;
+  delete res.meta;
   return res;
 }
 

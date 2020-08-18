@@ -53,7 +53,7 @@ public class ProductInfo {
   @JsonProperty("rankings")
   private List<Integer> rankingList = new ArrayList<>();
 
-  @JsonProperty("moedel_no")
+  @JsonProperty("model_no")
   private String modelNo;
 
   @JsonProperty("jan_code")

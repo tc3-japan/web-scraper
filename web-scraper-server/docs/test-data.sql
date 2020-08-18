@@ -75,7 +75,7 @@ SET
                 "regex": ""
             },
             "unit_price": {
-                "element": "div:nth-of-type(2) > div:nth-of-type(4) > span.a-size-small.a-color-price",
+                "element": "div:nth-of-type(2) > div > span.a-size-small.a-color-price",
                 "full_path": false,
                 "attribute": "",
                 "regex": ""
@@ -121,7 +121,7 @@ SET
         "element": "td > table > tbody > tr > td:nth-of-type(2) > a.itemLink",
         "full_path": false,
         "attribute": "href",
-        "regex": ".+item.rakuten.co.jp/([^/]+/[^/]+)/.*"
+        "regex": "rakuten.co.jp/([^/]+/[^/]+)/.*"
       },
       "product_name": {
         "element": "td > table > tbody > tr > td:nth-of-type(2) > a.itemLink",
@@ -183,7 +183,7 @@ SET
                 "full_path": false,
                 "attribute": "href",
                 "regex": "https://.*pagekey=(.*)",
-                "script": "document.querySelector(''#orddtl > div.elItem > ul > li:nth-child({productIndex}) > div > ul > li:nth-child(2) > p > a'').getAttribute(''href'').match(''https://.*order_id=(.*?)-'')[1] + ''/'' + document.querySelector(''#orddtl > div.elItem > ul > li:nth-child({productIndex}) > div > ul > li:nth-child(2) > p > a'').getAttribute(''href'').match(''https://.*pagekey=(.*)'')[1];"
+                "script": "document.querySelector(''input[type=hidden][name=h_sid]'').value + ''/'' + document.querySelector(''#orddtl > div.elItem > ul > li:nth-child({productIndex}) > div > ul > li:nth-child(2) > p > a'').getAttribute(''href'').match(''https://.*pagekey=(.*)'')[1];"
             },
             "product_name": {
                 "element": "div > dl > dd:nth-of-type(1) > a > span",
@@ -239,69 +239,124 @@ insert into web_scraper.configuration (id,site,type,config) values
 SET
 @amazon_product_detail_script = '{
   "url": "https://www.amazon.co.jp/gp/product/{code}/",
-  "product_details": [
+  "product_details":[
     [
       {
-        "item": "unit_price",
-        "selector": "#priceblock_ourprice",
-        "attribute": "",
-        "regex": "",
-        "script": ""
+        "item":"unit_price",
+        "selector":"#priceblock_ourprice",
+        "attribute":"",
+        "regex":"",
+        "script":""
       },
       {
-        "item": "unit_price",
-        "selector": "#MediaMatrix > div > div > ul > li.selected > span > span.a-button-selected > span > a > span > span.a-color-price",
-        "attribute": "",
-        "regex": "",
-        "script": ""
+        "attribute":"",
+        "item":"unit_price",
+        "regex":"",
+        "script":"",
+        "selector":"#priceblock_saleprice"
+      },
+      {
+        "attribute":"",
+        "item":"unit_price",
+        "regex":"",
+        "script":"",
+        "selector":"#priceblock_dealprice"
+      },
+      {
+        "item":"unit_price",
+        "selector":"#MediaMatrix > div > div > ul > li.selected > span > span.a-button-selected > span > a > span > span.a-color-price",
+        "attribute":"",
+        "regex":"",
+        "script":""
+      },
+      {
+        "attribute":"",
+        "item":"unit_price",
+        "regex":"",
+        "script":"",
+        "selector":"#olp-upd-new-freeshipping span.a-color-price"
+      },
+      {
+        "attribute":"",
+        "item":"unit_price",
+        "regex":"",
+        "script":"",
+        "selector":"#olp-upd-new span.a-color-price"
       }
     ],
     [
       {
-        "item": "product_name",
-        "selector": "#productTitle",
-        "attribute": "",
-        "regex": "",
-        "script": ""
+        "item":"product_name",
+        "selector":"#productTitle",
+        "attribute":"",
+        "regex":"",
+        "script":""
       }
     ],
     [
       {
-        "item": "model_no_label",
-        "selector": "#prodDetails > div.wrapper.JPlocale table > tbody > tr.item-model-number > td.value",
-        "attribute": "",
-        "regex": "",
-        "label_selector": "#prodDetails > div.wrapper.JPlocale table > tbody > tr.item-model-number > td.label",
-        "label_value": "メーカー型番",
-        "label_attribute": "",
-        "label_regex": "",
-        "script": ""
+        "item":"model_no_label",
+        "selector":"#prodDetails > div.wrapper.JPlocale table > tbody > tr.item-model-number > td.value",
+        "attribute":"",
+        "regex":"",
+        "label_selector":"#prodDetails > div.wrapper.JPlocale table > tbody > tr.item-model-number > td.label",
+        "label_value":"メーカー型番",
+        "label_attribute":"",
+        "label_regex":"",
+        "script":""
       },
       {
-        "item": "model_no_label",
-        "selector": "#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(3)",
-        "attribute": "",
-        "regex": "",
-        "label_selector": "#detail_bullets_id > table > tbody > tr > td > div > ul > li:nth-child(3) > b",
-        "label_value": "メーカー型番",
-        "label_attribute": "",
-        "label_regex": "",
-        "script": ""
+        "item":"model_no_label",
+        "selector":"#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(3)",
+        "attribute":"",
+        "regex":"",
+        "label_selector":"#detail_bullets_id > table > tbody > tr > td > div > ul > li:nth-child(3) > b",
+        "label_value":"メーカー型番",
+        "label_attribute":"",
+        "label_regex":"",
+        "script":""
       },
       {
-        "item": "model_no_label",
-        "selector": "#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(2)",
-        "attribute": "",
-        "regex": "",
-        "label_selector": "#detail_bullets_id > table > tbody > tr > td > div > ul > li:nth-child(2) > b",
-        "label_value": "メーカー型番",
-        "label_attribute": "",
-        "label_regex": "",
-        "script": ""
+        "item":"model_no_label",
+        "selector":"#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(2)",
+        "attribute":"",
+        "regex":"",
+        "label_selector":"#detail_bullets_id > table > tbody > tr > td > div > ul > li:nth-child(2) > b",
+        "label_value":"メーカー型番",
+        "label_attribute":"",
+        "label_regex":"",
+        "script":""
+      },
+      {
+        "attribute":"",
+        "item":"model_no_label",
+        "regex":"商品モデル番号： (.*)",
+        "script":"",
+        "selector":"#productDetailsTable ul:nth-of-type(1) li:nth-of-type(3)",
+        "label_attribute":"",
+        "label_regex":"",
+        "label_selector":"#productDetailsTable li:nth-of-type(3) b",
+        "label_value":"商品モデル番号："
+      }
+    ],
+    [
+      {
+        "attribute":"",
+        "item":"product_distributor",
+        "regex":"ブランド: (.*)",
+        "script":"",
+        "selector":".zg_hrsr_item span:nth-of-type(1)"
+      },
+      {
+        "attribute":"",
+        "item":"product_distributor",
+        "regex":"",
+        "script":"",
+        "selector":"#bylineInfo"
       }
     ]
   ]
-}',
+ }',
 @rakuten_product_detail_script = '{
   "url": "https://item.rakuten.co.jp/{code}",
   "product_details": [
@@ -335,8 +390,17 @@ SET
         "item": "model_no",
         "selector": ".item_number",
         "attribute": "",
-        "regex": "[p{ASCII}]+",
+        "regex": "^\\\w+-\\\w+$",
         "script": ""
+      }
+    ],
+    [
+      {
+        "attribute":"value",
+        "item":"product_distributor",
+        "regex":"",
+        "script":"",
+        "selector":"form > input[type=hidden][name=sn]"
       }
     ]
   ]
@@ -355,60 +419,60 @@ SET
     ],
     [
       {
-        "item": "product_name",
-        "selector": ".mdItemInfoTitle > h2",
-        "attribute": "",
-        "regex": "",
-        "script": ""
+        "item":"product_name",
+        "selector":".mdItemInfoTitle > h2",
+        "attribute":"",
+        "regex":"",
+        "script":""
       }
     ],
     [
       {
-        "item": "product_distributor",
-        "selector": "dt.elStore > a",
-        "attribute": "",
-        "regex": "",
-        "script": ""
+        "item":"product_distributor",
+        "selector":"dt.elStore > a",
+        "attribute":"",
+        "regex":"",
+        "script":""
       }
     ],
     [
       {
-        "item": "unit_price",
-        "selector": ".elNum",
-        "attribute": "",
-        "regex": "",
-        "script": ""
+        "item":"unit_price",
+        "selector":".elNum",
+        "attribute":"",
+        "regex":"",
+        "script":""
       },
       {
-        "item": "unit_price",
-        "selector": ".ItemPrice_price",
-        "attribute": "",
-        "regex": "",
-        "script": ""
+        "item":"unit_price",
+        "selector":".ItemPrice_price",
+        "attribute":"",
+        "regex":"",
+        "script":""
       },
       {
-        "item": "unit_price",
-        "selector": "p.elPrice:nth-child(2) > em",
-        "attribute": "",
-        "regex": "",
-        "script": ""
+        "item":"unit_price",
+        "selector":"p.elPrice:nth-child(2) > em",
+        "attribute":"",
+        "regex":"",
+        "script":""
       }
     ],
     [
       {
-        "item": "jan_code",
-        "selector": ".mdItemInfoCode > p",
-        "attribute": "",
-        "regex": "[0-9]{13}",
-        "script": ""
+        "item":"jan_code",
+        "selector":".mdItemInfoCode > p",
+        "attribute":"",
+        "regex":"[0-9]{13}",
+        "script":""
       }
     ]
   ]
 }',
 @amazon_product_search_script = '{
   "url": "https://www.amazon.co.jp/s?k={word}",
-  "group_selector": "html > body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(1) > div > div > span:nth-of-type(3) > div:nth-of-type(2)",
-  "selector": "div > div > span > div > div > div:nth-child(3) > h2 > a",
+  "group_selector": "html > body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(1) > div > div span:nth-of-type(3) > div:nth-of-type(2) > div.sg-col-4-of-24.sg-col-4-of-12.sg-col-4-of-36.s-result-item.s-asin.sg-col-4-of-28.sg-col-4-of-16.sg-col.sg-col-4-of-20.sg-col-4-of-32",
+  "selector": "div > span > div > div div:nth-of-type(2) > h2 > a",
   "attribute": "href",
   "regex": "/dp/([A-Z0-9]+)/",
   "script": "",
@@ -416,12 +480,12 @@ SET
 }',
 @rakuten_product_search_script = '{
   "url": "https://search.rakuten.co.jp/search/mall/{word}",
-  "group_selector": "html > body > div.dui-container.main > div.dui-container.content > div.dui-container.searchresults > div",
-  "selector": "div > div:nth-of-type(2) > h2 > a",
+  "group_selector": "html > body > div:nth-of-type(3) > div:nth-of-type(2) > div > div > div.dui-card.searchresultitem",
+  "selector": "div:nth-of-type(2) > h2 > a",
   "attribute": "href",
   "regex": "item.rakuten.co.jp\\\/(.+?\\\/.+?)\\\/",
   "script": "",
-  "excluded_selector": ""
+  "excluded_selector": "div:nth-of-type(2) > h2 > span.dui-tag.-pr"
 }',
 @yahoo_product_search_script = '{
   "url": "https://shopping.yahoo.co.jp/search?p={word}",

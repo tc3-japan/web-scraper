@@ -41,7 +41,9 @@ export default function SearchProductEditor() {
   }
 
   const [data, setData] = useGlobalState('data');
-  const [scriptMode, setScriptMode] = React.useState(false);
+
+  const scriptMode = data && data.isScript;
+  const setScriptMode = (yes) => setData({ ...data, isScript: yes });
 
   const [highlightOwner, setHighlightOwner] = useGlobalState('highlightOwner');
   if (!highlightOwner) heap.selectionsUuid = null;
@@ -50,7 +52,6 @@ export default function SearchProductEditor() {
   const [i18n] = useGlobalState('i18n');
 
   React.useEffect(() => {
-    setScriptMode(!!(data && data.script));
     setExpanded(true);
   }, [dataUuid]);
 

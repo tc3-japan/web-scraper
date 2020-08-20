@@ -288,7 +288,10 @@ function getCommonParent(p1, p2, mode) {
 }
 
 export { GET_COMMON_PARENT_MODES, getCommonParent };
-export const { getPathParent } = selector;
-export const { removeParent } = selector;
-export const { getCommonClass } = selector;
-export const { removeDifferentAndAdditional } = selector;
+export const {
+  getPathParent,
+  removeParent,
+  getCommonClass,
+  removeDifferentAndAdditional,
+  joinSelectors,
+} = selector;

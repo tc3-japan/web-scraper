@@ -172,11 +172,28 @@ function removeDifferentAndAdditional(p1, p2) {
   return parts2.map((p) => p.trim()).join(' > ');
 }
 
+/**
+ * Joins selectors by " > " separator, ignoring empty selectors.
+ * @param  {...string} args Any number of selector strings.
+ * @return {string}
+ */
+function joinSelectors(...args) {
+  let res = '';
+  args.forEach((selector) => {
+    if (selector) {
+      if (res) res += ' > ';
+      res += selector;
+    }
+  });
+  return res;
+}
+
 module.exports = {
   GET_COMMON_PARENT_MODES,
   getCommonParent,
   getCommonClass,
   getPathParent,
+  joinSelectors,
   removeDifferentAndAdditional,
   removeParent,
 };

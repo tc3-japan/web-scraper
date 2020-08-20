@@ -21,6 +21,7 @@ import {
   GET_COMMON_PARENT_MODES,
   getCommonClass,
   getCommonParent,
+  joinSelectors,
   sendMessageToPage,
 } from '../../services/utils';
 
@@ -239,7 +240,7 @@ export default function SearchProductEditor() {
               />
               <TargetButton
                 disabled={scriptMode}
-                selector={data.selector}
+                selector={joinSelectors(data.groupSelector, data.selector)}
                 uuid={heap.uuid.selector}
               />
               <div className="seq" />
@@ -248,11 +249,7 @@ export default function SearchProductEditor() {
                 disabled={scriptMode}
                 inputClassName="alignedInputFieldR"
                 onChange={(attribute) => setData({ ...data, attribute })}
-                selector={
-                  data.groupSelector
-                    ? `${data.groupSelector} > ${data.selector}`
-                    : data.selector
-                }
+                selector={joinSelectors(data.groupSelector, data.selector)}
                 tipClassName="alignedTipR"
               />
             </div>
@@ -268,7 +265,9 @@ export default function SearchProductEditor() {
               />
               <TargetButton
                 disabled={scriptMode}
-                selector={data.excludedSelector}
+                selector={
+                  joinSelectors(data.groupSelector, data.excludedSelector)
+                }
                 uuid={heap.uuid.excludedSelector}
               />
               <div className="seq" />
@@ -279,9 +278,7 @@ export default function SearchProductEditor() {
                 onChange={(regex) => setData({ ...data, regex })}
                 regex={data.regex}
                 selector={
-                  data.groupSelector
-                    ? `${data.groupSelector} > ${data.selector}`
-                    : data.selector
+                  joinSelectors(data.groupSelector, data.selector)
                 }
                 tipClassName="alignedTipR"
               />

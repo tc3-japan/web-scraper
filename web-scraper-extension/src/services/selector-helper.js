@@ -76,6 +76,7 @@ function getCommonParent(
             if (parts1[j] === parts2[j]) commonParts.push(parts1[j]);
             else commonParts.push(getTag(parts1[j]));
           }
+          break;
         }
       }
       break;

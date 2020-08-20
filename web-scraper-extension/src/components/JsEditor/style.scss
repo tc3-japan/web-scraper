@@ -3,6 +3,13 @@
 .JsEditor {
   width: 100%;
 
+  .resizeHandle {
+    border-top: 1px solid dimgray;
+    cursor: ns-resize;
+    width: 100%;
+    height: 5px;
+  }
+
   .mainContentRow {
     display: flex;
     margin: 5px 0;

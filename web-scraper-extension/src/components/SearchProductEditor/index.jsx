@@ -26,6 +26,7 @@ import {
 } from '../../services/utils';
 
 import './style.scss';
+import { removeDifferentAndAdditional } from '../../services/selector-helper';
 
 export default function SearchProductEditor() {
   const { current: heap } = React.useRef({});
@@ -109,7 +110,10 @@ export default function SearchProductEditor() {
         } else ({ groupSelector } = data);
 
         const gl = groupSelector.split(' > ').length;
-        let child = heap.selections[0].split(' > ').slice(gl).join(' > ');
+        let child = removeDifferentAndAdditional(
+          heap.selections[0],
+          heap.selections[1],
+        ).split(' > ').slice(gl).join(' > ');
         child += getCommonClass([
           await getClass(heap.selections[0]),
           await getClass(heap.selections[1]),

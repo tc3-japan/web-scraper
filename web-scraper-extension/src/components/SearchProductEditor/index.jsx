@@ -22,11 +22,11 @@ import {
   getCommonClass,
   getCommonParent,
   joinSelectors,
+  removeDifferentAndAdditional,
   sendMessageToPage,
 } from '../../services/utils';
 
 import './style.scss';
-import { removeDifferentAndAdditional } from '../../services/selector-helper';
 
 export default function SearchProductEditor() {
   const { current: heap } = React.useRef({});

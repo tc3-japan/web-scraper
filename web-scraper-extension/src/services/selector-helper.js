@@ -34,7 +34,7 @@ function getNthOfType(element) {
   return res;
 }
 
-const GET_COMMON_PARENT_MODES = {
+export const GET_COMMON_PARENT_MODES = {
   FROM_BEG: 'FROM_BEG',
   FROM_END: 'FROM_END',
 };
@@ -71,7 +71,7 @@ function withoutAdditionalArray(str1, str2) {
  * @param getI18T get i18t
  * @param {GET_COMMON_PARENT_MODES} [mode=GET_COMMON_PARENT_MODES.FROM_BEG]
  */
-function getCommonParent(
+export function getCommonParent(
   p1,
   p2,
   getI18T,
@@ -134,7 +134,7 @@ function getCommonParent(
  * @param p1 the path 1
  * @param p2 the path 2
  */
-function getPathParent(p1, p2) {
+export function getPathParent(p1, p2) {
   const parts1 = p1.split('>');
   const parts2 = p2.split('>');
   const minLength = Math.min(parts1.length, parts2.length);
@@ -157,7 +157,7 @@ function getPathParent(p1, p2) {
  * @param parent the parent path
  * @param path the current path
  */
-function removeParent(parent, path) {
+export function removeParent(parent, path) {
   const parentParts = parent.split('>');
   const parts = path.split('>');
   for (let i = 0; i < parentParts.length; i++) {
@@ -175,7 +175,7 @@ function removeParent(parent, path) {
  * @param classes the classes
  * @return {string}
  */
-function getCommonClass(classes) {
+export function getCommonClass(classes) {
   if (!classes || classes.length <= 0) {
     return '';
   }
@@ -199,7 +199,7 @@ function getCommonClass(classes) {
  * @param p2 the path 2
  * @return {string}
  */
-function removeDifferentAndAdditional(p1, p2) {
+export function removeDifferentAndAdditional(p1, p2) {
   const parts1 = p1.split('>');
   const parts2 = p2.split('>');
   // part2 length should = part2 length
@@ -220,7 +220,7 @@ function removeDifferentAndAdditional(p1, p2) {
  * @param  {...string} args Any number of selector strings.
  * @return {string}
  */
-function joinSelectors(...args) {
+export function joinSelectors(...args) {
   let res = '';
   args.forEach((selector) => {
     if (selector) {
@@ -230,13 +230,3 @@ function joinSelectors(...args) {
   });
   return res;
 }
-
-module.exports = {
-  GET_COMMON_PARENT_MODES,
-  getCommonParent,
-  getCommonClass,
-  getPathParent,
-  joinSelectors,
-  removeDifferentAndAdditional,
-  removeParent,
-};

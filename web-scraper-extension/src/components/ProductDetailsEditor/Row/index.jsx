@@ -312,7 +312,9 @@ function Row({
   const [i18n] = useGlobalState('i18n');
   const [expanded, setExpanded] = useState(false);
   const [highlightOwner, setHighlightOwner] = useGlobalState('highlightOwner');
-  const [scriptMode, setScriptMode] = useState(false);
+
+  const scriptMode = row.isScript;
+  const setScriptMode = (yes) => updateRow({ ...row, isScript: yes });
 
   useEffect(() => {
     const onMessage = (message) => {
@@ -379,6 +381,7 @@ Row.propTypes = {
   row: PT.shape({
     attribute: PT.string,
     item: PT.string,
+    isScript: PT.bool,
     regex: PT.string,
     selector: PT.string,
     script: PT.string,

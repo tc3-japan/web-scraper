@@ -18,7 +18,9 @@ import {
   sendMessageToPage,
   getCommonParent,
   removeParent,
-  getPathParent, getCommonClass, removeDifferentAndAdditional,
+  getPathParent,
+  getCommonClass,
+  removeDifferentAndAdditional,
 } from '../../services/utils';
 
 import './style.scss';

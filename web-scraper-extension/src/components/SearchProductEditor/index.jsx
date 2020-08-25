@@ -21,6 +21,8 @@ import {
   GET_COMMON_PARENT_MODES,
   getCommonClass,
   getCommonParent,
+  joinSelectors,
+  removeDifferentAndAdditional,
   sendMessageToPage,
 } from '../../services/utils';
 
@@ -41,7 +43,9 @@ export default function SearchProductEditor() {
   }
 
   const [data, setData] = useGlobalState('data');
-  const [scriptMode, setScriptMode] = React.useState(false);
+
+  const scriptMode = data && data.isScript;
+  const setScriptMode = (yes) => setData({ ...data, isScript: yes });
 
   const [highlightOwner, setHighlightOwner] = useGlobalState('highlightOwner');
   if (!highlightOwner) heap.selectionsUuid = null;
@@ -50,7 +54,6 @@ export default function SearchProductEditor() {
   const [i18n] = useGlobalState('i18n');
 
   React.useEffect(() => {
-    setScriptMode(!!(data && data.script));
     setExpanded(true);
   }, [dataUuid]);
 
@@ -107,7 +110,10 @@ export default function SearchProductEditor() {
         } else ({ groupSelector } = data);
 
         const gl = groupSelector.split(' > ').length;
-        let child = heap.selections[0].split(' > ').slice(gl).join(' > ');
+        let child = removeDifferentAndAdditional(
+          heap.selections[0],
+          heap.selections[1],
+        ).split(' > ').slice(gl).join(' > ');
         child += getCommonClass([
           await getClass(heap.selections[0]),
           await getClass(heap.selections[1]),
@@ -238,7 +244,7 @@ export default function SearchProductEditor() {
               />
               <TargetButton
                 disabled={scriptMode}
-                selector={data.selector}
+                selector={joinSelectors(data.groupSelector, data.selector)}
                 uuid={heap.uuid.selector}
               />
               <div className="seq" />
@@ -247,11 +253,7 @@ export default function SearchProductEditor() {
                 disabled={scriptMode}
                 inputClassName="alignedInputFieldR"
                 onChange={(attribute) => setData({ ...data, attribute })}
-                selector={
-                  data.groupSelector
-                    ? `${data.groupSelector} > ${data.selector}`
-                    : data.selector
-                }
+                selector={joinSelectors(data.groupSelector, data.selector)}
                 tipClassName="alignedTipR"
               />
             </div>
@@ -267,7 +269,9 @@ export default function SearchProductEditor() {
               />
               <TargetButton
                 disabled={scriptMode}
-                selector={data.excludedSelector}
+                selector={
+                  joinSelectors(data.groupSelector, data.excludedSelector)
+                }
                 uuid={heap.uuid.excludedSelector}
               />
               <div className="seq" />
@@ -278,9 +282,7 @@ export default function SearchProductEditor() {
                 onChange={(regex) => setData({ ...data, regex })}
                 regex={data.regex}
                 selector={
-                  data.groupSelector
-                    ? `${data.groupSelector} > ${data.selector}`
-                    : data.selector
+                  joinSelectors(data.groupSelector, data.selector)
                 }
                 tipClassName="alignedTipR"
               />

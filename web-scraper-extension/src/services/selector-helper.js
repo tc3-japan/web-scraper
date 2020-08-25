@@ -19,10 +19,50 @@ function getTag(element) {
   return e;
 }
 
-const GET_COMMON_PARENT_MODES = {
+/**
+ * Gets :nth-of-type(n)
+ * @param {string} element Selector element.
+ * @return {string} :nth-of-type(n) segment of element, or undefined, if
+ *  the element is undefined, or does not have the segment.
+ */
+function getNthOfType(element) {
+  let res;
+  if (element) {
+    const m = element.match(/:nth-of-type\(\d*\)/);
+    if (m) [res] = m;
+  }
+  return res;
+}
+
+export const GET_COMMON_PARENT_MODES = {
   FROM_BEG: 'FROM_BEG',
   FROM_END: 'FROM_END',
 };
+
+/**
+ * Given two selector fragments, it checks whether they have :nth-of-type(n)
+ * components. If both do have them, or both does not have them, it returns
+ * both fragments as is. If only one of the fragments has :nth-of-type(n)
+ * component, then it returns both fragments with :nth-of-type(n) stripped
+ * from the fragment having it.
+ * @param {string} str1
+ * @param {string} str2
+ * @return {string[]} Array of two elements, generated as described above.
+ */
+function withoutAdditionalArray(str1, str2) {
+  const res = [str1, str2];
+  const nth1 = getNthOfType(str1);
+  const nth2 = getNthOfType(str2);
+
+  // True if, and only if, one of fragments has :nth-of-type(n) component,
+  // and the other does not have it.
+  if (!nth1 !== !nth2) {
+    if (nth1) res[0] = str1.replace(nth1, '');
+    else res[1] = str2.replace(nth2, '');
+  }
+
+  return res;
+}
 
 /**
  * get common parent
@@ -31,7 +71,7 @@ const GET_COMMON_PARENT_MODES = {
  * @param getI18T get i18t
  * @param {GET_COMMON_PARENT_MODES} [mode=GET_COMMON_PARENT_MODES.FROM_BEG]
  */
-function getCommonParent(
+export function getCommonParent(
   p1,
   p2,
   getI18T,
@@ -60,10 +100,11 @@ function getCommonParent(
   switch (mode) {
     case GET_COMMON_PARENT_MODES.FROM_BEG: {
       for (let i = 0; i < length; i++) {
-        if (parts1[i] === parts2[i]) {
-          commonParts.push(parts1[i]);
+        const [pp1, pp2] = withoutAdditionalArray(parts1[i], parts2[i]);
+        if (pp1 === pp2) {
+          commonParts.push(pp1);
         } else {
-          commonParts.push(getTag(parts1[i]));
+          commonParts.push(getTag(pp1));
           break;
         }
       }
@@ -71,11 +112,14 @@ function getCommonParent(
     }
     case GET_COMMON_PARENT_MODES.FROM_END: {
       for (let i = length - 1; i >= 0; --i) {
-        if (parts1[i] !== parts2[i]) {
+        let [pp1, pp2] = withoutAdditionalArray(parts1[i], parts2[i]);
+        if (pp1 !== pp2) {
           for (let j = 0; j <= i; ++j) {
-            if (parts1[j] === parts2[j]) commonParts.push(parts1[j]);
-            else commonParts.push(getTag(parts1[j]));
+            [pp1, pp2] = withoutAdditionalArray(parts1[j], parts2[j]);
+            if (pp1 === pp2) commonParts.push(pp1);
+            else commonParts.push(getTag(pp2));
           }
+          break;
         }
       }
       break;
@@ -90,7 +134,7 @@ function getCommonParent(
  * @param p1 the path 1
  * @param p2 the path 2
  */
-function getPathParent(p1, p2) {
+export function getPathParent(p1, p2) {
   const parts1 = p1.split('>');
   const parts2 = p2.split('>');
   const minLength = Math.min(parts1.length, parts2.length);
@@ -113,7 +157,7 @@ function getPathParent(p1, p2) {
  * @param parent the parent path
  * @param path the current path
  */
-function removeParent(parent, path) {
+export function removeParent(parent, path) {
   const parentParts = parent.split('>');
   const parts = path.split('>');
   for (let i = 0; i < parentParts.length; i++) {
@@ -131,7 +175,7 @@ function removeParent(parent, path) {
  * @param classes the classes
  * @return {string}
  */
-function getCommonClass(classes) {
+export function getCommonClass(classes) {
   if (!classes || classes.length <= 0) {
     return '';
   }
@@ -155,7 +199,7 @@ function getCommonClass(classes) {
  * @param p2 the path 2
  * @return {string}
  */
-function removeDifferentAndAdditional(p1, p2) {
+export function removeDifferentAndAdditional(p1, p2) {
   const parts1 = p1.split('>');
   const parts2 = p2.split('>');
   // part2 length should = part2 length
@@ -171,11 +215,18 @@ function removeDifferentAndAdditional(p1, p2) {
   return parts2.map((p) => p.trim()).join(' > ');
 }
 
-module.exports = {
-  GET_COMMON_PARENT_MODES,
-  getCommonParent,
-  getCommonClass,
-  getPathParent,
-  removeDifferentAndAdditional,
-  removeParent,
-};
+/**
+ * Joins selectors by " > " separator, ignoring empty selectors.
+ * @param  {...string} args Any number of selector strings.
+ * @return {string}
+ */
+export function joinSelectors(...args) {
+  let res = '';
+  args.forEach((selector) => {
+    if (selector) {
+      if (res) res += ' > ';
+      res += selector;
+    }
+  });
+  return res;
+}

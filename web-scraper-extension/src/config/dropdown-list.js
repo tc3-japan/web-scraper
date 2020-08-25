@@ -59,5 +59,5 @@ export const PRODUCT_DETAILS_DROPDOWN = [
   { label: t('productDetails.modelNo'), value: 'model_no' },
   { label: t('productDetails.modelNoLabel'), value: 'model_no_label' },
   { label: t('productDetails.janCode'), value: 'jan_code' },
-  { label: t('productDetails.productDistributor'), value: 'product_distributor', },
+  { label: t('productDetails.productDistributor'), value: 'product_distributor' },
 ];

@@ -2,7 +2,6 @@ import _ from 'lodash';
 import React from 'react';
 import ReactDropdown from 'react-dropdown';
 import PT from 'prop-types';
-import { useGlobalState } from '@dr.pogodin/react-global-state';
 
 import AttributeField from '../AttributeField';
 import Button from '../Button';
@@ -31,15 +30,8 @@ export default function ExpandRow({
   path,
   row,
 }) {
-  const [dataUuid] = useGlobalState('dataUuid');
-
   const expanded = advancedExpanded ? _.get(advancedExpanded, path) : false;
-
-  const [scriptMode, setScriptMode] = React.useState(false);
-
-  React.useEffect(() => {
-    setScriptMode(!!row.script);
-  }, [dataUuid]);
+  const scriptMode = row.is_script;
 
   const options = _.filter(
     JSON_DROPDOWN,
@@ -126,7 +118,7 @@ export default function ExpandRow({
             <div className="row">
               <Checkbox
                 label={t('editor.script')}
-                onChange={() => setScriptMode(!scriptMode)}
+                onChange={() => onUpdate(`${path}.is_script`, !scriptMode)}
                 value={scriptMode}
               />
             </div>
@@ -157,6 +149,7 @@ ExpandRow.propTypes = {
     attribute: PT.string,
     element: PT.string,
     full_path: PT.bool,
+    is_script: PT.bool,
     regex: PT.string,
     script: PT.string,
     type: PT.string,

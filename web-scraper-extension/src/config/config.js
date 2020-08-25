@@ -22,5 +22,5 @@ export const I18_CONFIG = {
 /**
  * default base api
  */
-//export const DEFAULT_API = 'http://127.0.0.1:8085/api/v1/scrapers';
+// export const DEFAULT_API = 'http://127.0.0.1:8085/api/v1/scrapers';
 export const DEFAULT_API = 'https://scraper-stub-api.herokuapp.com/scrapers';

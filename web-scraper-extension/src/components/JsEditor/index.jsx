@@ -5,6 +5,7 @@
 
 import _ from 'lodash';
 import CodeMirror from 'codemirror';
+import cmResize from 'cm-resize';
 import PT from 'prop-types';
 import React from 'react';
 import { v4 as uuid } from 'uuid';
@@ -78,6 +79,18 @@ export default function JsEditor({
         onChange={_.noop}
         ref={scriptEditorHandler}
         value={script}
+      />
+      <div
+        className="resizeHandle"
+        ref={(node) => {
+          if (node && heap.scriptEditor) {
+            cmResize(heap.scriptEditor, {
+              resizableWidth: false,
+              resizableHeight: true,
+              handle: node,
+            });
+          }
+        }}
       />
       <div className="mainContentRow">
         <Button

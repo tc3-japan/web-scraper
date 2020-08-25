@@ -20,6 +20,15 @@
     this.messages = {};
   };
 
+  /**
+   * Prevents any event consequences.
+   */
+  const blocker = (e) => {
+    e.stopImmediatePropagation();
+    e.stopPropagation();
+    e.preventDefault();
+  };
+
   const templateHtml = `<template class='tl-template'>
 <style>
 .tl-wrap {
@@ -133,21 +142,12 @@
       let next = target;
       const elements = [];
 
-      const blocker = (e) => {
-        e.stopImmediatePropagation();
-        e.stopPropagation();
-        e.preventDefault();
-      };
-
       while (next) {
         if (next.classList && !next.classList.contains(blockEvent)) {
           if (next === target) {
             next.classList.add(blockEvent);
           }
           const context = { e: next };
-          if (next.tagName.toLowerCase() === 'a') {
-            next.addEventListener('click', blocker);
-          }
           elements.push(context);
         }
         next = next.parentNode;
@@ -156,9 +156,6 @@
         for (let i = 0; i < elements.length; i++) {
           const ele = elements[i].e;
           ele.classList.remove(blockEvent);
-          if (ele.tagName.toLowerCase() === 'a') {
-            ele.removeEventListener('click', blocker);
-          }
         }
       }, 2000);
     },
@@ -203,6 +200,7 @@
       if (this.forbidden.indexOf(this.$target) !== -1) return;
       this.$cacheEl = this.$target;
       this.layout();
+      blocker(e);
     },
 
     // redraw overlay
@@ -350,7 +348,9 @@
     },
 
     registerEvents() {
-      document.addEventListener('mousemove', this.log);
+      document.addEventListener('click', blocker, true);
+      document.addEventListener('mousemove', this.log, true);
+      document.addEventListener('mouseover', blocker, true);
       window.addEventListener('mousedown', this.mousedown);
       document.addEventListener('scroll', this.layout);
       window.addEventListener('resize', () => {
@@ -361,8 +361,12 @@
     deactivate() {
       if (this.$host) {
         this.$wrap.classList.add('-out');
-        document.removeEventListener('mousemove', this.log);
-        window.removeEventListener('mousedown', this.mousedown);
+        setTimeout(() => {
+          document.removeEventListener('click', blocker, true);
+          document.removeEventListener('mousemove', this.log, true);
+          document.removeEventListener('mouseover', blocker, true);
+          window.removeEventListener('mousedown', this.mousedown);
+        }, 100);
         document.body.removeChild(this.$host);
         this.highlightNodes = [];
         this.$target = null;

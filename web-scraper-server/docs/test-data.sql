@@ -21,74 +21,91 @@ delete from web_scraper.ec_site_account;
 delete from web_scraper.user;
 
 delete from web_scraper.configuration;
-
 SET
 @amazon_purchase_history_script = '
 {
-    "url": "https://www.amazon.co.jp/gp/your-account/order-history?opt=ab&digitalOrders=1&unifiedOrders=1&returnTo=&orderFilter=",
-    "purchase_order": {
-        "url_element": "",
-        "parent": "html > body > div > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(5) > div.a-box-group.a-spacing-base.order",
-        "order_number": {
-            "element": "div:nth-of-type(1) > div > div > div > div:nth-of-type(2) > div:nth-of-type(1) > span:nth-of-type(2).a-color-secondary.value",
-            "full_path": false,
-            "attribute": "",
-            "regex": ""
-        },
-        "order_date": {
-            "element": "div:nth-of-type(1) > div > div > div > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(2) > span.a-color-secondary.value",
-            "full_path": false,
-            "attribute": "",
-            "regex": ""
-        },
-        "total_amount": {
-            "element": "div:nth-of-type(1) > div > div > div > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(2) > span.a-color-secondary.value",
-            "full_path": false,
-            "attribute": "",
-            "regex": ""
-        },
-        "delivery_status": {
-            "element": "div:nth-of-type(2) > div > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) > span.js-shipment-info.aok-hidden",
-            "full_path": false,
-            "attribute": "data-yoshortstatuscode",
-            "regex": ""
-        },
-        "purchase_product": {
-            "url_element": "",
-            "parent": "div > div > div > div > div:nth-of-type(1) > div > div > div.a-fixed-left-grid-inner",
-            "product_code": {
-                "element": "div:nth-of-type(2) > div:nth-of-type(1) > a.a-link-normal",
-                "full_path": false,
-                "attribute": "href",
-                "regex": "/gp/product/([A-Z0-9]+)/"
-            },
-            "product_name": {
-                "element": "div:nth-of-type(2) > div:nth-of-type(1) > a.a-link-normal",
-                "full_path": false,
-                "attribute": "",
-                "regex": ""
-            },
-            "product_quantity": {
-                "element": "div:nth-of-type(1) > div > span.item-view-qty",
-                "full_path": false,
-                "attribute": "",
-                "regex": ""
-            },
-            "unit_price": {
-                "element": "div:nth-of-type(2) > div > span.a-size-small.a-color-price",
-                "full_path": false,
-                "attribute": "",
-                "regex": ""
-            },
-            "product_distributor": {
-                "element": "div:nth-of-type(2) > div:nth-of-type(2) > span.a-size-small.a-color-secondary",
-                "full_path": false,
-                "attribute": "",
-                "regex": ""
-            }
-       }
+  "url": "https://www.amazon.co.jp/gp/your-account/order-history?opt=ab&digitalOrders=1&unifiedOrders=1&returnTo=&orderFilter=",
+  "purchase_order": {
+    "url_element": "",
+    "parent": "html > body > div > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(5) > div.a-box-group.a-spacing-base.order",
+    "order_number": {
+      "element": "div:nth-of-type(1) > div > div > div > div:nth-of-type(2) > div:nth-of-type(1) > span:nth-of-type(2).a-color-secondary.value",
+      "full_path": false,
+      "attribute": "",
+      "regex": "",
+      "is_script": false,
+      "script": ""
     },
-    "next_url_element": ".a-last [href]"
+    "order_date": {
+      "element": "div:nth-of-type(1) > div > div > div > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(2) > span.a-color-secondary.value",
+      "full_path": false,
+      "attribute": "",
+      "regex": "",
+      "is_script": false,
+      "script": ""
+    },
+    "total_amount": {
+      "element": "div:nth-of-type(1) > div > div > div > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(2) > span.a-color-secondary.value",
+      "full_path": false,
+      "attribute": "",
+      "regex": "",
+       "is_script": false,
+       "script": ""
+     },
+    "delivery_status": {
+      "element": "div:nth-of-type(2) > div > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(2) > span.js-shipment-info.aok-hidden",
+      "full_path": false,
+      "attribute": "data-yoshortstatuscode",
+      "regex": "",
+      "is_script": false,
+      "script": ""
+    },
+    "purchase_product": {
+      "url_element": "",
+      "parent": "div > div > div > div > div:nth-of-type(1) > div > div > div.a-fixed-left-grid-inner",
+      "product_code": {
+        "element": "div:nth-of-type(2) > div:nth-of-type(1) > a.a-link-normal",
+        "full_path": false,
+        "attribute": "href",
+        "regex": "/gp/product/([A-Z0-9]+)/",
+        "is_script": false,
+        "script": ""
+      },
+      "product_name": {
+        "element": "div:nth-of-type(2) > div:nth-of-type(1) > a.a-link-normal",
+        "full_path": false,
+        "attribute": "",
+        "regex": "",
+         "is_script": false,
+         "script": ""
+       },
+      "product_quantity": {
+        "element": "div:nth-of-type(1) > div > span.item-view-qty",
+        "full_path": false,
+        "attribute": "",
+        "regex": "",
+        "is_script": false,
+        "script": ""
+      },
+      "unit_price": {
+        "element": "div:nth-of-type(2) > div > span.a-size-small.a-color-price",
+        "full_path": false,
+        "attribute": "",
+        "regex": "",
+        "is_script": false,
+        "script": ""
+      },
+      "product_distributor": {
+        "element": "div:nth-of-type(2) > div:nth-of-type(2) > span.a-size-small.a-color-secondary",
+        "full_path": false,
+        "attribute": "",
+        "regex": "",
+        "is_script": false,
+        "script": ""
+      }
+     }
+  },
+  "next_url_element": ".a-last [href]"
 }
 ',
 @rakuten_purchase_history_script = '
@@ -100,13 +117,17 @@ SET
       "element": "td:nth-of-type(1) > div > ul:nth-of-type(1) > li:nth-of-type(2) > span.idNum",
       "full_path": false,
       "attribute": "",
-      "regex": ""
+      "regex": "",
+      "is_script": false,
+      "script": ""
     },
     "order_date": {
       "element": "td:nth-of-type(1) > div > ul:nth-of-type(1) > li.purchaseDate",
       "full_path": false,
       "attribute": "",
-      "regex": ""
+      "regex": "",
+      "is_script": false,
+      "script": ""
     },
     "purchase_product": {
       "url_element": "td:nth-of-type(1) > div > ul:nth-of-type(1) > li:nth-of-type(4) > a.detail",
@@ -115,37 +136,49 @@ SET
         "element": "html > body > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-type(2) > div > div:nth-of-type(3) > table:nth-of-type(2) > tbody > tr > td:nth-of-type(3) > table > tbody > tr > td.netTot",
         "full_path": true,
         "attribute": "",
-        "regex": ""
+        "regex": "",
+        "is_script": false,
+        "script": ""
       },
       "product_code": {
         "element": "td > table > tbody > tr > td:nth-of-type(2) > a.itemLink",
         "full_path": false,
         "attribute": "href",
-        "regex": "rakuten.co.jp/([^/]+/[^/]+)/.*"
+        "regex": "rakuten.co.jp/([^/]+/[^/]+)/.*",
+        "is_script": false,
+        "script": ""
       },
       "product_name": {
         "element": "td > table > tbody > tr > td:nth-of-type(2) > a.itemLink",
         "full_path": false,
         "attribute": "",
-        "regex": ""
+        "regex": "",
+        "is_script": false,
+        "script": ""
       },
       "product_quantity": {
         "element": "td.widthQuantity.taRight",
         "full_path": false,
         "attribute": "",
-        "regex": ""
+        "regex": "",
+        "is_script": false,
+        "script": ""
       },
       "unit_price": {
         "element": "td.widthPrice.taRight",
         "full_path": false,
         "attribute": "",
-        "regex": ""
+        "regex": "",
+        "is_script": false,
+        "script": ""
       },
       "product_distributor": {
         "element": "html > body > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-type(2) > div > div:nth-of-type(1) > table > tbody > tr:nth-of-type(1) > td:nth-of-type(2) > p > a",
         "full_path": true,
         "attribute": "",
-        "regex": ""
+        "regex": "",
+        "is_script": false,
+        "script": ""
       }
     }
   },
@@ -154,64 +187,79 @@ SET
 ',
 @yahoo_purchase_history_script = '
 {
-    "url": "https://odhistory.shopping.yahoo.co.jp/cgi-bin/history-list?sc_i=shp_pc_my_MHD_order_history",
-    "purchase_order": {
-        "parent": "html > body > div:nth-of-type(1) > div > div:nth-of-type(2) > div > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(2) > ul > li",
-        "order_number": {
-            "element": "div:nth-of-type(2) > ul > li > ul:nth-of-type(1) > li:nth-of-type(2) > dl > dd",
-            "full_path": false,
-            "attribute": "",
-            "regex": ""
-        },
-        "order_date": {
-            "element": "div:nth-of-type(1) > p:nth-of-type(1) > span",
-            "full_path": false,
-            "attribute": "",
-            "regex": ""
-        },
-        "purchase_product": {
-            "url_element": "div:nth-of-type(2) > ul > li > ul:nth-of-type(3) > li:nth-of-type(1) > a",
-            "parent": "html > body > div:nth-of-type(1) > div > div:nth-of-type(2) > div > div:nth-of-type(1) > div > div:nth-of-type(3) > div:nth-of-type(2) > ul > li",
-            "total_amount": {
-                "element": "html > body > div:nth-of-type(1) > div > div:nth-of-type(2) > div > div:nth-of-type(2) > div > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(2) > ul > li.elSum > dl > dd",
-                "full_path": true,
-                "attribute": "",
-                "regex": ""
-            },
-            "product_code": {
-                "element": "div > ul > li:nth-of-type(2) > p > a",
-                "full_path": false,
-                "attribute": "href",
-                "regex": "https://.*pagekey=(.*)",
-                "script": "document.querySelector(''input[type=hidden][name=h_sid]'').value + ''/'' + document.querySelector(''#orddtl > div.elItem > ul > li:nth-child({productIndex}) > div > ul > li:nth-child(2) > p > a'').getAttribute(''href'').match(''https://.*pagekey=(.*)'')[1];"
-            },
-            "product_name": {
-                "element": "div > dl > dd:nth-of-type(1) > a > span",
-                "full_path": false,
-                "attribute": "",
-                "regex": ""
-            },
-            "product_quantity": {
-                "element": "div > dl > dd > span:nth-of-type(2).elNum",
-                "full_path": false,
-                "attribute": "",
-                "regex": ""
-            },
-            "unit_price": {
-                "element": "div > dl > dd > span:nth-of-type(1).elPrice",
-                "full_path": false,
-                "attribute": "",
-                "regex": ""
-            },
-            "product_distributor": {
-                "element": "html > body > div:nth-of-type(1) > div > div:nth-of-type(2) > div > div:nth-of-type(1) > div > div > div:nth-of-type(2) > ul:nth-of-type(1) > li:nth-of-type(1) > a",
-                "full_path": true,
-                "attribute": "",
-                "regex": ""
-            }
-       }
+  "url": "https://odhistory.shopping.yahoo.co.jp/cgi-bin/history-list?sc_i=shp_pc_my_MHD_order_history",
+  "purchase_order": {
+    "parent": "html > body > div:nth-of-type(1) > div > div:nth-of-type(2) > div > div:nth-of-type(1) > div > div:nth-of-type(1) > div:nth-of-type(2) > ul > li",
+    "order_number": {
+      "element": "div:nth-of-type(2) > ul > li > ul:nth-of-type(1) > li:nth-of-type(2) > dl > dd",
+      "full_path": false,
+      "attribute": "",
+      "regex": "",
+      "is_script": false,
+      "script": ""
     },
-    "next_url_element": "html > body > div:nth-of-type(1) > div > div:nth-of-type(2) > div > div:nth-of-type(1) > div > div:nth-of-type(2) > div > ul > li:nth-of-type(2) > a"
+    "order_date": {
+      "element": "div:nth-of-type(1) > p:nth-of-type(1) > span",
+      "full_path": false,
+      "attribute": "",
+      "regex": "",
+      "is_script": false,
+      "script": ""
+    },
+    "purchase_product": {
+      "url_element": "div:nth-of-type(2) > ul > li > ul:nth-of-type(3) > li:nth-of-type(1) > a",
+      "parent": "html > body > div:nth-of-type(1) > div > div:nth-of-type(2) > div > div:nth-of-type(1) > div > div:nth-of-type(3) > div:nth-of-type(2) > ul > li",
+      "total_amount": {
+        "element": "html > body > div:nth-of-type(1) > div > div:nth-of-type(2) > div > div:nth-of-type(2) > div > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(2) > ul > li.elSum > dl > dd",
+        "full_path": true,
+        "attribute": "",
+        "regex": "",
+        "is_script": false,
+        "script": ""
+      },
+      "product_code": {
+        "element": "div > ul > li:nth-of-type(2) > p > a",
+        "full_path": false,
+        "attribute": "href",
+        "regex": "https://.*pagekey=(.*)",
+        "is_script": true,
+        "script": "document.querySelector(''input[type=hidden][name=h_sid]'').value + ''/'' + document.querySelector(''#orddtl > div.elItem > ul > li:nth-child({productIndex}) > div > ul > li:nth-child(2) > p > a'').getAttribute(''href'').match(''https://.*pagekey=(.*)'')[1];"
+      },
+      "product_name": {
+        "element": "div > dl > dd:nth-of-type(1) > a > span",
+        "full_path": false,
+        "attribute": "",
+        "regex": "",
+        "is_script": false,
+        "script": ""
+      },
+      "product_quantity": {
+        "element": "div > dl > dd > span:nth-of-type(2).elNum",
+        "full_path": false,
+        "attribute": "",
+        "regex": "",
+        "is_script": false,
+        "script": ""
+      },
+      "unit_price": {
+        "element": "div > dl > dd > span:nth-of-type(1).elPrice",
+        "full_path": false,
+        "attribute": "",
+        "regex": "",
+        "is_script": false,
+        "script": ""
+      },
+      "product_distributor": {
+        "element": "html > body > div:nth-of-type(1) > div > div:nth-of-type(2) > div > div:nth-of-type(1) > div > div > div:nth-of-type(2) > ul:nth-of-type(1) > li:nth-of-type(1) > a",
+        "full_path": true,
+        "attribute": "",
+        "regex": "",
+        "is_script": false,
+        "script": ""
+      }
+     }
+  },
+  "next_url_element": "html > body > div:nth-of-type(1) > div > div:nth-of-type(2) > div > div:nth-of-type(1) > div > div:nth-of-type(2) > div > ul > li:nth-of-type(2) > a"
 }
 ';
 
@@ -246,42 +294,48 @@ SET
         "selector":"#priceblock_ourprice",
         "attribute":"",
         "regex":"",
+        "is_script": false,
         "script":""
       },
       {
-        "attribute":"",
         "item":"unit_price",
+        "selector":"#priceblock_saleprice",
+        "attribute":"",
         "regex":"",
-        "script":"",
-        "selector":"#priceblock_saleprice"
+        "is_script": false,
+        "script":""
       },
       {
-        "attribute":"",
         "item":"unit_price",
+        "selector":"#priceblock_dealprice",
+        "attribute":"",
         "regex":"",
-        "script":"",
-        "selector":"#priceblock_dealprice"
+        "is_script": false,
+        "script":""
       },
       {
         "item":"unit_price",
         "selector":"#MediaMatrix > div > div > ul > li.selected > span > span.a-button-selected > span > a > span > span.a-color-price",
         "attribute":"",
         "regex":"",
+        "is_script": false,
         "script":""
       },
       {
-        "attribute":"",
         "item":"unit_price",
+        "selector":"#olp-upd-new-freeshipping span.a-color-price",
+        "attribute":"",
         "regex":"",
-        "script":"",
-        "selector":"#olp-upd-new-freeshipping span.a-color-price"
+        "is_script": false,
+        "script":""
       },
       {
-        "attribute":"",
         "item":"unit_price",
+        "selector":"#olp-upd-new span.a-color-price",
+        "attribute":"",
         "regex":"",
-        "script":"",
-        "selector":"#olp-upd-new span.a-color-price"
+        "is_script": false,
+        "script":""
       }
     ],
     [
@@ -290,6 +344,7 @@ SET
         "selector":"#productTitle",
         "attribute":"",
         "regex":"",
+        "is_script": false,
         "script":""
       }
     ],
@@ -303,6 +358,7 @@ SET
         "label_value":"メーカー型番",
         "label_attribute":"",
         "label_regex":"",
+        "is_script": false,
         "script":""
       },
       {
@@ -314,6 +370,7 @@ SET
         "label_value":"メーカー型番",
         "label_attribute":"",
         "label_regex":"",
+        "is_script": false,
         "script":""
       },
       {
@@ -325,34 +382,38 @@ SET
         "label_value":"メーカー型番",
         "label_attribute":"",
         "label_regex":"",
+        "is_script": false,
         "script":""
       },
       {
-        "attribute":"",
         "item":"model_no_label",
-        "regex":"商品モデル番号： (.*)",
-        "script":"",
         "selector":"#productDetailsTable ul:nth-of-type(1) li:nth-of-type(3)",
+        "attribute":"",
+        "regex":"商品モデル番号： (.*)",
+        "label_selector":"#productDetailsTable li:nth-of-type(3) b",
+        "label_value":"商品モデル番号：",
         "label_attribute":"",
         "label_regex":"",
-        "label_selector":"#productDetailsTable li:nth-of-type(3) b",
-        "label_value":"商品モデル番号："
+        "is_script": false,
+        "script":""
       }
     ],
     [
       {
-        "attribute":"",
         "item":"product_distributor",
+        "selector":".zg_hrsr_item span:nth-of-type(1)",
+        "attribute":"",
         "regex":"ブランド: (.*)",
-        "script":"",
-        "selector":".zg_hrsr_item span:nth-of-type(1)"
+        "is_script": false,
+        "script":""
       },
       {
-        "attribute":"",
         "item":"product_distributor",
+        "selector":"#bylineInfo",
+        "attribute":"",
         "regex":"",
-        "script":"",
-        "selector":"#bylineInfo"
+        "is_script": false,
+        "script":""
       }
     ]
   ]
@@ -366,6 +427,7 @@ SET
         "selector": ".price2",
         "attribute": "",
         "regex": "",
+        "is_script": false,
         "script": ""
       }
     ],
@@ -375,6 +437,7 @@ SET
         "selector": ".item_name",
         "attribute": "",
         "regex": "",
+        "is_script": false,
         "script": ""
       }
     ],
@@ -384,6 +447,7 @@ SET
         "selector": ".item_number",
         "attribute": "",
         "regex": "[0-9]{13}",
+        "is_script": false,
         "script": ""
       },
       {
@@ -391,16 +455,18 @@ SET
         "selector": ".item_number",
         "attribute": "",
         "regex": "^\\\w+-\\\w+$",
+        "is_script": false,
         "script": ""
       }
     ],
     [
       {
-        "attribute":"value",
         "item":"product_distributor",
+        "selector":"form > input[type=hidden][name=sn]",
+        "attribute":"value",
         "regex":"",
-        "script":"",
-        "selector":"form > input[type=hidden][name=sn]"
+        "is_script": false,
+        "script":""
       }
     ]
   ]
@@ -489,8 +555,8 @@ SET
 }',
 @yahoo_product_search_script = '{
   "url": "https://shopping.yahoo.co.jp/search?p={word}",
-  "group_selector": "#searchResults1",
-  "selector": "div > div:nth-of-type(2) > p > a",
+  "group_selector":"html > body > div:nth-of-type(1) > div > div > main > div:nth-of-type(6) > div:nth-of-type(1) > div:nth-of-type(5) > ul > li > div > ul > li.LoopList__item",
+  "selector":"div > div:nth-of-type(2) > p > a._2EW-04-9Eayr",
   "attribute": "data-beacon",
   "regex": "targurl:store.shopping.yahoo.co.jp\\\/(.+?\\\/.+?).html",
   "script": "",

@@ -337,18 +337,18 @@ public class NavigableProductDetailPage extends NavigablePage {
         String result = null;
 
         // javascript
-        if (!StringUtils.isEmpty(productDetail.getScript())) {
+        if (isValid(productDetail.getIsScript())) {
             return executeJavaScript(page, productDetail.getScript(), null);
         }
 
         // label of model_no
-        if (!StringUtils.isEmpty(productDetail.getLabelSelector())) {
+        if (isValid(productDetail.getLabelSelector())) {
             // scrape label
             String labelValue = scrapeText(productDetail.getLabelSelector());
             if (StringUtils.isEmpty(labelValue) || !labelValue.trim().equals(productDetail.getLabelValue().trim()))
                 return null;
             // attribute of label
-            if (!StringUtils.isEmpty(productDetail.getLabelAttribute())) {
+            if (isValid(productDetail.getLabelAttribute())) {
                 result = getNodeAttribute(productDetail.getLabelSelector(), productDetail.getLabelAttribute());
                 if (Objects.isNull(result)) {
                     return null;
@@ -356,7 +356,7 @@ public class NavigableProductDetailPage extends NavigablePage {
             }
             // regex of label
             String labelRegex = productDetail.getLabelRegex();
-            if (!StringUtils.isEmpty(labelRegex)) {
+            if (isValid(labelRegex)) {
                 LOGGER.debug(String.format("regex=[%s]", labelRegex));
                 Pattern pattern = Pattern.compile(labelRegex);
                 result = HtmlUtils.extract2(result, pattern);
@@ -368,29 +368,29 @@ public class NavigableProductDetailPage extends NavigablePage {
         }
 
         // scrape target
-        result = scrapeText(productDetail.getSelector());
+        if (isValid(productDetail.getAttribute())) {
+            // attribute
+            result = getNodeAttribute(productDetail.getSelector(), productDetail.getAttribute());
+        } else {
+            result = scrapeText(productDetail.getSelector());
+        }
+
+        if (Objects.isNull(result)) {
+            return null;
+        }
+
+        // regex
+        String regex = productDetail.getRegex();
+        if (isValid(regex)) {
+            LOGGER.debug(String.format("regex=[%s]", regex));
+            Pattern pattern = Pattern.compile(regex);
+            result = HtmlUtils.extract2(result, pattern);
+            LOGGER.debug(String.format("regex result=[%s]", result));
+        }
 
         if (productDetail.getItem().equals("unit_price")) {
             Float price = extractFloat(result);
             result = price == null ? null : price.toString();
-        }
-
-        if (Objects.nonNull(result)) {
-            // attribute
-            if (!StringUtils.isEmpty(productDetail.getAttribute())) {
-                result = getNodeAttribute(productDetail.getSelector(), productDetail.getAttribute());
-                if (Objects.isNull(result)) {
-                    return null;
-                }
-            }
-            // regex
-            String regex = productDetail.getRegex();
-            if (!StringUtils.isEmpty(regex)) {
-                LOGGER.debug(String.format("regex=[%s]", regex));
-                Pattern pattern = Pattern.compile(regex);
-                result = HtmlUtils.extract2(result, pattern);
-                LOGGER.debug(String.format("regex result=[%s]", result));
-            }
         }
 
         return result;

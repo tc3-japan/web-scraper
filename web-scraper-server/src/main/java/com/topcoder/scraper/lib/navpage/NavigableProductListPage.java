@@ -39,7 +39,7 @@ public class NavigableProductListPage extends NavigablePage {
         if (productSearchConfig == null) {
             return null;
         }
-        if (isValid(productSearchConfig.getScript())) {
+        if (isValid(productSearchConfig.getIsScript())) {
             String script = productSearchConfig.getScript();
             return executeJavaScript(root, script, placeHolderNos);
         }

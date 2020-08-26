@@ -357,16 +357,6 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
   }
 
   /**
-   * check text is valid selector property
-   *
-   * @param property the value
-   * @return the result
-   */
-  public boolean isValidBool(Boolean property) {
-    return property != null ? property : false;
-  }
-
-  /**
    * scrape value by sector
    *
    * @param root     the page root
@@ -380,11 +370,11 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
     if (selector == null) {
       return null;
     }
-    if (isValid(selector.getScript())) {
+    if (isValid(selector.getIsScript())) {
       String script = selector.getScript();
       return executeJavaScript(root, script, placeHolderNos);
     }
-    if (isValidBool(selector.getFullPath())) {
+    if (isValid(selector.getFullPath())) {
       element = (root == null ? page : root).querySelector(selector.getElement());
     } else {
       element = parent.querySelector(selector.getElement());

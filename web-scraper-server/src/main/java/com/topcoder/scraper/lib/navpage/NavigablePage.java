@@ -60,6 +60,16 @@ public class NavigablePage {
         return property != null && !property.trim().equals("");
     }
 
+    /**
+     * check text is valid selector property
+     *
+     * @param property the value
+     * @return the result
+     */
+    public boolean isValid(Boolean property) {
+        return property != null ? property : false;
+    }
+
     public void setPage(String url) {
         LOGGER.debug("[setPage] in");
         try {

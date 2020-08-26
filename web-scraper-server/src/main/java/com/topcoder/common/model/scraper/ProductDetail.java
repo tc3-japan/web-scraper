@@ -29,6 +29,8 @@ public class ProductDetail {
     private String attribute;
     @JsonProperty("regex")
     private String regex;
+    @JsonProperty("is_script")
+    private Boolean isScript;
     @JsonProperty("script")
     private String script;
     @JsonProperty("label_selector")

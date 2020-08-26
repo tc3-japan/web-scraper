@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import lombok.Data;
+import org.apache.xpath.operations.Bool;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -16,6 +17,7 @@ import lombok.Data;
         "excluded_selector",
         "attribute",
         "regex",
+        "is_script",
         "script"
 })
 public class ProductSearchConfig {
@@ -31,6 +33,8 @@ public class ProductSearchConfig {
     private String attribute;
     @JsonProperty("regex")
     private String regex;
+    @JsonProperty("is_script")
+    private Boolean isScript;
     @JsonProperty("script")
     private String script;
 }

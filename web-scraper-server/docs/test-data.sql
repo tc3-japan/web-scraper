@@ -112,7 +112,7 @@ SET
 {
   "url": "https://order.my.rakuten.co.jp/?l-id=top_normal_function04&fidomy=1",
   "purchase_order": {
-    "parent": "html > body > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-type(2) > div:nth-of-type(1) > div > div:nth-of-type(3) > div > table > tbody > tr",
+    "parent": "html > body > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-type(2) > div:nth-of-type(1) > div > div > div.oDrListItem.clfx > table > tbody > tr",
     "order_number": {
       "element": "td:nth-of-type(1) > div > ul:nth-of-type(1) > li:nth-of-type(2) > span.idNum",
       "full_path": false,
@@ -130,10 +130,10 @@ SET
       "script": ""
     },
     "purchase_product": {
-      "url_element": "td:nth-of-type(1) > div > ul:nth-of-type(1) > li:nth-of-type(4) > a.detail",
-      "parent": "html > body > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-type(2) > div > div:nth-of-type(3) > table:nth-of-type(1) > tbody > tr",
+      "url_element": "td:nth-of-type(1) > div > ul:nth-of-type(1) > li > a.detail",
+      "parent": "html > body > div:nth-of-type(1) > div:nth-of-type(7) > div > div > div:nth-of-type(3) > table:nth-of-type(1) > tbody > tr",
       "total_amount": {
-        "element": "html > body > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-type(2) > div > div:nth-of-type(3) > table:nth-of-type(2) > tbody > tr > td:nth-of-type(3) > table > tbody > tr > td.netTot",
+        "element": "html > body > div:nth-of-type(1) > div:nth-of-type(7) > div > div > div:nth-of-type(3) > table:nth-of-type(2) > tbody > tr > td:nth-of-type(3) > table > tbody > tr:nth-of-type(1) > td",
         "full_path": true,
         "attribute": "",
         "regex": "",
@@ -173,7 +173,7 @@ SET
         "script": ""
       },
       "product_distributor": {
-        "element": "html > body > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-type(2) > div > div:nth-of-type(1) > table > tbody > tr:nth-of-type(1) > td:nth-of-type(2) > p > a",
+        "element": "html > body > div:nth-of-type(1) > div:nth-of-type(7) > div > div > div:nth-of-type(1) > table > tbody > tr:nth-of-type(1) > td:nth-of-type(2) > p > a",
         "full_path": true,
         "attribute": "",
         "regex": "",
@@ -454,14 +454,14 @@ SET
         "item": "model_no",
         "selector": ".item_number",
         "attribute": "",
-        "regex": "^\\\w+-\\\w+$",
+        "regex": "^\\\\w+-\\\\w+$",
         "is_script": false,
         "script": ""
       }
     ],
     [
       {
-        "item":"product_distributor",
+        "item": "product_distributor",
         "selector":"form > input[type=hidden][name=sn]",
         "attribute":"value",
         "regex":"",
@@ -483,30 +483,6 @@ SET
         "script": ""
       }
     ],
-    [
-      {
-        "item":"product_name",
-        "selector":".mdItemInfoTitle > h2",
-        "attribute":"",
-        "regex":"",
-        "script":""
-      }
-    ],
-    [
-      {
-        "item":"product_distributor",
-        "selector":"dt.elStore > a",
-        "attribute":"",
-        "regex":"",
-        "script":""
-      }
-    ],
-    [
-      {
-        "item":"unit_price",
-        "selector":".elNum",
-        "attribute":"",
-        "regex":"",
         "script":""
       },
       {
@@ -531,6 +507,23 @@ SET
         "attribute":"",
         "regex":"[0-9]{13}",
         "script":""
+      },
+      {
+        "attribute":"",
+        "item":"jan_code",
+        "regex":"JANコード/ISBNコード：(.+)",
+        "script":"",
+        "selector":".ItemDetails ul li:nth-of-type(2)"
+      }
+    ],
+    [
+      {
+        "attribute":"",
+        "item":"model_no",
+        "regex":"商品コード：(.+)",
+        "script":"(()=>{ var ifr = document.querySelector(''#itm_inf > div:nth-child(6) > div > iframe''); if (!ifr) return null; return ifr.contentDocument.body.querySelector(''#wrapper > table > tbody > tr:nth-child(4) > td > table > tbody > tr:nth-child(2) > td:nth-child(2) > font'').innerText; })();",
+        "selector":"#wrapper > table > tbody > tr:nth-child(4) > td > table > tbody > tr:nth-child(2) > td:nth-child(2) > font",
+        "is_script":true
       }
     ]
   ]

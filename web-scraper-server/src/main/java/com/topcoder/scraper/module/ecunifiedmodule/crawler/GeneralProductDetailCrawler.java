@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Objects;
 
+import com.gargoylesoftware.htmlunit.html.DomElement;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +44,17 @@ public class GeneralProductDetailCrawler extends AbstractGeneralCrawler {
         }
         String json = detailPage.getProductInfo().toJson();
         LOGGER.debug("product detail json=" + json);
-        String savedPath = detailPage.savePage(site, "product-detail", productCode, detailPage, webpageService);
+
+        String savedPath;
+        if (site.equals("rakuten")) {
+            DomElement de = detailPage.getPage().querySelector("body > script[src*=\"pa3\"]");
+            if (de != null) de.remove();
+            String html = detailPage.getPage().asXml().replace("<?xml version=\"1.0\" encoding=\"EUC-JP\"?>","");
+            savedPath = detailPage.savePage(site, "product-detail", productCode, html, webpageService);
+        } else {
+            savedPath = detailPage.savePage(site, "product-detail", productCode, detailPage, webpageService);
+        }
+
         return new GeneralProductDetailCrawlerResult(productInfo, savedPath);
     }
 

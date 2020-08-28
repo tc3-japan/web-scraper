@@ -59,6 +59,7 @@ export default function JsEditor({
           lineNumbers: true,
           mode: 'javascript',
         });
+        heap.scriptEditor.setSize(null,100);
         heap.scriptEditor.on('change', () => {
           const value = heap.scriptEditor.doc.getValue();
           onChange(value);

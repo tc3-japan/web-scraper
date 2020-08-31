@@ -1,21 +1,23 @@
 package com.topcoder.scraper.module.ecisolatedmodule.yahoo;
 
-import com.topcoder.common.dao.ProductDAO;
-import com.topcoder.common.model.ProductInfo;
-import com.topcoder.common.traffic.TrafficWebClient;
-import com.topcoder.scraper.module.IProductModule;
-import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralProductCrawler;
-import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralProductCrawlerResult;
-import com.topcoder.scraper.service.ProductService;
-import com.topcoder.scraper.service.WebpageService;
+import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
+import com.topcoder.common.dao.ProductDAO;
+import com.topcoder.common.model.ProductInfo;
+import com.topcoder.common.repository.ConfigurationRepository;
+import com.topcoder.common.traffic.TrafficWebClient;
+import com.topcoder.scraper.module.IProductModule;
+import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralProductDetailCrawler;
+import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralProductDetailCrawlerResult;
+import com.topcoder.scraper.service.ProductService;
+import com.topcoder.scraper.service.WebpageService;
 
 /**
  * Yahoo implementation of ProductDetailModule
@@ -28,6 +30,9 @@ public class OldYahooProductDetailModule implements IProductModule {
   //private final AmazonProperty property;
   private final ProductService productService;
   private final WebpageService webpageService;
+
+  @Autowired
+  ConfigurationRepository configurationRepository;
 
   @Autowired
   public OldYahooProductDetailModule(
@@ -53,7 +58,7 @@ public class OldYahooProductDetailModule implements IProductModule {
 
     List<ProductDAO> products = this.productService.getAllFetchInfoStatusIsNull(getModuleType());
 
-    GeneralProductCrawler crawler = new GeneralProductCrawler(getModuleType(), webpageService);
+    GeneralProductDetailCrawler crawler = new GeneralProductDetailCrawler(getModuleType(), "product", webpageService, configurationRepository);
 
     products.forEach(product -> {
       try {
@@ -72,10 +77,10 @@ public class OldYahooProductDetailModule implements IProductModule {
    * @param productCode the product code
    * @throws IOException webclient exception
    */
-  private void fetchProductDetail(GeneralProductCrawler crawler, int productId, String productCode) throws IOException {
+  private void fetchProductDetail(GeneralProductDetailCrawler crawler, int productId, String productCode) throws IOException {
 
     TrafficWebClient webClient = new TrafficWebClient(0, false);
-    GeneralProductCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productCode);
+    GeneralProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productCode);
     webClient.finishTraffic();
     ProductInfo productInfo = crawlerResult.getProductInfo();
 
@@ -95,13 +100,13 @@ public class OldYahooProductDetailModule implements IProductModule {
   public ProductDAO searchProductInfo(String siteName, String modelNo) throws IOException {
     TrafficWebClient webClient = new TrafficWebClient(0, false);
 
-    GeneralProductCrawler crawler = new GeneralProductCrawler(getModuleType(), webpageService);
-    GeneralProductCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, modelNo);
-    
+    GeneralProductDetailCrawler crawler = new GeneralProductDetailCrawler(getModuleType(), "product", webpageService, configurationRepository);
+    GeneralProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, modelNo);
+
     webClient.finishTraffic();
 
     ProductInfo productInfo = Objects.isNull(crawlerResult) ? null : crawlerResult.getProductInfo();
-	    
+
 	  if (Objects.isNull(productInfo) || productInfo.getModelNo() == null) {
 	    LOGGER.warn("Unable to obtain cross ec product information for: " + modelNo);
 	    return null;
@@ -109,5 +114,5 @@ public class OldYahooProductDetailModule implements IProductModule {
 
 	  return new ProductDAO(getModuleType(), productInfo);
   }
-  
+
 }

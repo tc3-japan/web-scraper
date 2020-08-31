@@ -3,7 +3,7 @@ package com.topcoder.scraper.command.impl;
 import com.topcoder.scraper.Consts;
 import com.topcoder.scraper.command.AbstractCommand;
 import com.topcoder.scraper.exception.FetchProductDetailException;
-import com.topcoder.scraper.module.IProductModule;
+import com.topcoder.scraper.module.IProductDetailModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +16,12 @@ import java.util.List;
  * Product detail command
  */
 @Component
-public class ProductDetailCommand extends AbstractCommand<IProductModule> {
+public class ProductDetailCommand extends AbstractCommand<IProductDetailModule> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ProductDetailCommand.class);
 
   @Autowired
-  public ProductDetailCommand(List<IProductModule> modules) {
+  public ProductDetailCommand(List<IProductDetailModule> modules) {
     super(modules);
   }
 
@@ -30,7 +30,7 @@ public class ProductDetailCommand extends AbstractCommand<IProductModule> {
    * @param module module to be run
    */
   @Override
-  protected void process(IProductModule module) {
+  protected void process(IProductDetailModule module) {
     LOGGER.info("module=site: " + module);
     try {
       if (this.sites == null || this.sites.size() == 0) {

@@ -2,7 +2,7 @@
 debug("--------------script begin--------------")
 
 searchProducts("https://search.rakuten.co.jp/search/mall/")
-saveListPage("product-list")
+//saveListPage("product-list")
 
 eachProducts { index ->
 

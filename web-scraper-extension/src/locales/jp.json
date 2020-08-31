@@ -11,6 +11,7 @@
     "dialogBtnNo": "Cancel",
     "dialogBtnOK": "OK",
     "header": {
+      "file": "File",
       "load": "Load",
       "save": "Save",
       "test": "Test",
@@ -19,7 +20,8 @@
       "ecSite": "ECサイト",
       "setting": "Setting",
       "purchaseHistory": "購入履歴",
-      "productDetail": "商品詳細"
+      "productDetail": "商品詳細",
+      "searchProduct": "商品検索"
     },
     "setting": {
       "title": "Settings",
@@ -39,21 +41,42 @@
         "unitPrice": "価格",
         "productDistributor": "販売者"
       },
+      "check": "Check",
+      "currentUrlCodePlaceholder": "URLの商品番号に {code} プレイスホルダーを設定してください。設定したプレイスホルダーは、スクレイピング実行時に実際の商品番号に置換されます。",
+      "currentUrlWordPlaceholder": "URLの検索文字列に {word} プレイスホルダーを設定してください。設定したプレイスホルダーは、スクレイピング実行時に実際の検索文字列に置換されます。",
+      "excludedSelector": "対象外セレクタ",
+      "invalidRegex": "無効な正規表現",
+      "productDetailPage": "商品詳細ページ",
       "purchaseHistoryPage": "購入履歴ページ",
       "purchaseOrder": "購入履歴",
       "purchaseProduct": "購入商品",
+      "searchProductPage": "商品検索ページ",
       "nextPage": "ページ移動",
       "addItem": "項目追加",
       "advanced": "Advanced",
       "selector": "セレクタ",
       "urlSelector": "URLセレクタ",
+      "label": "ラベル",
+      "labelAttribute": "ラベル属性",
+      "labelRegex": "ラベル正規表現",
+      "labelSelector": "ラベルセレクタ",
       "parentSelector": "グループセレクタ",
       "currentUrl": "現ページURL",
       "rootPath": "フルパス",
       "attribute": "属性",
       "regex": "正規表現",
+      "script": "スクリプト",
       "url": "URL",
       "differentType": "異なるDOMエレメントが選択されたため共通セレクタは取得できません。"
+    },
+    "productDetails": {
+      "productCode": "商品番号",
+      "productName": "商品名",
+      "unitPrice": "単価",
+      "modelNo": "型番",
+      "modelNoLabel": "型番(ラベル)",
+      "janCode": "JANコード",
+      "productDistributor":"販売者"
     }
   }
 }

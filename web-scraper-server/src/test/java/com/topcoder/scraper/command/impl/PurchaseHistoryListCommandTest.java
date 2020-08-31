@@ -45,7 +45,7 @@ public class PurchaseHistoryListCommandTest {
     when(args.getOptionValues("site")).thenReturn(Collections.singletonList("test"));
     purchaseHistoryListCommand.run(args);
     verify(IPurchaseHistoryModule1, times(1)).getModuleType();
-    verify(IPurchaseHistoryModule1, times(1)).fetchPurchaseHistoryList();
+    verify(IPurchaseHistoryModule1, times(0)).fetchPurchaseHistoryList();
     // not called because of find first module named test
     verify(IPurchaseHistoryModule2, times(0)).getModuleType();
     verify(IPurchaseHistoryModule2, times(0)).fetchPurchaseHistoryList();

@@ -1,0 +1,18 @@
+version: '3'
+services:
+
+  scraper-solr:
+    image: scraper-solr:latest
+    build:
+      context: ./
+    ports:
+      - 9983:8983
+#    networks:
+#      scraper_net:
+#        ipv4_address: 10.1.1.4
+    volumes:
+      - search-store:/var/solr/data
+
+volumes:
+  search-store:
+    driver: local

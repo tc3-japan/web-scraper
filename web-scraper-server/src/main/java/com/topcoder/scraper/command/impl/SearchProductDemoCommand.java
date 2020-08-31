@@ -11,19 +11,19 @@ import org.springframework.stereotype.Component;
 import com.topcoder.common.dao.ProductDAO;
 import com.topcoder.scraper.command.AbstractCommand;
 import com.topcoder.scraper.exception.FetchProductDetailException;
-import com.topcoder.scraper.module.IProductModule;
+import com.topcoder.scraper.module.IProductSearchModule;
 
 /**
  * Search Product demo command
  */
 // TODO : re-consider whether this class is needed or not.
 @Component
-public class SearchProductDemoCommand extends AbstractCommand<IProductModule> {
+public class SearchProductDemoCommand extends AbstractCommand<IProductSearchModule> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SearchProductDemoCommand.class);
 
   @Autowired
-  public SearchProductDemoCommand(List<IProductModule> modules) {
+  public SearchProductDemoCommand(List<IProductSearchModule> modules) {
     super(modules);
   }
 
@@ -32,7 +32,7 @@ public class SearchProductDemoCommand extends AbstractCommand<IProductModule> {
    * @param module module to be run
    */
   @Override
-  protected void process(IProductModule module) {
+  protected void process(IProductSearchModule module) {
     try {
       ProductDAO product;
 

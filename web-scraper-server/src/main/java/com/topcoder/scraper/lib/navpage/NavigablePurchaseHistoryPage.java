@@ -1,5 +1,16 @@
 package com.topcoder.scraper.lib.navpage;
 
+import static com.topcoder.common.util.HtmlUtils.*;
+
+import java.text.ParseException;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlHiddenInput;
@@ -9,17 +20,9 @@ import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.common.model.scraper.Selector;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.common.util.DateUtils;
+
 import lombok.Getter;
 import lombok.Setter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.text.ParseException;
-import java.util.Date;
-import java.util.List;
-import java.util.regex.Pattern;
-
-import static com.topcoder.common.util.HtmlUtils.*;
 
 public class NavigablePurchaseHistoryPage extends NavigablePage {
 
@@ -327,10 +330,11 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
    * @param root     the page root
    * @param parent   the parent node
    * @param selector the selector object
+   * @param placeHolderNo the placeholder no
    * @return final value
    */
-  public Float scrapeFloat(HtmlPage root, DomNode parent, Selector selector) {
-    return extractFloat(scrapeString(root, parent, selector));
+  public Float scrapeFloat(HtmlPage root, DomNode parent, Selector selector, Map<String, Integer> placeHolderNos) {
+    return extractFloat(scrapeString(root, parent, selector, placeHolderNos));
   }
 
   /**
@@ -339,11 +343,12 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
    * @param root     the page root
    * @param parent   the parent node
    * @param selector the selector object
+   * @param placeHolderNo the placeholder no
    * @return final value
    */
-  public Date scrapeDate(HtmlPage root, DomNode parent, Selector selector) {
+  public Date scrapeDate(HtmlPage root, DomNode parent, Selector selector, Map<String, Integer> placeHolderNos) {
     try {
-      return DateUtils.fromString(scrapeString(root, parent, selector));
+      return DateUtils.fromString(scrapeString(root, parent, selector, placeHolderNos));
     } catch (java.text.ParseException e) {
       LOGGER.debug("[scrapeOrderDate] Could not set date in NavigablePurchaseHistoryPage.java");
       e.printStackTrace();
@@ -352,39 +357,24 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
   }
 
   /**
-   * check text is valid selector property
-   *
-   * @param property the value
-   * @return the result
-   */
-  public boolean isValid(String property) {
-    return property != null && !property.trim().equals("");
-  }
-
-  /**
-   * check text is valid selector property
-   *
-   * @param property the value
-   * @return the result
-   */
-  public boolean isValidBool(Boolean property) {
-    return property != null ? property : false;
-  }
-
-  /**
    * scrape value by sector
    *
    * @param root     the page root
    * @param parent   the parent node
    * @param selector the selector object
+   * @param placeHolderNo the placeholder no
    * @return final value
    */
-  public String scrapeString(HtmlPage root, DomNode parent, Selector selector) {
+  public String scrapeString(HtmlPage root, DomNode parent, Selector selector, Map<String, Integer> placeHolderNos) {
     HtmlElement element;
     if (selector == null) {
       return null;
     }
-    if (isValidBool(selector.getFullPath())) {
+    if (isValid(selector.getIsScript())) {
+      String script = selector.getScript();
+      return executeJavaScript(root, script, placeHolderNos);
+    }
+    if (isValid(selector.getFullPath())) {
       element = (root == null ? page : root).querySelector(selector.getElement());
     } else {
       element = parent.querySelector(selector.getElement());
@@ -397,8 +387,9 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
       content = element.getAttribute(selector.getAttribute());
     }
     if (isValid(selector.getRegex())) {
-      content = extract1(content, Pattern.compile(selector.getRegex()));
+      content = extract2(content, Pattern.compile(selector.getRegex()));
     }
     return content;
   }
+
 }

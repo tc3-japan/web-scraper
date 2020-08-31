@@ -2,7 +2,7 @@
 debug("--------------script begin--------------")
 
 searchProducts("https://www.amazon.co.jp/s?k=")
-saveListPage("product-list")
+//saveListPage("product-list")
 
 eachProducts { index ->
     searchResultSelector = "#search div[data-index='" + index + "']"

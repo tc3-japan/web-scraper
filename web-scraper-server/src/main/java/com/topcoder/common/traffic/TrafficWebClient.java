@@ -437,7 +437,7 @@ public class TrafficWebClient {
   }
 
   /**
-   * this class only used for DryRunPurchaseHistoryModule
+   * this class only used for DryRunModule
    */
   public class TrafficWebClientForDryRun extends TrafficWebClient {
 

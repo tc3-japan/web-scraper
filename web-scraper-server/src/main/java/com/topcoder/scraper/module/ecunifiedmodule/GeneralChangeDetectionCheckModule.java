@@ -15,7 +15,7 @@ import com.topcoder.common.repository.NormalDataRepository;
 import com.topcoder.common.util.CheckUtils;
 import com.topcoder.scraper.Consts;
 import com.topcoder.scraper.module.IChangeDetectionCheckModule;
-import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralProductCrawlerResult;
+import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralProductDetailCrawlerResult;
 import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistoryCrawlerResult;
 import com.topcoder.scraper.service.WebpageService;
 import org.slf4j.Logger;
@@ -43,7 +43,7 @@ public class GeneralChangeDetectionCheckModule extends GeneralChangeDetectionCom
           ECSiteAccountRepository         ecSiteAccountRepository,
           NormalDataRepository            normalDataRepository,
           GeneralPurchaseHistoryModule    purchaseHistoryModule,
-          GeneralProductModule            productModule,
+          GeneralProductDetailModule            productModule,
           CheckItemsDefinitionProperty    checkItemsDefinitionProperty,
           CheckResultRepository           checkResultRepository
   ) {
@@ -112,7 +112,7 @@ public class GeneralChangeDetectionCheckModule extends GeneralChangeDetectionCom
    * @param site ec site
    * @param crawlerResult the crawler result
    */
-  protected void processProductInfo(String site, GeneralProductCrawlerResult crawlerResult) {
+  protected void processProductInfo(String site, GeneralProductDetailCrawlerResult crawlerResult) {
     ProductInfo productInfo = crawlerResult.getProductInfo();
 
     CheckItemsDefinitionProperty.CheckItemsCheckSite checkSiteDefinition = checkItemsDefinitionProperty.getCheckSiteDefinition(site);

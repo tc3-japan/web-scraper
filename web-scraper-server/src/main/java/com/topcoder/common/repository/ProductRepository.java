@@ -45,4 +45,7 @@ public interface ProductRepository extends CrudRepository<ProductDAO, Integer> {
 
   Page<ProductDAO> findAll(Pageable pageable);
 
+  @Query("select p from ProductDAO p where p.ecSite = :ecSite")
+  List<ProductDAO> findByECSite(@Param("ecSite") String ecSite);
+
 }

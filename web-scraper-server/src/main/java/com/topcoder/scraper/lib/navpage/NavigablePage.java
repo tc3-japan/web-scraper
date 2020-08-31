@@ -2,14 +2,16 @@ package com.topcoder.scraper.lib.navpage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.gargoylesoftware.htmlunit.ScriptResult;
 import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
-import com.gargoylesoftware.htmlunit.html.HtmlButton;
 import com.gargoylesoftware.htmlunit.html.HtmlCheckBoxInput;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
@@ -26,6 +28,8 @@ public class NavigablePage {
 
     protected TrafficWebClient webClient;
     protected HtmlPage page;
+
+    public static int DEFAULT_PLACEHOLDER_NO = -1;
 
     public NavigablePage(HtmlPage page, TrafficWebClient webClient) {
         LOGGER.debug("[constructor] in");
@@ -45,6 +49,26 @@ public class NavigablePage {
         webClient.getWebClient().getOptions().setJavaScriptEnabled(value);
     }
     /* Get and Set */
+
+    /**
+     * check text is valid selector property
+     *
+     * @param property the value
+     * @return the result
+     */
+    public boolean isValid(String property) {
+        return property != null && !property.trim().equals("");
+    }
+
+    /**
+     * check text is valid selector property
+     *
+     * @param property the value
+     * @return the result
+     */
+    public boolean isValid(Boolean property) {
+        return property != null ? property : false;
+    }
 
     public void setPage(String url) {
         LOGGER.debug("[setPage] in");
@@ -75,7 +99,7 @@ public class NavigablePage {
             HtmlElement element = page.querySelector(selector);
             LOGGER.info("click() > Selected " + element + " from " + selector);
             if (element == null) {
-              return;
+                return;
             }
             try {
                 HtmlPage result = webClient.click(element);
@@ -163,25 +187,25 @@ public class NavigablePage {
     }
 
     public String getText(String... selectors) {
-      if (selectors == null || selectors.length == 0) {
-        return null;
-      }
-      for (String s : selectors) {
-        String text = getText(s);
-        if (text != null) {
-          return text;
+        if (selectors == null || selectors.length == 0) {
+            return null;
         }
-      }
-      return null;
+        for (String s : selectors) {
+            String text = getText(s);
+            if (text != null) {
+                return text;
+            }
+        }
+        return null;
     }
 
     public String getNodeAttribute(String selector, String attr) {
-      LOGGER.debug("[getNodeAttribute(" + attr + ")] in");
+        LOGGER.debug("[getNodeAttribute(" + attr + ")] in");
 
-      HtmlElement node = page.querySelector(selector);
-      String str = node != null ? node.getAttribute(attr) : null;
-      LOGGER.debug(">>> Got Attribute >>> " + str + " for " + selector);
-      return str;
+        HtmlElement node = page.querySelector(selector);
+        String str = node != null ? node.getAttribute(attr) : null;
+        LOGGER.debug(">>> Got Attribute >>> " + str + " for " + selector);
+        return str;
     }
 
     protected String getValue(String selector) {
@@ -208,12 +232,12 @@ public class NavigablePage {
     }
 
     public String getNodeAttribute(DomNode sourceNode, String selector, String attr) {
-      LOGGER.debug("[getNodeAttribute(" + attr + ")] in");
+        LOGGER.debug("[getNodeAttribute(" + attr + ")] in");
 
-      HtmlElement node = sourceNode.querySelector(selector);
-      String str = node != null ? node.getAttribute(attr) : null;
-      LOGGER.debug(">>> Got Attribute >>> " + str + " for " + selector);
-      return str;
+        HtmlElement node = sourceNode.querySelector(selector);
+        String str = node != null ? node.getAttribute(attr) : null;
+        LOGGER.debug(">>> Got Attribute >>> " + str + " for " + selector);
+        return str;
     }
 
     public void type(String input, String selector) {
@@ -269,12 +293,91 @@ public class NavigablePage {
     public String savePage(String fileName, String siteName, WebpageService webpageService) {
         LOGGER.debug("[savePage] in");
         if (page == null || page.getWebResponse() == null) {
-          return null;
+            return null;
         }
-        return webpageService.save(fileName, siteName, page.getWebResponse().getContentAsString());
+        return savePage(fileName, siteName, page.getWebResponse().getContentAsString(), webpageService);
+    }
+
+    public String savePage(String siteName, String type, HtmlPage htmlPage, WebpageService webpageService) {
+        String contents = htmlPage.getWebResponse().getContentAsString();
+        return savePage(siteName, type, "", contents, webpageService);
+    }
+
+    public String savePage(String siteName, String type, NavigablePage navigablePage, WebpageService webpageService) {
+        String contents = navigablePage.getPage().getWebResponse().getContentAsString();
+        return savePage(siteName, type, "", contents, webpageService);
+    }
+
+    public String savePage(String siteName, String type, String keyword, NavigablePage navigablePage, WebpageService webpageService) {
+        String contents = navigablePage.getPage().getWebResponse().getContentAsString();
+        return savePage(siteName, type, keyword, contents, webpageService);
+    }
+
+    public String savePage(String siteName, String type, String contents, WebpageService webpageService) {
+        return savePage(siteName, type, "", contents, webpageService);
+    }
+
+    public String savePage(String siteName, String type, String keyword, String contents, WebpageService webpageService) {
+        LOGGER.debug("[savePage] in");
+        String fileName = siteName + "-" + type;
+        if (!StringUtils.isEmpty(keyword)) {
+            fileName += "-";
+            if (keyword.length() > 20) {
+                //20 characters from the top
+                fileName += keyword.substring(0, 20);
+            } else {
+                fileName += keyword;
+            }
+        }
+        //Characters that cannot be used in folder names are replaced as underscore
+        fileName = fileName.replaceAll("[/><?:\"\\*|;]", "_");
+        // save html page
+        String saveContents = convertHtmlCharset(contents);
+        saveContents = convertToAbsolutePath(saveContents);
+        return webpageService.save(fileName, siteName, saveContents, true);
+    }
+
+    private String convertHtmlCharset(String contents) {
+        return contents.replace("charset=euc-jp", "charset=utf-8")
+                .replace("charset=EUC-JP", "charset=utf-8");
+    }
+
+    private String convertToAbsolutePath(String contents) {
+        return contents.replace("src=\"//", "src=\"https://")
+                .replace("src='//", "src='https://")
+                .replace("href=\"//", "href=\"https://")
+                .replace("href='//", "href='https://");
     }
 
     public URL getPageUrl() {
-      return this.page != null ? this.page.getUrl() : null;
+        return this.page != null ? this.page.getUrl() : null;
     }
+
+    public String executeJavaScript(HtmlPage targetPage, String script, Map<String, Integer> placeHolderNos) {
+        boolean enableJavaScript = webClient.getWebClient().getOptions().isJavaScriptEnabled();
+        webClient.getWebClient().getOptions().setJavaScriptEnabled(true);
+        if (placeHolderNos != null) script = createScriptWithPlaceHolderNo(script, placeHolderNos);
+        ScriptResult scriptResult = targetPage.executeJavaScript(script);
+        webClient.getWebClient().getOptions().setJavaScriptEnabled(enableJavaScript);
+
+        if (ScriptResult.isFalse(scriptResult)
+                || ScriptResult.isUndefined(scriptResult)
+                || scriptResult.getJavaScriptResult() == null) {
+            return null;
+        }
+
+        String result = scriptResult.getJavaScriptResult().toString().trim();
+        return result;
+    }
+
+    public String createScriptWithPlaceHolderNo(String script, Map<String, Integer> placeHolderNos) {
+        String result = script;
+        if (placeHolderNos.containsKey("orderIndex"))
+            result = result.replace("{orderIndex}", String.valueOf(placeHolderNos.get("orderIndex")));
+        if (placeHolderNos.containsKey("productIndex"))
+            result = result.replace("{productIndex}", String.valueOf(placeHolderNos.get("productIndex")));
+        return result;
+    }
+
+
 }

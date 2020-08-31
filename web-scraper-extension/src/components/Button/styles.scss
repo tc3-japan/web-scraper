@@ -14,9 +14,8 @@
     display: none;
   }
 
-
   &.high-light {
-    @include setBgColorAndHover(#3c86ff)
+    @include setBgColorAndHover(#3c86ff);
   }
 
   &.selector {
@@ -29,5 +28,5 @@
     }
   }
 
-  @include setBgColorAndHover($containerColor)
+  @include setBgColorAndHover($containerColor);
 }

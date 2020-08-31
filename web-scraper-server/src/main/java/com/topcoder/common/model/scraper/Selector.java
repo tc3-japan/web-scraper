@@ -1,6 +1,7 @@
 package com.topcoder.common.model.scraper;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Data;
 
 /**
@@ -15,4 +16,9 @@ public class Selector {
 
   private String attribute;
   private String regex;
+
+  @JsonProperty("is_script")
+  private Boolean isScript;
+
+  private String script;
 }

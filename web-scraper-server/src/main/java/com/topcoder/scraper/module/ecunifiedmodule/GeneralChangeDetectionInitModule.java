@@ -8,7 +8,7 @@ import com.topcoder.common.repository.ECSiteAccountRepository;
 import com.topcoder.common.repository.NormalDataRepository;
 import com.topcoder.scraper.Consts;
 import com.topcoder.scraper.module.IChangeDetectionInitModule;
-import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralProductCrawlerResult;
+import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralProductDetailCrawlerResult;
 import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistoryCrawlerResult;
 import com.topcoder.scraper.service.WebpageService;
 import org.slf4j.Logger;
@@ -33,7 +33,7 @@ public class GeneralChangeDetectionInitModule extends GeneralChangeDetectionComm
           ECSiteAccountRepository         ecSiteAccountRepository,
           NormalDataRepository            normalDataRepository,
           GeneralPurchaseHistoryModule    purchaseHistoryModule,
-          GeneralProductModule            productModule
+          GeneralProductDetailModule            productModule
   ) {
     super(
             monitorTargetDefinitionProperty,
@@ -93,7 +93,7 @@ public class GeneralChangeDetectionInitModule extends GeneralChangeDetectionComm
    * @param site ec site
    * @param crawlerResult the crawler result
    */
-  protected void processProductInfo(String site, GeneralProductCrawlerResult crawlerResult) {
+  protected void processProductInfo(String site, GeneralProductDetailCrawlerResult crawlerResult) {
     LOGGER.debug("[processProductInfo]");
     ProductInfo productInfo = crawlerResult.getProductInfo();
     saveNormalData(site, productInfo.toJson(), productInfo.getCode(), Consts.PRODUCT_DETAIL_PAGE_NAME);

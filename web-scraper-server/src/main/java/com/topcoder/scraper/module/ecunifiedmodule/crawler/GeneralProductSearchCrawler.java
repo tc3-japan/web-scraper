@@ -1,10 +1,10 @@
 package com.topcoder.scraper.module.ecunifiedmodule.crawler;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
-import java.util.regex.Pattern;
 
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.topcoder.scraper.Consts;
@@ -17,7 +17,6 @@ import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.topcoder.common.model.scraper.ProductSearchConfig;
 import com.topcoder.common.repository.ConfigurationRepository;
 import com.topcoder.common.traffic.TrafficWebClient;
-import com.topcoder.common.util.HtmlUtils;
 import com.topcoder.scraper.lib.navpage.NavigableProductListPage;
 import com.topcoder.scraper.service.WebpageService;
 
@@ -69,7 +68,8 @@ public class GeneralProductSearchCrawler extends AbstractGeneralCrawler {
         }
 
         LOGGER.debug(String.format("return product_code=[%s]", productCode));
-        String savedPath = listPage.savePage(site, "product-list", searchWord, listPage, webpageService);
+        String encoded = URLEncoder.encode(searchWord, StandardCharsets.UTF_8.toString());
+        String savedPath = listPage.savePage(site, "product-list", encoded, listPage, webpageService);
         return new GeneralProductSearchCrawlerResult(productCode, savedPath);
     }
 

@@ -480,16 +480,17 @@ SET
         "selector": "head > link[rel=\\\"canonical\\\"]",
         "attribute": "href",
         "regex": "https:\\\/\\\/.*?\\\/(.*).html",
+        "is_script": false,
         "script": ""
       }
     ],
-        "script":""
-      },
+    [
       {
         "item":"unit_price",
         "selector":".ItemPrice_price",
         "attribute":"",
         "regex":"",
+        "is_script": false,
         "script":""
       },
       {
@@ -497,6 +498,7 @@ SET
         "selector":"p.elPrice:nth-child(2) > em",
         "attribute":"",
         "regex":"",
+        "is_script": false,
         "script":""
       }
     ],
@@ -506,12 +508,14 @@ SET
         "selector":".mdItemInfoCode > p",
         "attribute":"",
         "regex":"[0-9]{13}",
+        "is_script": false,
         "script":""
       },
       {
         "attribute":"",
         "item":"jan_code",
         "regex":"JANコード/ISBNコード：(.+)",
+        "is_script": false,
         "script":"",
         "selector":".ItemDetails ul li:nth-of-type(2)"
       }
@@ -523,9 +527,16 @@ SET
         "regex":"商品コード：(.+)",
         "script":"(()=>{ var ifr = document.querySelector(''#itm_inf > div:nth-child(6) > div > iframe''); if (!ifr) return null; return ifr.contentDocument.body.querySelector(''#wrapper > table > tbody > tr:nth-child(4) > td > table > tbody > tr:nth-child(2) > td:nth-child(2) > font'').innerText; })();",
         "selector":"#wrapper > table > tbody > tr:nth-child(4) > td > table > tbody > tr:nth-child(2) > td:nth-child(2) > font",
-        "is_script":true
+        "is_script": false
+      },
+      {
+        "attribute":"",
+        "item":"model_no",
+        "regex":"商品コード：(.+)",
+        "script":"",
+        "selector":".ItemDetails li"
       }
-    ]
+   ]
   ]
 }',
 @amazon_product_search_script = '{
@@ -534,6 +545,7 @@ SET
   "selector": "div > span > div > div div:nth-of-type(2) > h2 > a",
   "attribute": "href",
   "regex": "/dp/([A-Z0-9]+)/",
+  "is_script": false,
   "script": "",
   "excluded_selector": "div > span > div > div div:nth-of-type(2) > div > span > span > span:nth-of-type(1) > span"
 }',
@@ -543,6 +555,7 @@ SET
   "selector": "div:nth-of-type(2) > h2 > a",
   "attribute": "href",
   "regex": "item.rakuten.co.jp\\\/(.+?\\\/.+?)\\\/",
+  "is_script": false,
   "script": "",
   "excluded_selector": "div:nth-of-type(2) > h2 > span.dui-tag.-pr"
 }',
@@ -552,6 +565,7 @@ SET
   "selector":"div > div:nth-of-type(2) > p > a._2EW-04-9Eayr",
   "attribute": "data-beacon",
   "regex": "targurl:store.shopping.yahoo.co.jp\\\/(.+?\\\/.+?).html",
+  "is_script": false,
   "script": "",
   "excluded_selector": ""
 }';

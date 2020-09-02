@@ -10,40 +10,40 @@ import java.util.Date;
 @Table(name = "tactic_event")
 @Data
 public class TacticEventDAO {
-  /**
-   * the id
-   */
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private int id;
+    /**
+     * the id
+     */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
-  /**
-   * contents
-   */
-  @JsonIgnore
-  @Column(name = "contents", columnDefinition = "MEDIUMTEXT")
-  private String contents;
-
-
-  /**
-   * the status
-   */
-  @Column(name = "status")
-  private String status;
+    /**
+     * contents
+     */
+    @JsonIgnore
+    @Column(name = "contents", columnDefinition = "MEDIUMTEXT")
+    private String contents;
 
 
-  /**
-   * update at time
-   */
-  @Temporal(TemporalType.TIMESTAMP)
-  @Column(name = "create_at")
-  private Date createAt;
+    /**
+     * the status
+     */
+    @Column(name = "status")
+    private String status;
 
-  /**
-   * finish at time
-   */
-  @Temporal(TemporalType.TIMESTAMP)
-  @Column(name = "finish_at")
-  private Date finishAt;
+
+    /**
+     * update at time
+     */
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "create_at")
+    private Date createAt;
+
+    /**
+     * finish at time
+     */
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "finish_at")
+    private Date finishAt;
 
 }

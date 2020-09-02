@@ -23,69 +23,69 @@ import java.util.Optional;
 @Component
 public class OldKojimaPurchaseHistoryListModule implements IPurchaseHistoryModule {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(OldKojimaPurchaseHistoryListModule.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OldKojimaPurchaseHistoryListModule.class);
 
-  private final PurchaseHistoryService purchaseHistoryService;
-  private final WebpageService webpageService;
-  private final ECSiteAccountRepository ecSiteAccountRepository;
-  private final KojimaLoginHandler loginHandler;
+    private final PurchaseHistoryService purchaseHistoryService;
+    private final WebpageService webpageService;
+    private final ECSiteAccountRepository ecSiteAccountRepository;
+    private final KojimaLoginHandler loginHandler;
 
-  @Autowired
-  public OldKojimaPurchaseHistoryListModule(
-    PurchaseHistoryService purchaseHistoryService,
-    ECSiteAccountRepository ecSiteAccountRepository,
-    WebpageService webpageService,
-    KojimaLoginHandler loginHandler) {
-    this.purchaseHistoryService = purchaseHistoryService;
-    this.webpageService = webpageService;
-    this.ecSiteAccountRepository = ecSiteAccountRepository;
-    this.loginHandler = loginHandler;
-  }
-
-  @Override
-  public String getModuleType() {
-    return "kojima";
-  }
-
-  @Override
-  public void fetchPurchaseHistoryList(List<String> sites) throws IOException {
-    
-    Iterable<ECSiteAccountDAO> accountDAOS = ecSiteAccountRepository.findAllByEcSite(getModuleType());
-    for (ECSiteAccountDAO ecSiteAccountDAO : accountDAOS) {
-
-      if (ecSiteAccountDAO.getEcUseFlag() != Boolean.TRUE) {
-        LOGGER.info("EC Site [" + ecSiteAccountDAO.getId() + ":" + ecSiteAccountDAO.getEcSite() + "] is not active. Skipped.");
-        continue;
-      }
-
-      TrafficWebClient webClient = new TrafficWebClient(ecSiteAccountDAO.getUserId(), true);
-      LOGGER.info("web client version = " + webClient.getWebClient().getBrowserVersion());
-      boolean restoreRet = Common.restoreCookies(webClient.getWebClient(), ecSiteAccountDAO);
-      if (!restoreRet) {
-        LOGGER.error("skip ecSite id = " + ecSiteAccountDAO.getId() + ", restore cookies failed");
-        continue;
-      }
-      
-      try {
-        Optional<PurchaseHistory> lastPurchaseHistory = purchaseHistoryService.fetchLast(ecSiteAccountDAO.getId());
-
-        OldKojimaPurchaseHistoryListCrawler crawler = new OldKojimaPurchaseHistoryListCrawler(getModuleType(), webpageService);
-        GeneralPurchaseHistoryCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClient, lastPurchaseHistory.orElse(null), true);
-        webClient.finishTraffic();
-
-        List<PurchaseHistory> list = crawlerResult.getPurchaseHistoryList();
-
-        if (list != null && list.size() > 0) {
-          list.forEach(purchaseHistory -> purchaseHistory.setAccountId(Integer.toString(ecSiteAccountDAO.getId())));
-          purchaseHistoryService.save(getModuleType(), list);
-        }
-        LOGGER.info("succeed fetch purchaseHistory for ecSite id = " + ecSiteAccountDAO.getId());
-      } catch (Exception e) { // here catch all exception and did not throw it
-        this.loginHandler.saveFailedResult(ecSiteAccountDAO, e.getMessage());
-        LOGGER.error("failed to PurchaseHistory for ecSite id = " + ecSiteAccountDAO.getId());
-        e.printStackTrace();
-      }
+    @Autowired
+    public OldKojimaPurchaseHistoryListModule(
+            PurchaseHistoryService purchaseHistoryService,
+            ECSiteAccountRepository ecSiteAccountRepository,
+            WebpageService webpageService,
+            KojimaLoginHandler loginHandler) {
+        this.purchaseHistoryService = purchaseHistoryService;
+        this.webpageService = webpageService;
+        this.ecSiteAccountRepository = ecSiteAccountRepository;
+        this.loginHandler = loginHandler;
     }
-  }
+
+    @Override
+    public String getModuleType() {
+        return "kojima";
+    }
+
+    @Override
+    public void fetchPurchaseHistoryList(List<String> sites) throws IOException {
+
+        Iterable<ECSiteAccountDAO> accountDAOS = ecSiteAccountRepository.findAllByEcSite(getModuleType());
+        for (ECSiteAccountDAO ecSiteAccountDAO : accountDAOS) {
+
+            if (ecSiteAccountDAO.getEcUseFlag() != Boolean.TRUE) {
+                LOGGER.info("EC Site [" + ecSiteAccountDAO.getId() + ":" + ecSiteAccountDAO.getEcSite() + "] is not active. Skipped.");
+                continue;
+            }
+
+            TrafficWebClient webClient = new TrafficWebClient(ecSiteAccountDAO.getUserId(), true);
+            LOGGER.info("web client version = " + webClient.getWebClient().getBrowserVersion());
+            boolean restoreRet = Common.restoreCookies(webClient.getWebClient(), ecSiteAccountDAO);
+            if (!restoreRet) {
+                LOGGER.error("skip ecSite id = " + ecSiteAccountDAO.getId() + ", restore cookies failed");
+                continue;
+            }
+
+            try {
+                Optional<PurchaseHistory> lastPurchaseHistory = purchaseHistoryService.fetchLast(ecSiteAccountDAO.getId());
+
+                OldKojimaPurchaseHistoryListCrawler crawler = new OldKojimaPurchaseHistoryListCrawler(getModuleType(), webpageService);
+                GeneralPurchaseHistoryCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClient, lastPurchaseHistory.orElse(null), true);
+                webClient.finishTraffic();
+
+                List<PurchaseHistory> list = crawlerResult.getPurchaseHistoryList();
+
+                if (list != null && list.size() > 0) {
+                    list.forEach(purchaseHistory -> purchaseHistory.setAccountId(Integer.toString(ecSiteAccountDAO.getId())));
+                    purchaseHistoryService.save(getModuleType(), list);
+                }
+                LOGGER.info("succeed fetch purchaseHistory for ecSite id = " + ecSiteAccountDAO.getId());
+            } catch (Exception e) { // here catch all exception and did not throw it
+                this.loginHandler.saveFailedResult(ecSiteAccountDAO, e.getMessage());
+                LOGGER.error("failed to PurchaseHistory for ecSite id = " + ecSiteAccountDAO.getId());
+                e.printStackTrace();
+            }
+        }
+    }
 
 }

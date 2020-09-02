@@ -7,8 +7,8 @@ import lombok.Data;
 @AllArgsConstructor
 public class ScrapingFieldProperty {
 
-  public String selector;
-  public String type;
-  public String extractRegex;
-  public String dateFormat;
+    public String selector;
+    public String type;
+    public String extractRegex;
+    public String dateFormat;
 }

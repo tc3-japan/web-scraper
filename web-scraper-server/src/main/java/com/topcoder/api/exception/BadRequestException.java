@@ -5,22 +5,22 @@ package com.topcoder.api.exception;
  */
 public class BadRequestException extends ApiException {
 
-  /**
-   * Create a new instance with message argument.
-   *
-   * @param message the message
-   */
-  public BadRequestException(String message) {
-    super(message);
-  }
+    /**
+     * Create a new instance with message argument.
+     *
+     * @param message the message
+     */
+    public BadRequestException(String message) {
+        super(message);
+    }
 
-  /**
-   * Create a new instance with message and cause arguments.
-   *
-   * @param message the message
-   * @param cause   the cause of the exception
-   */
-  public BadRequestException(String message, Throwable cause) {
-    super(message, cause);
-  }
+    /**
+     * Create a new instance with message and cause arguments.
+     *
+     * @param message the message
+     * @param cause   the cause of the exception
+     */
+    public BadRequestException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

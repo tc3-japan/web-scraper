@@ -25,70 +25,70 @@ import com.topcoder.common.repository.ConfigurationRepository;
 @Component
 public class OldYahooPurchaseHistoryListModule implements IPurchaseHistoryModule {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(OldYahooPurchaseHistoryListModule.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OldYahooPurchaseHistoryListModule.class);
 
-  private final PurchaseHistoryService purchaseHistoryService;
-  private final WebpageService webpageService;
-  private final ECSiteAccountRepository ecSiteAccountRepository;
-  private final YahooLoginHandler loginHandler;
-  private final ConfigurationRepository configurationRepository;
+    private final PurchaseHistoryService purchaseHistoryService;
+    private final WebpageService webpageService;
+    private final ECSiteAccountRepository ecSiteAccountRepository;
+    private final YahooLoginHandler loginHandler;
+    private final ConfigurationRepository configurationRepository;
 
-  @Autowired
-  public OldYahooPurchaseHistoryListModule(
-    PurchaseHistoryService purchaseHistoryService,
-    ECSiteAccountRepository ecSiteAccountRepository,
-    WebpageService webpageService,
-    ConfigurationRepository configurationRepository,
-    YahooLoginHandler loginHandler) {
-    this.purchaseHistoryService = purchaseHistoryService;
-    this.webpageService = webpageService;
-    this.ecSiteAccountRepository = ecSiteAccountRepository;
-    this.loginHandler = loginHandler;
-    this.configurationRepository = configurationRepository;
-  }
-
-  @Override
-  public String getModuleType() {
-    return "yahoo";
-  }
-
-  @Override
-  public void fetchPurchaseHistoryList(List<String> sites) throws IOException {
-
-    Iterable<ECSiteAccountDAO> accountDAOS = ecSiteAccountRepository.findAllByEcSite(getModuleType());
-    for (ECSiteAccountDAO ecSiteAccountDAO : accountDAOS) {
-
-      if (ecSiteAccountDAO.getEcUseFlag() != Boolean.TRUE) {
-        LOGGER.info("EC Site [" + ecSiteAccountDAO.getId() + ":" + ecSiteAccountDAO.getEcSite() + "] is not active. Skipped.");
-        continue;
-      }
-      Optional<PurchaseHistory> lastPurchaseHistory = purchaseHistoryService.fetchLast(ecSiteAccountDAO.getId());
-
-      TrafficWebClient webClient = new TrafficWebClient(ecSiteAccountDAO.getUserId(), true);
-      LOGGER.info("web client version = " + webClient.getWebClient().getBrowserVersion());
-      boolean restoreRet = Common.restoreCookies(webClient.getWebClient(), ecSiteAccountDAO);
-      if (!restoreRet) {
-        LOGGER.error("skip ecSite id = " + ecSiteAccountDAO.getId() + ", restore cookies failed");
-        continue;
-      }
-
-      try {
-        OldYahooPurchaseHistoryListCrawler crawler = new OldYahooPurchaseHistoryListCrawler(getModuleType(), webpageService, ecSiteAccountDAO, this.configurationRepository);
-
-        GeneralPurchaseHistoryCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClient, lastPurchaseHistory.orElse(null), true);
-        webClient.finishTraffic();
-        List<PurchaseHistory> list = crawlerResult.getPurchaseHistoryList();
-
-        if (list != null && list.size() > 0) {
-          list.forEach(purchaseHistory -> purchaseHistory.setAccountId(Integer.toString(ecSiteAccountDAO.getId())));
-          purchaseHistoryService.save(getModuleType(), list);
-        }
-        LOGGER.info("succeed fetch purchaseHistory for ecSite id = " + ecSiteAccountDAO.getId());
-      } catch (Exception e) { // here catch all exception and did not throw it
-        this.loginHandler.saveFailedResult(ecSiteAccountDAO, e.getMessage());
-        LOGGER.error("failed to PurchaseHistory for ecSite id = " + ecSiteAccountDAO.getId());
-        e.printStackTrace();
-      }
+    @Autowired
+    public OldYahooPurchaseHistoryListModule(
+            PurchaseHistoryService purchaseHistoryService,
+            ECSiteAccountRepository ecSiteAccountRepository,
+            WebpageService webpageService,
+            ConfigurationRepository configurationRepository,
+            YahooLoginHandler loginHandler) {
+        this.purchaseHistoryService = purchaseHistoryService;
+        this.webpageService = webpageService;
+        this.ecSiteAccountRepository = ecSiteAccountRepository;
+        this.loginHandler = loginHandler;
+        this.configurationRepository = configurationRepository;
     }
-  }
+
+    @Override
+    public String getModuleType() {
+        return "yahoo";
+    }
+
+    @Override
+    public void fetchPurchaseHistoryList(List<String> sites) throws IOException {
+
+        Iterable<ECSiteAccountDAO> accountDAOS = ecSiteAccountRepository.findAllByEcSite(getModuleType());
+        for (ECSiteAccountDAO ecSiteAccountDAO : accountDAOS) {
+
+            if (ecSiteAccountDAO.getEcUseFlag() != Boolean.TRUE) {
+                LOGGER.info("EC Site [" + ecSiteAccountDAO.getId() + ":" + ecSiteAccountDAO.getEcSite() + "] is not active. Skipped.");
+                continue;
+            }
+            Optional<PurchaseHistory> lastPurchaseHistory = purchaseHistoryService.fetchLast(ecSiteAccountDAO.getId());
+
+            TrafficWebClient webClient = new TrafficWebClient(ecSiteAccountDAO.getUserId(), true);
+            LOGGER.info("web client version = " + webClient.getWebClient().getBrowserVersion());
+            boolean restoreRet = Common.restoreCookies(webClient.getWebClient(), ecSiteAccountDAO);
+            if (!restoreRet) {
+                LOGGER.error("skip ecSite id = " + ecSiteAccountDAO.getId() + ", restore cookies failed");
+                continue;
+            }
+
+            try {
+                OldYahooPurchaseHistoryListCrawler crawler = new OldYahooPurchaseHistoryListCrawler(getModuleType(), webpageService, ecSiteAccountDAO, this.configurationRepository);
+
+                GeneralPurchaseHistoryCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClient, lastPurchaseHistory.orElse(null), true);
+                webClient.finishTraffic();
+                List<PurchaseHistory> list = crawlerResult.getPurchaseHistoryList();
+
+                if (list != null && list.size() > 0) {
+                    list.forEach(purchaseHistory -> purchaseHistory.setAccountId(Integer.toString(ecSiteAccountDAO.getId())));
+                    purchaseHistoryService.save(getModuleType(), list);
+                }
+                LOGGER.info("succeed fetch purchaseHistory for ecSite id = " + ecSiteAccountDAO.getId());
+            } catch (Exception e) { // here catch all exception and did not throw it
+                this.loginHandler.saveFailedResult(ecSiteAccountDAO, e.getMessage());
+                LOGGER.error("failed to PurchaseHistory for ecSite id = " + ecSiteAccountDAO.getId());
+                e.printStackTrace();
+            }
+        }
+    }
 }

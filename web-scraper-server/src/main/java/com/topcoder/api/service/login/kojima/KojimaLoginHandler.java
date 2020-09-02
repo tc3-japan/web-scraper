@@ -26,41 +26,41 @@ import java.io.ObjectOutputStream;
 @Component
 public class KojimaLoginHandler extends LoginHandlerBase {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(KojimaLoginHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(KojimaLoginHandler.class);
 
-  private ApplicationContext applicationContext;
+    private ApplicationContext applicationContext;
 
-  @Autowired
-  public KojimaLoginHandler(ECSiteAccountRepository ecSiteAccountRepository,
-      UserRepository userRepository, ApplicationContext applicationContext) {
-    super(ecSiteAccountRepository, userRepository);
-    this.applicationContext = applicationContext;
-  }
+    @Autowired
+    public KojimaLoginHandler(ECSiteAccountRepository ecSiteAccountRepository,
+                              UserRepository userRepository, ApplicationContext applicationContext) {
+        super(ecSiteAccountRepository, userRepository);
+        this.applicationContext = applicationContext;
+    }
 
-  @Override
-  public String getECSite() {
-    return "kojima";
-  }
+    @Override
+    public String getECSite() {
+        return "kojima";
+    }
 
-  @Override
-  public LoginResponse loginInit(int userId, Integer siteId, String uuid) throws ApiException {
-    return new LoginResponse(null, null, null, AuthStep.SECOND, null);
-  }
+    @Override
+    public LoginResponse loginInit(int userId, Integer siteId, String uuid) throws ApiException {
+        return new LoginResponse(null, null, null, AuthStep.SECOND, null);
+    }
 
-  @Override
-  public LoginResponse login(int userId, LoginRequest request) throws ApiException {
+    @Override
+    public LoginResponse login(int userId, LoginRequest request) throws ApiException {
 
-    ECSiteAccountDAO ecSiteAccountDAO = ecSiteAccountRepository.findOne(request.getSiteId());
-    ecSiteAccountDAO.setPassword(request.getPassword());
-    ecSiteAccountDAO.setLoginEmail(request.getEmail());
-    ecSiteAccountRepository.save(ecSiteAccountDAO); // save it first
+        ECSiteAccountDAO ecSiteAccountDAO = ecSiteAccountRepository.findOne(request.getSiteId());
+        ecSiteAccountDAO.setPassword(request.getPassword());
+        ecSiteAccountDAO.setLoginEmail(request.getEmail());
+        ecSiteAccountRepository.save(ecSiteAccountDAO); // save it first
 
-    KojimaAuthenticationCrawler crawler = new KojimaAuthenticationCrawler("kojima", applicationContext.getBean(WebpageService.class));
-    TrafficWebClient webClient = new TrafficWebClient(userId, false);
+        KojimaAuthenticationCrawler crawler = new KojimaAuthenticationCrawler("kojima", applicationContext.getBean(WebpageService.class));
+        TrafficWebClient webClient = new TrafficWebClient(userId, false);
 
-    try {
-      KojimaAuthenticationCrawlerResult result = crawler.authenticate(webClient, request.getEmail(), request.getPassword(), null);
-      if (result.isSuccess()) { // succeed , update status and save cookies
+        try {
+            KojimaAuthenticationCrawlerResult result = crawler.authenticate(webClient, request.getEmail(), request.getPassword(), null);
+            if (result.isSuccess()) { // succeed , update status and save cookies
         /*
         List<ECCookie> ecCookies = new LinkedList<>();
         for (Cookie cookie : webClient.getWebClient().getCookieManager().getCookies()) {
@@ -78,23 +78,23 @@ public class KojimaLoginHandler extends LoginHandlerBase {
         saveSuccessResult(ecSiteAccountDAO);
         */
 
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        ObjectOutput oout = new ObjectOutputStream(bout);
-        oout.writeObject(webClient.getWebClient().getCookieManager().getCookies());
-        oout.close();
-        bout.close();
-        ecSiteAccountDAO.setEcCookies(bout.toByteArray());
-        saveSuccessResult(ecSiteAccountDAO);
+                ByteArrayOutputStream bout = new ByteArrayOutputStream();
+                ObjectOutput oout = new ObjectOutputStream(bout);
+                oout.writeObject(webClient.getWebClient().getCookieManager().getCookies());
+                oout.close();
+                bout.close();
+                ecSiteAccountDAO.setEcCookies(bout.toByteArray());
+                saveSuccessResult(ecSiteAccountDAO);
 
-        return new LoginResponse(ecSiteAccountDAO.getLoginEmail(), null, null, AuthStep.DONE, "");
-      } else { // login failed
-        saveFailedResult(ecSiteAccountDAO, "Authentication failed");
-        throw new ApiException("Authentication failed");
-      }
-    } catch (IOException e) {
-      saveFailedResult(ecSiteAccountDAO, e.getMessage());
-      throw new ApiException(e.getMessage());
+                return new LoginResponse(ecSiteAccountDAO.getLoginEmail(), null, null, AuthStep.DONE, "");
+            } else { // login failed
+                saveFailedResult(ecSiteAccountDAO, "Authentication failed");
+                throw new ApiException("Authentication failed");
+            }
+        } catch (IOException e) {
+            saveFailedResult(ecSiteAccountDAO, e.getMessage());
+            throw new ApiException(e.getMessage());
+        }
     }
-  }
 
 }

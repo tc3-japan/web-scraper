@@ -29,89 +29,89 @@ import com.topcoder.scraper.service.WebpageService;
 @Component
 public class GeneralPurchaseHistoryModule implements IPurchaseHistoryModule {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(GeneralPurchaseHistoryModule.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GeneralPurchaseHistoryModule.class);
 
-  private final PurchaseHistoryService purchaseHistoryService;
-  private final WebpageService webpageService;
-  private final ECSiteAccountRepository ecSiteAccountRepository;
-  private GeneralPurchaseHistoryCrawler crawler;
+    private final PurchaseHistoryService purchaseHistoryService;
+    private final WebpageService webpageService;
+    private final ECSiteAccountRepository ecSiteAccountRepository;
+    private GeneralPurchaseHistoryCrawler crawler;
 
-  @Autowired
-  ConfigurationRepository configurationRepository;
+    @Autowired
+    ConfigurationRepository configurationRepository;
 
-  @Autowired
-  PurchaseHistoryRepository historyRepository;
+    @Autowired
+    PurchaseHistoryRepository historyRepository;
 
-  // TODO: arrange login handler
-  //private final LoginHandlerBase loginHandler;
-
-  @Autowired
-  public GeneralPurchaseHistoryModule(PurchaseHistoryService purchaseHistoryService, ECSiteAccountRepository ecSiteAccountRepository, WebpageService webpageService
-                                      //LoginHandlerBase loginHandler
-  ) {
-    this.purchaseHistoryService = purchaseHistoryService;
-    this.webpageService = webpageService;
-    this.ecSiteAccountRepository = ecSiteAccountRepository;
     // TODO: arrange login handler
-    //this.loginHandler = loginHandler;
-  }
+    //private final LoginHandlerBase loginHandler;
 
-  @Override
-  public String getModuleType() {
-    return "general";
-  }
+    @Autowired
+    public GeneralPurchaseHistoryModule(PurchaseHistoryService purchaseHistoryService, ECSiteAccountRepository ecSiteAccountRepository, WebpageService webpageService
+                                        //LoginHandlerBase loginHandler
+    ) {
+        this.purchaseHistoryService = purchaseHistoryService;
+        this.webpageService = webpageService;
+        this.ecSiteAccountRepository = ecSiteAccountRepository;
+        // TODO: arrange login handler
+        //this.loginHandler = loginHandler;
+    }
 
-  @Override
-  public void fetchPurchaseHistoryList(List<String> sites) throws IOException {
+    @Override
+    public String getModuleType() {
+        return "general";
+    }
 
-    for (String site : sites) {
-      Iterable<ECSiteAccountDAO> accountDAOS = ecSiteAccountRepository.findAllByEcSite(site);
+    @Override
+    public void fetchPurchaseHistoryList(List<String> sites) throws IOException {
 
-      for (ECSiteAccountDAO ecSiteAccountDAO : accountDAOS) {
-        Optional<PurchaseHistory> lastPurchaseHistory = purchaseHistoryService.fetchLast(ecSiteAccountDAO.getId());
+        for (String site : sites) {
+            Iterable<ECSiteAccountDAO> accountDAOS = ecSiteAccountRepository.findAllByEcSite(site);
 
-        GeneralPurchaseHistoryCrawlerResult crawlerResult =
-                this.fetchPurchaseHistoryListForECSiteAccount(ecSiteAccountDAO, lastPurchaseHistory.orElse(null));
+            for (ECSiteAccountDAO ecSiteAccountDAO : accountDAOS) {
+                Optional<PurchaseHistory> lastPurchaseHistory = purchaseHistoryService.fetchLast(ecSiteAccountDAO.getId());
 
-        if (crawlerResult != null) {
-          List<PurchaseHistory> list = crawlerResult.getPurchaseHistoryList();
-          if (list != null && list.size() > 0) {
-            list.forEach(purchaseHistory -> purchaseHistory.setAccountId(Integer.toString(ecSiteAccountDAO.getId())));
-            purchaseHistoryService.save(site, list);
-          }
+                GeneralPurchaseHistoryCrawlerResult crawlerResult =
+                        this.fetchPurchaseHistoryListForECSiteAccount(ecSiteAccountDAO, lastPurchaseHistory.orElse(null));
+
+                if (crawlerResult != null) {
+                    List<PurchaseHistory> list = crawlerResult.getPurchaseHistoryList();
+                    if (list != null && list.size() > 0) {
+                        list.forEach(purchaseHistory -> purchaseHistory.setAccountId(Integer.toString(ecSiteAccountDAO.getId())));
+                        purchaseHistoryService.save(site, list);
+                    }
+                }
+            }
         }
-      }
-    }
-  }
-
-  public GeneralPurchaseHistoryCrawlerResult fetchPurchaseHistoryListForECSiteAccount(ECSiteAccountDAO ecSiteAccountDAO, PurchaseHistory lastPurchaseHistory) {
-    if (ecSiteAccountDAO.getEcUseFlag() != Boolean.TRUE) {
-      LOGGER.info("EC Site [" + ecSiteAccountDAO.getId() + ":" + ecSiteAccountDAO.getEcSite() + "] is not active. Skipped.");
-      return null;
-    }
-    this.crawler = new GeneralPurchaseHistoryCrawler(ecSiteAccountDAO.getEcSite(), webpageService, this.configurationRepository);
-
-    TrafficWebClient webClient = new TrafficWebClient(ecSiteAccountDAO.getUserId(), true);
-    LOGGER.info("web client version = " + webClient.getWebClient().getBrowserVersion());
-    boolean restoreRet = Common.restoreCookies(webClient.getWebClient(), ecSiteAccountDAO);
-    if (!restoreRet) {
-      LOGGER.error("skip ec site account id = " + ecSiteAccountDAO.getId() + ", restore cookies failed");
-      return null;
     }
 
-    try {
-      GeneralPurchaseHistoryCrawlerResult crawlerResult = this.crawler.fetchPurchaseHistoryList(webClient, true, false);
-      webClient.finishTraffic();
-      LOGGER.info("succeed fetch purchaseHistory for ec site account id = " + ecSiteAccountDAO.getId());
-      return crawlerResult;
+    public GeneralPurchaseHistoryCrawlerResult fetchPurchaseHistoryListForECSiteAccount(ECSiteAccountDAO ecSiteAccountDAO, PurchaseHistory lastPurchaseHistory) {
+        if (ecSiteAccountDAO.getEcUseFlag() != Boolean.TRUE) {
+            LOGGER.info("EC Site [" + ecSiteAccountDAO.getId() + ":" + ecSiteAccountDAO.getEcSite() + "] is not active. Skipped.");
+            return null;
+        }
+        this.crawler = new GeneralPurchaseHistoryCrawler(ecSiteAccountDAO.getEcSite(), webpageService, this.configurationRepository);
 
-    } catch (Exception e) { // here catch all exception and did not throw it
-      // TODO: arrange login handler
-      //this.loginHandler.saveFailedResult(ecSiteAccountDAO, e.getMessage());
-      LOGGER.error("failed to PurchaseHistory for ec site account id = " + ecSiteAccountDAO.getId());
-      e.printStackTrace();
+        TrafficWebClient webClient = new TrafficWebClient(ecSiteAccountDAO.getUserId(), true);
+        LOGGER.info("web client version = " + webClient.getWebClient().getBrowserVersion());
+        boolean restoreRet = Common.restoreCookies(webClient.getWebClient(), ecSiteAccountDAO);
+        if (!restoreRet) {
+            LOGGER.error("skip ec site account id = " + ecSiteAccountDAO.getId() + ", restore cookies failed");
+            return null;
+        }
+
+        try {
+            GeneralPurchaseHistoryCrawlerResult crawlerResult = this.crawler.fetchPurchaseHistoryList(webClient, true, false);
+            webClient.finishTraffic();
+            LOGGER.info("succeed fetch purchaseHistory for ec site account id = " + ecSiteAccountDAO.getId());
+            return crawlerResult;
+
+        } catch (Exception e) { // here catch all exception and did not throw it
+            // TODO: arrange login handler
+            //this.loginHandler.saveFailedResult(ecSiteAccountDAO, e.getMessage());
+            LOGGER.error("failed to PurchaseHistory for ec site account id = " + ecSiteAccountDAO.getId());
+            e.printStackTrace();
+        }
+        return null;
     }
-    return null;
-  }
 
 }

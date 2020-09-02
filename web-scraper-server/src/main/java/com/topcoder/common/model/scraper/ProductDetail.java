@@ -10,15 +10,15 @@ import lombok.Data;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "item",
-    "selector",
-    "attribute",
-    "regex",
-    "label_selector",
-    "label_value",
-    "label_attribute",
-    "label_regex",
-    "script"
+        "item",
+        "selector",
+        "attribute",
+        "regex",
+        "label_selector",
+        "label_value",
+        "label_attribute",
+        "label_regex",
+        "script"
 })
 public class ProductDetail {
     @JsonProperty("item")

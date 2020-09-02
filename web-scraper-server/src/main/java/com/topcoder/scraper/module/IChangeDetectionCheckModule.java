@@ -10,9 +10,9 @@ import java.util.List;
  */
 public interface IChangeDetectionCheckModule extends IBasicModule {
 
-  /**
-   * check change detection
-   */
-  void check(List<String> sites) throws IOException;
+    /**
+     * check change detection
+     */
+    void check(List<String> sites) throws IOException;
 }
 

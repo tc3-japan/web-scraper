@@ -13,15 +13,15 @@ import org.springframework.stereotype.Component;
 @Component
 public class KojimaProductCrawler extends AbstractProductCrawler {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(KojimaProductCrawler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(KojimaProductCrawler.class);
 
-  @Autowired
-  public KojimaProductCrawler(WebpageService webpageService) {
-    super("kojima", webpageService);
-  }
+    @Autowired
+    public KojimaProductCrawler(WebpageService webpageService) {
+        super("kojima", webpageService);
+    }
 
-  @Override
-  public String getScriptSupportClassName() {
-    return KojimaProductCrawlerScriptSupport.class.getName();
-  }
+    @Override
+    public String getScriptSupportClassName() {
+        return KojimaProductCrawlerScriptSupport.class.getName();
+    }
 }

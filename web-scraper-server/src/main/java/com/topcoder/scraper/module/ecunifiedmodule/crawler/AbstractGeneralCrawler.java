@@ -1,5 +1,6 @@
 package com.topcoder.scraper.module.ecunifiedmodule.crawler;
 
+import com.topcoder.scraper.module.ecunifiedmodule.dryrun.DryRunUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +17,7 @@ public abstract class AbstractGeneralCrawler {
     protected String site;
     protected String jsonConfigText;
     protected ProductConfig productConfig;
+    protected DryRunUtils dryRunUtils;
 
     public AbstractGeneralCrawler(String site, String type, WebpageService webpageService, ConfigurationRepository configurationRepository) {
         LOGGER.debug("[constructor] in");
@@ -50,6 +52,10 @@ public abstract class AbstractGeneralCrawler {
         if (conf != null && !conf.equals("")) {
             this.jsonConfigText = conf;
         }
+    }
+
+    public void setDryRunUtils(DryRunUtils dru) {
+        this.dryRunUtils = dru;
     }
 
 }

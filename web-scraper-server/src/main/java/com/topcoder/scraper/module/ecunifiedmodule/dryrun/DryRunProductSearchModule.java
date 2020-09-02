@@ -45,7 +45,7 @@ public class DryRunProductSearchModule {
         this.webpageService = webpageService;
     }
 
-    public List<Object> searchProduct(String site, String conf) {
+    public List<Object> searchProduct(String site, String conf, Integer count) {
         LOGGER.debug("[searchProductInfoList] in");
         LOGGER.info(String.format("Searching products in %s.", site));
         productCodeList = new ArrayList<String>();
@@ -54,30 +54,31 @@ public class DryRunProductSearchModule {
         this.webClientDryRun = webClient.new TrafficWebClientForDryRun(0, false);
         this.crawler = new GeneralProductSearchCrawler(site, "search", this.webpageService, this.configurationRepository);
         crawler.setConfig(conf);
+        DryRunUtils dru = new DryRunUtils(count);
         List<ProductDAO> products = productRepository.findByECSite(site);
         for (ProductDAO product : products) {
             try {
                 if (product.getModelNo() != null) {
                     LOGGER.info(String.format("Search product by model no :%s.", product.getModelNo()));
                     this.searchProduct(product.getModelNo());
-                    if (DryRunUtils.checkCountOver(productCodeList)) break;
+                    if (dru.checkCountOver(productCodeList)) break;
                 }
                 if (product.getJanCode() != null) {
                     LOGGER.info(String.format("Search product by jan code :%s.", product.getJanCode()));
                     this.searchProduct(product.getJanCode());
-                    if (DryRunUtils.checkCountOver(productCodeList)) break;
+                    if (dru.checkCountOver(productCodeList)) break;
                 }
                 if (product.getProductName() != null) {
                     LOGGER.info(String.format("Search product by product name :%s.", product.getProductName()));
                     this.searchProduct(product.getProductName());
-                    if (DryRunUtils.checkCountOver(productCodeList)) break;
+                    if (dru.checkCountOver(productCodeList)) break;
                 }
             } catch (IOException | IllegalStateException e) {
                 LOGGER.error(String.format("Fail to search product."));
             }
         }
         ;
-        return new DryRunUtils().toJsonOfDryRunProductSearchModule(productCodeList, htmlPathList);
+        return dru.toJsonOfDryRunProductSearchModule(productCodeList, htmlPathList);
     }
 
     private void searchProduct(String searchWord) throws IOException {

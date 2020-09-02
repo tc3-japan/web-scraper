@@ -45,7 +45,7 @@ public class DryRunProductDetailModule {
         this.webpageService = webpageService;
     }
 
-    public List<Object> fetchProductDetailList(String site, String conf) {
+    public List<Object> fetchProductDetailList(String site, String conf, Integer count) {
         LOGGER.debug("[fetchProductDetailList] in");
         LOGGER.debug("[fetchProductDetailList] site:" + site);
         this.productInfoList = new ArrayList<ProductInfo>();
@@ -54,6 +54,7 @@ public class DryRunProductDetailModule {
         this.webClientDryRun = webClient.new TrafficWebClientForDryRun(0, false);
         this.crawler = new GeneralProductDetailCrawler(site, "product", this.webpageService, this.configurationRepository);
         crawler.setConfig(conf);
+        DryRunUtils dru = new DryRunUtils(count);
         List<ProductDAO> products = productRepository.findByECSite(site);
         for (ProductDAO product : products) {
             try {
@@ -61,11 +62,11 @@ public class DryRunProductDetailModule {
             } catch (IOException | IllegalStateException e) {
                 LOGGER.error(String.format("Fail to fetch product %s, please try again.", product.getProductCode()));
             }
-            if (DryRunUtils.checkCountOver(productInfoList)) {
+            if (dru.checkCountOver(productInfoList)) {
                 break;
             }
         }
-        return new DryRunUtils().toJsonOfDryRunProductModule(this.productInfoList, this.htmlPathList);
+        return dru.toJsonOfDryRunProductModule(this.productInfoList, this.htmlPathList);
     }
 
     private void processProductDetail(int productId, String productCode) throws IOException {

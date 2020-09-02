@@ -27,7 +27,9 @@
       "title": "Settings",
       "back": "戻る",
       "update": "Update",
-      "baseUrl": "APIベースURL"
+      "baseUrl": "APIベースURL",
+      "baseTest": "テスト件数",
+      "baseTestDesc": "0:全件"
     },
     "editor": {
       "items": {

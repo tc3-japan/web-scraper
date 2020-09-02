@@ -14,7 +14,16 @@ import com.topcoder.common.model.PurchaseHistory;
 public class DryRunUtils {
 
     private String PREFIX_PATH = "html";
-    public static int DRY_RUN_MAX_COUNT = 10;
+
+    private Integer maxRunCount;
+
+    public DryRunUtils(Integer count) {
+        this.maxRunCount = count;
+    }
+
+    public Integer getMaxRunCount() {
+        return maxRunCount;
+    }
 
     /**
      * Called by DryRunPurchasehistoryModule
@@ -110,11 +119,11 @@ public class DryRunUtils {
      *
      * @return if true over count
      */
-    public static boolean checkCountOver(List list) {
-        if (DRY_RUN_MAX_COUNT == 0) {
+    public boolean checkCountOver(List list) {
+        if (maxRunCount == 0) {
             return false;
         }
-        if (list.size() >= DRY_RUN_MAX_COUNT) {
+        if (list.size() >= maxRunCount) {
             return true;
         }
         return false;

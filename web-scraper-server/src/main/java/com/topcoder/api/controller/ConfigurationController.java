@@ -60,9 +60,9 @@ public class ConfigurationController {
      * @return scraping result
      * @throws ApiException if any error happened
      */
-    @PostMapping(path = "/{site}/{type}/test", consumes = "text/plain")
-    public List<Object> executeConfig(@PathVariable("site") String site, @PathVariable("type") String type, @RequestBody String conf) throws ApiException {
-        List<Object> list = configurationService.executeConfiguration(site, type, conf);
+    @PostMapping(path = "/{site}/{type}/{count}/test", consumes = "text/plain")
+    public List<Object> executeConfig(@PathVariable("site") String site, @PathVariable("type") String type, @PathVariable("count") Integer count, @RequestBody String conf) throws ApiException {
+        List<Object> list = configurationService.executeConfiguration(site, type, conf, count);
         if (list == null || list.size() == 0) {
             throw new ApiException("failed to execute conf");
         }

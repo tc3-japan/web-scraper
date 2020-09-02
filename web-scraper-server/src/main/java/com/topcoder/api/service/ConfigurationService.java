@@ -1,9 +1,7 @@
 package com.topcoder.api.service;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.*;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -145,8 +143,8 @@ public class ConfigurationService {
             String currentAbsolutePath = System.getProperty("user.dir");
             String htmlFilePath = searchHtmlFilePath(currentAbsolutePath + "/logs", htmlFileName);
             File htmlFile = new File(htmlFilePath);
-            FileReader fileReader = new FileReader(htmlFile);
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
+      //      FileReader fileReader = new FileReader(htmlFile, StandardCharsets.UTF_8);
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(htmlFile), "UTF-8"));
             StringBuffer htmlData = new StringBuffer();
             String tempHtmlData = "";
             while ((tempHtmlData = bufferedReader.readLine()) != null) {

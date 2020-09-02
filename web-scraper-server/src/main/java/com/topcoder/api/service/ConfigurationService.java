@@ -107,20 +107,21 @@ public class ConfigurationService {
     /**
      * execute conf
      *
+     * @param request to executable conf
      * @param site    the ec site
      * @param type    the logic type
-     * @param request to executable conf
+     * @param count
      * @throws ApiException if any error happened
      */
-    public List<Object> executeConfiguration(String site, String type, String conf) throws ApiException {
+    public List<Object> executeConfiguration(String site, String type, String conf, Integer count) throws ApiException {
         try {
             switch (type) {
                 case "purchase_history":
-                    return dryRunPurchaseHistoryModule.fetchPurchaseHistoryList(site, conf);
+                    return dryRunPurchaseHistoryModule.fetchPurchaseHistoryList(site, conf, count);
                 case "product":
-                    return dryRunProductModule.fetchProductDetailList(site, conf);
+                    return dryRunProductModule.fetchProductDetailList(site, conf, count);
                 case "search":
-                    return dryRunProductSearchModule.searchProduct(site, conf);
+                    return dryRunProductSearchModule.searchProduct(site, conf, count);
                 default:
                     throw new ApiException("the type:" + type + " was not supported");
             }

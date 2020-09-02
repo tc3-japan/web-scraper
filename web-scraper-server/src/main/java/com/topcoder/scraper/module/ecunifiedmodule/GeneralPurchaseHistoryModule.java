@@ -100,7 +100,7 @@ public class GeneralPurchaseHistoryModule implements IPurchaseHistoryModule {
         }
 
         try {
-            GeneralPurchaseHistoryCrawlerResult crawlerResult = this.crawler.fetchPurchaseHistoryList(webClient, true, false);
+            GeneralPurchaseHistoryCrawlerResult crawlerResult = this.crawler.fetchPurchaseHistoryList(webClient);
             webClient.finishTraffic();
             LOGGER.info("succeed fetch purchaseHistory for ec site account id = " + ecSiteAccountDAO.getId());
             return crawlerResult;

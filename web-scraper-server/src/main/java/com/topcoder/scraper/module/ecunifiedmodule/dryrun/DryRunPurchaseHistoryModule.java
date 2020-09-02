@@ -38,7 +38,7 @@ public class DryRunPurchaseHistoryModule {
         this.ecSiteAccountRepository = ecSiteAccountRepository;
     }
 
-    public List<Object> fetchPurchaseHistoryList(String site, String config) throws IOException {
+    public List<Object> fetchPurchaseHistoryList(String site, String config, Integer count) throws IOException {
 
         ECSiteAccountDAO accountDAO = null;
 
@@ -67,9 +67,11 @@ public class DryRunPurchaseHistoryModule {
         try {
             GeneralPurchaseHistoryCrawler crawler = new GeneralPurchaseHistoryCrawler(site, this.webpageService, this.configurationRepository);
             crawler.setConfig(config);
-            GeneralPurchaseHistoryCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClientForDryRun, true, true);
+            DryRunUtils dru = new DryRunUtils(count);
+            crawler.setDryRunUtils(dru);
+            GeneralPurchaseHistoryCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClientForDryRun);
             LOGGER.info("succeed fetch purchaseHistory for ecSite id = " + accountDAO.getId());
-            return new DryRunUtils().toJsonOfDryRunPurchasehistoryModule(crawlerResult.getPurchaseHistoryList(), crawlerResult.getHtmlPathList());
+            return dru.toJsonOfDryRunPurchasehistoryModule(crawlerResult.getPurchaseHistoryList(), crawlerResult.getHtmlPathList());
         } catch (Exception e) {
             LOGGER.error("failed to PurchaseHistory for ecSite id = " + accountDAO.getId());
             e.printStackTrace();

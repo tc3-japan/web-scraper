@@ -27,7 +27,9 @@
       "title": "Settings",
       "back": "back",
       "update": "Update",
-      "baseUrl": "API Url base"
+      "baseUrl": "API Url base",
+      "baseTest": "Test Count",
+      "baseTestDesc": "0:All"
     },
     "editor": {
       "items": {

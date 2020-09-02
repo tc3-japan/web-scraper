@@ -15,48 +15,48 @@ import java.io.IOException;
  */
 public class RakutenAuthenticationCrawler extends AbstractAuthenticationCrawler {
 
-  private Logger logger = LoggerFactory.getLogger(RakutenAuthenticationCrawler.class.getName());
-  
-  private String siteName;
-  
-  private final WebpageService webpageService;
+    private Logger logger = LoggerFactory.getLogger(RakutenAuthenticationCrawler.class.getName());
 
-  public RakutenAuthenticationCrawler(String siteName, WebpageService webpageService) {
-    this.siteName       = siteName;
-    this.webpageService = webpageService;
-  }
+    private String siteName;
 
-  @Override
-  public RakutenAuthenticationCrawlerResult authenticate(TrafficWebClient webClient,
-                                                       String username,
-                                                       String password, String code, boolean init) throws IOException {
-    return new RakutenAuthenticationCrawlerResult(false, null);
-  }
+    private final WebpageService webpageService;
 
-  @Override
-  public RakutenAuthenticationCrawlerResult authenticate(TrafficWebClient webClient, String username, String password, String code) throws IOException {
-    webClient.getWebClient().getCookieManager().clearCookies();
-    webClient.getWebClient().getOptions().setJavaScriptEnabled(true);
+    public RakutenAuthenticationCrawler(String siteName, WebpageService webpageService) {
+        this.siteName = siteName;
+        this.webpageService = webpageService;
+    }
 
-    HtmlPage page = webClient.getPage("https://grp01.id.rakuten.co.jp/rms/nid/vc?__event=login&service_id=top");
-    NavigableAuthenticationPage authPage = new NavigableAuthenticationPage(page, webClient);
-    
-    authPage.type(username, "#loginInner_u");
-    authPage.savePage("rakuten-auth-1", this.siteName, webpageService);
+    @Override
+    public RakutenAuthenticationCrawlerResult authenticate(TrafficWebClient webClient,
+                                                           String username,
+                                                           String password, String code, boolean init) throws IOException {
+        return new RakutenAuthenticationCrawlerResult(false, null);
+    }
 
-    authPage.typePassword(password, "#loginInner_p");
-    authPage.savePage("rakuten-auth-2", this.siteName, webpageService);
+    @Override
+    public RakutenAuthenticationCrawlerResult authenticate(TrafficWebClient webClient, String username, String password, String code) throws IOException {
+        webClient.getWebClient().getCookieManager().clearCookies();
+        webClient.getWebClient().getOptions().setJavaScriptEnabled(true);
 
-    authPage.typeCheckbox("off", "#auto_logout");
-    authPage.savePage("rakuten-auth-3", this.siteName, webpageService);
+        HtmlPage page = webClient.getPage("https://grp01.id.rakuten.co.jp/rms/nid/vc?__event=login&service_id=top");
+        NavigableAuthenticationPage authPage = new NavigableAuthenticationPage(page, webClient);
 
-    authPage.click(".loginButton", webpageService);
-    authPage.savePage("rakuten-auth-5", "rakuten", webpageService);
+        authPage.type(username, "#loginInner_u");
+        authPage.savePage("rakuten-auth-1", this.siteName, webpageService);
 
-    authPage.savePage("rakuten-authenticated", siteName, webpageService);
+        authPage.typePassword(password, "#loginInner_p");
+        authPage.savePage("rakuten-auth-2", this.siteName, webpageService);
 
-    authPage.confirmLoginByElementExists(".header-logo");
-    
-    return new RakutenAuthenticationCrawlerResult(authPage.getLoginStatus(), null);
-  }
+        authPage.typeCheckbox("off", "#auto_logout");
+        authPage.savePage("rakuten-auth-3", this.siteName, webpageService);
+
+        authPage.click(".loginButton", webpageService);
+        authPage.savePage("rakuten-auth-5", "rakuten", webpageService);
+
+        authPage.savePage("rakuten-authenticated", siteName, webpageService);
+
+        authPage.confirmLoginByElementExists(".header-logo");
+
+        return new RakutenAuthenticationCrawlerResult(authPage.getLoginStatus(), null);
+    }
 }

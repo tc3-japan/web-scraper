@@ -16,29 +16,29 @@ import org.springframework.stereotype.Component;
 @Component
 public class KojimaChangeDetectionInitModule extends AbstractChangeDetectionInitModule {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(KojimaChangeDetectionInitModule.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(KojimaChangeDetectionInitModule.class);
 
-  @Autowired
-  public KojimaChangeDetectionInitModule(
-          MonitorTargetDefinitionProperty monitorTargetDefinitionProperty,
-          WebpageService                  webpageService,
-          ECSiteAccountRepository         ecSiteAccountRepository,
-          NormalDataRepository            normalDataRepository,
-          KojimaPurchaseHistoryModule     purchaseHistoryModule,
-          KojimaProductModule             productModule
-  ) {
-    super(
-            monitorTargetDefinitionProperty,
-            webpageService,
-            ecSiteAccountRepository,
-            normalDataRepository,
-            purchaseHistoryModule,
-            productModule
-    );
-  }
+    @Autowired
+    public KojimaChangeDetectionInitModule(
+            MonitorTargetDefinitionProperty monitorTargetDefinitionProperty,
+            WebpageService webpageService,
+            ECSiteAccountRepository ecSiteAccountRepository,
+            NormalDataRepository normalDataRepository,
+            KojimaPurchaseHistoryModule purchaseHistoryModule,
+            KojimaProductModule productModule
+    ) {
+        super(
+                monitorTargetDefinitionProperty,
+                webpageService,
+                ecSiteAccountRepository,
+                normalDataRepository,
+                purchaseHistoryModule,
+                productModule
+        );
+    }
 
-  @Override
-  public String getModuleType() {
-    return "kojima";
-  }
+    @Override
+    public String getModuleType() {
+        return "kojima";
+    }
 }

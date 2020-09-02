@@ -11,10 +11,10 @@ import lombok.Data;
 public class ScraperRequest {
 
 
-  /**
-   * the script
-   */
-  @NotNull
-  private String script;
+    /**
+     * the script
+     */
+    @NotNull
+    private String script;
 
 }

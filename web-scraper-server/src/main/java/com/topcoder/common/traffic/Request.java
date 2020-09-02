@@ -12,12 +12,12 @@ import java.io.IOException;
  */
 public interface Request {
 
-  /**
-   * invoke action
-   *
-   * @param <P> the page
-   * @return the new page
-   * @throws IOException invoke failed, like network error
-   */
-  <P extends Page> P invoke() throws IOException;
+    /**
+     * invoke action
+     *
+     * @param <P> the page
+     * @return the new page
+     * @throws IOException invoke failed, like network error
+     */
+    <P extends Page> P invoke() throws IOException;
 }

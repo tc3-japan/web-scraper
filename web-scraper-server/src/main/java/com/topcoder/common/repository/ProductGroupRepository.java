@@ -7,7 +7,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ProductGroupRepository extends CrudRepository<ProductGroupDAO, Integer> {
     ProductGroupDAO getByModelNo(String modelNo);
+
     ProductGroupDAO getByJanCode(String janCode);
+
     ProductGroupDAO getByProductName(String janCode);
+
     Iterable<ProductGroupDAO> findByConfirmationStatus(String status);
 }

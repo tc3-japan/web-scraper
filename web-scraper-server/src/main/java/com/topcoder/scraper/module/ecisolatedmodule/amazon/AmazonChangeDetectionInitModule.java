@@ -16,29 +16,29 @@ import org.springframework.stereotype.Component;
 @Component
 public class AmazonChangeDetectionInitModule extends AbstractChangeDetectionInitModule {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(AmazonChangeDetectionInitModule.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AmazonChangeDetectionInitModule.class);
 
-  @Autowired
-  public AmazonChangeDetectionInitModule(
-          MonitorTargetDefinitionProperty monitorTargetDefinitionProperty,
-          WebpageService                  webpageService,
-          ECSiteAccountRepository         ecSiteAccountRepository,
-          NormalDataRepository            normalDataRepository,
-          AmazonPurchaseHistoryModule     purchaseHistoryModule,
-          AmazonProductModule             productModule
-  ) {
-    super(
-            monitorTargetDefinitionProperty,
-            webpageService,
-            ecSiteAccountRepository,
-            normalDataRepository,
-            purchaseHistoryModule,
-            productModule
-    );
-  }
+    @Autowired
+    public AmazonChangeDetectionInitModule(
+            MonitorTargetDefinitionProperty monitorTargetDefinitionProperty,
+            WebpageService webpageService,
+            ECSiteAccountRepository ecSiteAccountRepository,
+            NormalDataRepository normalDataRepository,
+            AmazonPurchaseHistoryModule purchaseHistoryModule,
+            AmazonProductModule productModule
+    ) {
+        super(
+                monitorTargetDefinitionProperty,
+                webpageService,
+                ecSiteAccountRepository,
+                normalDataRepository,
+                purchaseHistoryModule,
+                productModule
+        );
+    }
 
-  @Override
-  public String getModuleType() {
-    return "amazon";
-  }
+    @Override
+    public String getModuleType() {
+        return "amazon";
+    }
 }

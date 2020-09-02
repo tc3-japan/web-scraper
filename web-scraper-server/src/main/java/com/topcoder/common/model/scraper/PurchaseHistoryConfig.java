@@ -8,11 +8,11 @@ import lombok.Data;
  */
 @Data
 public class PurchaseHistoryConfig {
-  private String url;
+    private String url;
 
-  @JsonProperty("purchase_order")
-  private PurchaseOrder purchaseOrder;
+    @JsonProperty("purchase_order")
+    private PurchaseOrder purchaseOrder;
 
-  @JsonProperty("next_url_element")
-  private String nextUrlElement;
+    @JsonProperty("next_url_element")
+    private String nextUrlElement;
 }

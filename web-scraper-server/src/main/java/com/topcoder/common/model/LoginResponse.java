@@ -8,28 +8,28 @@ import lombok.Data;
 @AllArgsConstructor
 public class LoginResponse {
 
-  /**
-   * the email
-   */
-  private String emailId;
+    /**
+     * the email
+     */
+    private String emailId;
 
-  /**
-   * the code type
-   */
-  private CodeType codeType;
+    /**
+     * the code type
+     */
+    private CodeType codeType;
 
-  /**
-   * the image(base 64 format)
-   */
-  private String image;
+    /**
+     * the image(base 64 format)
+     */
+    private String image;
 
-  /**
-   * what step for auth now
-   */
-  private AuthStep authStep;
+    /**
+     * what step for auth now
+     */
+    private AuthStep authStep;
 
-  /**
-   * failed reason
-   */
-  private String reason;
+    /**
+     * failed reason
+     */
+    private String reason;
 }

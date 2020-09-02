@@ -18,34 +18,34 @@ import org.springframework.stereotype.Component;
 @Component
 public class AmazonChangeDetectionCheckModule extends AbstractChangeDetectionCheckModule {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(AmazonChangeDetectionCheckModule.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AmazonChangeDetectionCheckModule.class);
 
-  @Autowired
-  public AmazonChangeDetectionCheckModule(
-          MonitorTargetDefinitionProperty monitorTargetDefinitionProperty,
-          WebpageService                  webpageService,
-          ECSiteAccountRepository         ecSiteAccountRepository,
-          NormalDataRepository            normalDataRepository,
-          AmazonPurchaseHistoryModule     purchaseHistoryModule,
-          AmazonProductModule             productModule,
-          CheckItemsDefinitionProperty    checkItemsDefinitionProperty,
-          CheckResultRepository           checkResultRepository
+    @Autowired
+    public AmazonChangeDetectionCheckModule(
+            MonitorTargetDefinitionProperty monitorTargetDefinitionProperty,
+            WebpageService webpageService,
+            ECSiteAccountRepository ecSiteAccountRepository,
+            NormalDataRepository normalDataRepository,
+            AmazonPurchaseHistoryModule purchaseHistoryModule,
+            AmazonProductModule productModule,
+            CheckItemsDefinitionProperty checkItemsDefinitionProperty,
+            CheckResultRepository checkResultRepository
 
-  ) {
-    super(
-            monitorTargetDefinitionProperty,
-            webpageService,
-            ecSiteAccountRepository,
-            normalDataRepository,
-            purchaseHistoryModule,
-            productModule,
-            checkItemsDefinitionProperty,
-            checkResultRepository
-    );
-  }
+    ) {
+        super(
+                monitorTargetDefinitionProperty,
+                webpageService,
+                ecSiteAccountRepository,
+                normalDataRepository,
+                purchaseHistoryModule,
+                productModule,
+                checkItemsDefinitionProperty,
+                checkResultRepository
+        );
+    }
 
-  @Override
-  public String getModuleType() {
-    return "amazon";
-  }
+    @Override
+    public String getModuleType() {
+        return "amazon";
+    }
 }

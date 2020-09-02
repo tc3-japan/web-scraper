@@ -20,74 +20,75 @@ import com.topcoder.scraper.module.IProductSearchModule;
 @Component
 public class SearchProductDemoCommand extends AbstractCommand<IProductSearchModule> {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(SearchProductDemoCommand.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SearchProductDemoCommand.class);
 
-  @Autowired
-  public SearchProductDemoCommand(List<IProductSearchModule> modules) {
-    super(modules);
-  }
-
-  /**
-   * run fetch product detail from specific module
-   * @param module module to be run
-   */
-  @Override
-  protected void process(IProductSearchModule module) {
-    try {
-      ProductDAO product;
-
-      LOGGER.info(">>> SearchProductDemo, Amazon: ");
-      product = module.searchProductInfo("amazon", "GZ-E109KC-R");
-      if (product != null) {
-        LOGGER.info("ProductCode: " + product.getProductCode());
-        LOGGER.info("ProductName: " + product.getProductName());
-        LOGGER.info("UnitPrice: " + product.getUnitPrice());
-        LOGGER.info("ModelNo: " + product.getModelNo());
-        LOGGER.info("JANCode: " + product.getJanCode());
-      } else {
-        LOGGER.warn(String.format("No product(%s) found in %s", "GZ-E109KC-R", "amazon"));
-      }
-
-      LOGGER.info(">>> SearchProductDemo, Kojima: ");
-      product = module.searchProductInfo("kojima", "GZ-E109KC-R");
-      if (product != null) {
-        LOGGER.info("ProductCode: " + product.getProductCode());
-        LOGGER.info("ProductName: " + product.getProductName());
-        LOGGER.info("UnitPrice: " + product.getUnitPrice());
-        LOGGER.info("ModelNo: " + product.getModelNo());
-        LOGGER.info("JANCode: " + product.getJanCode());
-      } else {
-        LOGGER.warn(String.format("No product(%s) found in %s", "GZ-E109KC-R", "Kojima"));
-      }
-
-      LOGGER.info(">>> SearchProductDemo, Yahoo: ");
-      product = module.searchProductInfo("yahoo", "GZ-E109KC-R");
-      if (product != null) {
-        LOGGER.info("ProductCode: " + product.getProductCode());
-        LOGGER.info("ProductName: " + product.getProductName());
-        LOGGER.info("UnitPrice: " + product.getUnitPrice());
-        LOGGER.info("ModelNo: " + product.getModelNo());
-        LOGGER.info("JANCode: " + product.getJanCode());
-      } else {
-        LOGGER.warn(String.format("No product(%s) found in %s", "GZ-E109KC-R", "yahoo"));
-      }
-
-      LOGGER.info(">>> SearchProductDemo, Rakuten: ");
-      product = module.searchProductInfo("rakuten", "HandyCam");
-      if (product != null) {
-        LOGGER.info("ProductCode: " + product.getProductCode());
-        LOGGER.info("ProductName: " + product.getProductName());
-        LOGGER.info("UnitPrice: " + product.getUnitPrice());
-        LOGGER.info("ModelNo: " + product.getModelNo());
-        LOGGER.info("JANCode: " + product.getJanCode());
-      } else {
-        LOGGER.warn(String.format("No product(%s) found in %s", "GZ-E109KC-R", "rakuten"));
-      }
-    } catch (IOException e) {
-      LOGGER.error("Fail to fetch product detail list", e);
-      throw new FetchProductDetailException();
+    @Autowired
+    public SearchProductDemoCommand(List<IProductSearchModule> modules) {
+        super(modules);
     }
-    LOGGER.info("Successfully product detail list");
-  }
+
+    /**
+     * run fetch product detail from specific module
+     *
+     * @param module module to be run
+     */
+    @Override
+    protected void process(IProductSearchModule module) {
+        try {
+            ProductDAO product;
+
+            LOGGER.info(">>> SearchProductDemo, Amazon: ");
+            product = module.searchProductInfo("amazon", "GZ-E109KC-R");
+            if (product != null) {
+                LOGGER.info("ProductCode: " + product.getProductCode());
+                LOGGER.info("ProductName: " + product.getProductName());
+                LOGGER.info("UnitPrice: " + product.getUnitPrice());
+                LOGGER.info("ModelNo: " + product.getModelNo());
+                LOGGER.info("JANCode: " + product.getJanCode());
+            } else {
+                LOGGER.warn(String.format("No product(%s) found in %s", "GZ-E109KC-R", "amazon"));
+            }
+
+            LOGGER.info(">>> SearchProductDemo, Kojima: ");
+            product = module.searchProductInfo("kojima", "GZ-E109KC-R");
+            if (product != null) {
+                LOGGER.info("ProductCode: " + product.getProductCode());
+                LOGGER.info("ProductName: " + product.getProductName());
+                LOGGER.info("UnitPrice: " + product.getUnitPrice());
+                LOGGER.info("ModelNo: " + product.getModelNo());
+                LOGGER.info("JANCode: " + product.getJanCode());
+            } else {
+                LOGGER.warn(String.format("No product(%s) found in %s", "GZ-E109KC-R", "Kojima"));
+            }
+
+            LOGGER.info(">>> SearchProductDemo, Yahoo: ");
+            product = module.searchProductInfo("yahoo", "GZ-E109KC-R");
+            if (product != null) {
+                LOGGER.info("ProductCode: " + product.getProductCode());
+                LOGGER.info("ProductName: " + product.getProductName());
+                LOGGER.info("UnitPrice: " + product.getUnitPrice());
+                LOGGER.info("ModelNo: " + product.getModelNo());
+                LOGGER.info("JANCode: " + product.getJanCode());
+            } else {
+                LOGGER.warn(String.format("No product(%s) found in %s", "GZ-E109KC-R", "yahoo"));
+            }
+
+            LOGGER.info(">>> SearchProductDemo, Rakuten: ");
+            product = module.searchProductInfo("rakuten", "HandyCam");
+            if (product != null) {
+                LOGGER.info("ProductCode: " + product.getProductCode());
+                LOGGER.info("ProductName: " + product.getProductName());
+                LOGGER.info("UnitPrice: " + product.getUnitPrice());
+                LOGGER.info("ModelNo: " + product.getModelNo());
+                LOGGER.info("JANCode: " + product.getJanCode());
+            } else {
+                LOGGER.warn(String.format("No product(%s) found in %s", "GZ-E109KC-R", "rakuten"));
+            }
+        } catch (IOException e) {
+            LOGGER.error("Fail to fetch product detail list", e);
+            throw new FetchProductDetailException();
+        }
+        LOGGER.info("Successfully product detail list");
+    }
 
 }

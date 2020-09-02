@@ -31,66 +31,66 @@ import java.util.Map;
 @Component
 public class YahooLoginHandler extends LoginHandlerBase {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(YahooLoginHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(YahooLoginHandler.class);
 
-  private ApplicationContext applicationContext;
+    private ApplicationContext applicationContext;
 
-  /**
-   * save Crawler context
-   */
-  private Map<Integer, CrawlerContext> crawlerContextMap = new HashMap<>();
+    /**
+     * save Crawler context
+     */
+    private Map<Integer, CrawlerContext> crawlerContextMap = new HashMap<>();
 
-  @Autowired
-  public YahooLoginHandler(ECSiteAccountRepository ecSiteAccountRepository,
-      UserRepository userRepository, ApplicationContext applicationContext) {
-    super(ecSiteAccountRepository, userRepository);
-    this.applicationContext = applicationContext;
-  }
-  
-  @Override
-  public String getECSite() {
-    return "yahoo";
-  }
-
-  @Override
-  public LoginResponse loginInit(int userId, Integer siteId, String uuid) throws ApiException {
-
-    CrawlerContext context = crawlerContextMap.get(siteId);
-
-    if (context == null || !context.getUuid().equals(uuid)) { // ignore previous context, because of uuid is different
-      context = new CrawlerContext(new TrafficWebClient(userId, false),
-              null,
-              applicationContext.getBean(WebpageService.class),
-              uuid, null);
-      context.setCrawler(new YahooAuthenticationCrawler(context.getWebpageService()));
-
-      crawlerContextMap.put(siteId, context); // save context
+    @Autowired
+    public YahooLoginHandler(ECSiteAccountRepository ecSiteAccountRepository,
+                             UserRepository userRepository, ApplicationContext applicationContext) {
+        super(ecSiteAccountRepository, userRepository);
+        this.applicationContext = applicationContext;
     }
 
-    return new LoginResponse(null, null, null, AuthStep.FIRST, null);
-  }
-
-  @Override
-  public LoginResponse login(int userId, LoginRequest request) throws ApiException {
-    
-    ECSiteAccountDAO ecSiteAccountDAO = ecSiteAccountRepository.findOne(request.getSiteId());
-
-    ecSiteAccountDAO.setPassword(request.getPassword());
-    ecSiteAccountDAO.setLoginEmail(request.getEmail());
-    ecSiteAccountRepository.save(ecSiteAccountDAO); // save it first
-
-    CrawlerContext context = crawlerContextMap.get(request.getSiteId());
-    if (context == null || !context.getUuid().equals(request.getUuid())) { // context error
-      saveFailedResult(ecSiteAccountDAO, "crawler context error");
-      throw new BadRequestException(ecSiteAccountDAO.getAuthFailReason());
+    @Override
+    public String getECSite() {
+        return "yahoo";
     }
 
-    try {
-      YahooAuthenticationCrawler crawler = (YahooAuthenticationCrawler)context.getCrawler();
-      YahooAuthenticationCrawlerResult result = crawler.authenticate(
-              context.getWebClient(), request.getEmail(), request.getPassword(), request.getCode());
+    @Override
+    public LoginResponse loginInit(int userId, Integer siteId, String uuid) throws ApiException {
 
-      if (result.isSuccess()) { // succeed , update status and save cookies
+        CrawlerContext context = crawlerContextMap.get(siteId);
+
+        if (context == null || !context.getUuid().equals(uuid)) { // ignore previous context, because of uuid is different
+            context = new CrawlerContext(new TrafficWebClient(userId, false),
+                    null,
+                    applicationContext.getBean(WebpageService.class),
+                    uuid, null);
+            context.setCrawler(new YahooAuthenticationCrawler(context.getWebpageService()));
+
+            crawlerContextMap.put(siteId, context); // save context
+        }
+
+        return new LoginResponse(null, null, null, AuthStep.FIRST, null);
+    }
+
+    @Override
+    public LoginResponse login(int userId, LoginRequest request) throws ApiException {
+
+        ECSiteAccountDAO ecSiteAccountDAO = ecSiteAccountRepository.findOne(request.getSiteId());
+
+        ecSiteAccountDAO.setPassword(request.getPassword());
+        ecSiteAccountDAO.setLoginEmail(request.getEmail());
+        ecSiteAccountRepository.save(ecSiteAccountDAO); // save it first
+
+        CrawlerContext context = crawlerContextMap.get(request.getSiteId());
+        if (context == null || !context.getUuid().equals(request.getUuid())) { // context error
+            saveFailedResult(ecSiteAccountDAO, "crawler context error");
+            throw new BadRequestException(ecSiteAccountDAO.getAuthFailReason());
+        }
+
+        try {
+            YahooAuthenticationCrawler crawler = (YahooAuthenticationCrawler) context.getCrawler();
+            YahooAuthenticationCrawlerResult result = crawler.authenticate(
+                    context.getWebClient(), request.getEmail(), request.getPassword(), request.getCode());
+
+            if (result.isSuccess()) { // succeed , update status and save cookies
         /*
         List<ECCookie> ecCookies = new LinkedList<>();
         for (Cookie cookie : context.getWebClient().getWebClient().getCookieManager().getCookies()) {
@@ -108,31 +108,31 @@ public class YahooLoginHandler extends LoginHandlerBase {
         saveSuccessResult(ecSiteAccountDAO);
         */
 
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        ObjectOutput oout = new ObjectOutputStream(bout);
-        oout.writeObject(context.getWebClient().getWebClient().getCookieManager().getCookies());
-        oout.close();
-        bout.close();
-        ecSiteAccountDAO.setEcCookies(bout.toByteArray());
-        saveSuccessResult(ecSiteAccountDAO);
+                ByteArrayOutputStream bout = new ByteArrayOutputStream();
+                ObjectOutput oout = new ObjectOutputStream(bout);
+                oout.writeObject(context.getWebClient().getWebClient().getCookieManager().getCookies());
+                oout.close();
+                bout.close();
+                ecSiteAccountDAO.setEcCookies(bout.toByteArray());
+                saveSuccessResult(ecSiteAccountDAO);
 
-        return new LoginResponse(ecSiteAccountDAO.getLoginEmail(), null, null,
-                AuthStep.DONE, "");
-      } else { // login failed
+                return new LoginResponse(ecSiteAccountDAO.getLoginEmail(), null, null,
+                        AuthStep.DONE, "");
+            } else { // login failed
 
-        // VerifyCodeLogin
-        if (result.getCodeType() == CodeType.VerifyCodeLogin) {
-          return new LoginResponse(ecSiteAccountDAO.getLoginEmail(), result.getCodeType(), null,
-                  AuthStep.SECOND, "");
+                // VerifyCodeLogin
+                if (result.getCodeType() == CodeType.VerifyCodeLogin) {
+                    return new LoginResponse(ecSiteAccountDAO.getLoginEmail(), result.getCodeType(), null,
+                            AuthStep.SECOND, "");
+                }
+
+                saveFailedResult(ecSiteAccountDAO, "Authentication failed");
+                throw new ApiException("Authentication failed");
+            }
+        } catch (IOException e) {
+            saveFailedResult(ecSiteAccountDAO, e.getMessage());
+            throw new ApiException(e.getMessage());
         }
-
-        saveFailedResult(ecSiteAccountDAO, "Authentication failed");
-        throw new ApiException("Authentication failed");
-      }
-    } catch (IOException e) {
-      saveFailedResult(ecSiteAccountDAO, e.getMessage());
-      throw new ApiException(e.getMessage());
     }
-  }
 
 }

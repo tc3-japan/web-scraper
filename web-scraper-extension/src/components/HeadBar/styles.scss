@@ -19,14 +19,15 @@
   flex-direction: row;
   display: flex;
   border-bottom: 1px solid $borderColor;
-  padding-left: 16px;
-  padding-right: 16px;
-  padding-bottom: 10px;
+  // padding-left: 16px;
+  // padding-right: 16px;
+  // padding-bottom: 10px;
   flex-wrap: wrap;
 
   .btn-container {
-    margin-top: 10px;
+    // margin-top: 10px;
     margin-right: 16px;
+    border: none;
   }
 
   .button {
@@ -34,10 +35,17 @@
     width: 100px;
   }
 
-  .boldButton {
-    @include setBgColorAndHover(darken($containerColor, 10%));
+  $baseColor: darken($containerColor, 10%);
 
+  .boldButton {
+    @include setBgColorAndHover($baseColor);
+
+    background-color: initial;
     font-weight: bold;
+
+    &:hover {
+      background-color: darken($containerColor, 5%);
+    }
   }
 
   .fileMenu {
@@ -52,13 +60,13 @@
   .fileMenuWrap {
     position: relative;
 
-    > .button {
-      background-color: $containerColor;
-    }
+    // > .button {
+    //   background-color: $containerColor;
+    // }
 
-    .boldButton {
-      background-color: darken($containerColor, 10%);
-    }
+    // .boldButton {
+    //   background-color: darken($containerColor, 10%);
+    // }
   }
 
   .fileMenuWrap:hover .fileMenu {
@@ -66,13 +74,22 @@
   }
 
   .selector-container {
-    margin-top: 10px;
+    // margin-top: 10px;
     display: flex;
     flex-direction: row;
     align-items: center;
 
     span {
       margin-right: 4px;
+    }
+  }
+
+  .seq {
+    width: 24px;
+    display: inline-block;
+  
+    &.big {
+      width: 96px;
     }
   }
 }

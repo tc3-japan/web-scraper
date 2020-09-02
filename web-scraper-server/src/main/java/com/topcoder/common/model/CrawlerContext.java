@@ -12,39 +12,39 @@ import lombok.Data;
 @Data
 public class CrawlerContext {
 
-  /**
-   * the web client
-   */
-  private TrafficWebClient webClient;
+    /**
+     * the web client
+     */
+    private TrafficWebClient webClient;
 
-  // TODO: delete AmazonProperty
-  /**
-   * the Amazon Property
-   */
-  private AmazonProperty property;
+    // TODO: delete AmazonProperty
+    /**
+     * the Amazon Property
+     */
+    private AmazonProperty property;
 
-  /**
-   * the web page service
-   */
-  private WebpageService webpageService;
+    /**
+     * the web page service
+     */
+    private WebpageService webpageService;
 
-  /**
-   * the session/task id
-   */
-  private String uuid;
+    /**
+     * the session/task id
+     */
+    private String uuid;
 
-  /**
-   * the auth crawler
-   */
-  private AbstractAuthenticationCrawler crawler;
+    /**
+     * the auth crawler
+     */
+    private AbstractAuthenticationCrawler crawler;
 
-  // TODO: delete AmazonProperty
-  public CrawlerContext(TrafficWebClient webClient, AmazonProperty property, WebpageService webpageService, String uuid,
-                        AbstractAuthenticationCrawler crawler) {
-    this.webClient      = webClient;
-    this.property       = property;
-    this.webpageService = webpageService;
-    this.uuid           = uuid;
-    this.crawler        = crawler;
-  }
+    // TODO: delete AmazonProperty
+    public CrawlerContext(TrafficWebClient webClient, AmazonProperty property, WebpageService webpageService, String uuid,
+                          AbstractAuthenticationCrawler crawler) {
+        this.webClient = webClient;
+        this.property = property;
+        this.webpageService = webpageService;
+        this.uuid = uuid;
+        this.crawler = crawler;
+    }
 }

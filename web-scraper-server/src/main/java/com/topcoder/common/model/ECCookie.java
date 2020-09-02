@@ -13,33 +13,33 @@ import java.util.Date;
 @AllArgsConstructor
 public class ECCookie {
 
-  public ECCookie() {
-  }
+    public ECCookie() {
+    }
 
-  /**
-   * the cookie name
-   */
-  private String name;
+    /**
+     * the cookie name
+     */
+    private String name;
 
-  /**
-   * the cookie value
-   */
-  private String value;
+    /**
+     * the cookie value
+     */
+    private String value;
 
-  /**
-   * the cookie domain
-   */
-  private String domain;
+    /**
+     * the cookie domain
+     */
+    private String domain;
 
 
-  /**
-   * below properties are from Java Cookie
-   */
+    /**
+     * below properties are from Java Cookie
+     */
 
-  private Date expires;
-  // saved to db as epoch milliseconds (1970/01/01 0:0:0.000 = 0)
-  private String path;
-  private boolean secure;
-  private boolean httpOnly;
+    private Date expires;
+    // saved to db as epoch milliseconds (1970/01/01 0:0:0.000 = 0)
+    private String path;
+    private boolean secure;
+    private boolean httpOnly;
 
 }

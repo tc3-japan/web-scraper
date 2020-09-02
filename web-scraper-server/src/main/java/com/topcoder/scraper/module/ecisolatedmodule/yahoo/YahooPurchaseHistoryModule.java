@@ -17,21 +17,21 @@ import org.springframework.stereotype.Component;
 @Component
 public class YahooPurchaseHistoryModule extends AbstractPurchaseHistoryModule {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(YahooPurchaseHistoryModule.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(YahooPurchaseHistoryModule.class);
 
-  @Autowired
-  public YahooPurchaseHistoryModule(
-          PurchaseHistoryService          purchaseHistoryService,
-          ECSiteAccountRepository         ecSiteAccountRepository,
-          WebpageService                  webpageService,
-          YahooLoginHandler               loginHandler,
-          YahooPurchaseHistoryCrawler     crawler
-  ) {
-    super(purchaseHistoryService, ecSiteAccountRepository, webpageService, loginHandler, crawler);
-  }
+    @Autowired
+    public YahooPurchaseHistoryModule(
+            PurchaseHistoryService purchaseHistoryService,
+            ECSiteAccountRepository ecSiteAccountRepository,
+            WebpageService webpageService,
+            YahooLoginHandler loginHandler,
+            YahooPurchaseHistoryCrawler crawler
+    ) {
+        super(purchaseHistoryService, ecSiteAccountRepository, webpageService, loginHandler, crawler);
+    }
 
-  @Override
-  public String getModuleType() {
-    return "yahoo";
-  }
+    @Override
+    public String getModuleType() {
+        return "yahoo";
+    }
 }

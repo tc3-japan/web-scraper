@@ -299,6 +299,7 @@ export default function SearchProductEditor() {
                 <JsEditor
                   onChange={(script) => setData({ ...data, script })}
                   script={data.script}
+                  description={i18n('searchProduct.jsDescription')}
                 />
               ) : null
             }

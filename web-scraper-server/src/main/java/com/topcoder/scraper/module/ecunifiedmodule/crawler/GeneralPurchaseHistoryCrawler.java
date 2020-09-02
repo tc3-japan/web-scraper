@@ -78,7 +78,7 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
      * @return result
      * @throws IOException if save html failed/parse json failed/get page failed
      */
-    public GeneralPurchaseHistoryCrawlerResult fetchPurchaseHistoryList(TrafficWebClient webClient, boolean saveHtml, boolean dryRun) throws IOException {
+    public GeneralPurchaseHistoryCrawlerResult fetchPurchaseHistoryList(TrafficWebClient webClient) throws IOException {
         LOGGER.debug("[fetchPurchaseHistoryList] in");
 
         webClient.getWebClient().getOptions().setJavaScriptEnabled(true);
@@ -95,7 +95,7 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
         scrapedPageList.add(purchaseHistoryConfig.getUrl());
 
         try {
-            processPurchaseHistory(dryRun);
+            processPurchaseHistory();
         } catch (DuplicatedException de) {
             LOGGER.info("Scraping duplicated Order Number detected.");
         }
@@ -108,14 +108,13 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
      *
      * @throws IOException if save html failed
      */
-    private void processPurchaseHistory(boolean dryRun) throws IOException, DuplicatedException {
+    private void processPurchaseHistory() throws IOException, DuplicatedException {
         LOGGER.debug("[processPurchaseHistory] in");
-        int i = 1;
+
         while (this.historyPage.getPage() != null) {
             // if called from dryrun module check over maxcount or not.
-            if (dryRun == true && i >= DryRunUtils.DRY_RUN_MAX_COUNT) {
-                break;
-            }
+            if (dryRunUtils != null && dryRunUtils.checkCountOver(purchaseHistoryList)) break;
+
             String savedPath = historyPage.savePage(this.site, "purchase-history-list", historyPage, this.webpageService);
             if (savedPath != null) {
                 savedPathList.add(savedPath);
@@ -129,7 +128,6 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
             List<DomNode> orderList = rootPage.querySelectorAll(purchaseHistoryConfig.getPurchaseOrder().getParent());
             processOrders(orderList, rootPage);
             this.historyPage.setPage(this.gotoNextPage(this.historyPage.getPage(), webClient));
-            i++;
         }
     }
 

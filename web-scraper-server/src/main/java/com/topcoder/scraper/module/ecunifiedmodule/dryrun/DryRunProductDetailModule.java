@@ -26,61 +26,62 @@ import com.topcoder.scraper.service.WebpageService;
 @Component
 public class DryRunProductDetailModule {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(DryRunProductDetailModule.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DryRunProductDetailModule.class);
 
-  private final WebpageService webpageService;
-  private GeneralProductDetailCrawler crawler;
-  private TrafficWebClientForDryRun webClientDryRun;
-  private List<ProductInfo> productInfoList;
-  private List<String> htmlPathList;
+    private final WebpageService webpageService;
+    private GeneralProductDetailCrawler crawler;
+    private TrafficWebClientForDryRun webClientDryRun;
+    private List<ProductInfo> productInfoList;
+    private List<String> htmlPathList;
 
-  @Autowired
-  ConfigurationRepository configurationRepository;
+    @Autowired
+    ConfigurationRepository configurationRepository;
 
-  @Autowired
-  ProductRepository productRepository;
+    @Autowired
+    ProductRepository productRepository;
 
-  @Autowired
-  public DryRunProductDetailModule(WebpageService webpageService) {
-    this.webpageService = webpageService;
-  }
-
-  public List<Object> fetchProductDetailList(String site, String conf) {
-    LOGGER.debug("[fetchProductDetailList] in");
-    LOGGER.debug("[fetchProductDetailList] site:" + site);
-    this.productInfoList = new ArrayList<ProductInfo>();
-    this.htmlPathList = new ArrayList<String>();
-    TrafficWebClient webClient = new TrafficWebClient(0, false);
-    this.webClientDryRun = webClient.new TrafficWebClientForDryRun(0, false);
-    this.crawler = new GeneralProductDetailCrawler(site, "product", this.webpageService, this.configurationRepository);
-    crawler.setConfig(conf);
-    List<ProductDAO> products = productRepository.findByECSite(site);
-    for (ProductDAO product :products) {
-      try {
-        this.processProductDetail(product.getId(), product.getProductCode());
-      } catch (IOException | IllegalStateException e) {
-        LOGGER.error(String.format("Fail to fetch product %s, please try again.", product.getProductCode()));
-      }
-      if (DryRunUtils.checkCountOver(productInfoList)) {
-        break;
-      }
+    @Autowired
+    public DryRunProductDetailModule(WebpageService webpageService) {
+        this.webpageService = webpageService;
     }
-    return new DryRunUtils().toJsonOfDryRunProductModule(this.productInfoList, this.htmlPathList);
-  }
 
-  private void processProductDetail(int productId, String productCode) throws IOException {
-    if (StringUtils.isBlank(productCode)) {
-      LOGGER.info(String.format("Skipping Product#%d - no product code", productId));
-      return;
+    public List<Object> fetchProductDetailList(String site, String conf, Integer count) {
+        LOGGER.debug("[fetchProductDetailList] in");
+        LOGGER.debug("[fetchProductDetailList] site:" + site);
+        this.productInfoList = new ArrayList<ProductInfo>();
+        this.htmlPathList = new ArrayList<String>();
+        TrafficWebClient webClient = new TrafficWebClient(0, false);
+        this.webClientDryRun = webClient.new TrafficWebClientForDryRun(0, false);
+        this.crawler = new GeneralProductDetailCrawler(site, "product", this.webpageService, this.configurationRepository);
+        crawler.setConfig(conf);
+        DryRunUtils dru = new DryRunUtils(count);
+        List<ProductDAO> products = productRepository.findByECSite(site);
+        for (ProductDAO product : products) {
+            try {
+                this.processProductDetail(product.getId(), product.getProductCode());
+            } catch (IOException | IllegalStateException e) {
+                LOGGER.error(String.format("Fail to fetch product %s, please try again.", product.getProductCode()));
+            }
+            if (dru.checkCountOver(productInfoList)) {
+                break;
+            }
+        }
+        return dru.toJsonOfDryRunProductModule(this.productInfoList, this.htmlPathList);
     }
-    GeneralProductDetailCrawlerResult crawlerResult = this.fetchProductDetail(productCode);
-    this.productInfoList.add(crawlerResult.getProductInfo());
-    this.htmlPathList.add(crawlerResult.getHtmlPath());
-    LOGGER.info(String.format("Add html file path:", crawlerResult.getHtmlPath()));
-  }
 
-  private GeneralProductDetailCrawlerResult fetchProductDetail(String productCode) throws IOException {
-    return this.crawler.fetchProductInfo(this.webClientDryRun, productCode);
-  }
+    private void processProductDetail(int productId, String productCode) throws IOException {
+        if (StringUtils.isBlank(productCode)) {
+            LOGGER.info(String.format("Skipping Product#%d - no product code", productId));
+            return;
+        }
+        GeneralProductDetailCrawlerResult crawlerResult = this.fetchProductDetail(productCode);
+        this.productInfoList.add(crawlerResult.getProductInfo());
+        this.htmlPathList.add(crawlerResult.getHtmlPath());
+        LOGGER.info(String.format("Add html file path:", crawlerResult.getHtmlPath()));
+    }
+
+    private GeneralProductDetailCrawlerResult fetchProductDetail(String productCode) throws IOException {
+        return this.crawler.fetchProductInfo(this.webClientDryRun, productCode);
+    }
 
 }

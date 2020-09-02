@@ -13,15 +13,15 @@ import org.springframework.stereotype.Component;
 @Component
 public class YahooProductCrawler extends AbstractProductCrawler {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(YahooProductCrawler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(YahooProductCrawler.class);
 
-  @Autowired
-  public YahooProductCrawler(WebpageService webpageService) {
-    super("yahoo", webpageService);
-  }
+    @Autowired
+    public YahooProductCrawler(WebpageService webpageService) {
+        super("yahoo", webpageService);
+    }
 
-  @Override
-  public String getScriptSupportClassName() {
-    return YahooProductCrawlerScriptSupport.class.getName();
-  }
+    @Override
+    public String getScriptSupportClassName() {
+        return YahooProductCrawlerScriptSupport.class.getName();
+    }
 }

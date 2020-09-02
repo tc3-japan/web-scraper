@@ -11,130 +11,131 @@ import java.util.List;
 
 public abstract class AbstractPurchaseHistoryCrawlerScriptSupport extends Script {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPurchaseHistoryCrawlerScriptSupport.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPurchaseHistoryCrawlerScriptSupport.class);
 
-  protected AbstractPurchaseHistoryCrawler crawler;
-  void setCrawler(AbstractPurchaseHistoryCrawler crawler) {
-    this.crawler = crawler;
-  }
+    protected AbstractPurchaseHistoryCrawler crawler;
 
-  void setPage(String historyUrl) {
-    this.crawler.getWebClient().getWebClient().getOptions().setJavaScriptEnabled(false); //TODO: TEST ONLY
-    this.crawler.getHistoryPage().setPage(historyUrl);
-  }
+    void setCrawler(AbstractPurchaseHistoryCrawler crawler) {
+        this.crawler = crawler;
+    }
 
-  void setEnableJS(boolean value) {
-    this.crawler.getWebClient().getWebClient().getOptions().setJavaScriptEnabled(value);
-  }
+    void setPage(String historyUrl) {
+        this.crawler.getWebClient().getWebClient().getOptions().setJavaScriptEnabled(false); //TODO: TEST ONLY
+        this.crawler.getHistoryPage().setPage(historyUrl);
+    }
 
-  void savePage(String name) {
-    this.crawler.getHistoryPage().savePage(name, this.crawler.getSiteName(), this.crawler.getWebpageService());
-  }
+    void setEnableJS(boolean value) {
+        this.crawler.getWebClient().getWebClient().getOptions().setJavaScriptEnabled(value);
+    }
 
-  void click(String selector) {
-    this.crawler.getHistoryPage().click(selector);
-  }
+    void savePage(String name) {
+        this.crawler.getHistoryPage().savePage(name, this.crawler.getSiteName(), this.crawler.getWebpageService());
+    }
 
-  void openPage(DomNode node, String selector, Closure<Boolean> closure) {
-    this.crawler.getHistoryPage().openPage(node, selector, closure, this.crawler.getWebpageService());
-  }
+    void click(String selector) {
+        this.crawler.getHistoryPage().click(selector);
+    }
 
-  void type(String input, String selector) {
-    this.crawler.getHistoryPage().type(input, selector);
-  }
+    void openPage(DomNode node, String selector, Closure<Boolean> closure) {
+        this.crawler.getHistoryPage().openPage(node, selector, closure, this.crawler.getWebpageService());
+    }
 
-  // Crawler method: purchase history structure processor --------------------------------------------------------------
+    void type(String input, String selector) {
+        this.crawler.getHistoryPage().type(input, selector);
+    }
 
-  void processPurchaseHistory(Closure<Boolean> closure) throws IOException {
-    this.crawler.processPurchaseHistory(closure);
-  }
+    // Crawler method: purchase history structure processor --------------------------------------------------------------
 
-  void processOrders(List<DomNode> orderList , Closure<Boolean> closure) {
-    this.crawler.processOrders(orderList, closure);
-  }
+    void processPurchaseHistory(Closure<Boolean> closure) throws IOException {
+        this.crawler.processPurchaseHistory(closure);
+    }
 
-  void processProducts(List<DomNode> productList , Closure<Boolean> closure) {
-    this.crawler.processProducts(productList, closure);
-  }
+    void processOrders(List<DomNode> orderList, Closure<Boolean> closure) {
+        this.crawler.processOrders(orderList, closure);
+    }
 
-  // Crawler method: others --------------------------------------------------------------------------------------------
+    void processProducts(List<DomNode> productList, Closure<Boolean> closure) {
+        this.crawler.processProducts(productList, closure);
+    }
 
-  boolean isNew() {
-    return this.crawler.isNew();
-  }
+    // Crawler method: others --------------------------------------------------------------------------------------------
 
-  // Scraping wrapper: general -----------------------------------------------------------------------------------------
+    boolean isNew() {
+        return this.crawler.isNew();
+    }
 
-  List<DomNode> scrapeDomList(String selector) {
-    return this.crawler.getHistoryPage().scrapeDomList(selector);
-  }
+    // Scraping wrapper: general -----------------------------------------------------------------------------------------
 
-  List<DomNode> scrapeDomList(DomNode node, String selector) {
-    return this.crawler.getHistoryPage().scrapeDomList(node, selector);
-  }
+    List<DomNode> scrapeDomList(String selector) {
+        return this.crawler.getHistoryPage().scrapeDomList(selector);
+    }
 
-  // Scraping wrapper: order in purchase history -----------------------------------------------------------------------
+    List<DomNode> scrapeDomList(DomNode node, String selector) {
+        return this.crawler.getHistoryPage().scrapeDomList(node, selector);
+    }
 
-  void scrapeOrderNumber(DomNode orderNode, String selector) {
-    this.crawler.getHistoryPage().scrapeOrderNumber(orderNode, selector);
-  }
+    // Scraping wrapper: order in purchase history -----------------------------------------------------------------------
 
-  void scrapeOrderNumberWithRegex(DomNode orderNode, String selector, String regexStr) {
-    this.crawler.getHistoryPage().scrapeOrderNumberWithRegex(orderNode, selector, regexStr);
-  }
+    void scrapeOrderNumber(DomNode orderNode, String selector) {
+        this.crawler.getHistoryPage().scrapeOrderNumber(orderNode, selector);
+    }
 
-  void scrapeOrderDate(DomNode orderNode, String selector) {
-    this.crawler.getHistoryPage().scrapeOrderDate(orderNode, selector);
-  }
+    void scrapeOrderNumberWithRegex(DomNode orderNode, String selector, String regexStr) {
+        this.crawler.getHistoryPage().scrapeOrderNumberWithRegex(orderNode, selector, regexStr);
+    }
 
-  void scrapeOrderDateDefault(DomNode orderNode, String selector) {
-    this.crawler.getHistoryPage().scrapeOrderDateDefault(orderNode, selector);
-  }
+    void scrapeOrderDate(DomNode orderNode, String selector) {
+        this.crawler.getHistoryPage().scrapeOrderDate(orderNode, selector);
+    }
 
-  void scrapeTotalAmount(DomNode orderNode, String selector) {
-    this.crawler.getHistoryPage().scrapeTotalAmount(orderNode, selector);
-  }
+    void scrapeOrderDateDefault(DomNode orderNode, String selector) {
+        this.crawler.getHistoryPage().scrapeOrderDateDefault(orderNode, selector);
+    }
 
-  void scrapeDeliveryStatus(DomNode orderNode, String selector) {
-    this.crawler.getHistoryPage().scrapeDeliveryStatus(orderNode, selector);
-  }
+    void scrapeTotalAmount(DomNode orderNode, String selector) {
+        this.crawler.getHistoryPage().scrapeTotalAmount(orderNode, selector);
+    }
 
-  // Scraping wrapper: product in order --------------------------------------------------------------------------------
+    void scrapeDeliveryStatus(DomNode orderNode, String selector) {
+        this.crawler.getHistoryPage().scrapeDeliveryStatus(orderNode, selector);
+    }
 
-  void scrapeProductCodeFromAnchor(DomNode productNode, String selector, String regexStr) {
-    this.crawler.getHistoryPage().scrapeProductCodeFromAnchor(productNode, selector, regexStr);
-  }
+    // Scraping wrapper: product in order --------------------------------------------------------------------------------
 
-  void scrapeProductCodeFromInput(DomNode productNode, String selector, String regexStr) {
-    this.crawler.getHistoryPage().scrapeProductCodeFromInput(productNode, selector, regexStr);
-  }
+    void scrapeProductCodeFromAnchor(DomNode productNode, String selector, String regexStr) {
+        this.crawler.getHistoryPage().scrapeProductCodeFromAnchor(productNode, selector, regexStr);
+    }
 
-  void scrapeProductCode(String selector) {
-    this.crawler.getHistoryPage().scrapeProductCode(selector);
-  }
+    void scrapeProductCodeFromInput(DomNode productNode, String selector, String regexStr) {
+        this.crawler.getHistoryPage().scrapeProductCodeFromInput(productNode, selector, regexStr);
+    }
 
-  void scrapeProductName(DomNode productNode, String selector) {
-    this.crawler.getHistoryPage().scrapeProductName(productNode, selector);
-  }
+    void scrapeProductCode(String selector) {
+        this.crawler.getHistoryPage().scrapeProductCode(selector);
+    }
 
-  void scrapeProductNameFromAnchor(DomNode productNode, String selector) {
-    this.crawler.getHistoryPage().scrapeProductNameFromAnchor(productNode, selector);
-  }
+    void scrapeProductName(DomNode productNode, String selector) {
+        this.crawler.getHistoryPage().scrapeProductName(productNode, selector);
+    }
 
-  void scrapeUnitPrice(DomNode productNode, String selector) {
-    this.crawler.getHistoryPage().scrapeUnitPrice(productNode, selector);
-  }
+    void scrapeProductNameFromAnchor(DomNode productNode, String selector) {
+        this.crawler.getHistoryPage().scrapeProductNameFromAnchor(productNode, selector);
+    }
 
-  void scrapeProductQuantity(DomNode productNode, String selector) {
-    this.crawler.getHistoryPage().scrapeProductQuantity(productNode, selector);
-  }
+    void scrapeUnitPrice(DomNode productNode, String selector) {
+        this.crawler.getHistoryPage().scrapeUnitPrice(productNode, selector);
+    }
 
-  void scrapeProductDistributor(DomNode productNode, String selector) {
-    this.crawler.getHistoryPage().scrapeProductDistributor(productNode, selector);
-  }
+    void scrapeProductQuantity(DomNode productNode, String selector) {
+        this.crawler.getHistoryPage().scrapeProductQuantity(productNode, selector);
+    }
 
-  // Others: logging ---------------------------------------------------------------------------------------------------
-  void log(String str) {
-    LOGGER.info(str);
-  }
+    void scrapeProductDistributor(DomNode productNode, String selector) {
+        this.crawler.getHistoryPage().scrapeProductDistributor(productNode, selector);
+    }
+
+    // Others: logging ---------------------------------------------------------------------------------------------------
+    void log(String str) {
+        LOGGER.info(str);
+    }
 }

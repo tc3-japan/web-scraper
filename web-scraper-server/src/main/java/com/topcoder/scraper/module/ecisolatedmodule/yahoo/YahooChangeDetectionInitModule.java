@@ -16,29 +16,29 @@ import org.springframework.stereotype.Component;
 @Component
 public class YahooChangeDetectionInitModule extends AbstractChangeDetectionInitModule {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(YahooChangeDetectionInitModule.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(YahooChangeDetectionInitModule.class);
 
-  @Autowired
-  public YahooChangeDetectionInitModule(
-          MonitorTargetDefinitionProperty monitorTargetDefinitionProperty,
-          WebpageService                  webpageService,
-          ECSiteAccountRepository         ecSiteAccountRepository,
-          NormalDataRepository            normalDataRepository,
-          YahooPurchaseHistoryModule      purchaseHistoryModule,
-          YahooProductDetailModule        productModule
-  ) {
-    super(
-            monitorTargetDefinitionProperty,
-            webpageService,
-            ecSiteAccountRepository,
-            normalDataRepository,
-            purchaseHistoryModule,
-            productModule
-    );
-  }
+    @Autowired
+    public YahooChangeDetectionInitModule(
+            MonitorTargetDefinitionProperty monitorTargetDefinitionProperty,
+            WebpageService webpageService,
+            ECSiteAccountRepository ecSiteAccountRepository,
+            NormalDataRepository normalDataRepository,
+            YahooPurchaseHistoryModule purchaseHistoryModule,
+            YahooProductDetailModule productModule
+    ) {
+        super(
+                monitorTargetDefinitionProperty,
+                webpageService,
+                ecSiteAccountRepository,
+                normalDataRepository,
+                purchaseHistoryModule,
+                productModule
+        );
+    }
 
-  @Override
-  public String getModuleType() {
-    return "yahoo";
-  }
+    @Override
+    public String getModuleType() {
+        return "yahoo";
+    }
 }

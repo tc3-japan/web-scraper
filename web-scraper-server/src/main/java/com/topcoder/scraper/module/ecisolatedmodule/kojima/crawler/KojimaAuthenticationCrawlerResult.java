@@ -8,11 +8,11 @@ import com.topcoder.scraper.module.ecisolatedmodule.crawler.AbstractAuthenticati
  */
 public class KojimaAuthenticationCrawlerResult extends AbstractAuthenticationCrawlerResult {
 
-  public KojimaAuthenticationCrawlerResult(boolean success, String htmlPath) {
-    super(success, htmlPath);
-  }
+    public KojimaAuthenticationCrawlerResult(boolean success, String htmlPath) {
+        super(success, htmlPath);
+    }
 
-  public KojimaAuthenticationCrawlerResult(boolean success, String reason, CodeType codeType, String img, boolean needContinue) {
-    super(success, reason, codeType, img, needContinue);
-  }
+    public KojimaAuthenticationCrawlerResult(boolean success, String reason, CodeType codeType, String img, boolean needContinue) {
+        super(success, reason, codeType, img, needContinue);
+    }
 }

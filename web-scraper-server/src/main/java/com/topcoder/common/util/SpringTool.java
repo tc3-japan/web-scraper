@@ -11,17 +11,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class SpringTool implements ApplicationContextAware {
 
-  /**
-   * the spring application context
-   */
-  private static ApplicationContext context = null;
+    /**
+     * the spring application context
+     */
+    private static ApplicationContext context = null;
 
-  @Override
-  public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-    context = applicationContext;
-  }
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        context = applicationContext;
+    }
 
-  public static ApplicationContext getApplicationContext() {
-    return context;
-  }
+    public static ApplicationContext getApplicationContext() {
+        return context;
+    }
 } 

@@ -9,22 +9,22 @@ import java.io.IOException;
 
 public abstract class AbstractAuthenticationCrawler {
 
-  public abstract AbstractAuthenticationCrawlerResult authenticate(
-          TrafficWebClient webClient,
-          String username,
-          String password,
-          String code,
-          boolean init
-  )throws IOException;
+    public abstract AbstractAuthenticationCrawlerResult authenticate(
+            TrafficWebClient webClient,
+            String username,
+            String password,
+            String code,
+            boolean init
+    ) throws IOException;
 
-  public abstract AbstractAuthenticationCrawlerResult authenticate(
-          TrafficWebClient webClient,
-          String username,
-          String password,
-          String code
-  ) throws IOException;
+    public abstract AbstractAuthenticationCrawlerResult authenticate(
+            TrafficWebClient webClient,
+            String username,
+            String password,
+            String code
+    ) throws IOException;
 
-  @Getter
-  @Setter
-  protected AuthStep authStep = AuthStep.FIRST;
+    @Getter
+    @Setter
+    protected AuthStep authStep = AuthStep.FIRST;
 }

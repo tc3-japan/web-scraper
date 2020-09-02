@@ -8,11 +8,11 @@ import org.slf4j.LoggerFactory;
 // TODO : re-consider whether this class is needed or not.
 public abstract class GroovyDemoScriptSupport extends Script {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(UserEncoderCommand.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserEncoderCommand.class);
 
-  // Wrapper for export methods
-  String foo(String[] args) {
-    LOGGER.debug("[GroovyDemoScriptSupport # foo()]");
-    return HtmlUtils.foo(args);
-  }
+    // Wrapper for export methods
+    String foo(String[] args) {
+        LOGGER.debug("[GroovyDemoScriptSupport # foo()]");
+        return HtmlUtils.foo(args);
+    }
 }

@@ -18,34 +18,34 @@ import org.springframework.stereotype.Component;
 @Component
 public class YahooChangeDetectionCheckModule extends AbstractChangeDetectionCheckModule {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(YahooChangeDetectionCheckModule.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(YahooChangeDetectionCheckModule.class);
 
-  @Autowired
-  public YahooChangeDetectionCheckModule(
-          MonitorTargetDefinitionProperty monitorTargetDefinitionProperty,
-          WebpageService                  webpageService,
-          ECSiteAccountRepository         ecSiteAccountRepository,
-          NormalDataRepository            normalDataRepository,
-          YahooPurchaseHistoryModule      purchaseHistoryModule,
-          YahooProductDetailModule        productModule,
-          CheckItemsDefinitionProperty    checkItemsDefinitionProperty,
-          CheckResultRepository           checkResultRepository
+    @Autowired
+    public YahooChangeDetectionCheckModule(
+            MonitorTargetDefinitionProperty monitorTargetDefinitionProperty,
+            WebpageService webpageService,
+            ECSiteAccountRepository ecSiteAccountRepository,
+            NormalDataRepository normalDataRepository,
+            YahooPurchaseHistoryModule purchaseHistoryModule,
+            YahooProductDetailModule productModule,
+            CheckItemsDefinitionProperty checkItemsDefinitionProperty,
+            CheckResultRepository checkResultRepository
 
-  ) {
-    super(
-            monitorTargetDefinitionProperty,
-            webpageService,
-            ecSiteAccountRepository,
-            normalDataRepository,
-            purchaseHistoryModule,
-            productModule,
-            checkItemsDefinitionProperty,
-            checkResultRepository
-    );
-  }
+    ) {
+        super(
+                monitorTargetDefinitionProperty,
+                webpageService,
+                ecSiteAccountRepository,
+                normalDataRepository,
+                purchaseHistoryModule,
+                productModule,
+                checkItemsDefinitionProperty,
+                checkResultRepository
+        );
+    }
 
-  @Override
-  public String getModuleType() {
-    return "yahoo";
-  }
+    @Override
+    public String getModuleType() {
+        return "yahoo";
+    }
 }

@@ -25,50 +25,50 @@ import com.topcoder.scraper.service.WebpageService;
 @Component
 public class GeneralProductSearchModule implements IProductSearchModule {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(GeneralProductSearchModule.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GeneralProductSearchModule.class);
 
-  private final WebpageService webpageService;
-  private TrafficWebClient webClient;
+    private final WebpageService webpageService;
+    private TrafficWebClient webClient;
 
-  @Autowired
-  ConfigurationRepository configurationRepository;
+    @Autowired
+    ConfigurationRepository configurationRepository;
 
-  @Autowired
-  public GeneralProductSearchModule(WebpageService webpageService) {
-    this.webpageService = webpageService;
-  }
+    @Autowired
+    public GeneralProductSearchModule(WebpageService webpageService) {
+        this.webpageService = webpageService;
+    }
 
-  @Override
-  public String getModuleType() {
-    return "general";
-  }
+    @Override
+    public String getModuleType() {
+        return "general";
+    }
 
-  @Override
-  public ProductDAO searchProductInfo(String siteName, String searchWord) throws IOException {
-    LOGGER.debug("[searchProductInfo] in");
-    LOGGER.info(String.format("Searching products in %s. search-word: %s", siteName, searchWord));
-    this.webClient = new TrafficWebClient(0, false);
-    GeneralProductSearchCrawler searchCrawler = new GeneralProductSearchCrawler(siteName, "search", this.webpageService, this.configurationRepository);
-    String productCode = "";
-    GeneralProductSearchCrawlerResult searchCrawlerResult = searchCrawler.searchProduct(this.webClient, searchWord);
-    if (Objects.isNull(searchCrawlerResult)) {
-      this.webClient.finishTraffic();
-      return null;
-    } else {
-      productCode = searchCrawlerResult.getProductCode();
-      if (StringUtils.isEmpty(productCode)) {
+    @Override
+    public ProductDAO searchProductInfo(String siteName, String searchWord) throws IOException {
+        LOGGER.debug("[searchProductInfo] in");
+        LOGGER.info(String.format("Searching products in %s. search-word: %s", siteName, searchWord));
+        this.webClient = new TrafficWebClient(0, false);
+        GeneralProductSearchCrawler searchCrawler = new GeneralProductSearchCrawler(siteName, "search", this.webpageService, this.configurationRepository);
+        String productCode = "";
+        GeneralProductSearchCrawlerResult searchCrawlerResult = searchCrawler.searchProduct(this.webClient, searchWord);
+        if (Objects.isNull(searchCrawlerResult)) {
+            this.webClient.finishTraffic();
+            return null;
+        } else {
+            productCode = searchCrawlerResult.getProductCode();
+            if (StringUtils.isEmpty(productCode)) {
+                this.webClient.finishTraffic();
+                return null;
+            }
+        }
+        GeneralProductDetailCrawler detailCrawler = new GeneralProductDetailCrawler(siteName, "product", this.webpageService, this.configurationRepository);
+        ProductInfo productInfo = detailCrawler.fetchProductInfo(this.webClient, productCode).getProductInfo();
+        if (Objects.isNull(productInfo)) {
+            LOGGER.warn("[searchProductInfo] Unable to obtain a product information about: " + searchWord);
+            this.webClient.finishTraffic();
+            return null;
+        }
         this.webClient.finishTraffic();
-        return null;
-      }
+        return new ProductDAO(siteName, productInfo);
     }
-    GeneralProductDetailCrawler detailCrawler = new GeneralProductDetailCrawler(siteName, "product", this.webpageService, this.configurationRepository);
-    ProductInfo productInfo = detailCrawler.fetchProductInfo(this.webClient, productCode).getProductInfo();
-    if (Objects.isNull(productInfo)) {
-      LOGGER.warn("[searchProductInfo] Unable to obtain a product information about: " + searchWord);
-      this.webClient.finishTraffic();
-      return null;
-    }
-    this.webClient.finishTraffic();
-    return new ProductDAO(siteName, productInfo);
-  }
 }

@@ -25,89 +25,101 @@ import java.util.Properties;
  */
 public abstract class AbstractProductCrawler {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractProductCrawler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractProductCrawler.class);
 
-  protected final Binding               scriptBinding;
-  protected final CompilerConfiguration scriptConfig;
-  protected GroovyShell                 scriptShell;
-  protected String                      scriptText = "";
+    protected final Binding scriptBinding;
+    protected final CompilerConfiguration scriptConfig;
+    protected GroovyShell scriptShell;
+    protected String scriptText = "";
 
-  protected String savedPath;
+    protected String savedPath;
 
-  @Getter@Setter protected WebpageService   webpageService;
-  @Getter@Setter protected TrafficWebClient webClient;
-  @Getter@Setter protected String           siteName;
+    @Getter
+    @Setter
+    protected WebpageService webpageService;
+    @Getter
+    @Setter
+    protected TrafficWebClient webClient;
+    @Getter
+    @Setter
+    protected String siteName;
 
-  @Getter@Setter protected String           productCode;
-  @Getter@Setter protected ProductInfo      productInfo;
-  @Getter@Setter protected NavigableProductDetailPage detailPage;
+    @Getter
+    @Setter
+    protected String productCode;
+    @Getter
+    @Setter
+    protected ProductInfo productInfo;
+    @Getter
+    @Setter
+    protected NavigableProductDetailPage detailPage;
 
-  public AbstractProductCrawler(String siteName, WebpageService webpageService) {
-    LOGGER.debug("[constructor] in");
+    public AbstractProductCrawler(String siteName, WebpageService webpageService) {
+        LOGGER.debug("[constructor] in");
 
-    this.siteName = siteName;
-    this.webpageService = webpageService;
+        this.siteName = siteName;
+        this.webpageService = webpageService;
 
-    String scriptPath = this.getScriptPath();
-    this.scriptText   = this.getScriptText(scriptPath);
+        String scriptPath = this.getScriptPath();
+        this.scriptText = this.getScriptText(scriptPath);
 
-    Properties configProps = new Properties();
-    configProps.setProperty("groovy.script.base", this.getScriptSupportClassName());
-    this.scriptConfig  = new CompilerConfiguration(configProps);
-    this.scriptBinding = new Binding();
-  }
-
-  private String getScriptPath() {
-    LOGGER.debug("[getScriptPath] in");
-
-    String scriptPath = System.getenv(Consts.SCRAPING_SCRIPT_PATH);
-    if (StringUtils.isEmpty(scriptPath)) {
-      scriptPath = System.getProperty("user.dir") + "/scripts/scraping";
+        Properties configProps = new Properties();
+        configProps.setProperty("groovy.script.base", this.getScriptSupportClassName());
+        this.scriptConfig = new CompilerConfiguration(configProps);
+        this.scriptBinding = new Binding();
     }
-    scriptPath  += "/isolated/" + this.siteName + "-product-detail.groovy";
 
-    LOGGER.info("scriptPath: " + scriptPath);
-    return scriptPath;
-  }
+    private String getScriptPath() {
+        LOGGER.debug("[getScriptPath] in");
 
-  private String getScriptText(String scriptPath) {
-    LOGGER.debug("[getScriptText] in");
+        String scriptPath = System.getenv(Consts.SCRAPING_SCRIPT_PATH);
+        if (StringUtils.isEmpty(scriptPath)) {
+            scriptPath = System.getProperty("user.dir") + "/scripts/scraping";
+        }
+        scriptPath += "/isolated/" + this.siteName + "-product-detail.groovy";
 
-    try {
-      return FileUtils.readFileToString(new File(scriptPath), "utf-8");
-    } catch (IOException e) {
-      LOGGER.info("Could not read script file: " + scriptPath);
-      return null;
+        LOGGER.info("scriptPath: " + scriptPath);
+        return scriptPath;
     }
-  }
 
-  protected abstract String getScriptSupportClassName();
+    private String getScriptText(String scriptPath) {
+        LOGGER.debug("[getScriptText] in");
 
-  private String executeScript() {
-    LOGGER.debug("[executeScript] in");
-    this.scriptShell = new GroovyShell(this.scriptBinding, this.scriptConfig);
-    Script script = scriptShell.parse(this.scriptText);
-    script.invokeMethod("setCrawler", this);
-    String resStr = (String)script.run();
-    return resStr;
-  }
+        try {
+            return FileUtils.readFileToString(new File(scriptPath), "utf-8");
+        } catch (IOException e) {
+            LOGGER.info("Could not read script file: " + scriptPath);
+            return null;
+        }
+    }
 
-  public AbstractProductCrawlerResult fetchProductInfo(TrafficWebClient webClient, String productCode) throws IOException {
-    LOGGER.debug("[fetchProductInfo] in");
+    protected abstract String getScriptSupportClassName();
 
-    this.webClient  = webClient;
-    this.detailPage = new NavigableProductDetailPage(this.webClient);
+    private String executeScript() {
+        LOGGER.debug("[executeScript] in");
+        this.scriptShell = new GroovyShell(this.scriptBinding, this.scriptConfig);
+        Script script = scriptShell.parse(this.scriptText);
+        script.invokeMethod("setCrawler", this);
+        String resStr = (String) script.run();
+        return resStr;
+    }
 
-    this.productCode = productCode;
-    this.productInfo = new ProductInfo();
-    this.productInfo.setCode(productCode);
-    this.detailPage.setProductInfo(this.productInfo);
+    public AbstractProductCrawlerResult fetchProductInfo(TrafficWebClient webClient, String productCode) throws IOException {
+        LOGGER.debug("[fetchProductInfo] in");
 
-    // binding variables for scraping script
-    this.scriptBinding.setProperty("productCode", this.productCode);
+        this.webClient = webClient;
+        this.detailPage = new NavigableProductDetailPage(this.webClient);
 
-    this.executeScript();
+        this.productCode = productCode;
+        this.productInfo = new ProductInfo();
+        this.productInfo.setCode(productCode);
+        this.detailPage.setProductInfo(this.productInfo);
 
-    return new AbstractProductCrawlerResult(this.productInfo, this.savedPath);
-  }
+        // binding variables for scraping script
+        this.scriptBinding.setProperty("productCode", this.productCode);
+
+        this.executeScript();
+
+        return new AbstractProductCrawlerResult(this.productInfo, this.savedPath);
+    }
 }

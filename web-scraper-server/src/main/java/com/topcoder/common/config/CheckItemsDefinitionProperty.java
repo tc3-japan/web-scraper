@@ -18,181 +18,181 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties
 public class CheckItemsDefinitionProperty {
 
-  private List<CheckItemsCheckSite> checkSites;
-  
-  public List<CheckItemsCheckSite> getCheckSites() {
-    return checkSites;
-  }
+    private List<CheckItemsCheckSite> checkSites;
 
-  public void setCheckSites(List<CheckItemsCheckSite> checkSites) {
-    this.checkSites = checkSites;
-  }
-  
-  public CheckItemsCheckSite getCheckSiteDefinition(String siteKey) {
-    if (siteKey == null || siteKey.length() == 0) {
-      throw new IllegalArgumentException("siteKey is required.");
-    }
-    return getCheckSites()
-        .stream()
-        .filter((site) -> site.getEcSite().equalsIgnoreCase(siteKey))
-        .findFirst().get();
-  }
-
-  public static class CheckItemsCheckSite {
-    private String ecSite;
-    private List<CheckItemsCheckPage> checkPages;
-
-    public String getEcSite() {
-      return ecSite;
+    public List<CheckItemsCheckSite> getCheckSites() {
+        return checkSites;
     }
 
-    public List<CheckItemsCheckPage> getCheckPages() {
-      return checkPages;
+    public void setCheckSites(List<CheckItemsCheckSite> checkSites) {
+        this.checkSites = checkSites;
     }
 
-    public void setEcSite(String ecSite) {
-      this.ecSite = ecSite;
+    public CheckItemsCheckSite getCheckSiteDefinition(String siteKey) {
+        if (siteKey == null || siteKey.length() == 0) {
+            throw new IllegalArgumentException("siteKey is required.");
+        }
+        return getCheckSites()
+                .stream()
+                .filter((site) -> site.getEcSite().equalsIgnoreCase(siteKey))
+                .findFirst().get();
     }
 
-    public void setCheckPages(List<CheckItemsCheckPage> checkPages) {
-      this.checkPages = checkPages;
-    }
-    
-    
-    public CheckItemsCheckPage getCheckPageDefinition(String pageKey) {
-      if (pageKey == null || pageKey.length() == 0) {
-        throw new IllegalArgumentException("pageKey is required.");
-      }
-      return getCheckPages()
-          .stream()
-          .filter((page) -> page.getPageName().equals(pageKey))
-          .findFirst().get();
-    }
-  }
-  
-  /**
-   * Represents `products` in check-items-definition.yaml
-   */
-  public static class CheckProduct {
-    private String productName;
-    private String productQuantity;
-    private String unitPrice;
-    private String productDistributor;
-    private String categories;
+    public static class CheckItemsCheckSite {
+        private String ecSite;
+        private List<CheckItemsCheckPage> checkPages;
 
-    public String getProductName() {
-      return productName;
-    }
+        public String getEcSite() {
+            return ecSite;
+        }
 
-    public String getProductQuantity() {
-      return productQuantity;
+        public List<CheckItemsCheckPage> getCheckPages() {
+            return checkPages;
+        }
+
+        public void setEcSite(String ecSite) {
+            this.ecSite = ecSite;
+        }
+
+        public void setCheckPages(List<CheckItemsCheckPage> checkPages) {
+            this.checkPages = checkPages;
+        }
+
+
+        public CheckItemsCheckPage getCheckPageDefinition(String pageKey) {
+            if (pageKey == null || pageKey.length() == 0) {
+                throw new IllegalArgumentException("pageKey is required.");
+            }
+            return getCheckPages()
+                    .stream()
+                    .filter((page) -> page.getPageName().equals(pageKey))
+                    .findFirst().get();
+        }
     }
 
-    public String getUnitPrice() {
-      return unitPrice;
+    /**
+     * Represents `products` in check-items-definition.yaml
+     */
+    public static class CheckProduct {
+        private String productName;
+        private String productQuantity;
+        private String unitPrice;
+        private String productDistributor;
+        private String categories;
+
+        public String getProductName() {
+            return productName;
+        }
+
+        public String getProductQuantity() {
+            return productQuantity;
+        }
+
+        public String getUnitPrice() {
+            return unitPrice;
+        }
+
+        public String getProductDistributor() {
+            return productDistributor;
+        }
+
+        public String getCategories() {
+            return categories;
+        }
+
+        public void setProductName(String productName) {
+            this.productName = productName;
+        }
+
+        public void setProductQuantity(String productQuantity) {
+            this.productQuantity = productQuantity;
+        }
+
+        public void setUnitPrice(String unitPrice) {
+            this.unitPrice = unitPrice;
+        }
+
+        public void setProductDistributor(String productDistributor) {
+            this.productDistributor = productDistributor;
+        }
+
+        public void setCategories(String categories) {
+            this.categories = categories;
+        }
     }
 
-    public String getProductDistributor() {
-      return productDistributor;
+    /**
+     * Represents `check_items` in check-items-definition.yaml
+     */
+    public static class CheckItems {
+        private String orderNo;
+        private String orderDate;
+        private String totalAmount;
+        private String deliveryStatus;
+        private CheckProduct products;
+
+        public String getOrderNo() {
+            return orderNo;
+        }
+
+        public String getOrderDate() {
+            return orderDate;
+        }
+
+        public String getTotalAmount() {
+            return totalAmount;
+        }
+
+        public String getDeliveryStatus() {
+            return deliveryStatus;
+        }
+
+        public CheckProduct getProducts() {
+            return products;
+        }
+
+        public void setOrderNo(String orderNo) {
+            this.orderNo = orderNo;
+        }
+
+        public void setOrderDate(String orderDate) {
+            this.orderDate = orderDate;
+        }
+
+        public void setTotalAmount(String totalAmount) {
+            this.totalAmount = totalAmount;
+        }
+
+        public void setDeliveryStatus(String deliveryStatus) {
+            this.deliveryStatus = deliveryStatus;
+        }
+
+        public void setProducts(CheckProduct products) {
+            this.products = products;
+        }
     }
 
-    public String getCategories() {
-      return categories;
+    /**
+     * Represents `check_pages` in check-items-definition.yaml
+     */
+    public static class CheckItemsCheckPage {
+        private String pageName;
+        private CheckItems checkItems;
+
+        public String getPageName() {
+            return pageName;
+        }
+
+        public CheckItems getCheckItems() {
+            return checkItems;
+        }
+
+        public void setPageName(String pageName) {
+            this.pageName = pageName;
+        }
+
+        public void setCheckItems(CheckItems checkItems) {
+            this.checkItems = checkItems;
+        }
     }
-
-    public void setProductName(String productName) {
-      this.productName = productName;
-    }
-
-    public void setProductQuantity(String productQuantity) {
-      this.productQuantity = productQuantity;
-    }
-
-    public void setUnitPrice(String unitPrice) {
-      this.unitPrice = unitPrice;
-    }
-
-    public void setProductDistributor(String productDistributor) {
-      this.productDistributor = productDistributor;
-    }
-
-    public void setCategories(String categories) {
-      this.categories = categories;
-    }
-  }
-
-  /**
-   * Represents `check_items` in check-items-definition.yaml
-   */
-  public static class CheckItems {
-    private String orderNo;
-    private String orderDate;
-    private String totalAmount;
-    private String deliveryStatus;
-    private CheckProduct products;
-
-    public String getOrderNo() {
-      return orderNo;
-    }
-
-    public String getOrderDate() {
-      return orderDate;
-    }
-
-    public String getTotalAmount() {
-      return totalAmount;
-    }
-
-    public String getDeliveryStatus() {
-      return deliveryStatus;
-    }
-
-    public CheckProduct getProducts() {
-      return products;
-    }
-
-    public void setOrderNo(String orderNo) {
-      this.orderNo = orderNo;
-    }
-
-    public void setOrderDate(String orderDate) {
-      this.orderDate = orderDate;
-    }
-
-    public void setTotalAmount(String totalAmount) {
-      this.totalAmount = totalAmount;
-    }
-
-    public void setDeliveryStatus(String deliveryStatus) {
-      this.deliveryStatus = deliveryStatus;
-    }
-
-    public void setProducts(CheckProduct products) {
-      this.products = products;
-    }
-  }
-
-  /**
-   * Represents `check_pages` in check-items-definition.yaml
-   */
-  public static class CheckItemsCheckPage {
-    private String pageName;
-    private CheckItems checkItems;
-
-    public String getPageName() {
-      return pageName;
-    }
-
-    public CheckItems getCheckItems() {
-      return checkItems;
-    }
-
-    public void setPageName(String pageName) {
-      this.pageName = pageName;
-    }
-
-    public void setCheckItems(CheckItems checkItems) {
-      this.checkItems = checkItems;
-    }
-  }
 }

@@ -6,17 +6,18 @@ import com.gargoylesoftware.htmlunit.html.HtmlImage;
  * Interface for webpage
  */
 public interface WebpageService {
-  /**
-   * Save webpage
-   * @param filename filename
-   * @param site site name
-   * @param content webpage content
-   */
-  String save(String filename, String site, String content);
+    /**
+     * Save webpage
+     *
+     * @param filename filename
+     * @param site     site name
+     * @param content  webpage content
+     */
+    String save(String filename, String site, String content);
 
-  String save(String filename, String site, String content, boolean saveFlag);
+    String save(String filename, String site, String content, boolean saveFlag);
 
-  String saveImage(String filename, String fileExt, String site, HtmlImage htmlImage);
+    String saveImage(String filename, String fileExt, String site, HtmlImage htmlImage);
 
-  String toBase64Image(HtmlImage htmlImage);
+    String toBase64Image(HtmlImage htmlImage);
 }

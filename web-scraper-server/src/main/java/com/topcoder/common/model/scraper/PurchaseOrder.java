@@ -11,6 +11,6 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class PurchaseOrder extends PurchaseCommon {
-  @JsonProperty("purchase_product")
-  private PurchaseProduct purchaseProduct;
+    @JsonProperty("purchase_product")
+    private PurchaseProduct purchaseProduct;
 }

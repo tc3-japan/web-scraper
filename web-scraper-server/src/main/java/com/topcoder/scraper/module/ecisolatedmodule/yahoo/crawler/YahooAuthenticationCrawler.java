@@ -19,70 +19,70 @@ import java.io.IOException;
 @Component
 public class YahooAuthenticationCrawler extends AbstractAuthenticationCrawler {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(YahooAuthenticationCrawler.class.getName());
-  
-  private String                      siteName;
-  private NavigableAuthenticationPage authPage;
+    private static final Logger LOGGER = LoggerFactory.getLogger(YahooAuthenticationCrawler.class.getName());
 
-  private final WebpageService webpageService;
+    private String siteName;
+    private NavigableAuthenticationPage authPage;
 
-  public YahooAuthenticationCrawler(WebpageService webpageService) {
-    this.siteName       = "yahoo";
-    this.webpageService = webpageService;
-  }
+    private final WebpageService webpageService;
 
-  // TODO : implement
-  @Override
-  public YahooAuthenticationCrawlerResult authenticate(TrafficWebClient webClient,
-                                                       String username,
-                                                       String password, String code, boolean init) throws IOException {
-    return this.authenticate(webClient, username, password, code, false);
-  }
-
-  @Override
-  public YahooAuthenticationCrawlerResult authenticate(TrafficWebClient webClient, String username, String password, String code) throws IOException {
-    String path;
-
-    // First Step and Second Step of Password Login
-    if (StringUtils.isEmpty(code)) {
-      // TODO: Make sure webClient.getOptions().setJavaScriptEnabled(true);
-
-      webClient.getWebClient().getCookieManager().clearCookies();
-      webClient.getWebClient().getOptions().setJavaScriptEnabled(true);
-
-      HtmlPage page = webClient.getPage("https://login.yahoo.co.jp/config/login");
-      authPage = new NavigableAuthenticationPage(page, webClient);
-      authPage.type(username, "#username");
-      authPage.savePage("yahoo-auth-1", "yahoo", webpageService);
-
-      authPage.click("#btnNext", webpageService);
-      path = authPage.savePage("yahoo-auth-2", "yahoo", webpageService);
-
-      if (StringUtils.isNotEmpty(password)) {
-        // password login
-        authPage.typePassword(password, "#passwd");
-      } else {
-        // send verify code via SMS / EMail
-        return new YahooAuthenticationCrawlerResult(false, CodeType.VerifyCodeLogin, path);
-      }
-
-    // Second Step of Verify Code Login
-    } else if (StringUtils.isNotEmpty(code)) {
-      // verify code login
-      authPage.type(code, "#code");
+    public YahooAuthenticationCrawler(WebpageService webpageService) {
+        this.siteName = "yahoo";
+        this.webpageService = webpageService;
     }
-    authPage.savePage("yahoo-auth-3", "yahoo", webpageService);
 
-    // Persistent Login: default value is on at current(2019-12) site , so we don't need this code.
-    //authPage.typeCheckbox("on", "#persistent");
-    //authPage.savePage("yahoo-auth-4", "yahoo", webpageService);
+    // TODO : implement
+    @Override
+    public YahooAuthenticationCrawlerResult authenticate(TrafficWebClient webClient,
+                                                         String username,
+                                                         String password, String code, boolean init) throws IOException {
+        return this.authenticate(webClient, username, password, code, false);
+    }
 
-    authPage.click("#btnSubmit", webpageService);
-    authPage.savePage("yahoo-auth-5", "yahoo", webpageService);
+    @Override
+    public YahooAuthenticationCrawlerResult authenticate(TrafficWebClient webClient, String username, String password, String code) throws IOException {
+        String path;
 
-    path = authPage.savePage("yahoo-authenticated", siteName, webpageService);
-    authPage.confirmLoginByMissingLoginText("#Login > div", "ログイン");
+        // First Step and Second Step of Password Login
+        if (StringUtils.isEmpty(code)) {
+            // TODO: Make sure webClient.getOptions().setJavaScriptEnabled(true);
 
-    return new YahooAuthenticationCrawlerResult(authPage.getLoginStatus(), path);
-  }
+            webClient.getWebClient().getCookieManager().clearCookies();
+            webClient.getWebClient().getOptions().setJavaScriptEnabled(true);
+
+            HtmlPage page = webClient.getPage("https://login.yahoo.co.jp/config/login");
+            authPage = new NavigableAuthenticationPage(page, webClient);
+            authPage.type(username, "#username");
+            authPage.savePage("yahoo-auth-1", "yahoo", webpageService);
+
+            authPage.click("#btnNext", webpageService);
+            path = authPage.savePage("yahoo-auth-2", "yahoo", webpageService);
+
+            if (StringUtils.isNotEmpty(password)) {
+                // password login
+                authPage.typePassword(password, "#passwd");
+            } else {
+                // send verify code via SMS / EMail
+                return new YahooAuthenticationCrawlerResult(false, CodeType.VerifyCodeLogin, path);
+            }
+
+            // Second Step of Verify Code Login
+        } else if (StringUtils.isNotEmpty(code)) {
+            // verify code login
+            authPage.type(code, "#code");
+        }
+        authPage.savePage("yahoo-auth-3", "yahoo", webpageService);
+
+        // Persistent Login: default value is on at current(2019-12) site , so we don't need this code.
+        //authPage.typeCheckbox("on", "#persistent");
+        //authPage.savePage("yahoo-auth-4", "yahoo", webpageService);
+
+        authPage.click("#btnSubmit", webpageService);
+        authPage.savePage("yahoo-auth-5", "yahoo", webpageService);
+
+        path = authPage.savePage("yahoo-authenticated", siteName, webpageService);
+        authPage.confirmLoginByMissingLoginText("#Login > div", "ログイン");
+
+        return new YahooAuthenticationCrawlerResult(authPage.getLoginStatus(), path);
+    }
 }

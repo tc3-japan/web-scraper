@@ -24,57 +24,57 @@ import com.topcoder.scraper.service.WebpageService;
 @Component
 public class DryRunPurchaseHistoryModule {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(DryRunPurchaseHistoryModule.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DryRunPurchaseHistoryModule.class);
 
-  private final WebpageService webpageService;
-  private final ECSiteAccountRepository ecSiteAccountRepository;
+    private final WebpageService webpageService;
+    private final ECSiteAccountRepository ecSiteAccountRepository;
 
-  @Autowired
-  ConfigurationRepository configurationRepository;
+    @Autowired
+    ConfigurationRepository configurationRepository;
 
-  @Autowired
-  public DryRunPurchaseHistoryModule(ECSiteAccountRepository ecSiteAccountRepository, WebpageService webpageService) {
-    this.webpageService = webpageService;
-    this.ecSiteAccountRepository = ecSiteAccountRepository;
-  }
-
-  public List<Object> fetchPurchaseHistoryList(String site, String config) throws IOException {
-
-    ECSiteAccountDAO accountDAO = null;
-
-    Iterable<ECSiteAccountDAO> accountDAOS = ecSiteAccountRepository.findAllByEcSite(site);
-    for (ECSiteAccountDAO ecSiteAccountDAO : accountDAOS) {
-      if (ecSiteAccountDAO.getEcUseFlag() == Boolean.TRUE) {
-        accountDAO = ecSiteAccountDAO;
-        break;
-      }
+    @Autowired
+    public DryRunPurchaseHistoryModule(ECSiteAccountRepository ecSiteAccountRepository, WebpageService webpageService) {
+        this.webpageService = webpageService;
+        this.ecSiteAccountRepository = ecSiteAccountRepository;
     }
 
-    if (accountDAO == null) {
-      LOGGER.error("failed to get ecSite account");
-      return null;
-    }
+    public List<Object> fetchPurchaseHistoryList(String site, String config) throws IOException {
 
-    TrafficWebClient webClient = new TrafficWebClient(accountDAO.getUserId(), true);
-    TrafficWebClientForDryRun webClientForDryRun = webClient.new TrafficWebClientForDryRun(accountDAO.getUserId(), true);
-    LOGGER.info("web client version = " + webClient.getWebClient().getBrowserVersion());
-    boolean restoreRet = Common.restoreCookies(webClientForDryRun.getWebClient(), accountDAO);
-    if (!restoreRet) {
-      LOGGER.error("skip ecSite id = " + accountDAO.getId() + ", restore cookies failed");
-      return null;
-    }
+        ECSiteAccountDAO accountDAO = null;
 
-    try {
-      GeneralPurchaseHistoryCrawler crawler = new GeneralPurchaseHistoryCrawler(site, this.webpageService, this.configurationRepository);
-      crawler.setConfig(config);
-      GeneralPurchaseHistoryCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClientForDryRun, true, true);
-      LOGGER.info("succeed fetch purchaseHistory for ecSite id = " + accountDAO.getId());
-      return new DryRunUtils().toJsonOfDryRunPurchasehistoryModule(crawlerResult.getPurchaseHistoryList(), crawlerResult.getHtmlPathList());
-    } catch (Exception e) {
-      LOGGER.error("failed to PurchaseHistory for ecSite id = " + accountDAO.getId());
-      e.printStackTrace();
+        Iterable<ECSiteAccountDAO> accountDAOS = ecSiteAccountRepository.findAllByEcSite(site);
+        for (ECSiteAccountDAO ecSiteAccountDAO : accountDAOS) {
+            if (ecSiteAccountDAO.getEcUseFlag() == Boolean.TRUE) {
+                accountDAO = ecSiteAccountDAO;
+                break;
+            }
+        }
+
+        if (accountDAO == null) {
+            LOGGER.error("failed to get ecSite account");
+            return null;
+        }
+
+        TrafficWebClient webClient = new TrafficWebClient(accountDAO.getUserId(), true);
+        TrafficWebClientForDryRun webClientForDryRun = webClient.new TrafficWebClientForDryRun(accountDAO.getUserId(), true);
+        LOGGER.info("web client version = " + webClient.getWebClient().getBrowserVersion());
+        boolean restoreRet = Common.restoreCookies(webClientForDryRun.getWebClient(), accountDAO);
+        if (!restoreRet) {
+            LOGGER.error("skip ecSite id = " + accountDAO.getId() + ", restore cookies failed");
+            return null;
+        }
+
+        try {
+            GeneralPurchaseHistoryCrawler crawler = new GeneralPurchaseHistoryCrawler(site, this.webpageService, this.configurationRepository);
+            crawler.setConfig(config);
+            GeneralPurchaseHistoryCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClientForDryRun, true, true);
+            LOGGER.info("succeed fetch purchaseHistory for ecSite id = " + accountDAO.getId());
+            return new DryRunUtils().toJsonOfDryRunPurchasehistoryModule(crawlerResult.getPurchaseHistoryList(), crawlerResult.getHtmlPathList());
+        } catch (Exception e) {
+            LOGGER.error("failed to PurchaseHistory for ecSite id = " + accountDAO.getId());
+            e.printStackTrace();
+        }
+        return null;
     }
-    return null;
-  }
 
 }

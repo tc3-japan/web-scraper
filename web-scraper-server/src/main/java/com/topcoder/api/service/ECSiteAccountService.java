@@ -26,132 +26,132 @@ import com.topcoder.common.repository.UserRepository;
 @Service
 public class ECSiteAccountService {
 
-  /**
-   * user repository
-   */
-  @Autowired
-  UserRepository userRepository;
+    /**
+     * user repository
+     */
+    @Autowired
+    UserRepository userRepository;
 
-  /**
-   * ec site account repository
-   */
-  @Autowired
-  ECSiteAccountRepository ecSiteAccountRepository;
-
-
-  @Autowired
-  AmazonProperty amazonProperty;
-
-  @Autowired
-  private LoginHandlerFactory loginHandlerFactory;
-
-  /**
-   * the logger
-   */
-  private Logger logger = LoggerFactory.getLogger(ECSiteAccountService.class.getName());
-
-  /**
-   * the BCryptPasswordEncoder passwordEncoder instance.
-   */
-  private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
-  public List<ECSiteAccountDAO> getAll(String userId) throws ApiException {
-    UserDAO userDAO = checkUserByCryptoID(userId);
-    return ecSiteAccountRepository.findAllByUserId(userDAO.getId());
-  }
+    /**
+     * ec site account repository
+     */
+    @Autowired
+    ECSiteAccountRepository ecSiteAccountRepository;
 
 
-  /**
-   * get ECSiteAccountDAO by id
-   *
-   * @param userId the user id
-   * @param id     the site id
-   * @return the db ECSiteAccountDAO
-   * @throws ApiException if not exist
-   */
-  public ECSiteAccountDAO getECSite(String userId, Integer id) throws ApiException {
-    checkUserByCryptoID(userId);
-    return get(id);
-  }
+    @Autowired
+    AmazonProperty amazonProperty;
 
+    @Autowired
+    private LoginHandlerFactory loginHandlerFactory;
 
-  /**
-   * update ECSiteAccountDAO
-   *
-   * @param userId the user id
-   * @param id     the ECSiteAccountDAO id
-   * @param entity the request entity
-   * @return the updated
-   * @throws ApiException if user not found or ECSiteAccountDAO not found
-   */
-  public ECSiteAccountDAO updateECSite(String userId, Integer id, ECSiteAccountDAO entity) throws ApiException {
-    checkUserByCryptoID(userId);
+    /**
+     * the logger
+     */
+    private Logger logger = LoggerFactory.getLogger(ECSiteAccountService.class.getName());
 
-    ECSiteAccountDAO accountDAO = get(id);
-    accountDAO.setEcUseFlag(entity.getEcUseFlag());
-    accountDAO.setUpdateAt(Date.from(Instant.now()));
-    ecSiteAccountRepository.save(accountDAO);
+    /**
+     * the BCryptPasswordEncoder passwordEncoder instance.
+     */
+    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    return accountDAO;
-  }
-
-
-  public LoginResponse loginInit(String userId, Integer siteId, String uuid) throws ApiException {
-
-    UserDAO userDAO = checkUserByCryptoID(userId);
-    ECSiteAccountDAO ecSiteAccountDAO = ecSiteAccountRepository.findOne(siteId);
-
-    LoginHandler handler = this.loginHandlerFactory.getLoginHandler(ecSiteAccountDAO.getEcSite());
-
-    return handler.loginInit(userDAO.getId(), siteId, uuid);
-  }
-
-  public LoginResponse login(String userId, LoginRequest request) throws ApiException {
-
-    UserDAO userDAO = checkUserByCryptoID(userId);
-    ECSiteAccountDAO ecSiteAccountDAO = ecSiteAccountRepository.findOne(request.getSiteId());
-
-    LoginHandler handler = this.loginHandlerFactory.getLoginHandler(ecSiteAccountDAO.getEcSite());
-
-    return handler.login(userDAO.getId(), request);
-  }
-
-
-  /**
-   * get ECSiteAccountDAO by id
-   *
-   * @param id the id
-   * @return the entity
-   */
-  public ECSiteAccountDAO get(int id) throws EntityNotFoundException {
-    ECSiteAccountDAO ecSiteAccountDAO = ecSiteAccountRepository.findOne(id);
-    if (ecSiteAccountDAO == null) {
-      throw new EntityNotFoundException("Not found ECSiteAccount where id = " + id);
-    }
-    return ecSiteAccountDAO;
-  }
-
-  /**
-   * the BCryptPasswordEncoder passwordEncoder instance.
-   */
-  private UserDAO checkUserByCryptoID(String id) throws BadRequestException {
-    Iterable<UserDAO> userDAOS = userRepository.findAll();
-
-    UserDAO ret = null;
-    for (UserDAO userDAO : userDAOS) {
-      if (passwordEncoder.matches(userDAO.getId() + "", id)) {
-        ret = userDAO;
-      }
+    public List<ECSiteAccountDAO> getAll(String userId) throws ApiException {
+        UserDAO userDAO = checkUserByCryptoID(userId);
+        return ecSiteAccountRepository.findAllByUserId(userDAO.getId());
     }
 
-    if (ret == null) {
-      throw new BadRequestException("User not exist");
+
+    /**
+     * get ECSiteAccountDAO by id
+     *
+     * @param userId the user id
+     * @param id     the site id
+     * @return the db ECSiteAccountDAO
+     * @throws ApiException if not exist
+     */
+    public ECSiteAccountDAO getECSite(String userId, Integer id) throws ApiException {
+        checkUserByCryptoID(userId);
+        return get(id);
     }
 
-    // expired
-    if (ret.getIdExpireAt() == null || ret.getIdExpireAt().before(Date.from(Instant.now()))) {
-      throw new BadRequestException("this url already expired");
+
+    /**
+     * update ECSiteAccountDAO
+     *
+     * @param userId the user id
+     * @param id     the ECSiteAccountDAO id
+     * @param entity the request entity
+     * @return the updated
+     * @throws ApiException if user not found or ECSiteAccountDAO not found
+     */
+    public ECSiteAccountDAO updateECSite(String userId, Integer id, ECSiteAccountDAO entity) throws ApiException {
+        checkUserByCryptoID(userId);
+
+        ECSiteAccountDAO accountDAO = get(id);
+        accountDAO.setEcUseFlag(entity.getEcUseFlag());
+        accountDAO.setUpdateAt(Date.from(Instant.now()));
+        ecSiteAccountRepository.save(accountDAO);
+
+        return accountDAO;
     }
-    return ret;
-  }
+
+
+    public LoginResponse loginInit(String userId, Integer siteId, String uuid) throws ApiException {
+
+        UserDAO userDAO = checkUserByCryptoID(userId);
+        ECSiteAccountDAO ecSiteAccountDAO = ecSiteAccountRepository.findOne(siteId);
+
+        LoginHandler handler = this.loginHandlerFactory.getLoginHandler(ecSiteAccountDAO.getEcSite());
+
+        return handler.loginInit(userDAO.getId(), siteId, uuid);
+    }
+
+    public LoginResponse login(String userId, LoginRequest request) throws ApiException {
+
+        UserDAO userDAO = checkUserByCryptoID(userId);
+        ECSiteAccountDAO ecSiteAccountDAO = ecSiteAccountRepository.findOne(request.getSiteId());
+
+        LoginHandler handler = this.loginHandlerFactory.getLoginHandler(ecSiteAccountDAO.getEcSite());
+
+        return handler.login(userDAO.getId(), request);
+    }
+
+
+    /**
+     * get ECSiteAccountDAO by id
+     *
+     * @param id the id
+     * @return the entity
+     */
+    public ECSiteAccountDAO get(int id) throws EntityNotFoundException {
+        ECSiteAccountDAO ecSiteAccountDAO = ecSiteAccountRepository.findOne(id);
+        if (ecSiteAccountDAO == null) {
+            throw new EntityNotFoundException("Not found ECSiteAccount where id = " + id);
+        }
+        return ecSiteAccountDAO;
+    }
+
+    /**
+     * the BCryptPasswordEncoder passwordEncoder instance.
+     */
+    private UserDAO checkUserByCryptoID(String id) throws BadRequestException {
+        Iterable<UserDAO> userDAOS = userRepository.findAll();
+
+        UserDAO ret = null;
+        for (UserDAO userDAO : userDAOS) {
+            if (passwordEncoder.matches(userDAO.getId() + "", id)) {
+                ret = userDAO;
+            }
+        }
+
+        if (ret == null) {
+            throw new BadRequestException("User not exist");
+        }
+
+        // expired
+        if (ret.getIdExpireAt() == null || ret.getIdExpireAt().before(Date.from(Instant.now()))) {
+            throw new BadRequestException("this url already expired");
+        }
+        return ret;
+    }
 }

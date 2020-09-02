@@ -9,16 +9,16 @@ import lombok.Data;
  */
 @Data
 public class Selector {
-  private String element;
+    private String element;
 
-  @JsonProperty("full_path")
-  private Boolean fullPath;
+    @JsonProperty("full_path")
+    private Boolean fullPath;
 
-  private String attribute;
-  private String regex;
+    private String attribute;
+    private String regex;
 
-  @JsonProperty("is_script")
-  private Boolean isScript;
+    @JsonProperty("is_script")
+    private Boolean isScript;
 
-  private String script;
+    private String script;
 }

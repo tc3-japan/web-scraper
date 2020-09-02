@@ -9,40 +9,40 @@ import lombok.Data;
 @Data
 public class AbstractAuthenticationCrawlerResult {
 
-    protected boolean success;
-    protected String reason;
-    protected CodeType codeType;
-    protected String img;
-    protected String htmlPath;
-    protected boolean needContinue;
+  protected boolean  success;
+  protected String   reason;
+  protected CodeType codeType;
+  protected String   img;
+  protected String   htmlPath;
+  protected boolean  needContinue;
 
-    public AbstractAuthenticationCrawlerResult(boolean success, String htmlPath) {
-        this.success = success;
-        this.htmlPath = htmlPath;
-    }
+  public AbstractAuthenticationCrawlerResult(boolean success, String htmlPath) {
+    this.success  = success;
+    this.htmlPath = htmlPath;
+  }
 
-    public AbstractAuthenticationCrawlerResult(boolean success, String reason, CodeType codeType, String img, boolean needContinue) {
-        this.success = success;
-        this.reason = reason;
-        this.codeType = codeType;
-        this.img = img;
-        this.needContinue = needContinue;
-    }
+  public AbstractAuthenticationCrawlerResult(boolean success, String reason, CodeType codeType, String img, boolean needContinue) {
+    this.success      = success;
+    this.reason       = reason;
+    this.codeType     = codeType;
+    this.img          = img;
+    this.needContinue = needContinue;
+  }
 
-    public AbstractAuthenticationCrawlerResult(boolean success, String reason, CodeType codeType, String img, boolean needContinue, String htmlPath) {
-        this.success = success;
-        this.reason = reason;
-        this.codeType = codeType;
-        this.img = img;
-        this.needContinue = needContinue;
-        this.htmlPath = htmlPath;
-    }
+  public AbstractAuthenticationCrawlerResult(boolean success, String reason, CodeType codeType, String img, boolean needContinue, String htmlPath) {
+    this.success      = success;
+    this.reason       = reason;
+    this.codeType     = codeType;
+    this.img          = img;
+    this.needContinue = needContinue;
+    this.htmlPath     = htmlPath;
+  }
 
-    public boolean isSuccess() {
-        return success;
-    }
+  public boolean isSuccess() {
+    return success;
+  }
 
-    public String getHtmlPath() {
-        return htmlPath;
-    }
+  public String getHtmlPath() {
+    return htmlPath;
+  }
 }

@@ -17,21 +17,21 @@ import org.springframework.stereotype.Component;
 @Component
 public class AmazonPurchaseHistoryModule extends AbstractPurchaseHistoryModule {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AmazonPurchaseHistoryModule.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AmazonPurchaseHistoryModule.class);
 
-    @Autowired
-    public AmazonPurchaseHistoryModule(
-            PurchaseHistoryService purchaseHistoryService,
-            ECSiteAccountRepository ecSiteAccountRepository,
-            WebpageService webpageService,
-            AmazonLoginHandler loginHandler,
-            AmazonPurchaseHistoryCrawler crawler
-    ) {
-        super(purchaseHistoryService, ecSiteAccountRepository, webpageService, loginHandler, crawler);
-    }
+  @Autowired
+  public AmazonPurchaseHistoryModule(
+          PurchaseHistoryService           purchaseHistoryService,
+          ECSiteAccountRepository          ecSiteAccountRepository,
+          WebpageService                   webpageService,
+          AmazonLoginHandler               loginHandler,
+          AmazonPurchaseHistoryCrawler     crawler
+  ) {
+    super(purchaseHistoryService, ecSiteAccountRepository, webpageService, loginHandler, crawler);
+  }
 
-    @Override
-    public String getModuleType() {
-        return "amazon";
-    }
+  @Override
+  public String getModuleType() {
+    return "amazon";
+  }
 }

@@ -49,7 +49,7 @@ public class GeneralProductDetailCrawler extends AbstractGeneralCrawler {
         if (site.equals("rakuten")) {
             DomElement de = detailPage.getPage().querySelector("body > script[src*=\"pa3\"]");
             if (de != null) de.remove();
-            String html = detailPage.getPage().asXml().replace("<?xml version=\"1.0\" encoding=\"EUC-JP\"?>", "");
+            String html = detailPage.getPage().asXml().replace("<?xml version=\"1.0\" encoding=\"EUC-JP\"?>","");
             savedPath = detailPage.savePage(site, "product-detail", productCode, html, webpageService);
         } else {
             savedPath = detailPage.savePage(site, "product-detail", productCode, detailPage, webpageService);

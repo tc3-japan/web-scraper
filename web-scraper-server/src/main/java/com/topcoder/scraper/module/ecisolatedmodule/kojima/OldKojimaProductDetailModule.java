@@ -21,52 +21,52 @@ import com.topcoder.scraper.service.WebpageService;
 
 public class OldKojimaProductDetailModule extends AbstractProductModule {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OldKojimaProductDetailModule.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(OldKojimaProductDetailModule.class);
 
-    @Autowired
-    ConfigurationRepository configurationRepository;
+  @Autowired
+  ConfigurationRepository configurationRepository;
 
-    public OldKojimaProductDetailModule(
-            ProductService productService,
-            WebpageService webpageService,
-            KojimaProductCrawler crawler) {
-        super(productService, webpageService, crawler);
+  public OldKojimaProductDetailModule(
+          ProductService             productService,
+          WebpageService             webpageService,
+          KojimaProductCrawler crawler) {
+    super(productService, webpageService, crawler);
+  }
+
+  @Override
+  public String getModuleType() {
+    return "kojima";
+  }
+
+  @Override
+  public void fetchProductDetailList(List<String> sites) {
+
+    List<ProductDAO> products = this.productService.getAllFetchInfoStatusIsNull(getModuleType());
+    GeneralProductDetailCrawler crawler = new GeneralProductDetailCrawler(getModuleType(), "product", webpageService, configurationRepository);
+
+    products.forEach(product -> {
+      try {
+        fetchProductDetail(crawler, product.getId(), product.getProductCode());
+      } catch (IOException | IllegalStateException e) {
+        LOGGER.error(String.format("Fail to fetch product %s, please try again.", product.getProductCode()));
+      }
+    });
+  }
+
+  private void fetchProductDetail(GeneralProductDetailCrawler crawler, int productId, String productName) throws IOException {
+    TrafficWebClient webClient = new TrafficWebClient(0, false);
+
+    GeneralProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productName);
+    webClient.finishTraffic();
+    ProductInfo productInfo = crawlerResult != null ? crawlerResult.getProductInfo() : null;
+
+    if (productInfo == null) {
+      LOGGER.warn("Unable to obtain a detailed information about: " + productName);
+      return;
     }
 
-    @Override
-    public String getModuleType() {
-        return "kojima";
-    }
-
-    @Override
-    public void fetchProductDetailList(List<String> sites) {
-
-        List<ProductDAO> products = this.productService.getAllFetchInfoStatusIsNull(getModuleType());
-        GeneralProductDetailCrawler crawler = new GeneralProductDetailCrawler(getModuleType(), "product", webpageService, configurationRepository);
-
-        products.forEach(product -> {
-            try {
-                fetchProductDetail(crawler, product.getId(), product.getProductCode());
-            } catch (IOException | IllegalStateException e) {
-                LOGGER.error(String.format("Fail to fetch product %s, please try again.", product.getProductCode()));
-            }
-        });
-    }
-
-    private void fetchProductDetail(GeneralProductDetailCrawler crawler, int productId, String productName) throws IOException {
-        TrafficWebClient webClient = new TrafficWebClient(0, false);
-
-        GeneralProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productName);
-        webClient.finishTraffic();
-        ProductInfo productInfo = crawlerResult != null ? crawlerResult.getProductInfo() : null;
-
-        if (productInfo == null) {
-            LOGGER.warn("Unable to obtain a detailed information about: " + productName);
-            return;
-        }
-
-        // save updated information
-        productService.updateProduct(productId, productInfo);
+    // save updated information
+    productService.updateProduct(productId, productInfo);
     /* Kojima: Category and Ranking are not available
     for (int i = 0; i < productInfo.getCategoryList().size(); i++) {
       String category = productInfo.getCategoryList().get(i);
@@ -74,24 +74,24 @@ public class OldKojimaProductDetailModule extends AbstractProductModule {
       productService.addCategoryRanking(productId, category, rank);
     }
     */
-        productService.updateFetchInfoStatus(productId, "updated");
-    }
+    productService.updateFetchInfoStatus(productId, "updated");
+  }
 
-    @Override
-    public ProductDAO searchProductInfo(String siteName, String modelNo) throws IOException {
-        TrafficWebClient webClient = new TrafficWebClient(0, false);
+  @Override
+  public ProductDAO searchProductInfo(String siteName, String modelNo) throws IOException {
+    TrafficWebClient webClient = new TrafficWebClient(0, false);
 
-        GeneralProductDetailCrawler crawler = new GeneralProductDetailCrawler(getModuleType(), "product", webpageService, configurationRepository);
+    GeneralProductDetailCrawler crawler = new GeneralProductDetailCrawler(getModuleType(), "product", webpageService, configurationRepository);
 
-        GeneralProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, modelNo);
-        webClient.finishTraffic();
-        ProductInfo productInfo = Objects.isNull(crawlerResult) ? null : crawlerResult.getProductInfo();
+    GeneralProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, modelNo);
+	  webClient.finishTraffic();
+	  ProductInfo productInfo = Objects.isNull(crawlerResult) ? null : crawlerResult.getProductInfo();
 
-        if (Objects.isNull(productInfo)) {
-            LOGGER.warn("Unable to obtain a cross ec product information about: " + modelNo);
-            return null;
-        }
+	  if (Objects.isNull(productInfo)) {
+	    LOGGER.warn("Unable to obtain a cross ec product information about: " + modelNo);
+	    return null;
+	  }
 
-        return new ProductDAO(getModuleType(), productInfo);
-    }
+	  return new ProductDAO(getModuleType(), productInfo);
+  }
 }

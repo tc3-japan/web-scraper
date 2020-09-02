@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CategoryRepository extends CrudRepository<CategoryDAO, Integer> {
-    CategoryDAO findByEcSiteAndCategoryPath(String ecSite, String categoryPath);
+  CategoryDAO findByEcSiteAndCategoryPath(String ecSite, String categoryPath);
 }

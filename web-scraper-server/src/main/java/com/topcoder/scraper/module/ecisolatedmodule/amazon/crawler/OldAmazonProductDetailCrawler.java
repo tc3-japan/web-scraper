@@ -29,261 +29,257 @@ import static com.topcoder.common.util.HtmlUtils.getTextContentWithoutDuplicated
  */
 public class OldAmazonProductDetailCrawler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OldAmazonProductDetailCrawler.class);
-    private String siteName;
-    private AmazonProperty property;
-    private final WebpageService webpageService;
+  private static final Logger LOGGER = LoggerFactory.getLogger(OldAmazonProductDetailCrawler.class);
+  private String siteName;
+  private AmazonProperty property;
+  private final WebpageService webpageService;
 
-    public OldAmazonProductDetailCrawler(
-            String siteName,
-            AmazonProperty property,
-            WebpageService webpageService) {
-        this.siteName = siteName;
-        this.property = property;
-        this.webpageService = webpageService;
+  public OldAmazonProductDetailCrawler(
+    String siteName,
+    AmazonProperty property,
+    WebpageService webpageService) {
+    this.siteName = siteName;
+    this.property = property;
+    this.webpageService = webpageService;
+  }
+
+  /**
+   *
+   * Fetch product information
+   * @param webClient the web client
+   * @param productCode the product code
+   * @param saveHtml true if product html page will be saved
+   * @return ProductDetailCrawlerResult
+   * @throws IOException
+   */
+  public AbstractProductCrawlerResult fetchProductInfo(TrafficWebClient webClient, String productCode, boolean saveHtml) throws IOException {
+
+    String productUrl = property.getProductUrl() + productCode;
+    LOGGER.info("Product url " + productUrl);
+
+    HtmlPage productPage = webClient.getPage(productUrl);
+    ProductInfo productInfo = new ProductInfo();
+    fetchProductInfo(productPage, productInfo, productCode);
+    fetchCategoryRanking(productPage, productInfo, productCode);
+
+    String savedPath = null;
+    if (saveHtml) {
+      savedPath = webpageService.save("product", siteName, productPage.getWebResponse().getContentAsString());
     }
 
-    /**
-     * Fetch product information
-     *
-     * @param webClient   the web client
-     * @param productCode the product code
-     * @param saveHtml    true if product html page will be saved
-     * @return ProductDetailCrawlerResult
-     * @throws IOException
-     */
-    public AbstractProductCrawlerResult fetchProductInfo(TrafficWebClient webClient, String productCode, boolean saveHtml) throws IOException {
+    productInfo.setCode(productCode);
+    return new AbstractProductCrawlerResult(productInfo, savedPath);
+  }
 
-        String productUrl = property.getProductUrl() + productCode;
-        LOGGER.info("Product url " + productUrl);
+  /**
+   * Update product information
+   * @param productPage the product detail page
+   * @param info the product info to be updated
+   * @param productCode the product code
+   */
+  private void fetchProductInfo(HtmlPage productPage, ProductInfo info, String productCode) {
 
-        HtmlPage productPage = webClient.getPage(productUrl);
-        ProductInfo productInfo = new ProductInfo();
-        fetchProductInfo(productPage, productInfo, productCode);
-        fetchCategoryRanking(productPage, productInfo, productCode);
+    // update price
+    // Pair includes element and it's selector string.
+    Pair<HtmlElement, String> priceElementPair = findFirstElementInSelectors(productPage, property.getCrawling().getProductDetailPage().getPrices());
+    if (priceElementPair == null) {
+      LOGGER.info(String.format("Could not find price info for product %s:%s",
+        this.siteName, productCode));
+    } else {
+      HtmlElement priceElement  = priceElementPair.getFirst();
+      String      priceSelector = priceElementPair.getSecond();
+      LOGGER.info("Price's found by selector: " + priceSelector);
 
-        String savedPath = null;
-        if (saveHtml) {
-            savedPath = webpageService.save("product", siteName, productPage.getWebResponse().getContentAsString());
-        }
+      String price = getTextContentWithoutDuplicatedSpaces(priceElement);
 
-        productInfo.setCode(productCode);
-        return new AbstractProductCrawlerResult(productInfo, savedPath);
+      // special case handle, for example
+      // https://www.amazon.com/gp/product/B016KBVBCS
+      // current value of price is $ 75 55
+      String[] priceArray = price.split(" ");
+      if (priceArray.length == 3) {
+        price = String.format("%s%s.%s", priceArray[0], priceArray[1], priceArray[2]);
+      }
+
+      info.setPrice(getNumberAsStringFrom(price));
     }
 
-    /**
-     * Update product information
-     *
-     * @param productPage the product detail page
-     * @param info        the product info to be updated
-     * @param productCode the product code
-     */
-    private void fetchProductInfo(HtmlPage productPage, ProductInfo info, String productCode) {
+    // update name
+    HtmlElement nameElement = productPage.querySelector(property.getCrawling().getProductDetailPage().getName());
+    if (nameElement == null) {
+      LOGGER.info(String.format("Could not find name info for product %s:%s",
+        this.siteName, productCode));
+    } else {
+      String name = getTextContent(nameElement);
+      info.setName(name);
+    }
+    
+    //update model_no
+    HtmlElement modelLabelElement  = null;
+    HtmlElement modelNoValueElement  = null;
+    List<String> modelNoLabels      = property.getCrawling().getProductDetailPage().getModelNoLabels();
+    List<String> modelNoLabelValues = property.getCrawling().getProductDetailPage().getModelNoLabelValues();
+    List<String> modelNoValues      = property.getCrawling().getProductDetailPage().getModelNoValues();
+    for(int i = 0 ; i < modelNoLabels.size() ; i++) {
+      modelLabelElement   = productPage.querySelector(modelNoLabels.get(i));
+      modelNoValueElement = productPage.querySelector(modelNoValues.get(i));
 
-        // update price
-        // Pair includes element and it's selector string.
-        Pair<HtmlElement, String> priceElementPair = findFirstElementInSelectors(productPage, property.getCrawling().getProductDetailPage().getPrices());
-        if (priceElementPair == null) {
-            LOGGER.info(String.format("Could not find price info for product %s:%s",
-                    this.siteName, productCode));
-        } else {
-            HtmlElement priceElement = priceElementPair.getFirst();
-            String priceSelector = priceElementPair.getSecond();
-            LOGGER.info("Price's found by selector: " + priceSelector);
+      if (modelLabelElement != null 
+          && modelNoValueElement != null
+          && getTextContent(modelLabelElement).replaceAll("[:：]", "").equals(modelNoLabelValues.get(i))) {
+    	  
+    	  LOGGER.info("model no is found by selector: " + modelNoValueElement);
+    	  String modelNo = getTextContentWithoutDuplicatedSpaces(modelNoValueElement).replaceAll("[^0-9a-zA-Z\\-]", "").trim();
+    	  info.setModelNo(modelNo);
+    	  break;
+      }
+    }
+  }
+  /**
+   * Find category ranking and save in database
+   * @param productPage the product detail page
+   * @param info the product info to be updated
+   * @param productCode the product code
+   */
+  private void fetchCategoryRanking(HtmlPage productPage, ProductInfo info, String productCode) {
+    List<String> categoryInfoList = fetchCategoryInfoList(productPage, productCode);
 
-            String price = getTextContentWithoutDuplicatedSpaces(priceElement);
+    for (String data : categoryInfoList) {
 
-            // special case handle, for example
-            // https://www.amazon.com/gp/product/B016KBVBCS
-            // current value of price is $ 75 55
-            String[] priceArray = price.split(" ");
-            if (priceArray.length == 3) {
-                price = String.format("%s%s.%s", priceArray[0], priceArray[1], priceArray[2]);
-            }
+      // categoryInfo = [rank] [in] [category path]
+      // in may contain ascii char number 160, so replace it with space
+      String[] categoryInfo = data.replace("\u00A0", " ").split(" ", 3);
 
-            info.setPrice(getNumberAsStringFrom(price));
-        }
+      // remove possible leading # and comma, then convert to int
+      int rank = Integer.valueOf(categoryInfo[0].replaceAll("[^0-9]*", ""));
 
-        // update name
-        HtmlElement nameElement = productPage.querySelector(property.getCrawling().getProductDetailPage().getName());
-        if (nameElement == null) {
-            LOGGER.info(String.format("Could not find name info for product %s:%s",
-                    this.siteName, productCode));
-        } else {
-            String name = getTextContent(nameElement);
-            info.setName(name);
-        }
+      // remove See [Tt]op 100 info from category path
+      String path = categoryInfo[2];
+      int topIndex = path.indexOf(" (See ");
+      if (topIndex != -1) {
+        path = path.substring(0, topIndex);
+      }
 
-        //update model_no
-        HtmlElement modelLabelElement = null;
-        HtmlElement modelNoValueElement = null;
-        List<String> modelNoLabels = property.getCrawling().getProductDetailPage().getModelNoLabels();
-        List<String> modelNoLabelValues = property.getCrawling().getProductDetailPage().getModelNoLabelValues();
-        List<String> modelNoValues = property.getCrawling().getProductDetailPage().getModelNoValues();
-        for (int i = 0; i < modelNoLabels.size(); i++) {
-            modelLabelElement = productPage.querySelector(modelNoLabels.get(i));
-            modelNoValueElement = productPage.querySelector(modelNoValues.get(i));
-
-            if (modelLabelElement != null
-                    && modelNoValueElement != null
-                    && getTextContent(modelLabelElement).replaceAll("[:：]", "").equals(modelNoLabelValues.get(i))) {
-
-                LOGGER.info("model no is found by selector: " + modelNoValueElement);
-                String modelNo = getTextContentWithoutDuplicatedSpaces(modelNoValueElement).replaceAll("[^0-9a-zA-Z\\-]", "").trim();
-                info.setModelNo(modelNo);
-                break;
-            }
-        }
+      info.addCategoryRanking(path, rank);
     }
 
-    /**
-     * Find category ranking and save in database
-     *
-     * @param productPage the product detail page
-     * @param info        the product info to be updated
-     * @param productCode the product code
-     */
-    private void fetchCategoryRanking(HtmlPage productPage, ProductInfo info, String productCode) {
-        List<String> categoryInfoList = fetchCategoryInfoList(productPage, productCode);
+  }
 
-        for (String data : categoryInfoList) {
+  /**
+   * Fetch category info list from webpage
+   * There are different pages from amazon
+   * from li tag or a table
+   * @param page the product page
+   * @param productCode the product code
+   * @return list of category string
+   */
+  private List<String> fetchCategoryInfoList(HtmlPage page, String productCode) {
+    DomNode node = page.querySelector(property.getCrawling().getProductDetailPage().getSalesRank());
 
-            // categoryInfo = [rank] [in] [category path]
-            // in may contain ascii char number 160, so replace it with space
-            String[] categoryInfo = data.replace("\u00A0", " ").split(" ", 3);
+    // category ranking is from li#salesrank
+    if (node != null) {
+      List<String> categoryInfoList = new ArrayList<>();
 
-            // remove possible leading # and comma, then convert to int
-            int rank = Integer.valueOf(categoryInfo[0].replaceAll("[^0-9]*", ""));
+      // get first rank and category path
+      Pattern pattern = Pattern.compile("(#.*? in .*?)\\(");
+      Matcher matcher = pattern.matcher(node.getTextContent());
+      if (matcher.find()) {
+        String firstRankAndPath = matcher.group(1).trim();
+        categoryInfoList.add(firstRankAndPath);
+      }
 
-            // remove See [Tt]op 100 info from category path
-            String path = categoryInfo[2];
-            int topIndex = path.indexOf(" (See ");
-            if (topIndex != -1) {
-                path = path.substring(0, topIndex);
-            }
+      // get rest of ranks and category paths
+      List<DomNode> ranks = node.querySelectorAll("ul > li > span:nth-of-type(1)");
+      List<DomNode> paths = node.querySelectorAll("ul > li > span:nth-of-type(2)");
+      for (int i = 0; i < ranks.size(); i++) {
+        categoryInfoList.add(
+          getTextContent((HtmlElement) ranks.get(i)) + " " + getTextContent((HtmlElement) paths.get(i)));
+      }
 
-            info.addCategoryRanking(path, rank);
-        }
-
+      return categoryInfoList;
     }
 
-    /**
-     * Fetch category info list from webpage
-     * There are different pages from amazon
-     * from li tag or a table
-     *
-     * @param page        the product page
-     * @param productCode the product code
-     * @return list of category string
-     */
-    private List<String> fetchCategoryInfoList(HtmlPage page, String productCode) {
-        DomNode node = page.querySelector(property.getCrawling().getProductDetailPage().getSalesRank());
+    node = page.querySelector(property.getCrawling().getProductDetailPage().getProductInfoTable());
 
-        // category ranking is from li#salesrank
-        if (node != null) {
-            List<String> categoryInfoList = new ArrayList<>();
-
-            // get first rank and category path
-            Pattern pattern = Pattern.compile("(#.*? in .*?)\\(");
-            Matcher matcher = pattern.matcher(node.getTextContent());
-            if (matcher.find()) {
-                String firstRankAndPath = matcher.group(1).trim();
-                categoryInfoList.add(firstRankAndPath);
-            }
-
-            // get rest of ranks and category paths
-            List<DomNode> ranks = node.querySelectorAll("ul > li > span:nth-of-type(1)");
-            List<DomNode> paths = node.querySelectorAll("ul > li > span:nth-of-type(2)");
-            for (int i = 0; i < ranks.size(); i++) {
-                categoryInfoList.add(
-                        getTextContent((HtmlElement) ranks.get(i)) + " " + getTextContent((HtmlElement) paths.get(i)));
-            }
-
-            return categoryInfoList;
+    // category ranking is from product table
+    if (node != null) {
+      List<DomNode> trList = node.querySelectorAll("tbody > tr");
+      for (DomNode tr : trList) {
+        if (getTextContent(tr.querySelector("th")).contains("Rank")) {
+          List<DomNode> spanList = tr.querySelectorAll("td > span > span");
+          return spanList.stream().map(span -> getTextContent((HtmlElement) span)).collect(Collectors.toList());
         }
-
-        node = page.querySelector(property.getCrawling().getProductDetailPage().getProductInfoTable());
-
-        // category ranking is from product table
-        if (node != null) {
-            List<DomNode> trList = node.querySelectorAll("tbody > tr");
-            for (DomNode tr : trList) {
-                if (getTextContent(tr.querySelector("th")).contains("Rank")) {
-                    List<DomNode> spanList = tr.querySelectorAll("td > span > span");
-                    return spanList.stream().map(span -> getTextContent((HtmlElement) span)).collect(Collectors.toList());
-                }
-            }
-        }
-
-        LOGGER.info(String.format("Could not find category rankings for product %s:%s",
-                this.siteName, productCode));
-        return new ArrayList<>();
+      }
     }
 
-    /**
-     * Search and Fetch product information
-     *
-     * @param webClient the web client
-     * @param modelNo   the mode no
-     * @param saveHtml  true if product html page will be saved
-     * @return ProductDetailCrawlerResult
-     * @throws IOException
-     */
-    public AbstractProductCrawlerResult serarchProductAndFetchProductInfoByModelNo(TrafficWebClient webClient, String modelNo, boolean saveHtml) throws IOException {
+    LOGGER.info(String.format("Could not find category rankings for product %s:%s",
+      this.siteName, productCode));
+    return new ArrayList<>();
+  }
+  
+  /**
+  *
+  * Search and Fetch product information
+  * @param webClient the web client
+  * @param modelNo the mode no
+  * @param saveHtml true if product html page will be saved
+  * @return ProductDetailCrawlerResult
+  * @throws IOException
+  */
+  public AbstractProductCrawlerResult serarchProductAndFetchProductInfoByModelNo(TrafficWebClient webClient, String modelNo, boolean saveHtml) throws IOException  {
+	  
+	  String productCode = searchProduct(webClient,modelNo);
+	  
+	  if (productCode == null) {
+	      LOGGER.info(String.format("Could not find name info for model no %s",modelNo));
+	      return null;
+	    }
+	  
+	  return fetchProductInfo(webClient, productCode, saveHtml);
+  }
+  
+  /**
+  *
+  * Search product
+  * @param webClient the web client
+  * @param searchWord search word
+  * @return String asin no(product code)
+  * @throws IOException
+  */
+  private String searchProduct(TrafficWebClient webClient, String searchWord) throws IOException {
+	  
+	  String productCode = null;
+	  String searchUrl = property.getSearchUrl() + searchWord;
+	  LOGGER.info("Product url " + searchUrl);
+	  
+	  HtmlPage productPage = webClient.getPage(searchUrl);
+	  
+	  //10 times try
+	  for(int index = 0; index < 10 ; index++) {
+		  String searchResultSelector = property.getCrawling().getSearchProductPage().getProductSelector() + index + ")";
+		  HtmlElement element = productPage.querySelector(searchResultSelector);
+		  
+		  if (element == null) {
+			  continue;
+		  }
+		  
+		  //skip ad product
+		  if(element.getAttribute("class").contains(property.getCrawling().getSearchProductPage().getAdProductClass())) {
+			  LOGGER.info(String.format("Skip ad product with search word = %s",searchWord));
+			  continue;
+		  }
+		  
+		  //get asin no
+		  productCode = element.getAttribute(property.getCrawling().getSearchProductPage().getProductCodeAttribute());
 
-        String productCode = searchProduct(webClient, modelNo);
-
-        if (productCode == null) {
-            LOGGER.info(String.format("Could not find name info for model no %s", modelNo));
-            return null;
-        }
-
-        return fetchProductInfo(webClient, productCode, saveHtml);
-    }
-
-    /**
-     * Search product
-     *
-     * @param webClient  the web client
-     * @param searchWord search word
-     * @return String asin no(product code)
-     * @throws IOException
-     */
-    private String searchProduct(TrafficWebClient webClient, String searchWord) throws IOException {
-
-        String productCode = null;
-        String searchUrl = property.getSearchUrl() + searchWord;
-        LOGGER.info("Product url " + searchUrl);
-
-        HtmlPage productPage = webClient.getPage(searchUrl);
-
-        //10 times try
-        for (int index = 0; index < 10; index++) {
-            String searchResultSelector = property.getCrawling().getSearchProductPage().getProductSelector() + index + ")";
-            HtmlElement element = productPage.querySelector(searchResultSelector);
-
-            if (element == null) {
-                continue;
-            }
-
-            //skip ad product
-            if (element.getAttribute("class").contains(property.getCrawling().getSearchProductPage().getAdProductClass())) {
-                LOGGER.info(String.format("Skip ad product with search word = %s", searchWord));
-                continue;
-            }
-
-            //get asin no
-            productCode = element.getAttribute(property.getCrawling().getSearchProductPage().getProductCodeAttribute());
-
-            if (productCode == null) {
-                continue;
-            }
-
-            LOGGER.info(String.format("Product is found with search word = %s, product code is %s", searchWord, productCode));
-            return productCode;
-        }
-
-        LOGGER.info(String.format("Could not find product with search word = %s", searchWord));
-        return null;
-    }
+		  if(productCode == null) {
+			  continue;
+		  }
+		  
+		  LOGGER.info(String.format("Product is found with search word = %s, product code is %s", searchWord, productCode));
+		  return productCode;
+	  }
+	  
+	  LOGGER.info(String.format("Could not find product with search word = %s",searchWord));
+	  return null;
+  }
 }

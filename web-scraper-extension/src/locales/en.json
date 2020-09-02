@@ -27,9 +27,7 @@
       "title": "Settings",
       "back": "back",
       "update": "Update",
-      "baseUrl": "API Url base",
-      "baseTest": "Test Count",
-      "baseTestDesc": "0:All"
+      "baseUrl": "API Url base"
     },
     "editor": {
       "items": {
@@ -44,8 +42,7 @@
         "productDistributor": "Product Distributor"
       },
       "check": "Check",
-      "jsDescription": "Please put following placeholders in script as you need. When scraping each placeholder will be replaced with number from 1 for every target element of parent selector in each page.<ul><li>Purchase Order: {orderIndex}</li><li>Purchase Product: {productIndex}</li></ul>All placeholders will be placed with 1 when checking with below button.",
-       "currentUrlCodePlaceholder": "Please replace product code in URL with {code} placeholder so that the placeholder is replaced with each product code when scraping",
+      "currentUrlCodePlaceholder": "Please replace product code in URL with {code} placeholder so that the placeholder is replaced with each product code when scraping",
       "currentUrlWordPlaceholder": "Please replace search word in URL with {word} placeholder so that the placeholder is replaced with each search word when scraping",
       "excludedSelector": "Excluded Selector",
       "invalidRegex": "Invalid Regex",
@@ -80,9 +77,6 @@
       "modelNoLabel": "Model No (Label)",
       "janCode": "Jan Code",
       "productDistributor":"Product Distributor"
-    },
-    "searchProduct": {
-      "jsDescription": "Please put {productIndex} placeholder in script as you need. When scraping the placeholder will be replaced with number from 1 for target element of parent selector in each page.<br />It will be placed with 1 when checking with below button."
     }
   }
 }

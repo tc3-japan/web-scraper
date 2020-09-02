@@ -18,34 +18,34 @@ import org.springframework.stereotype.Component;
 @Component
 public class KojimaChangeDetectionCheckModule extends AbstractChangeDetectionCheckModule {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KojimaChangeDetectionCheckModule.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(KojimaChangeDetectionCheckModule.class);
 
-    @Autowired
-    public KojimaChangeDetectionCheckModule(
-            MonitorTargetDefinitionProperty monitorTargetDefinitionProperty,
-            WebpageService webpageService,
-            ECSiteAccountRepository ecSiteAccountRepository,
-            NormalDataRepository normalDataRepository,
-            KojimaPurchaseHistoryModule purchaseHistoryModule,
-            KojimaProductModule productModule,
-            CheckItemsDefinitionProperty checkItemsDefinitionProperty,
-            CheckResultRepository checkResultRepository
+  @Autowired
+  public KojimaChangeDetectionCheckModule(
+          MonitorTargetDefinitionProperty monitorTargetDefinitionProperty,
+          WebpageService                  webpageService,
+          ECSiteAccountRepository         ecSiteAccountRepository,
+          NormalDataRepository            normalDataRepository,
+          KojimaPurchaseHistoryModule     purchaseHistoryModule,
+          KojimaProductModule             productModule,
+          CheckItemsDefinitionProperty    checkItemsDefinitionProperty,
+          CheckResultRepository           checkResultRepository
 
-    ) {
-        super(
-                monitorTargetDefinitionProperty,
-                webpageService,
-                ecSiteAccountRepository,
-                normalDataRepository,
-                purchaseHistoryModule,
-                productModule,
-                checkItemsDefinitionProperty,
-                checkResultRepository
-        );
-    }
+  ) {
+    super(
+            monitorTargetDefinitionProperty,
+            webpageService,
+            ecSiteAccountRepository,
+            normalDataRepository,
+            purchaseHistoryModule,
+            productModule,
+            checkItemsDefinitionProperty,
+            checkResultRepository
+    );
+  }
 
-    @Override
-    public String getModuleType() {
-        return "kojima";
-    }
+  @Override
+  public String getModuleType() {
+    return "kojima";
+  }
 }

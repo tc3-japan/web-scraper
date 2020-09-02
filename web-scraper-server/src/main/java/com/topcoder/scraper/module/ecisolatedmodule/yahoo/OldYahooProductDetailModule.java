@@ -25,95 +25,94 @@ import com.topcoder.scraper.service.WebpageService;
 @Component
 public class OldYahooProductDetailModule implements IProductModule {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OldYahooProductDetailModule.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(OldYahooProductDetailModule.class);
 
-    //private final AmazonProperty property;
-    private final ProductService productService;
-    private final WebpageService webpageService;
+  //private final AmazonProperty property;
+  private final ProductService productService;
+  private final WebpageService webpageService;
 
-    @Autowired
-    ConfigurationRepository configurationRepository;
+  @Autowired
+  ConfigurationRepository configurationRepository;
 
-    @Autowired
-    public OldYahooProductDetailModule(
-            //AmazonProperty property,
-            ProductService productService,
-            WebpageService webpageService) {
-        //this.property = property;
-        this.productService = productService;
-        this.webpageService = webpageService;
+  @Autowired
+  public OldYahooProductDetailModule(
+    //AmazonProperty property,
+    ProductService productService,
+    WebpageService webpageService) {
+    //this.property = property;
+    this.productService = productService;
+    this.webpageService = webpageService;
+  }
+
+  @Override
+  public String getModuleType() {
+    return "yahoo";
+  }
+
+  @Override
+  public void fetchProductDetailList(List<String> sites) {
+    // TODO: delete
+    LOGGER.info("---fetchProductDetailList------------------------------------------------");
+    LOGGER.info("sites:" + sites);
+    LOGGER.info("---fetchProductDetailList------------------------------------------------");
+
+    List<ProductDAO> products = this.productService.getAllFetchInfoStatusIsNull(getModuleType());
+
+    GeneralProductDetailCrawler crawler = new GeneralProductDetailCrawler(getModuleType(), "product", webpageService, configurationRepository);
+
+    products.forEach(product -> {
+      try {
+        fetchProductDetail(crawler, product.getId(), product.getProductCode());
+      } catch (IOException | IllegalStateException e) {
+        LOGGER.error(String.format("Fail to fetch product %s, please try again.", product.getProductCode()));
+      }
+    });
+  }
+
+  /**
+   * Fetch product information from yahoo
+   * and save in database
+   * @param crawler the crawler
+   * @param productId the product id
+   * @param productCode the product code
+   * @throws IOException webclient exception
+   */
+  private void fetchProductDetail(GeneralProductDetailCrawler crawler, int productId, String productCode) throws IOException {
+
+    TrafficWebClient webClient = new TrafficWebClient(0, false);
+    GeneralProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productCode);
+    webClient.finishTraffic();
+    ProductInfo productInfo = crawlerResult.getProductInfo();
+
+    if(productInfo != null) {
+      // save updated information
+      productService.updateProduct(productId, productInfo);
+      for (int i = 0; i < productInfo.getCategoryList().size(); i++) {
+        String category = productInfo.getCategoryList().get(i);
+        Integer rank = productInfo.getRankingList().get(i);
+      productService.addCategoryRanking(productId, category, rank);
+      }
+      productService.updateFetchInfoStatus(productId, "updated");
     }
+  }
 
-    @Override
-    public String getModuleType() {
-        return "yahoo";
-    }
+  @Override
+  public ProductDAO searchProductInfo(String siteName, String modelNo) throws IOException {
+    TrafficWebClient webClient = new TrafficWebClient(0, false);
 
-    @Override
-    public void fetchProductDetailList(List<String> sites) {
-        // TODO: delete
-        LOGGER.info("---fetchProductDetailList------------------------------------------------");
-        LOGGER.info("sites:" + sites);
-        LOGGER.info("---fetchProductDetailList------------------------------------------------");
+    GeneralProductDetailCrawler crawler = new GeneralProductDetailCrawler(getModuleType(), "product", webpageService, configurationRepository);
+    GeneralProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, modelNo);
 
-        List<ProductDAO> products = this.productService.getAllFetchInfoStatusIsNull(getModuleType());
+    webClient.finishTraffic();
 
-        GeneralProductDetailCrawler crawler = new GeneralProductDetailCrawler(getModuleType(), "product", webpageService, configurationRepository);
+    ProductInfo productInfo = Objects.isNull(crawlerResult) ? null : crawlerResult.getProductInfo();
 
-        products.forEach(product -> {
-            try {
-                fetchProductDetail(crawler, product.getId(), product.getProductCode());
-            } catch (IOException | IllegalStateException e) {
-                LOGGER.error(String.format("Fail to fetch product %s, please try again.", product.getProductCode()));
-            }
-        });
-    }
+	  if (Objects.isNull(productInfo) || productInfo.getModelNo() == null) {
+	    LOGGER.warn("Unable to obtain cross ec product information for: " + modelNo);
+	    return null;
+	  }
 
-    /**
-     * Fetch product information from yahoo
-     * and save in database
-     *
-     * @param crawler     the crawler
-     * @param productId   the product id
-     * @param productCode the product code
-     * @throws IOException webclient exception
-     */
-    private void fetchProductDetail(GeneralProductDetailCrawler crawler, int productId, String productCode) throws IOException {
-
-        TrafficWebClient webClient = new TrafficWebClient(0, false);
-        GeneralProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, productCode);
-        webClient.finishTraffic();
-        ProductInfo productInfo = crawlerResult.getProductInfo();
-
-        if (productInfo != null) {
-            // save updated information
-            productService.updateProduct(productId, productInfo);
-            for (int i = 0; i < productInfo.getCategoryList().size(); i++) {
-                String category = productInfo.getCategoryList().get(i);
-                Integer rank = productInfo.getRankingList().get(i);
-                productService.addCategoryRanking(productId, category, rank);
-            }
-            productService.updateFetchInfoStatus(productId, "updated");
-        }
-    }
-
-    @Override
-    public ProductDAO searchProductInfo(String siteName, String modelNo) throws IOException {
-        TrafficWebClient webClient = new TrafficWebClient(0, false);
-
-        GeneralProductDetailCrawler crawler = new GeneralProductDetailCrawler(getModuleType(), "product", webpageService, configurationRepository);
-        GeneralProductDetailCrawlerResult crawlerResult = crawler.fetchProductInfo(webClient, modelNo);
-
-        webClient.finishTraffic();
-
-        ProductInfo productInfo = Objects.isNull(crawlerResult) ? null : crawlerResult.getProductInfo();
-
-        if (Objects.isNull(productInfo) || productInfo.getModelNo() == null) {
-            LOGGER.warn("Unable to obtain cross ec product information for: " + modelNo);
-            return null;
-        }
-
-        return new ProductDAO(getModuleType(), productInfo);
-    }
+	  return new ProductDAO(getModuleType(), productInfo);
+  }
 
 }

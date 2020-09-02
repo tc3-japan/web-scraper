@@ -5,27 +5,27 @@ package com.topcoder.api.exception;
  */
 public class EntityNotFoundException extends ApiException {
 
-    /**
-     * The serial version UID.
-     */
-    private static final long serialVersionUID = 6981076108348619981L;
+  /**
+   * The serial version UID.
+   */
+  private static final long serialVersionUID = 6981076108348619981L;
 
-    /**
-     * Create a new instance with message argument.
-     *
-     * @param message the message
-     */
-    public EntityNotFoundException(String message) {
-        super(message);
-    }
+  /**
+   * Create a new instance with message argument.
+   *
+   * @param message the message
+   */
+  public EntityNotFoundException(String message) {
+    super(message);
+  }
 
-    /**
-     * Create a new instance with message and cause arguments.
-     *
-     * @param message the message
-     * @param cause   the cause of the exception
-     */
-    public EntityNotFoundException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  /**
+   * Create a new instance with message and cause arguments.
+   *
+   * @param message the message
+   * @param cause the cause of the exception
+   */
+  public EntityNotFoundException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }

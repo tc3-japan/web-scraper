@@ -32,9 +32,9 @@ scraper:
 
 amazon:
   # amazon.com
-  #  url: https://www.amazon.com/
-  #  historyUrl: https://www.amazon.com/gp/your-account/order-history?opt=ab&digitalOrders=1&unifiedOrders=1&returnTo=&orderFilter=
-  #  productUrl: https://www.amazon.com/gp/product/
+#  url: https://www.amazon.com/
+#  historyUrl: https://www.amazon.com/gp/your-account/order-history?opt=ab&digitalOrders=1&unifiedOrders=1&returnTo=&orderFilter=
+#  productUrl: https://www.amazon.com/gp/product/
   # amazon.co.jp
   url: https://www.amazon.co.jp/
   historyUrl: https://www.amazon.co.jp/gp/your-account/order-history?opt=ab&digitalOrders=1&unifiedOrders=1&returnTo=&orderFilter=
@@ -115,32 +115,32 @@ amazon:
     # Product detail page
     productDetailPage:
       prices:
-        - "#priceblock_ourprice"
-        - "#MediaMatrix > div > div > ul > li.selected > span > span.a-button-selected > span > a > span > span.a-color-price"
+        -               "#priceblock_ourprice"
+        -               "#MediaMatrix > div > div > ul > li.selected > span > span.a-button-selected > span > a > span > span.a-color-price"
       name:             "#productTitle"
       salesRank:        "#SalesRank"
       productInfoTable: "#productDetails_detailBullets_sections1"
       modelNoLabels:
-        - "div.wrapper.JPlocale > div.column.col1 > div > div.content.pdClearfix > div > div > table > tbody > tr:nth-child(8) > td.label"
-        - "#prodDetails > div.wrapper.JPlocale > div.column.col1 > div > div.content.pdClearfix > div > div > table > tbody > tr:nth-child(2) > td.label"
-        - "#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(3) > b"
-        - "#detail_bullets_id > table > tbody > tr > td > div > ul > li:nth-child(2) > b"
-        - "#detail_bullets_id > table > tbody > tr > td > div > ul > li:nth-child(3) > b"
-        - "#prodDetails > div.wrapper.JPlocale > div.column.col1 > div > div.content.pdClearfix > div > div > table > tbody > tr:nth-child(2) > td.label"
-        - "#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(2) > b"
+        -               "div.wrapper.JPlocale > div.column.col1 > div > div.content.pdClearfix > div > div > table > tbody > tr:nth-child(8) > td.label"
+        -               "#prodDetails > div.wrapper.JPlocale > div.column.col1 > div > div.content.pdClearfix > div > div > table > tbody > tr:nth-child(2) > td.label"
+        -               "#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(3) > b"
+        -               "#detail_bullets_id > table > tbody > tr > td > div > ul > li:nth-child(2) > b"
+        -               "#detail_bullets_id > table > tbody > tr > td > div > ul > li:nth-child(3) > b"
+        -               "#prodDetails > div.wrapper.JPlocale > div.column.col1 > div > div.content.pdClearfix > div > div > table > tbody > tr:nth-child(2) > td.label"
+        -               "#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(2) > b"
       modelNoLabelValues:
-        - "製品型番"
-        - "製品型番"
-        - "製品型番"
-        - "メーカー型番"
-        - "メーカー型番"
-        - "モデル"
-        - "製造元リファレンス"
+        -               "製品型番"
+        -               "製品型番"
+        -               "製品型番"
+        -               "メーカー型番"
+        -               "メーカー型番"
+        -               "モデル"
+        -               "製造元リファレンス"
       modelNoValues:
-        - "div.wrapper.JPlocale > div.column.col1 > div > div.content.pdClearfix > div > div > table > tbody > tr:nth-child(8) > td.value"
-        - "#prodDetails > div.wrapper.JPlocale > div.column.col1 > div > div.content.pdClearfix > div > div > table > tbody > tr:nth-child(2) > td.value"
-        - "#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(3)"
-        - "#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(2)"
-        - "#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(3)"
-        - "#prodDetails > div.wrapper.JPlocale > div.column.col1 > div > div.content.pdClearfix > div > div > table > tbody > tr:nth-child(2) > td.value"
-        - "#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(2)"
+        -               "div.wrapper.JPlocale > div.column.col1 > div > div.content.pdClearfix > div > div > table > tbody > tr:nth-child(8) > td.value"
+        -               "#prodDetails > div.wrapper.JPlocale > div.column.col1 > div > div.content.pdClearfix > div > div > table > tbody > tr:nth-child(2) > td.value"
+        -               "#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(3)"
+        -               "#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(2)"
+        -               "#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(3)"
+        -               "#prodDetails > div.wrapper.JPlocale > div.column.col1 > div > div.content.pdClearfix > div > div > table > tbody > tr:nth-child(2) > td.value"
+        -               "#detail_bullets_id > table > tbody > tr > td > div.content > ul > li:nth-child(2)"

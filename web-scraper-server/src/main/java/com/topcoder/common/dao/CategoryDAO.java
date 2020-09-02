@@ -14,71 +14,71 @@ import javax.persistence.TemporalType;
 @Table(name = "product_category")
 public class CategoryDAO {
 
-    /**
-     * Category id
-     */
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+  /**
+   * Category id
+   */
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private int id;
 
-    /**
-     * EC Site name
-     */
-    @Column(name = "ec_site", length = 32)
-    private String ecSite;
+  /**
+   * EC Site name
+   */
+  @Column(name = "ec_site", length = 32)
+  private String ecSite;
 
-    /**
-     * Category path
-     */
-    @Column(name = "category_path")
-    private String categoryPath;
+  /**
+   * Category path
+   */
+  @Column(name = "category_path")
+  private String categoryPath;
 
-    /**
-     * Update at
-     */
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "update_at")
-    private Date updateAt;
+  /**
+   * Update at
+   */
+  @Temporal(TemporalType.TIMESTAMP)
+  @Column(name = "update_at")
+  private Date updateAt;
 
-    public CategoryDAO() {
-    }
+  public CategoryDAO() {
+  }
 
-    public CategoryDAO(String ecSite, String categoryPath, Date updateAt) {
-        this.ecSite = ecSite;
-        this.categoryPath = categoryPath;
-        this.updateAt = updateAt;
-    }
+  public CategoryDAO(String ecSite, String categoryPath, Date updateAt) {
+    this.ecSite = ecSite;
+    this.categoryPath = categoryPath;
+    this.updateAt = updateAt;
+  }
 
-    public int getId() {
-        return id;
-    }
+  public int getId() {
+    return id;
+  }
 
-    public String getEcSite() {
-        return ecSite;
-    }
+  public String getEcSite() {
+    return ecSite;
+  }
 
-    public String getCategoryPath() {
-        return categoryPath;
-    }
+  public String getCategoryPath() {
+    return categoryPath;
+  }
 
-    public Date getUpdateAt() {
-        return updateAt;
-    }
+  public Date getUpdateAt() {
+    return updateAt;
+  }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+  public void setId(int id) {
+    this.id = id;
+  }
 
-    public void setEcSite(String ecSite) {
-        this.ecSite = ecSite;
-    }
+  public void setEcSite(String ecSite) {
+    this.ecSite = ecSite;
+  }
 
-    public void setCategoryPath(String categoryPath) {
-        this.categoryPath = categoryPath;
-    }
+  public void setCategoryPath(String categoryPath) {
+    this.categoryPath = categoryPath;
+  }
 
-    public void setUpdateAt(Date updateAt) {
-        this.updateAt = updateAt;
-    }
+  public void setUpdateAt(Date updateAt) {
+    this.updateAt = updateAt;
+  }
 
 }

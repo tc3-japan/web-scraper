@@ -12,17 +12,17 @@ import java.util.List;
  */
 public abstract class AmazonProductCrawlerScriptSupport extends AbstractProductCrawlerScriptSupport {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AmazonProductCrawlerScriptSupport.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AmazonProductCrawlerScriptSupport.class);
 
-    void scrapeCategoryRanking(List<String> categoryInfoList) {
-        ((AmazonProductCrawler) this.crawler).scrapeCategoryRanking(categoryInfoList);
-    }
+  void scrapeCategoryRanking(List<String> categoryInfoList) {
+    ((AmazonProductCrawler)this.crawler).scrapeCategoryRanking(categoryInfoList);
+  }
 
-    List<String> scrapeCategoryInfoListBySalesRank(String salesRankSelector, Closure<?> setProps) {
-        return ((AmazonProductCrawler) this.crawler).scrapeCategoryInfoListBySalesRank(salesRankSelector, setProps);
-    }
+  List<String> scrapeCategoryInfoListBySalesRank(String salesRankSelector, Closure<?> setProps) {
+    return ((AmazonProductCrawler)this.crawler).scrapeCategoryInfoListBySalesRank(salesRankSelector, setProps);
+  }
 
-    List<String> scrapeCategoryInfoListByProductInfoTable(String productInfoTableSelector, Closure<?> setProps, Closure<Boolean> rankLineTest) {
-        return ((AmazonProductCrawler) this.crawler).scrapeCategoryInfoListByProductInfoTable(productInfoTableSelector, setProps, rankLineTest);
-    }
+  List<String> scrapeCategoryInfoListByProductInfoTable(String productInfoTableSelector, Closure<?> setProps, Closure<Boolean> rankLineTest) {
+    return ((AmazonProductCrawler)this.crawler).scrapeCategoryInfoListByProductInfoTable(productInfoTableSelector, setProps, rankLineTest);
+  }
 }

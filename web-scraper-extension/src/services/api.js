@@ -2,8 +2,8 @@
 
 import * as NProgress from 'nprogress';
 import { logInfo, storageGet } from './utils';
-import { DEFAULT_API, DEFAULT_TEST } from '../config/config';
-import { BASE_API_KEY, BASE_TEST_KEY } from '../components/Setting';
+import { DEFAULT_API } from '../config/config';
+import { BASE_API_KEY } from '../components/Setting';
 
 /**
  * get base url
@@ -14,15 +14,6 @@ async function getBaseUrl() {
   } catch (e) {
     logInfo(JSON.stringify(e));
     return Promise.resolve(DEFAULT_API);
-  }
-}
-
-async function getTestCount() {
-  try {
-    return await storageGet(BASE_TEST_KEY) || DEFAULT_TEST;
-  } catch (e) {
-    logInfo(JSON.stringify(e));
-    return Promise.resolve(DEFAULT_TEST);
   }
 }
 
@@ -83,7 +74,7 @@ class Api {
    * @param body  the test body
    */
   static async test(site, type, body) {
-    return fetchRequest(new Request(`${await getBaseUrl()}/${site}/${type}/${await getTestCount()}/test`, {
+    return fetchRequest(new Request(`${await getBaseUrl()}/${site}/${type}/test`, {
       method: 'POST',
       body: JSON.stringify(body),
     }));

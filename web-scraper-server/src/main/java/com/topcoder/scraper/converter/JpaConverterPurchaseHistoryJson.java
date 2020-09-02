@@ -8,13 +8,13 @@ import javax.persistence.Converter;
 @Converter(autoApply = true)
 public class JpaConverterPurchaseHistoryJson implements AttributeConverter<PurchaseHistory, String> {
 
-    @Override
-    public String convertToDatabaseColumn(PurchaseHistory meta) {
-        return meta.toJson();
-    }
+  @Override
+  public String convertToDatabaseColumn(PurchaseHistory meta) {
+    return meta.toJson();
+  }
 
-    @Override
-    public PurchaseHistory convertToEntityAttribute(String dbData) {
-        return PurchaseHistory.fromJson(dbData);
-    }
+  @Override
+  public PurchaseHistory convertToEntityAttribute(String dbData) {
+    return PurchaseHistory.fromJson(dbData);
+  }
 }

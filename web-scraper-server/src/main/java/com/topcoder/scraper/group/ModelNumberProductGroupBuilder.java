@@ -16,30 +16,30 @@ import com.topcoder.common.repository.ProductRepository;
 @Component
 public class ModelNumberProductGroupBuilder extends AbstractProductGroupBuilder {
 
-    private static final Logger logger = LoggerFactory.getLogger(ModelNumberProductGroupBuilder.class);
+  private static final Logger logger = LoggerFactory.getLogger(ModelNumberProductGroupBuilder.class);
 
-    @Autowired
-    ProductRepository productRepository;
+  @Autowired
+  ProductRepository productRepository;
 
-    @Override
-    String getGroupingMethod() {
-        return ProductGroupDAO.GroupingMethod.same_no;
+  @Override
+  String getGroupingMethod() {
+    return ProductGroupDAO.GroupingMethod.same_no;
+  }
+
+  @Override
+  protected String getSearchParameter(ProductDAO product) {
+    if (product == null) {
+      throw new IllegalArgumentException("product must be specified.");
     }
+    return product.getModelNo();
+  }
 
-    @Override
-    protected String getSearchParameter(ProductDAO product) {
-        if (product == null) {
-            throw new IllegalArgumentException("product must be specified.");
-        }
-        return product.getModelNo();
+  @Override
+  public List<ProductDAO> findSameProducts(ProductDAO prod) {
+    logger.info("Searching for products by Model no: " + prod.getModelNo());
+    if (prod == null || StringUtils.isBlank(prod.getModelNo())) {
+      return new ArrayList<ProductDAO>();
     }
-
-    @Override
-    public List<ProductDAO> findSameProducts(ProductDAO prod) {
-        logger.info("Searching for products by Model no: " + prod.getModelNo());
-        if (prod == null || StringUtils.isBlank(prod.getModelNo())) {
-            return new ArrayList<ProductDAO>();
-        }
-        return this.productRepository.findByModelNo(prod.getModelNo());
-    }
+    return this.productRepository.findByModelNo(prod.getModelNo());
+  }
 }

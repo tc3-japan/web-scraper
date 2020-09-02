@@ -12,13 +12,13 @@ import org.springframework.context.annotation.Configuration;
 public class WebClientConfig {
 
 
-    @Bean(destroyMethod = "close")
-    public WebClient webClient() {
-        WebClient webClient = new WebClient(BrowserVersion.CHROME);
-        webClient.getOptions().setThrowExceptionOnScriptError(false);
-        webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
-        webClient.getOptions().setJavaScriptEnabled(true);
+  @Bean(destroyMethod = "close")
+  public WebClient webClient() {
+    WebClient webClient = new WebClient(BrowserVersion.CHROME);
+    webClient.getOptions().setThrowExceptionOnScriptError(false);
+    webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
+    webClient.getOptions().setJavaScriptEnabled(true);
 
-        return webClient;
-    }
+    return webClient;
+  }
 }

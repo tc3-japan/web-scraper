@@ -15,18 +15,18 @@ import org.springframework.stereotype.Component;
 @Component
 public class AmazonProductModule extends AbstractProductModule {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AmazonProductModule.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AmazonProductModule.class);
 
-    @Autowired
-    public AmazonProductModule(
-            ProductService productService,
-            WebpageService webpageService,
-            AmazonProductCrawler crawler) {
-        super(productService, webpageService, crawler);
-    }
+  @Autowired
+  public AmazonProductModule(
+          ProductService             productService,
+          WebpageService             webpageService,
+          AmazonProductCrawler       crawler) {
+    super(productService, webpageService, crawler);
+  }
 
-    @Override
-    public String getModuleType() {
-        return "amazon";
-    }
+  @Override
+  public String getModuleType() {
+    return "amazon";
+  }
 }

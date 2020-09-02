@@ -21,7 +21,6 @@ import './style.scss';
 export default function JsEditor({
   onChange,
   script,
-  description,
 }) {
   const { current: heap } = React.useRef({});
 
@@ -60,7 +59,7 @@ export default function JsEditor({
           lineNumbers: true,
           mode: 'javascript',
         });
-        heap.scriptEditor.setSize(null, 100);
+        heap.scriptEditor.setSize(null,100);
         heap.scriptEditor.on('change', () => {
           const value = heap.scriptEditor.doc.getValue();
           onChange(value);
@@ -94,7 +93,6 @@ export default function JsEditor({
           }
         }}
       />
-      <div className="description" dangerouslySetInnerHTML={{ __html: description}} />
       <div className="mainContentRow">
         <Button
           onClick={() => {

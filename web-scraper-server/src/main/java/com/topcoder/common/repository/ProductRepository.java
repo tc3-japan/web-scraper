@@ -14,38 +14,38 @@ import com.topcoder.common.dao.ProductDAO;
 @Repository
 public interface ProductRepository extends CrudRepository<ProductDAO, Integer> {
 
-    ProductDAO findById(Integer id);
+  ProductDAO findById(Integer id);
 
-    ProductDAO findByProductCode(String productCode);
+  ProductDAO findByProductCode(String productCode);
 
-    List<ProductDAO> findByFetchInfoStatusIsNull();
+  List<ProductDAO> findByFetchInfoStatusIsNull();
 
-    @Query("select p from ProductDAO p where p.ecSite = :ecSite and p.productName = :productName")
-    ProductDAO findByECSiteAndProductName(@Param("ecSite") String ecSite, @Param("productName") String productName);
+  @Query("select p from ProductDAO p where p.ecSite = :ecSite and p.productName = :productName")
+  ProductDAO findByECSiteAndProductName(@Param("ecSite") String ecSite, @Param("productName") String productName);
 
-    @Query("select p from ProductDAO p where p.ecSite = :ecSite and p.fetchInfoStatus = null")
-    List<ProductDAO> findByFetchInfoStatusAndECSite(@Param("ecSite") String ecSite);
+  @Query("select p from ProductDAO p where p.ecSite = :ecSite and p.fetchInfoStatus = null")
+  List<ProductDAO> findByFetchInfoStatusAndECSite(@Param("ecSite") String ecSite);
 
-    List<ProductDAO> findByGroupStatusIsNullOrProductGroupIdIsNull();
+  List<ProductDAO> findByGroupStatusIsNullOrProductGroupIdIsNull();
 
-    List<ProductDAO> findAllByProductGroupId(Integer id);
+  List<ProductDAO> findAllByProductGroupId(Integer id);
 
-    Page<ProductDAO> findByProductGroupIdIsNullOrProductGroupIdIn(List<Integer> groupList, Pageable pageable);
+  Page<ProductDAO> findByProductGroupIdIsNullOrProductGroupIdIn(List<Integer> groupList, Pageable pageable);
 
-    @Query("select p from ProductDAO p where (p.productGroupId is null or p.productGroupId in :groupIds) and (p.productName like %:keyword% or p.modelNo like %:keyword%)")
-    Page<ProductDAO> findProducts(@Param("groupIds") List<Integer> groupIds, @Param("keyword") String keyword, Pageable pageable);
+  @Query("select p from ProductDAO p where (p.productGroupId is null or p.productGroupId in :groupIds) and (p.productName like %:keyword% or p.modelNo like %:keyword%)")
+  Page<ProductDAO> findProducts(@Param("groupIds") List<Integer> groupIds, @Param("keyword") String keyword, Pageable pageable);
 
-    List<ProductDAO> findByModelNo(String modelNo);
+  List<ProductDAO> findByModelNo(String modelNo);
 
-    List<ProductDAO> findByJanCode(String janCode);
+  List<ProductDAO> findByJanCode(String janCode);
 
-    List<ProductDAO> findByIdIn(List<Integer> ids);
+  List<ProductDAO> findByIdIn(List<Integer> ids);
 
-    List<ProductDAO> findByProductCodeIn(List<String> codes);
+  List<ProductDAO> findByProductCodeIn(List<String> codes);
 
-    Page<ProductDAO> findAll(Pageable pageable);
+  Page<ProductDAO> findAll(Pageable pageable);
 
-    @Query("select p from ProductDAO p where p.ecSite = :ecSite")
-    List<ProductDAO> findByECSite(@Param("ecSite") String ecSite);
+  @Query("select p from ProductDAO p where p.ecSite = :ecSite")
+  List<ProductDAO> findByECSite(@Param("ecSite") String ecSite);
 
 }

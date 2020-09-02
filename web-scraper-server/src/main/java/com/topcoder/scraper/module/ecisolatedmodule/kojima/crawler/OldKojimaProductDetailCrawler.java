@@ -26,24 +26,24 @@ import com.topcoder.scraper.service.WebpageService;
  */
 public class OldKojimaProductDetailCrawler extends GeneralProductDetailCrawler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OldKojimaProductDetailCrawler.class);
-    private String siteName;
-    private final WebpageService webpageService;
+  private static final Logger LOGGER = LoggerFactory.getLogger(OldKojimaProductDetailCrawler.class);
+  private String siteName;
+  private final WebpageService webpageService;
 
-    public OldKojimaProductDetailCrawler(String siteName, WebpageService webpageService, ConfigurationRepository configurationRepository) {
-        super(siteName, "product", webpageService, configurationRepository);
-        this.siteName = siteName;
-        this.webpageService = webpageService;
+  public OldKojimaProductDetailCrawler(String siteName, WebpageService webpageService, ConfigurationRepository configurationRepository) {
+	super(siteName, "product", webpageService, configurationRepository);
+    this.siteName = siteName;
+	this.webpageService = webpageService;
 
-    }
+  }
 
-    public GeneralProductDetailCrawlerResult fetchProductInfo(TrafficWebClient webClient, String productName, boolean saveHtml) throws IOException {
+  public GeneralProductDetailCrawlerResult fetchProductInfo(TrafficWebClient webClient, String productName, boolean saveHtml) throws IOException {
 
-        LOGGER.info("Product name " + productName);
+    LOGGER.info("Product name " + productName);
 
-        ProductInfo productInfo = new ProductInfo();
+    ProductInfo productInfo = new ProductInfo();
 
-        NavigableProductDetailPage detailPage = new NavigableProductDetailPage("https://www.kojima.net/ec/top/CSfTop.jsp", webClient, productInfo);
+    NavigableProductDetailPage detailPage = new NavigableProductDetailPage("https://www.kojima.net/ec/top/CSfTop.jsp", webClient, productInfo);
 
     /*
     detailPage.type(productName, "#q");
@@ -55,77 +55,77 @@ public class OldKojimaProductDetailCrawler extends GeneralProductDetailCrawler {
     detailPage.setModelNo("#item_detail > div > div.item_detail_box > table > tbody > tr:nth-child(6) > td");
     */
 
-        //setName(productInfo, "h1.htxt02");
-        //setDistributor(productInfo, "span");
-        //setPrice(productInfo, "td.price > span");
-        //setModelNo(productInfo, "#item_detail > div > div.item_detail_box > table > tbody > tr:nth-child(6) > td");
+    //setName(productInfo, "h1.htxt02");
+    //setDistributor(productInfo, "span");
+    //setPrice(productInfo, "td.price > span");
+    //setModelNo(productInfo, "#item_detail > div > div.item_detail_box > table > tbody > tr:nth-child(6) > td");
 
 
-        String savedPath = null;
-        if (saveHtml) {
-            savedPath = detailPage.savePage("kojima-product-details", siteName, webpageService);
-        }
-        GeneralProductDetailCrawlerResult result = new GeneralProductDetailCrawlerResult(detailPage.getProductInfo(), savedPath);
-
-        LOGGER.info("Product name from Purchase history: [" + productName + "]");
-        LOGGER.info("Product name from Product page    : [" + result.getProductInfo().getName() + "] matched: " + (productName.equals(result.getProductInfo().getName())));
-
-        return result;
+    String savedPath = null;
+    if (saveHtml) {
+      savedPath = detailPage.savePage("kojima-product-details", siteName, webpageService);
     }
+    GeneralProductDetailCrawlerResult result = new GeneralProductDetailCrawlerResult(detailPage.getProductInfo(), savedPath);
 
-    private AbstractProductCrawlerResult searchProductInfoByAnyWords(TrafficWebClient webClient, String searchWords, boolean saveHtml) throws IOException {
+    LOGGER.info("Product name from Purchase history: [" + productName + "]");
+    LOGGER.info("Product name from Product page    : [" + result.getProductInfo().getName()+ "] matched: " + (productName.equals(result.getProductInfo().getName())));
 
-        HtmlPage topPage = webClient.getPage("https://www.kojima.net/ec/top/CSfTop.jsp");
-        HtmlForm searchForm = topPage.getFormByName("search_form");
+    return result;
+  }
 
-        HtmlTextInput searchInput = searchForm.getInputByName("q");
-        searchInput.type(searchWords);
-        HtmlImageInput searchButtonInput = topPage.querySelector("#btnSearch");
+  private AbstractProductCrawlerResult searchProductInfoByAnyWords(TrafficWebClient webClient, String searchWords, boolean saveHtml) throws IOException {
 
-        HtmlPage searchResultPage = webClient.click(searchButtonInput);
+    HtmlPage topPage = webClient.getPage("https://www.kojima.net/ec/top/CSfTop.jsp");
+    HtmlForm searchForm = topPage.getFormByName("search_form");
 
-        // TODO: -----------------
-        DomNode firstItemAnchorNode = searchResultPage.querySelector("#category_item_list > li:first-child > a");
-        if (saveHtml) {
-            webpageService.save("kojima-search-result", siteName, searchResultPage.getWebResponse().getContentAsString());
-        }
-        if (firstItemAnchorNode == null) {
-            return null;
-        }
-        NamedNodeMap attributeMap = firstItemAnchorNode.getAttributes();
-        String linkToItem = attributeMap.getNamedItem("href") != null ? attributeMap.getNamedItem("href").getNodeValue() : null;
+    HtmlTextInput searchInput = searchForm.getInputByName("q");
+    searchInput.type(searchWords);
+    HtmlImageInput searchButtonInput = topPage.querySelector("#btnSearch");
 
-        HtmlPage productDetailPage = webClient.getPage(linkToItem);
+    HtmlPage searchResultPage = webClient.click(searchButtonInput);
 
-        HtmlForm goodsForm = productDetailPage.getFormByName("Goods");
-        HtmlHiddenInput stkNoHidden = goodsForm.getInputByName("GOODS_STK_NO");
-        String stkNo = stkNoHidden != null ? stkNoHidden.getValueAttribute() : null;
-
-        DomNode prodNameNode = productDetailPage.querySelector("h1.htxt02");
-        String prodName = prodNameNode != null ? prodNameNode.asText().replaceAll("\\n", " ").trim() : null;
-
-        DomNode vendorNameNode = prodNameNode.querySelector("span");
-        String vendorName = vendorNameNode != null ? vendorNameNode.asText().trim() : null;
-
-        DomNode prodPriceNode = productDetailPage.querySelector("td.price > span");
-        String prodPrice = prodPriceNode != null ? prodPriceNode.asText().trim() : null;
-
-        DomNode modelNoNode = productDetailPage.querySelector("#item_detail > div > div.item_detail_box > table > tbody > tr:nth-child(6) > td");
-        String modelNo = modelNoNode != null ? modelNoNode.asText().replaceAll("[^0-9a-zA-Z\\-]", "").trim() : null;
-
-        ProductInfo productInfo = new ProductInfo();
-        productInfo.setCode(stkNo); // GOODS_STK_NO (GOODS_NO?)
-        productInfo.setDistributor(vendorName);
-        productInfo.setName(prodName);
-        productInfo.setPrice(prodPrice.replaceAll(",", "")); // TODO
-        productInfo.setModelNo(modelNo);
-        //productInfo.setQuantity(1);
-
-        String savedPath = null;
-        if (saveHtml) {
-            savedPath = webpageService.save("kojima-product-details", siteName, productDetailPage.getWebResponse().getContentAsString());
-        }
-        return new AbstractProductCrawlerResult(productInfo, savedPath);
+    // TODO: -----------------
+    DomNode firstItemAnchorNode = searchResultPage.querySelector("#category_item_list > li:first-child > a");
+    if (saveHtml) {
+      webpageService.save("kojima-search-result", siteName, searchResultPage.getWebResponse().getContentAsString());
     }
+    if (firstItemAnchorNode == null) {
+      return null;
+    }
+    NamedNodeMap attributeMap = firstItemAnchorNode.getAttributes();
+    String linkToItem = attributeMap.getNamedItem("href") != null ? attributeMap.getNamedItem("href").getNodeValue() : null;
+
+    HtmlPage productDetailPage = webClient.getPage(linkToItem);
+
+    HtmlForm goodsForm = productDetailPage.getFormByName("Goods");
+    HtmlHiddenInput stkNoHidden = goodsForm.getInputByName("GOODS_STK_NO");
+    String stkNo = stkNoHidden != null ? stkNoHidden.getValueAttribute() : null;
+
+    DomNode prodNameNode = productDetailPage.querySelector("h1.htxt02");
+    String prodName = prodNameNode != null ? prodNameNode.asText().replaceAll("\\n", " ").trim() : null;
+
+    DomNode vendorNameNode = prodNameNode.querySelector("span");
+    String vendorName = vendorNameNode != null ? vendorNameNode.asText().trim() : null;
+
+    DomNode prodPriceNode = productDetailPage.querySelector("td.price > span");
+    String prodPrice = prodPriceNode != null ? prodPriceNode.asText().trim() : null;
+
+    DomNode modelNoNode = productDetailPage.querySelector("#item_detail > div > div.item_detail_box > table > tbody > tr:nth-child(6) > td");
+    String modelNo= modelNoNode != null ? modelNoNode.asText().replaceAll("[^0-9a-zA-Z\\-]", "").trim() : null;
+
+    ProductInfo productInfo = new ProductInfo();
+    productInfo.setCode(stkNo); // GOODS_STK_NO (GOODS_NO?)
+    productInfo.setDistributor(vendorName);
+    productInfo.setName(prodName);
+    productInfo.setPrice(prodPrice.replaceAll(",", "")); // TODO
+    productInfo.setModelNo(modelNo);
+    //productInfo.setQuantity(1);
+
+    String savedPath = null;
+    if (saveHtml) {
+      savedPath = webpageService.save("kojima-product-details", siteName, productDetailPage.getWebResponse().getContentAsString());
+    }
+    return new AbstractProductCrawlerResult(productInfo, savedPath);
+  }
 
 }

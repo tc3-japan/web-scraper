@@ -18,32 +18,31 @@ import java.util.List;
 @Component
 public class ProductDetailCommand extends AbstractCommand<IProductDetailModule> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProductDetailCommand.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ProductDetailCommand.class);
 
-    @Autowired
-    public ProductDetailCommand(List<IProductDetailModule> modules) {
-        super(modules);
-    }
+  @Autowired
+  public ProductDetailCommand(List<IProductDetailModule> modules) {
+    super(modules);
+  }
 
-    /**
-     * run fetch product detail from specific module
-     *
-     * @param module module to be run
-     */
-    @Override
-    protected void process(IProductDetailModule module) {
-        LOGGER.info("module=site: " + module);
-        try {
-            if (this.sites == null || this.sites.size() == 0) {
-                module.fetchProductDetailList(Consts.ALL_SITES);
-            } else {
-                module.fetchProductDetailList(this.sites);
-            }
-        } catch (IOException e) {
-            LOGGER.error("Fail to fetch product detail list", e);
-            throw new FetchProductDetailException();
-        }
-        LOGGER.info("Successfully product detail list");
+  /**
+   * run fetch product detail from specific module
+   * @param module module to be run
+   */
+  @Override
+  protected void process(IProductDetailModule module) {
+    LOGGER.info("module=site: " + module);
+    try {
+      if (this.sites == null || this.sites.size() == 0) {
+        module.fetchProductDetailList(Consts.ALL_SITES);
+      } else {
+        module.fetchProductDetailList(this.sites);
+      }
+    } catch (IOException e) {
+      LOGGER.error("Fail to fetch product detail list", e);
+      throw new FetchProductDetailException();
     }
+    LOGGER.info("Successfully product detail list");
+  }
 
 }

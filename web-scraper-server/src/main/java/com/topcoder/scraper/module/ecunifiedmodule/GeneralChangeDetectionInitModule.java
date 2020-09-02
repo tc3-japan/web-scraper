@@ -25,80 +25,77 @@ import java.util.List;
 @Component
 public class GeneralChangeDetectionInitModule extends GeneralChangeDetectionCommonModule implements IChangeDetectionInitModule {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(GeneralChangeDetectionInitModule.class);
+  private static Logger LOGGER = LoggerFactory.getLogger(GeneralChangeDetectionInitModule.class);
 
-    public GeneralChangeDetectionInitModule(
-            MonitorTargetDefinitionProperty monitorTargetDefinitionProperty,
-            WebpageService webpageService,
-            ECSiteAccountRepository ecSiteAccountRepository,
-            NormalDataRepository normalDataRepository,
-            GeneralPurchaseHistoryModule purchaseHistoryModule,
-            GeneralProductDetailModule productModule
-    ) {
-        super(
-                monitorTargetDefinitionProperty,
-                webpageService,
-                ecSiteAccountRepository,
-                normalDataRepository,
-                purchaseHistoryModule,
-                productModule
-        );
+  public GeneralChangeDetectionInitModule(
+          MonitorTargetDefinitionProperty monitorTargetDefinitionProperty,
+          WebpageService                  webpageService,
+          ECSiteAccountRepository         ecSiteAccountRepository,
+          NormalDataRepository            normalDataRepository,
+          GeneralPurchaseHistoryModule    purchaseHistoryModule,
+          GeneralProductDetailModule            productModule
+  ) {
+    super(
+            monitorTargetDefinitionProperty,
+            webpageService,
+            ecSiteAccountRepository,
+            normalDataRepository,
+            purchaseHistoryModule,
+            productModule
+    );
+  }
+
+  /**
+   * Implementation of init method
+   */
+  @Override
+  public void init(List<String> sites) throws IOException {
+    LOGGER.debug("[init]");
+    this.processMonitorTarget(sites);
+  }
+
+  /**
+   * Save normal data in database
+   * @param site ec site
+   * @param normalData normal data as string
+   * @param page the page name
+   * @param pageKey the page key
+   */
+  protected void saveNormalData(String site, String normalData, String pageKey, String page) {
+    LOGGER.debug("[saveNormalData]");
+    NormalDataDAO dao = normalDataRepository.findFirstByEcSiteAndPageAndPageKey(site, page, pageKey);
+    if (dao == null) {
+      dao = new NormalDataDAO();
     }
 
-    /**
-     * Implementation of init method
-     */
-    @Override
-    public void init(List<String> sites) throws IOException {
-        LOGGER.debug("[init]");
-        this.processMonitorTarget(sites);
-    }
+    dao.setEcSite(site);
+    dao.setNormalData(normalData);
+    dao.setDownloadedAt(new Date());
+    dao.setPage(page);
+    dao.setPageKey(pageKey);
+    normalDataRepository.save(dao);
+  }
 
-    /**
-     * Save normal data in database
-     *
-     * @param site       ec site
-     * @param normalData normal data as string
-     * @param page       the page name
-     * @param pageKey    the page key
-     */
-    protected void saveNormalData(String site, String normalData, String pageKey, String page) {
-        LOGGER.debug("[saveNormalData]");
-        NormalDataDAO dao = normalDataRepository.findFirstByEcSiteAndPageAndPageKey(site, page, pageKey);
-        if (dao == null) {
-            dao = new NormalDataDAO();
-        }
+  /**
+   * process purchase history crawler result
+   * @param site ec site
+   * @param crawlerResult the crawler result
+   * @param pageKey the page key
+   */
+  protected void processPurchaseHistory(String site, GeneralPurchaseHistoryCrawlerResult crawlerResult, String pageKey) {
+    LOGGER.debug("[processPurchaseHistory]");
+    List<PurchaseHistory> purchaseHistoryList = crawlerResult.getPurchaseHistoryList();
+    saveNormalData(site, PurchaseHistory.toArrayJson(purchaseHistoryList), pageKey, Consts.PURCHASE_HISTORY_LIST_PAGE_NAME);
+  }
 
-        dao.setEcSite(site);
-        dao.setNormalData(normalData);
-        dao.setDownloadedAt(new Date());
-        dao.setPage(page);
-        dao.setPageKey(pageKey);
-        normalDataRepository.save(dao);
-    }
-
-    /**
-     * process purchase history crawler result
-     *
-     * @param site          ec site
-     * @param crawlerResult the crawler result
-     * @param pageKey       the page key
-     */
-    protected void processPurchaseHistory(String site, GeneralPurchaseHistoryCrawlerResult crawlerResult, String pageKey) {
-        LOGGER.debug("[processPurchaseHistory]");
-        List<PurchaseHistory> purchaseHistoryList = crawlerResult.getPurchaseHistoryList();
-        saveNormalData(site, PurchaseHistory.toArrayJson(purchaseHistoryList), pageKey, Consts.PURCHASE_HISTORY_LIST_PAGE_NAME);
-    }
-
-    /**
-     * process product info crawler result
-     *
-     * @param site          ec site
-     * @param crawlerResult the crawler result
-     */
-    protected void processProductInfo(String site, GeneralProductDetailCrawlerResult crawlerResult) {
-        LOGGER.debug("[processProductInfo]");
-        ProductInfo productInfo = crawlerResult.getProductInfo();
-        saveNormalData(site, productInfo.toJson(), productInfo.getCode(), Consts.PRODUCT_DETAIL_PAGE_NAME);
-    }
+  /**
+   * process product info crawler result
+   * @param site ec site
+   * @param crawlerResult the crawler result
+   */
+  protected void processProductInfo(String site, GeneralProductDetailCrawlerResult crawlerResult) {
+    LOGGER.debug("[processProductInfo]");
+    ProductInfo productInfo = crawlerResult.getProductInfo();
+    saveNormalData(site, productInfo.toJson(), productInfo.getCode(), Consts.PRODUCT_DETAIL_PAGE_NAME);
+  }
 }

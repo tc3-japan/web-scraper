@@ -15,18 +15,18 @@ import org.springframework.stereotype.Component;
 @Component
 public class KojimaProductModule extends AbstractProductModule {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KojimaProductModule.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(KojimaProductModule.class);
 
-    @Autowired
-    public KojimaProductModule(
-            ProductService productService,
-            WebpageService webpageService,
-            KojimaProductCrawler crawler) {
-        super(productService, webpageService, crawler);
-    }
+  @Autowired
+  public KojimaProductModule(
+          ProductService             productService,
+          WebpageService             webpageService,
+          KojimaProductCrawler       crawler) {
+    super(productService, webpageService, crawler);
+  }
 
-    @Override
-    public String getModuleType() {
-        return "kojima";
-    }
+  @Override
+  public String getModuleType() {
+    return "kojima";
+  }
 }

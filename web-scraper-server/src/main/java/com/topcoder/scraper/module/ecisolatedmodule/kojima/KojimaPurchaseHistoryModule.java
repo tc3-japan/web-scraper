@@ -17,21 +17,21 @@ import org.springframework.stereotype.Component;
 @Component
 public class KojimaPurchaseHistoryModule extends AbstractPurchaseHistoryModule {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KojimaPurchaseHistoryModule.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(KojimaPurchaseHistoryModule.class);
 
-    @Autowired
-    public KojimaPurchaseHistoryModule(
-            PurchaseHistoryService purchaseHistoryService,
-            ECSiteAccountRepository ecSiteAccountRepository,
-            WebpageService webpageService,
-            KojimaLoginHandler loginHandler,
-            KojimaPurchaseHistoryCrawler crawler
-    ) {
-        super(purchaseHistoryService, ecSiteAccountRepository, webpageService, loginHandler, crawler);
-    }
+  @Autowired
+  public KojimaPurchaseHistoryModule(
+          PurchaseHistoryService           purchaseHistoryService,
+          ECSiteAccountRepository          ecSiteAccountRepository,
+          WebpageService                   webpageService,
+          KojimaLoginHandler               loginHandler,
+          KojimaPurchaseHistoryCrawler crawler
+  ) {
+    super(purchaseHistoryService, ecSiteAccountRepository, webpageService, loginHandler, crawler);
+  }
 
-    @Override
-    public String getModuleType() {
-        return "kojima";
-    }
+  @Override
+  public String getModuleType() {
+    return "kojima";
+  }
 }

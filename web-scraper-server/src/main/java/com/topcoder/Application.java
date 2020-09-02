@@ -9,7 +9,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.ComponentScan;
 
 // TODO: consider if we set FlywayAutoConfiguration.class, or not.
-@SpringBootApplication(exclude = {SolrAutoConfiguration.class})
+@SpringBootApplication(exclude = { SolrAutoConfiguration.class })
 //@SpringBootApplication(exclude = { FlywayAutoConfiguration.class, SolrAutoConfiguration.class })
 //Hack: Workaround for unable to component-scan "com.topcoder.common.util.SpringTool" by "java" command.
 //      Using "gradle bootRun", it can be scanned normally.
@@ -20,20 +20,20 @@ import org.springframework.context.annotation.ComponentScan;
 })
 public class Application {
 
-    private static Logger logger = LoggerFactory.getLogger(Application.class.getName());
+  private static Logger logger = LoggerFactory.getLogger(Application.class.getName());
 
-    public static void main(String[] args) {
+  public static void main(String[] args) {
 
-        boolean isRestMode = false;
-        for (String arg : args) {
-            logger.info("arg = " + arg);
-            if ("--rest".equalsIgnoreCase(arg)) {
-                isRestMode = true;
-            }
-        }
-        new SpringApplicationBuilder(Application.class).web(isRestMode).run(args);
-
-
+    boolean isRestMode = false;
+    for (String arg : args) {
+      logger.info("arg = " + arg);
+      if ("--rest".equalsIgnoreCase(arg)) {
+        isRestMode = true;
+      }
     }
+    new SpringApplicationBuilder(Application.class).web(isRestMode).run(args);
+
+
+  }
 
 }

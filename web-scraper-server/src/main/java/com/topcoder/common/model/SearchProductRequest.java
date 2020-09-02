@@ -9,23 +9,23 @@ import lombok.Data;
 @Data
 public class SearchProductRequest {
 
-    /**
-     * the page number
-     */
-    private Integer pageNo;
+  /**
+   * the page number
+   */
+  private Integer pageNo;
 
-    /**
-     * the page size
-     */
-    private Integer pageSize;
+  /**
+   * the page size
+   */
+  private Integer pageSize;
 
-    /**
-     * the search keyword
-     */
-    private String searchKeyword;
+  /**
+   * the search keyword
+   */
+  private String searchKeyword;
 
-    /**
-     * the status
-     */
-    private String confirmationStatus;
+  /**
+   * the status
+   */
+  private String confirmationStatus;
 }

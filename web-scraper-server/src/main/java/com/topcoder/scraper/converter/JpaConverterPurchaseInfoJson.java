@@ -9,18 +9,18 @@ import javax.persistence.Converter;
 @Converter(autoApply = true)
 public class JpaConverterPurchaseInfoJson implements AttributeConverter<ProductInfo, String> {
 
-    private final static ObjectMapper OB = new ObjectMapper();
+  private final static ObjectMapper OB = new ObjectMapper();
 
-    @Override
-    public String convertToDatabaseColumn(ProductInfo meta) {
-        if (meta == null) {
-            return null;
-        }
-        return meta.toJson();
+  @Override
+  public String convertToDatabaseColumn(ProductInfo meta) {
+    if (meta == null) {
+      return null;
     }
+    return meta.toJson();
+  }
 
-    @Override
-    public ProductInfo convertToEntityAttribute(String dbData) {
-        return ProductInfo.fromJson(dbData);
-    }
+  @Override
+  public ProductInfo convertToEntityAttribute(String dbData) {
+    return ProductInfo.fromJson(dbData);
+  }
 }

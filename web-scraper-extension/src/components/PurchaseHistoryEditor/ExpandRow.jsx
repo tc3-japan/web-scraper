@@ -127,7 +127,6 @@ export default function ExpandRow({
                 <JsEditor
                   onChange={(script) => onUpdate(`${path}.script`, script)}
                   script={row.script}
-                  description={t('editor.jsDescription')}
                 />
               ) : null
             }

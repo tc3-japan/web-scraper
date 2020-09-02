@@ -13,16 +13,16 @@ import org.springframework.stereotype.Component;
 @Component
 public class YahooPurchaseHistoryCrawler extends AbstractPurchaseHistoryCrawler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(YahooPurchaseHistoryCrawler.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(YahooPurchaseHistoryCrawler.class);
 
-    @Autowired
-    public YahooPurchaseHistoryCrawler(WebpageService webpageService) {
-        super("yahoo", webpageService);
-    }
+  @Autowired
+  public YahooPurchaseHistoryCrawler(WebpageService webpageService) {
+    super("yahoo", webpageService);
+  }
 
-    @Override
-    public String getScriptSupportClassName() {
-        return YahooPurchaseHistoryCrawlerScriptSupport.class.getName();
-    }
+  @Override
+  public String getScriptSupportClassName() {
+    return YahooPurchaseHistoryCrawlerScriptSupport.class.getName();
+  }
 
 }

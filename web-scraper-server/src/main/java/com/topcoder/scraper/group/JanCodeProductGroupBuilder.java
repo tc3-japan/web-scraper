@@ -16,31 +16,31 @@ import com.topcoder.common.repository.ProductRepository;
 @Component
 public class JanCodeProductGroupBuilder extends AbstractProductGroupBuilder {
 
-    private static final Logger logger = LoggerFactory.getLogger(JanCodeProductGroupBuilder.class);
+  private static final Logger logger = LoggerFactory.getLogger(JanCodeProductGroupBuilder.class);
 
-    @Autowired
-    ProductRepository productRepository;
+  @Autowired
+  ProductRepository productRepository;
 
-    @Override
-    String getGroupingMethod() {
-        return ProductGroupDAO.GroupingMethod.jan_code;
+  @Override
+  String getGroupingMethod() {
+    return ProductGroupDAO.GroupingMethod.jan_code;
+  }
+
+  @Override
+  protected String getSearchParameter(ProductDAO product) {
+    if (product == null) {
+      throw new IllegalArgumentException("product must be specified.");
     }
+    return product.getJanCode();
+  }
 
-    @Override
-    protected String getSearchParameter(ProductDAO product) {
-        if (product == null) {
-            throw new IllegalArgumentException("product must be specified.");
-        }
-        return product.getJanCode();
+  @Override
+  public List<ProductDAO> findSameProducts(ProductDAO prod) {
+    logger.info("Searching for products by JAN code: " + prod.getJanCode());
+    List<ProductDAO> productList = new LinkedList<>();
+    if (prod == null || StringUtils.isBlank(prod.getJanCode())) {
+      return productList;
     }
-
-    @Override
-    public List<ProductDAO> findSameProducts(ProductDAO prod) {
-        logger.info("Searching for products by JAN code: " + prod.getJanCode());
-        List<ProductDAO> productList = new LinkedList<>();
-        if (prod == null || StringUtils.isBlank(prod.getJanCode())) {
-            return productList;
-        }
-        return this.productRepository.findByJanCode(prod.getJanCode());
-    }
+    return this.productRepository.findByJanCode(prod.getJanCode());
+  }
 }

@@ -15,18 +15,18 @@ import org.springframework.stereotype.Component;
 @Component
 public class YahooProductDetailModule extends AbstractProductModule {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(YahooProductDetailModule.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(YahooProductDetailModule.class);
 
-    @Autowired
-    public YahooProductDetailModule(
-            ProductService productService,
-            WebpageService webpageService,
-            YahooProductCrawler crawler) {
-        super(productService, webpageService, crawler);
-    }
+  @Autowired
+  public YahooProductDetailModule(
+          ProductService            productService,
+          WebpageService            webpageService,
+          YahooProductCrawler       crawler) {
+    super(productService, webpageService, crawler);
+  }
 
-    @Override
-    public String getModuleType() {
-        return "yahoo";
-    }
+  @Override
+  public String getModuleType() {
+    return "yahoo";
+  }
 }

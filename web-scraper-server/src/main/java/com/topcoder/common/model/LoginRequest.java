@@ -10,28 +10,28 @@ import lombok.ToString;
 @ToString(exclude = {"password"})
 public class LoginRequest {
 
-    /**
-     * the email
-     */
-    String email;
+  /**
+   * the email
+   */
+  String email;
 
-    /**
-     * the password
-     */
-    String password;
+  /**
+   * the password
+   */
+  String password;
 
-    /**
-     * the site id
-     */
-    Integer siteId;
+  /**
+   * the site id
+   */
+  Integer siteId;
 
-    /**
-     * the code
-     */
-    String code;
+  /**
+   * the code
+   */
+  String code;
 
-    /**
-     * the session/task id
-     */
-    String uuid;
+  /**
+   * the session/task id
+   */
+  String uuid;
 }

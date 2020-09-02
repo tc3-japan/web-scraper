@@ -11,50 +11,50 @@ import java.util.List;
 
 public abstract class LoginHandlerBase implements LoginHandler {
 
-    protected final ECSiteAccountRepository ecSiteAccountRepository;
-
-    protected final UserRepository userRepository;
-
-    public LoginHandlerBase(ECSiteAccountRepository ecSiteAccountRepository, UserRepository userRepository) {
-        this.ecSiteAccountRepository = ecSiteAccountRepository;
-        this.userRepository = userRepository;
+  protected final ECSiteAccountRepository ecSiteAccountRepository;
+  
+  protected final UserRepository userRepository;
+  
+  public LoginHandlerBase(ECSiteAccountRepository ecSiteAccountRepository, UserRepository userRepository) {
+    this.ecSiteAccountRepository = ecSiteAccountRepository;
+    this.userRepository = userRepository;
+  }
+  
+  public void saveSuccessResult(ECSiteAccountDAO ecSiteAccountDAO) {
+    saveResult(ecSiteAccountDAO, AuthStatusType.SUCCESS, null);
+    
+    UserDAO user = userRepository.findOne(ecSiteAccountDAO.getUserId());
+    if (user == null || AuthStatusType.SUCCESS.equals(user.getTotalECStatus())) {
+      return;
     }
-
-    public void saveSuccessResult(ECSiteAccountDAO ecSiteAccountDAO) {
-        saveResult(ecSiteAccountDAO, AuthStatusType.SUCCESS, null);
-
-        UserDAO user = userRepository.findOne(ecSiteAccountDAO.getUserId());
-        if (user == null || AuthStatusType.SUCCESS.equals(user.getTotalECStatus())) {
-            return;
-        }
-
-        List<ECSiteAccountDAO> accounts = ecSiteAccountRepository.findAllByUserId(ecSiteAccountDAO.getUserId());
-        boolean allAccountsInSuccess = accounts.stream().allMatch(a -> AuthStatusType.SUCCESS.equals(a.getAuthStatus()));
-        if (allAccountsInSuccess) {
-            user.setTotalECStatus(AuthStatusType.SUCCESS);
-            user.setUpdateAt(new Date());
-            userRepository.save(user);
-        }
+    
+    List<ECSiteAccountDAO> accounts = ecSiteAccountRepository.findAllByUserId(ecSiteAccountDAO.getUserId());
+    boolean allAccountsInSuccess = accounts.stream().allMatch(a -> AuthStatusType.SUCCESS.equals(a.getAuthStatus()));
+    if (allAccountsInSuccess) {
+      user.setTotalECStatus(AuthStatusType.SUCCESS);
+      user.setUpdateAt(new Date());
+      userRepository.save(user);
     }
-
-    public void saveFailedResult(ECSiteAccountDAO ecSiteAccountDAO, String message) {
-        saveResult(ecSiteAccountDAO, AuthStatusType.FAILED, message);
-
-        UserDAO user = userRepository.findOne(ecSiteAccountDAO.getUserId());
-        if (user == null || AuthStatusType.FAILED.equals(user.getTotalECStatus())) {
-            return;
-        }
-
-        user.setTotalECStatus(AuthStatusType.FAILED);
-        user.setUpdateAt(new Date());
-        userRepository.save(user);
+  }
+  
+  public void saveFailedResult(ECSiteAccountDAO ecSiteAccountDAO, String message) {
+    saveResult(ecSiteAccountDAO, AuthStatusType.FAILED, message);
+    
+    UserDAO user = userRepository.findOne(ecSiteAccountDAO.getUserId());
+    if (user == null || AuthStatusType.FAILED.equals(user.getTotalECStatus())) {
+      return;
     }
-
-    protected void saveResult(ECSiteAccountDAO ecSiteAccountDAO, String status, String message) {
-        ecSiteAccountDAO.setAuthStatus(status);
-        ecSiteAccountDAO.setAuthFailReason(message);
-        ecSiteAccountDAO.setUpdateAt(new Date());
-        ecSiteAccountRepository.save(ecSiteAccountDAO);
-    }
+    
+    user.setTotalECStatus(AuthStatusType.FAILED);
+    user.setUpdateAt(new Date());
+    userRepository.save(user);
+  }
+  
+  protected void saveResult(ECSiteAccountDAO ecSiteAccountDAO, String status, String message) {
+    ecSiteAccountDAO.setAuthStatus(status);
+    ecSiteAccountDAO.setAuthFailReason(message);
+    ecSiteAccountDAO.setUpdateAt(new Date());
+    ecSiteAccountRepository.save(ecSiteAccountDAO);
+  }
 
 }

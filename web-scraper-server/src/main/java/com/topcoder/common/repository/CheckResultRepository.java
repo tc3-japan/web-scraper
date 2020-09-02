@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CheckResultRepository extends CrudRepository<CheckResultDAO, Integer> {
 
-    CheckResultDAO findFirstByEcSiteAndPageAndPageKey(String site, String page, String pageKey);
+  CheckResultDAO findFirstByEcSiteAndPageAndPageKey(String site, String page, String pageKey);
 }

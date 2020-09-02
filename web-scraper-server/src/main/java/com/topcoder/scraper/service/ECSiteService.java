@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class ECSiteService {
 
-    public Set<String> getAllECSites() {
-        return new HashSet<>(Arrays.asList("amazon", "yahoo", "rakuten"));
-        //return new HashSet<>(Arrays.asList("amazon", "yahoo"));
-    }
+  public Set<String> getAllECSites() {
+    return new HashSet<>(Arrays.asList("amazon", "yahoo", "rakuten"));
+    //return new HashSet<>(Arrays.asList("amazon", "yahoo"));
+  }
 }

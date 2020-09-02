@@ -7,19 +7,18 @@ import org.slf4j.LoggerFactory;
 
 public class DevSupport {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DevSupport.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(DevSupport.class);
 
-    public static WebClient getWebClient() {
-        WebClient webClient = new WebClient(new BrowserVersion.BrowserVersionBuilder(BrowserVersion.CHROME).build());
-        webClient.getOptions().setJavaScriptEnabled(false);
-        return webClient;
-    }
+  public static WebClient getWebClient() {
+    WebClient webClient = new WebClient(new BrowserVersion.BrowserVersionBuilder(BrowserVersion.CHROME).build());
+    webClient.getOptions().setJavaScriptEnabled(false);
+    return webClient;
+  }
 
-    public static void enableJs(WebClient webClient) {
-        webClient.getOptions().setJavaScriptEnabled(true);
-    }
-
-    public static void disableJs(WebClient webClient) {
-        webClient.getOptions().setJavaScriptEnabled(false);
-    }
+  public static void enableJs(WebClient webClient) {
+    webClient.getOptions().setJavaScriptEnabled(true);
+  }
+  public static void disableJs(WebClient webClient) {
+    webClient.getOptions().setJavaScriptEnabled(false);
+  }
 }

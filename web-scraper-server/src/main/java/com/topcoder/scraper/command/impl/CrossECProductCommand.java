@@ -37,87 +37,87 @@ import com.topcoder.scraper.module.ecunifiedmodule.GeneralProductSearchModule;
 @Transactional
 public class CrossECProductCommand {
 
-    @Autowired
-    private ProductRepository productRepository;
+  @Autowired
+  private ProductRepository productRepository;
 
-    @Autowired
-    private ProductGroupRepository productGroupRepository;
+  @Autowired
+  private ProductGroupRepository productGroupRepository;
 
-    @Autowired
-    private GeneralProductSearchModule generalProductSearchModule;
+  @Autowired
+  private GeneralProductSearchModule generalProductSearchModule;
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
+  private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
-    public void run(ApplicationArguments arguments) {
-        List<ProductDAO> productDAOList = productRepository.findByGroupStatusIsNullOrProductGroupIdIsNull();
-        logger.info("found " + productDAOList.size() + " un grouped product");
-        Map<String, List<ProductDAO>> productDAOMap = new HashMap<>();
-        productDAOList.forEach(productDAO -> {
-            if (productDAO.getModelNo() != null) {
-                List<ProductDAO> productDAOS = productDAOMap.get(productDAO.getModelNo());
-                if (productDAOS == null) {
-                    productDAOS = new LinkedList<>();
-                }
-                productDAOS.add(productDAO);
-                productDAOMap.put(productDAO.getModelNo(), productDAOS);
-            }
-        });
+  public void run(ApplicationArguments arguments) {
+    List<ProductDAO> productDAOList = productRepository.findByGroupStatusIsNullOrProductGroupIdIsNull();
+    logger.info("found " + productDAOList.size() + " un grouped product");
+    Map<String, List<ProductDAO>> productDAOMap = new HashMap<>();
+    productDAOList.forEach(productDAO -> {
+      if (productDAO.getModelNo() != null) {
+        List<ProductDAO> productDAOS = productDAOMap.get(productDAO.getModelNo());
+        if (productDAOS == null) {
+          productDAOS = new LinkedList<>();
+        }
+        productDAOS.add(productDAO);
+        productDAOMap.put(productDAO.getModelNo(), productDAOS);
+      }
+    });
 
-        productDAOMap.forEach((key, productDAOS) -> {
-            logger.info("start group " + key + " with item count = " + productDAOS.size());
-            List<ProductDAO> groupingCandidateProjectDAOs = productDAOS;
+    productDAOMap.forEach((key, productDAOS)->{
+      logger.info("start group " + key + " with item count = " + productDAOS.size());
+      List<ProductDAO> groupingCandidateProjectDAOs = productDAOS;
 
-            boolean isAmazonExist = false;
-            boolean isKojimaExist = false;
-            for (ProductDAO productDAO : productDAOS) {
-                if (productDAO.getEcSite().equals(ECSite.AMAZON.getValue())) isAmazonExist = true;
-                else if (productDAO.getEcSite().equals(ECSite.KOJIMA.getValue())) isKojimaExist = true;
-            }
+      boolean isAmazonExist = false;
+      boolean isKojimaExist = false;
+      for(ProductDAO productDAO:productDAOS) {
+        if (productDAO.getEcSite().equals(ECSite.AMAZON.getValue())) isAmazonExist = true;
+        else if (productDAO.getEcSite().equals(ECSite.KOJIMA.getValue())) isKojimaExist = true;
+      }
 
-            if (!isAmazonExist) {
-                try {
-                    logger.info("start cross ec product at amazon for model no = %s", key);
-                    ProductDAO result = this.generalProductSearchModule.searchProductInfo("amazon", key);
-                    if (Objects.nonNull(result)) groupingCandidateProjectDAOs.add(result);
-                } catch (IOException e) {
-                    logger.error("Fail to cross ec product from amazon", e);
-                    throw new CrossECProductException();
-                }
-            }
+      if (!isAmazonExist) {
+        try {
+          logger.info("start cross ec product at amazon for model no = %s",key);
+          ProductDAO result = this.generalProductSearchModule.searchProductInfo("amazon", key);
+          if(Objects.nonNull(result)) groupingCandidateProjectDAOs.add(result);
+        } catch (IOException e) {
+          logger.error("Fail to cross ec product from amazon", e);
+          throw new CrossECProductException();
+        }
+      }
 
-            if (!isKojimaExist) {
-                try {
-                    logger.info("start cross ec product at kojima for model no = %s", key);
-                    ProductDAO result = this.generalProductSearchModule.searchProductInfo("kojima", key);
-                    if (Objects.nonNull(result)) groupingCandidateProjectDAOs.add(result);
-                } catch (IOException e) {
-                    logger.error("Fail to cross ec product from kojima", e);
-                    throw new CrossECProductException();
-                }
-            }
+      if (!isKojimaExist) {
+        try {
+          logger.info("start cross ec product at kojima for model no = %s",key);
+          ProductDAO result = this.generalProductSearchModule.searchProductInfo("kojima", key);
+          if(Objects.nonNull(result)) groupingCandidateProjectDAOs.add(result);
+        } catch (IOException e) {
+          logger.error("Fail to cross ec product from kojima", e);
+          throw new CrossECProductException();
+        }
+      }
 
-            if (groupingCandidateProjectDAOs.size() <= 1) {
-                logger.info("skip group " + key + " , because of item count < 2");
-                return;
-            }
-            productDAOS.addAll(groupingCandidateProjectDAOs);
+      if (groupingCandidateProjectDAOs.size() <= 1) {
+        logger.info("skip group " + key + " , because of item count < 2");
+        return;
+      }
+      productDAOS.addAll(groupingCandidateProjectDAOs);
 
-            ProductGroupDAO groupDAO = productGroupRepository.getByModelNo(key);
-            if (groupDAO == null) {
-                groupDAO = new ProductGroupDAO();
-                groupDAO.setModelNo(key);
-                groupDAO.setConfirmationStatus(ProductGroupDAO.ConfirmationStatus.unconfirmed);
-                groupDAO.setGroupingMethod(ProductGroupDAO.GroupingMethod.same_no);
-            }
-            groupDAO.setUpdateAt(Date.from(Instant.now()));
-            productGroupRepository.save(groupDAO);
+      ProductGroupDAO groupDAO = productGroupRepository.getByModelNo(key);
+      if (groupDAO == null) {
+        groupDAO = new ProductGroupDAO();
+        groupDAO.setModelNo(key);
+        groupDAO.setConfirmationStatus(ProductGroupDAO.ConfirmationStatus.unconfirmed);
+        groupDAO.setGroupingMethod(ProductGroupDAO.GroupingMethod.same_no);
+      }
+      groupDAO.setUpdateAt(Date.from(Instant.now()));
+      productGroupRepository.save(groupDAO);
 
-            ProductGroupDAO finalGroupDAO = groupDAO;
-            productDAOS.forEach(product -> {
-                product.setGroupStatus(ProductDAO.GroupStatus.grouped);
-                product.setProductGroupId(finalGroupDAO.getId());
-                productRepository.save(product);
-            });
-        });
-    }
+      ProductGroupDAO finalGroupDAO = groupDAO;
+      productDAOS.forEach(product -> {
+        product.setGroupStatus(ProductDAO.GroupStatus.grouped);
+        product.setProductGroupId(finalGroupDAO.getId());
+        productRepository.save(product);
+      });
+    });
+  }
 }

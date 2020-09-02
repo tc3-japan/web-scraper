@@ -18,32 +18,31 @@ import java.util.List;
 @Component
 public class PurchaseHistoryListCommand extends AbstractCommand<IPurchaseHistoryModule> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PurchaseHistoryListCommand.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(PurchaseHistoryListCommand.class);
 
-    @Autowired
-    public PurchaseHistoryListCommand(List<IPurchaseHistoryModule> modules) {
-        super(modules);
-    }
+  @Autowired
+  public PurchaseHistoryListCommand(List<IPurchaseHistoryModule> modules) {
+    super(modules);
+  }
 
-    /**
-     * fetch purchase history list from specific module
-     *
-     * @param module module to be run
-     */
-    @Override
-    protected void process(IPurchaseHistoryModule module) {
-        LOGGER.info("module=site: " + module);
-        try {
-            if (this.sites == null || this.sites.size() == 0) {
-                module.fetchPurchaseHistoryList(Consts.ALL_SITES);
-            } else {
-                module.fetchPurchaseHistoryList(this.sites);
-            }
-        } catch (IOException e) {
-            LOGGER.error("Fail to fetch purchase history list", e);
-            throw new FetchPurchaseHistoryListException();
-        }
-        LOGGER.info("Successfully fetch purchase history");
+  /**
+   * fetch purchase history list from specific module
+   * @param module module to be run
+   */
+  @Override
+  protected void process(IPurchaseHistoryModule module) {
+    LOGGER.info("module=site: " + module);
+    try {
+      if (this.sites == null || this.sites.size() == 0) {
+        module.fetchPurchaseHistoryList(Consts.ALL_SITES);
+      } else {
+        module.fetchPurchaseHistoryList(this.sites);
+      }
+    } catch (IOException e) {
+      LOGGER.error("Fail to fetch purchase history list", e);
+      throw new FetchPurchaseHistoryListException();
     }
+    LOGGER.info("Successfully fetch purchase history");
+  }
 
 }

@@ -31,116 +31,102 @@ import lombok.Setter;
 
 public abstract class AbstractPurchaseHistoryCrawler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPurchaseHistoryCrawler.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPurchaseHistoryCrawler.class);
 
-    protected final Binding configBinding;
-    protected final CompilerConfiguration compConfig;
-    protected GroovyShell scriptShell;
-    protected String configText = "";
+  protected final Binding               configBinding;
+  protected final CompilerConfiguration compConfig;
+  protected GroovyShell                 scriptShell;
+  protected String                      configText = "";
 
-    protected PurchaseHistory lastPurchaseHistory;
-    protected List<String> savedPathList;
-    protected boolean saveHtml;
+  protected PurchaseHistory       lastPurchaseHistory;
+  protected List<String>          savedPathList;
+  protected boolean               saveHtml;
 
-    @Getter
-    @Setter
-    protected NavigablePurchaseHistoryPage historyPage;
-    @Getter
-    @Setter
-    protected TrafficWebClient webClient;
-    @Getter
-    @Setter
-    protected String siteName;
-    @Getter
-    @Setter
-    protected WebpageService webpageService;
+  @Getter@Setter protected NavigablePurchaseHistoryPage historyPage;
+  @Getter@Setter protected TrafficWebClient webClient;
+  @Getter@Setter protected String           siteName;
+  @Getter@Setter protected WebpageService   webpageService;
 
-    @Getter
-    @Setter
-    protected PurchaseHistory currentPurchaseHistory; // OrderInfo (to be refactored)
-    @Getter
-    @Setter
-    protected ProductInfo currentProduct;
-    @Getter
-    @Setter
-    protected List<PurchaseHistory> purchaseHistoryList;
+  @Getter@Setter protected PurchaseHistory       currentPurchaseHistory; // OrderInfo (to be refactored)
+  @Getter@Setter protected ProductInfo           currentProduct;
+  @Getter@Setter protected List<PurchaseHistory> purchaseHistoryList;
 
-    public AbstractPurchaseHistoryCrawler(String siteName, WebpageService webpageService) {
-        LOGGER.debug("[constructor] in");
+  public AbstractPurchaseHistoryCrawler(String siteName, WebpageService webpageService) {
+    LOGGER.debug("[constructor] in");
 
-        this.siteName = siteName;
-        this.webpageService = webpageService;
+    this.siteName       = siteName;
+    this.webpageService = webpageService;
 
-        String configPath = this.getConfigPath();
-        this.configText = this.getConfigText(configPath);
+    String configPath = this.getConfigPath();
+    this.configText = this.getConfigText(configPath);
 
-        Properties configProps = new Properties();
-        configProps.setProperty("groovy.script.base", this.getScriptSupportClassName());
-        this.compConfig = new CompilerConfiguration(configProps);
-        this.configBinding = new Binding();
+    Properties configProps = new Properties();
+    configProps.setProperty("groovy.script.base", this.getScriptSupportClassName());
+    this.compConfig = new CompilerConfiguration(configProps);
+    this.configBinding = new Binding();
+  }
+
+  protected String getConfigPath() {
+    LOGGER.debug("[getConfigPath] in");
+
+    String configPath = System.getenv(Consts.SCRAPING_SCRIPT_PATH);
+    if (StringUtils.isEmpty(configPath)) {
+      configPath = System.getProperty("user.dir") + "/scripts/scraping";
     }
+    configPath  += "/isolated/" + this.siteName + "-purchase-history-list.groovy";
 
-    protected String getConfigPath() {
-        LOGGER.debug("[getConfigPath] in");
+    LOGGER.debug("[getConfigPath] configPath: " + configPath);
+    return configPath;
+  }
 
-        String configPath = System.getenv(Consts.SCRAPING_SCRIPT_PATH);
-        if (StringUtils.isEmpty(configPath)) {
-            configPath = System.getProperty("user.dir") + "/scripts/scraping";
-        }
-        configPath += "/isolated/" + this.siteName + "-purchase-history-list.groovy";
+  protected String getConfigText(String configPath) {
+    LOGGER.debug("[getConfigText] in");
 
-        LOGGER.debug("[getConfigPath] configPath: " + configPath);
-        return configPath;
+    try {
+      return FileUtils.readFileToString(new File(configPath), "utf-8");
+    } catch (IOException e) {
+      LOGGER.debug("[getConfigText] Could not read config file: " + configPath);
+      return null;
     }
+  }
 
-    protected String getConfigText(String configPath) {
-        LOGGER.debug("[getConfigText] in");
+  protected abstract String getScriptSupportClassName();
 
-        try {
-            return FileUtils.readFileToString(new File(configPath), "utf-8");
-        } catch (IOException e) {
-            LOGGER.debug("[getConfigText] Could not read config file: " + configPath);
-            return null;
-        }
-    }
+  protected String executeConfig() {
+    LOGGER.debug("[executeConfig] in");
+    this.scriptShell = new GroovyShell(this.configBinding, this.compConfig);
+    Script script = this.scriptShell.parse(this.configText);
+    script.invokeMethod("setCrawler", this);
+    String resStr = (String)script.run();
+    return resStr;
+  }
 
-    protected abstract String getScriptSupportClassName();
+  public AbstractPurchaseHistoryCrawlerResult fetchPurchaseHistoryList(TrafficWebClient webClient, PurchaseHistory lastPurchaseHistory, boolean saveHtml) throws IOException {
+    LOGGER.debug("[fetchPurchaseHistoryList] in");
 
-    protected String executeConfig() {
-        LOGGER.debug("[executeConfig] in");
-        this.scriptShell = new GroovyShell(this.configBinding, this.compConfig);
-        Script script = this.scriptShell.parse(this.configText);
-        script.invokeMethod("setCrawler", this);
-        String resStr = (String) script.run();
-        return resStr;
-    }
+    this.webClient = webClient;
+    this.saveHtml  = saveHtml;
+    this.historyPage = new NavigablePurchaseHistoryPage(this.webClient);
 
-    public AbstractPurchaseHistoryCrawlerResult fetchPurchaseHistoryList(TrafficWebClient webClient, PurchaseHistory lastPurchaseHistory, boolean saveHtml) throws IOException {
-        LOGGER.debug("[fetchPurchaseHistoryList] in");
+    this.lastPurchaseHistory = lastPurchaseHistory;
+    this.purchaseHistoryList = new LinkedList<>();
+    this.savedPathList       = new LinkedList<>();
 
-        this.webClient = webClient;
-        this.saveHtml = saveHtml;
-        this.historyPage = new NavigablePurchaseHistoryPage(this.webClient);
+    // binding variables for scraping config
+    // TODO: re-consider whether this is necessary
+    this.configBinding.setProperty("purchaseHistoryList", this.purchaseHistoryList);
 
-        this.lastPurchaseHistory = lastPurchaseHistory;
-        this.purchaseHistoryList = new LinkedList<>();
-        this.savedPathList = new LinkedList<>();
+    this.executeConfig();
 
-        // binding variables for scraping config
-        // TODO: re-consider whether this is necessary
-        this.configBinding.setProperty("purchaseHistoryList", this.purchaseHistoryList);
+    return new AbstractPurchaseHistoryCrawlerResult(this.purchaseHistoryList, this.savedPathList);
+  }
 
-        this.executeConfig();
+  // TODO: re-consider Closure<HERE>, now temporarily Boolean
+  public void processPurchaseHistory(Closure<Boolean> closure) throws IOException {
+    LOGGER.debug("[processPurchaseHistory] in");
 
-        return new AbstractPurchaseHistoryCrawlerResult(this.purchaseHistoryList, this.savedPathList);
-    }
-
-    // TODO: re-consider Closure<HERE>, now temporarily Boolean
-    public void processPurchaseHistory(Closure<Boolean> closure) throws IOException {
-        LOGGER.debug("[processPurchaseHistory] in");
-
-        this.webpageService.save(this.siteName + "-purchase-history", this.siteName, this.historyPage.getPage().getWebResponse().getContentAsString(), this.saveHtml);
-        // TODO : implement
+    this.webpageService.save(this.siteName + "-purchase-history", this.siteName, this.historyPage.getPage().getWebResponse().getContentAsString(), this.saveHtml);
+    // TODO : implement
     /*
     if (page.getBaseURI().contains("?autoLogin")) {
       throw new SessionExpiredException("Session has been expired.");
@@ -148,71 +134,71 @@ public abstract class AbstractPurchaseHistoryCrawler {
      */
 
 
-        // Go to First Page
-        this.historyPage.setPage(this.gotoFirstPage(this.historyPage.getPage(), webClient));
+    // Go to First Page
+    this.historyPage.setPage(this.gotoFirstPage(this.historyPage.getPage(), webClient));
 
-        while (true) {
-            if (this.historyPage.getPage() == null) {
-                break;
-            }
-            closure.call();
-            // Go to Next Page
-            this.historyPage.setPage(this.gotoNextPage(this.historyPage.getPage(), webClient));
-        }
+    while (true) {
+      if (this.historyPage.getPage() == null) {
+        break;
+      }
+      closure.call();
+      // Go to Next Page
+      this.historyPage.setPage(this.gotoNextPage(this.historyPage.getPage(), webClient));
     }
+  }
 
-    public void processOrders(List<DomNode> orderList, Closure<Boolean> closure) {
-        LOGGER.debug("[processOrders] in");
-        LOGGER.debug("Parsing page url " + historyPage.getPage().getUrl().toString());
+  public void processOrders(List<DomNode> orderList, Closure<Boolean> closure) {
+    LOGGER.debug("[processOrders] in");
+    LOGGER.debug("Parsing page url " + historyPage.getPage().getUrl().toString());
 
-        for (DomNode orderNode : orderList) {
-            this.currentPurchaseHistory = new PurchaseHistory();
-            this.historyPage.setPurchaseHistory(this.currentPurchaseHistory);
+    for (DomNode orderNode : orderList) {
+      this.currentPurchaseHistory = new PurchaseHistory();
+      this.historyPage.setPurchaseHistory(this.currentPurchaseHistory);
 
-            closure.call(orderNode);
+      closure.call(orderNode);
 
-            this.purchaseHistoryList.add(this.currentPurchaseHistory);
-        }
+      this.purchaseHistoryList.add(this.currentPurchaseHistory);
     }
+  }
 
-    public void processProducts(List<DomNode> productList, Closure<Boolean> closure) {
-        LOGGER.debug("[processProducts] in");
+  public void processProducts(List<DomNode> productList, Closure<Boolean> closure) {
+    LOGGER.debug("[processProducts] in");
 
-        for (DomNode productNode : productList) {
-            this.currentProduct = new ProductInfo();
-            this.historyPage.setProductInfo(this.currentProduct);
+    for (DomNode productNode : productList) {
+      this.currentProduct = new ProductInfo();
+      this.historyPage.setProductInfo(this.currentProduct);
 
-            closure.call(productNode);
+      closure.call(productNode);
 
-            if (this.currentProduct.getName() != null) {
-                this.currentPurchaseHistory.addProduct(this.currentProduct);
-            }
-        }
+      if (this.currentProduct.getName() != null) {
+        this.currentPurchaseHistory.addProduct(this.currentProduct);
+      }
     }
+  }
 
-    public boolean isNew() {
-        LOGGER.debug("[isNew] in");
-        PurchaseHistory curr = this.currentPurchaseHistory;
-        PurchaseHistory last = this.lastPurchaseHistory;
+  public boolean isNew() {
+    LOGGER.debug("[isNew] in");
+    PurchaseHistory curr = this.currentPurchaseHistory;
+    PurchaseHistory last = this.lastPurchaseHistory;
 
-        Date currOrderDate = curr.getOrderDate();
-        Date lastOrderDate = last != null ? last.getOrderDate() : null;
-        String currOrderNumber = curr.getOrderNumber();
-        String lastOrderNumber = last != null ? (last.getOrderNumber() != null ? last.getOrderNumber() : "") : "";
+    Date currOrderDate = curr.getOrderDate();
+    Date lastOrderDate = last != null ? last.getOrderDate() : null;
+    String currOrderNumber = curr.getOrderNumber();
+    String lastOrderNumber = last != null ? (last.getOrderNumber() != null ? last.getOrderNumber() : "") : "";
 
-        if ((currOrderDate != null && lastOrderDate != null && currOrderDate.compareTo(lastOrderDate) <= 0) || lastOrderNumber.equals(currOrderNumber)) {
-            return false;
-        }
-        return true;
+    if ((currOrderDate != null && lastOrderDate != null && currOrderDate.compareTo(lastOrderDate) <= 0) || lastOrderNumber.equals(currOrderNumber)) {
+      return false;
     }
+    return true;
+  }
 
-    protected HtmlPage gotoFirstPage(HtmlPage page, TrafficWebClient webClient) throws IOException {
-        LOGGER.debug("[gotoFirstPage] in");
-        return null;
-    }
+  protected HtmlPage gotoFirstPage(HtmlPage page, TrafficWebClient webClient) throws IOException {
+    LOGGER.debug("[gotoFirstPage] in");
+    return null;
+  }
 
-    protected HtmlPage gotoNextPage(HtmlPage page, TrafficWebClient webClient) throws IOException {
-        LOGGER.debug("[gotoNextPage] in");
-        return null;
-    }
+  protected HtmlPage gotoNextPage(HtmlPage page, TrafficWebClient webClient) throws IOException {
+    LOGGER.debug("[gotoNextPage] in");
+    return null;
+  }
 }

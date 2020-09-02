@@ -27,9 +27,7 @@
       "title": "Settings",
       "back": "戻る",
       "update": "Update",
-      "baseUrl": "APIベースURL",
-      "baseTest": "テスト件数",
-      "baseTestDesc": "0:全件"
+      "baseUrl": "APIベースURL"
     },
     "editor": {
       "items": {
@@ -41,9 +39,9 @@
         "productName": "商品名",
         "productQuantity": "注文数",
         "unitPrice": "価格",
-        "productDistributor": "販売者"      },
+        "productDistributor": "販売者"
+      },
       "check": "Check",
-      "jsDescription": "必要に応じて下記のプレースホルダーをスクリプトに埋め込んでください。スクリプト実行時に各ページの対象グループセレクタ毎に１〜からの番号にそれぞれのプレースホルダーが置換されます。<ul><li>購入履歴：{orderIndex}</li><li>購入商品：{productIndex}</li></ul>Check実行時はプレースホルダーは全て１に置換されます。",
       "currentUrlCodePlaceholder": "URLの商品番号に {code} プレイスホルダーを設定してください。設定したプレイスホルダーは、スクレイピング実行時に実際の商品番号に置換されます。",
       "currentUrlWordPlaceholder": "URLの検索文字列に {word} プレイスホルダーを設定してください。設定したプレイスホルダーは、スクレイピング実行時に実際の検索文字列に置換されます。",
       "excludedSelector": "対象外セレクタ",
@@ -79,9 +77,6 @@
       "modelNoLabel": "型番(ラベル)",
       "janCode": "JANコード",
       "productDistributor":"販売者"
-    },
-    "searchProduct": {
-      "jsDescription": "必要に応じて {productIndex} のプレースホルダーをスクリプトに埋め込んでください。スクリプト実行時に各ページのグループセレクタ毎に１〜からの番号にそれぞれのプレースホルダーが置換されます。<br />Check実行時はプレースホルダーは全て１に置換されます。"
     }
   }
 }

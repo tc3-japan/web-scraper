@@ -30,138 +30,133 @@ import java.util.List;
  */
 public abstract class AbstractChangeDetectionCheckModule extends AbstractChangeDetectionCommonModule implements IChangeDetectionCheckModule {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(AbstractChangeDetectionInitModule.class);
+  private static Logger LOGGER = LoggerFactory.getLogger(AbstractChangeDetectionInitModule.class);
 
-    protected final CheckItemsDefinitionProperty checkItemsDefinitionProperty;
-    protected final CheckResultRepository checkResultRepository;
+  protected final CheckItemsDefinitionProperty checkItemsDefinitionProperty;
+  protected final CheckResultRepository        checkResultRepository;
 
-    public AbstractChangeDetectionCheckModule(
-            MonitorTargetDefinitionProperty monitorTargetDefinitionProperty,
-            WebpageService webpageService,
-            ECSiteAccountRepository ecSiteAccountRepository,
-            NormalDataRepository normalDataRepository,
-            AbstractPurchaseHistoryModule purchaseHistoryModule,
-            AbstractProductModule productModule,
-            CheckItemsDefinitionProperty checkItemsDefinitionProperty,
-            CheckResultRepository checkResultRepository
-    ) {
-        super(
-                monitorTargetDefinitionProperty,
-                webpageService,
-                ecSiteAccountRepository,
-                normalDataRepository,
-                purchaseHistoryModule,
-                productModule);
+  public AbstractChangeDetectionCheckModule(
+          MonitorTargetDefinitionProperty monitorTargetDefinitionProperty,
+          WebpageService                  webpageService,
+          ECSiteAccountRepository         ecSiteAccountRepository,
+          NormalDataRepository            normalDataRepository,
+          AbstractPurchaseHistoryModule   purchaseHistoryModule,
+          AbstractProductModule           productModule,
+          CheckItemsDefinitionProperty    checkItemsDefinitionProperty,
+          CheckResultRepository           checkResultRepository
+  ) {
+    super(
+            monitorTargetDefinitionProperty,
+            webpageService,
+            ecSiteAccountRepository,
+            normalDataRepository,
+            purchaseHistoryModule,
+            productModule);
 
-        this.checkItemsDefinitionProperty = checkItemsDefinitionProperty;
-        this.checkResultRepository = checkResultRepository;
+    this.checkItemsDefinitionProperty = checkItemsDefinitionProperty;
+    this.checkResultRepository        = checkResultRepository;
+  }
+
+  @Override
+  public abstract String getModuleType();
+
+  /**
+   * Implementation of check method
+   */
+  @Override
+  public void check(List<String> sites) throws IOException {
+    LOGGER.debug("[check]");
+    this.processMonitorTarget();
+  }
+
+  /**
+   * Process purchase history crawler result
+   * @param crawlerResult the crawler result
+   * @param pageKey the page key
+   */
+  protected void processPurchaseHistory(AbstractPurchaseHistoryCrawlerResult crawlerResult, String pageKey) {
+    List<PurchaseHistory> purchaseHistoryList = crawlerResult.getPurchaseHistoryList();
+
+    CheckItemsDefinitionProperty.CheckItemsCheckSite checkSiteDefinition = checkItemsDefinitionProperty.getCheckSiteDefinition(getModuleType());
+    CheckItemsDefinitionProperty.CheckItemsCheckPage checkItemsCheckPage = checkSiteDefinition.getCheckPageDefinition(Consts.PURCHASE_HISTORY_LIST_PAGE_NAME);
+
+    NormalDataDAO normalDataDAO = normalDataRepository.findFirstByEcSiteAndPageAndPageKey(getModuleType(), Consts.PURCHASE_HISTORY_LIST_PAGE_NAME, pageKey);
+    if (normalDataDAO == null) {
+      // Could not find in database.
+      // It's new product.
+      LOGGER.warn(
+              String.format(
+                      "Could not find %s (%s) in database, please run change_detection_init first. Skip.",
+                      getModuleType(), pageKey));
+      return;
     }
 
-    @Override
-    public abstract String getModuleType();
+    List<PurchaseHistory> dbPurchaseHistoryList = PurchaseHistory.fromJsonToList(normalDataDAO.getNormalData());
 
-    /**
-     * Implementation of check method
-     */
-    @Override
-    public void check(List<String> sites) throws IOException {
-        LOGGER.debug("[check]");
-        this.processMonitorTarget();
+    List<PurchaseHistoryCheckResultDetail> results =
+            CheckUtils.checkPurchaseHistoryList(checkItemsCheckPage, dbPurchaseHistoryList, purchaseHistoryList);
+
+    boolean passed = results.stream().allMatch(r -> r.isOk());
+
+    this.saveCheckResult(passed, PurchaseHistoryCheckResultDetail.toArrayJson(results), Consts.PURCHASE_HISTORY_LIST_PAGE_NAME, null);
+
+    Notification notification = new Notification(getModuleType(), Consts.PURCHASE_HISTORY_LIST_PAGE_NAME, pageKey);
+    notification.setHtmlPaths(crawlerResult.getHtmlPathList());
+    notification.setDetectionTime(new Date());
+    webpageService.save("notification", getModuleType(), notification.toString());
+  }
+
+  /**
+   * Process product info crawler result
+   * @param crawlerResult the crawler result
+   */
+  protected void processProductInfo(AbstractProductCrawlerResult crawlerResult) {
+    ProductInfo productInfo = crawlerResult.getProductInfo();
+
+    CheckItemsDefinitionProperty.CheckItemsCheckSite checkSiteDefinition = checkItemsDefinitionProperty.getCheckSiteDefinition(getModuleType());
+    CheckItemsDefinitionProperty.CheckItemsCheckPage checkItemsCheckPage = checkSiteDefinition.getCheckPageDefinition(Consts.PRODUCT_DETAIL_PAGE_NAME);
+    NormalDataDAO normalDataDAO = normalDataRepository.findFirstByEcSiteAndPageAndPageKey(getModuleType(), Consts.PRODUCT_DETAIL_PAGE_NAME, productInfo.getCode());
+
+    if (normalDataDAO == null) {
+      // Could not find in database.
+      // It's new product.
+      LOGGER.warn(
+              String.format(
+                      "Could not find %s: %s in database, please run change_detection_init first. Skip.",
+                      getModuleType(), productInfo.getCode()));
+      return;
     }
 
-    /**
-     * Process purchase history crawler result
-     *
-     * @param crawlerResult the crawler result
-     * @param pageKey       the page key
-     */
-    protected void processPurchaseHistory(AbstractPurchaseHistoryCrawlerResult crawlerResult, String pageKey) {
-        List<PurchaseHistory> purchaseHistoryList = crawlerResult.getPurchaseHistoryList();
+    ProductInfo dbProductInfo = ProductInfo.fromJson(normalDataDAO.getNormalData());
+    ProductCheckResultDetail result = CheckUtils.checkProductInfo(checkItemsCheckPage, dbProductInfo, productInfo);
+    this.saveCheckResult(result.isOk(), result.toJson(), Consts.PRODUCT_DETAIL_PAGE_NAME, productInfo.getCode());
 
-        CheckItemsDefinitionProperty.CheckItemsCheckSite checkSiteDefinition = checkItemsDefinitionProperty.getCheckSiteDefinition(getModuleType());
-        CheckItemsDefinitionProperty.CheckItemsCheckPage checkItemsCheckPage = checkSiteDefinition.getCheckPageDefinition(Consts.PURCHASE_HISTORY_LIST_PAGE_NAME);
+    Notification notification = new Notification(getModuleType(), Consts.PRODUCT_DETAIL_PAGE_NAME, productInfo.getCode());
+    notification.addHtmlPath(crawlerResult.getHtmlPath());
+    notification.setDetectionTime(new Date());
+    webpageService.save("notification", getModuleType(), notification.toString());
+  };
 
-        NormalDataDAO normalDataDAO = normalDataRepository.findFirstByEcSiteAndPageAndPageKey(getModuleType(), Consts.PURCHASE_HISTORY_LIST_PAGE_NAME, pageKey);
-        if (normalDataDAO == null) {
-            // Could not find in database.
-            // It's new product.
-            LOGGER.warn(
-                    String.format(
-                            "Could not find %s (%s) in database, please run change_detection_init first. Skip.",
-                            getModuleType(), pageKey));
-            return;
-        }
-
-        List<PurchaseHistory> dbPurchaseHistoryList = PurchaseHistory.fromJsonToList(normalDataDAO.getNormalData());
-
-        List<PurchaseHistoryCheckResultDetail> results =
-                CheckUtils.checkPurchaseHistoryList(checkItemsCheckPage, dbPurchaseHistoryList, purchaseHistoryList);
-
-        boolean passed = results.stream().allMatch(r -> r.isOk());
-
-        this.saveCheckResult(passed, PurchaseHistoryCheckResultDetail.toArrayJson(results), Consts.PURCHASE_HISTORY_LIST_PAGE_NAME, null);
-
-        Notification notification = new Notification(getModuleType(), Consts.PURCHASE_HISTORY_LIST_PAGE_NAME, pageKey);
-        notification.setHtmlPaths(crawlerResult.getHtmlPathList());
-        notification.setDetectionTime(new Date());
-        webpageService.save("notification", getModuleType(), notification.toString());
+  /**
+   * Save check result in database
+   * @param passed true if result is passed
+   * @param checkResultDetail check result detail as string
+   * @param page the page name
+   * @param pageKey the page key
+   */
+  private void saveCheckResult(boolean passed, String checkResultDetail, String page, String pageKey) {
+    CheckResultDAO dao = checkResultRepository.findFirstByEcSiteAndPageAndPageKey(getModuleType(), page, pageKey);
+    if (dao == null) {
+      dao = new CheckResultDAO();
     }
 
-    /**
-     * Process product info crawler result
-     *
-     * @param crawlerResult the crawler result
-     */
-    protected void processProductInfo(AbstractProductCrawlerResult crawlerResult) {
-        ProductInfo productInfo = crawlerResult.getProductInfo();
-
-        CheckItemsDefinitionProperty.CheckItemsCheckSite checkSiteDefinition = checkItemsDefinitionProperty.getCheckSiteDefinition(getModuleType());
-        CheckItemsDefinitionProperty.CheckItemsCheckPage checkItemsCheckPage = checkSiteDefinition.getCheckPageDefinition(Consts.PRODUCT_DETAIL_PAGE_NAME);
-        NormalDataDAO normalDataDAO = normalDataRepository.findFirstByEcSiteAndPageAndPageKey(getModuleType(), Consts.PRODUCT_DETAIL_PAGE_NAME, productInfo.getCode());
-
-        if (normalDataDAO == null) {
-            // Could not find in database.
-            // It's new product.
-            LOGGER.warn(
-                    String.format(
-                            "Could not find %s: %s in database, please run change_detection_init first. Skip.",
-                            getModuleType(), productInfo.getCode()));
-            return;
-        }
-
-        ProductInfo dbProductInfo = ProductInfo.fromJson(normalDataDAO.getNormalData());
-        ProductCheckResultDetail result = CheckUtils.checkProductInfo(checkItemsCheckPage, dbProductInfo, productInfo);
-        this.saveCheckResult(result.isOk(), result.toJson(), Consts.PRODUCT_DETAIL_PAGE_NAME, productInfo.getCode());
-
-        Notification notification = new Notification(getModuleType(), Consts.PRODUCT_DETAIL_PAGE_NAME, productInfo.getCode());
-        notification.addHtmlPath(crawlerResult.getHtmlPath());
-        notification.setDetectionTime(new Date());
-        webpageService.save("notification", getModuleType(), notification.toString());
-    }
-
-    ;
-
-    /**
-     * Save check result in database
-     *
-     * @param passed            true if result is passed
-     * @param checkResultDetail check result detail as string
-     * @param page              the page name
-     * @param pageKey           the page key
-     */
-    private void saveCheckResult(boolean passed, String checkResultDetail, String page, String pageKey) {
-        CheckResultDAO dao = checkResultRepository.findFirstByEcSiteAndPageAndPageKey(getModuleType(), page, pageKey);
-        if (dao == null) {
-            dao = new CheckResultDAO();
-        }
-
-        dao.setEcSite(getModuleType());
-        dao.setCheckResultDetail(checkResultDetail);
-        dao.setCheckedAt(new Date());
-        dao.setPage(page);
-        dao.setPageKey(pageKey);
-        dao.setTotalCheckStatus(passed ? "OK" : "NG");
-        checkResultRepository.save(dao);
-    }
+    dao.setEcSite(getModuleType());
+    dao.setCheckResultDetail(checkResultDetail);
+    dao.setCheckedAt(new Date());
+    dao.setPage(page);
+    dao.setPageKey(pageKey);
+    dao.setTotalCheckStatus(passed ? "OK" : "NG");
+    checkResultRepository.save(dao);
+  }
 
 }

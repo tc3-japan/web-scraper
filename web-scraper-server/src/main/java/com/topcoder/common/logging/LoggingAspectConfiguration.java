@@ -11,13 +11,13 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 @EnableAspectJAutoProxy
 public class LoggingAspectConfiguration {
 
-    /**
-     * Creates logging aspect bean.
-     *
-     * @return the logging aspect bean
-     */
-    @Bean
-    public LoggingAspect loggingAspect() {
-        return new LoggingAspect();
-    }
+  /**
+   * Creates logging aspect bean.
+   *
+   * @return the logging aspect bean
+   */
+  @Bean
+  public LoggingAspect loggingAspect() {
+    return new LoggingAspect();
+  }
 }

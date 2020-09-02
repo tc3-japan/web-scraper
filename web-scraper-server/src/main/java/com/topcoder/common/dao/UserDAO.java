@@ -23,41 +23,41 @@ import java.util.List;
 @Table(name = "user")
 @Data
 public class UserDAO {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private int id;
 
-    /**
-     * email for contact
-     */
-    @Column(name = "email_for_contact")
-    private String emailForContact;
+  /**
+   * email for contact
+   */
+  @Column(name = "email_for_contact")
+  private String emailForContact;
 
-    /**
-     * total ec status
-     */
-    @Column(name = "total_ec_status")
-    private String totalECStatus;
+  /**
+   * total ec status
+   */
+  @Column(name = "total_ec_status")
+  private String totalECStatus;
 
-    /**
-     * the user id expired time
-     */
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "id_expire_at")
-    private Date idExpireAt;
+  /**
+   * the user id expired time
+   */
+  @Temporal(TemporalType.TIMESTAMP)
+  @Column(name = "id_expire_at")
+  private Date idExpireAt;
 
-    /**
-     * Checked at
-     */
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "update_at")
-    private Date updateAt;
+  /**
+   * Checked at
+   */
+  @Temporal(TemporalType.TIMESTAMP)
+  @Column(name = "update_at")
+  private Date updateAt;
 
-    @ToString.Exclude
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
-    private List<ECSiteAccountDAO> ecSiteAccountDAOS;
+  @ToString.Exclude
+  @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
+  private List<ECSiteAccountDAO> ecSiteAccountDAOS;
 
-    public List<ECSiteAccountDAO> getECSiteAccountDAOS() {
-        return ecSiteAccountDAOS;
-    }
+  public List<ECSiteAccountDAO> getECSiteAccountDAOS() {
+    return ecSiteAccountDAOS;
+  }
 }

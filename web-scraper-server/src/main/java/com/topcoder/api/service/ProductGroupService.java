@@ -28,170 +28,170 @@ import java.util.List;
 @Service
 public class ProductGroupService {
 
-    /**
-     * the product repository
-     */
-    @Autowired
-    ProductRepository productRepository;
+  /**
+   * the product repository
+   */
+  @Autowired
+  ProductRepository productRepository;
 
-    /**
-     * the productGroup Repository
-     */
-    @Autowired
-    ProductGroupRepository productGroupRepository;
+  /**
+   * the productGroup Repository
+   */
+  @Autowired
+  ProductGroupRepository productGroupRepository;
 
 
-    /**
-     * get group by id
-     *
-     * @param groupId the group id
-     * @return the group
-     * @throws EntityNotFoundException if not found
-     */
-    public ProductGroupDAO getProductGroup(Integer groupId) throws EntityNotFoundException {
-        ProductGroupDAO productGroupDAO = productGroupRepository.findOne(groupId);
-        if (productGroupDAO == null) {
-            throw new EntityNotFoundException("Cannot found group where id = " + groupId);
-        }
-        return productGroupDAO;
+  /**
+   * get group by id
+   *
+   * @param groupId the group id
+   * @return the group
+   * @throws EntityNotFoundException if not found
+   */
+  public ProductGroupDAO getProductGroup(Integer groupId) throws EntityNotFoundException {
+    ProductGroupDAO productGroupDAO = productGroupRepository.findOne(groupId);
+    if (productGroupDAO == null) {
+      throw new EntityNotFoundException("Cannot found group where id = " + groupId);
+    }
+    return productGroupDAO;
+  }
+
+
+  /**
+   * search products by filter
+   *
+   * @param request the filter
+   * @return the page content
+   */
+  public Page<ProductDAO> searchProducts(SearchProductRequest request) {
+
+
+    Iterable<ProductGroupDAO> groupDAOS;
+    List<Integer> groupIdList = new LinkedList<>();
+    if (request.getConfirmationStatus() != null) {
+      groupDAOS = productGroupRepository.findByConfirmationStatus(request.getConfirmationStatus());
+    } else {
+      groupDAOS = productGroupRepository.findAll();
+    }
+    groupDAOS.forEach(groupDAO -> groupIdList.add(groupDAO.getId()));
+    Pageable pageable = new PageRequest(request.getPageNo(), request.getPageSize(),
+        Sort.Direction.ASC, "productGroupId");
+    if (request.getSearchKeyword() != null && !request.getSearchKeyword().equals("")) {
+      return productRepository.findProducts(groupIdList, request.getSearchKeyword(), pageable);
+    }
+    return productRepository.findByProductGroupIdIsNullOrProductGroupIdIn(groupIdList, pageable);
+  }
+
+
+  /**
+   * create or update group
+   * first find group by name, if existing, merge into this group, and update it
+   * otherwise, create new group
+   *
+   * @param request the create request entity
+   */
+  public void createOrUpdateGroup(GroupRequest request) {
+
+    ProductGroupDAO productGroupDAO = null;
+    if (       StringUtils.isNotEmpty(request.getModelNo())) {
+      productGroupDAO = productGroupRepository.getByModelNo(request.getModelNo());
+    } else if (StringUtils.isNotEmpty(request.getJanCode()) && productGroupDAO == null) {
+      productGroupDAO = productGroupRepository.getByJanCode(request.getJanCode());
+    } else if (StringUtils.isNotEmpty(request.getProductName()) && productGroupDAO == null) {
+      productGroupDAO = productGroupRepository.getByProductName(request.getProductName());
     }
 
+    if (productGroupDAO == null) {
+      productGroupDAO = new ProductGroupDAO();
+      if (       StringUtils.isNotEmpty(request.getModelNo())) {
+        productGroupDAO.setModelNo(request.getModelNo());
+      } else if (StringUtils.isNotEmpty(request.getJanCode())) {
+        productGroupDAO.setJanCode(request.getJanCode());
+      } else if (StringUtils.isNotEmpty(request.getProductName())) {
+        productGroupDAO.setProductName(request.getProductName());
+      }
+    }
+    productGroupDAO.setGroupingMethod(ProductGroupDAO.GroupingMethod.manual);
+    productGroupDAO.setUpdateAt(Date.from(Instant.now()));
+    productGroupRepository.save(productGroupDAO); //save it
 
-    /**
-     * search products by filter
-     *
-     * @param request the filter
-     * @return the page content
-     */
-    public Page<ProductDAO> searchProducts(SearchProductRequest request) {
-
-
-        Iterable<ProductGroupDAO> groupDAOS;
-        List<Integer> groupIdList = new LinkedList<>();
-        if (request.getConfirmationStatus() != null) {
-            groupDAOS = productGroupRepository.findByConfirmationStatus(request.getConfirmationStatus());
-        } else {
-            groupDAOS = productGroupRepository.findAll();
-        }
-        groupDAOS.forEach(groupDAO -> groupIdList.add(groupDAO.getId()));
-        Pageable pageable = new PageRequest(request.getPageNo(), request.getPageSize(),
-                Sort.Direction.ASC, "productGroupId");
-        if (request.getSearchKeyword() != null && !request.getSearchKeyword().equals("")) {
-            return productRepository.findProducts(groupIdList, request.getSearchKeyword(), pageable);
-        }
-        return productRepository.findByProductGroupIdIsNullOrProductGroupIdIn(groupIdList, pageable);
+    ProductGroupDAO finalProductGroupDAO = productGroupDAO;
+    if (request.getGroupIds() != null && request.getGroupIds().size() > 0) {
+      request.getGroupIds().forEach(groupId -> productRepository.findAllByProductGroupId(groupId).forEach(productDAO -> {
+        productDAO.setProductGroupId(finalProductGroupDAO.getId());
+        productDAO.setGroupStatus(ProductDAO.GroupStatus.grouped);
+        productRepository.save(productDAO);
+      }));
     }
 
-
-    /**
-     * create or update group
-     * first find group by name, if existing, merge into this group, and update it
-     * otherwise, create new group
-     *
-     * @param request the create request entity
-     */
-    public void createOrUpdateGroup(GroupRequest request) {
-
-        ProductGroupDAO productGroupDAO = null;
-        if (StringUtils.isNotEmpty(request.getModelNo())) {
-            productGroupDAO = productGroupRepository.getByModelNo(request.getModelNo());
-        } else if (StringUtils.isNotEmpty(request.getJanCode()) && productGroupDAO == null) {
-            productGroupDAO = productGroupRepository.getByJanCode(request.getJanCode());
-        } else if (StringUtils.isNotEmpty(request.getProductName()) && productGroupDAO == null) {
-            productGroupDAO = productGroupRepository.getByProductName(request.getProductName());
+    if (request.getProductIds() != null && request.getProductIds().size() > 0) {
+      request.getProductIds().forEach(productId -> {
+        ProductDAO productDAO = productRepository.findById(productId);
+        if (productDAO != null) {
+          productDAO.setProductGroupId(finalProductGroupDAO.getId());
+          productDAO.setGroupStatus(ProductDAO.GroupStatus.grouped);
+          productRepository.save(productDAO);
         }
-
-        if (productGroupDAO == null) {
-            productGroupDAO = new ProductGroupDAO();
-            if (StringUtils.isNotEmpty(request.getModelNo())) {
-                productGroupDAO.setModelNo(request.getModelNo());
-            } else if (StringUtils.isNotEmpty(request.getJanCode())) {
-                productGroupDAO.setJanCode(request.getJanCode());
-            } else if (StringUtils.isNotEmpty(request.getProductName())) {
-                productGroupDAO.setProductName(request.getProductName());
-            }
-        }
-        productGroupDAO.setGroupingMethod(ProductGroupDAO.GroupingMethod.manual);
-        productGroupDAO.setUpdateAt(Date.from(Instant.now()));
-        productGroupRepository.save(productGroupDAO); //save it
-
-        ProductGroupDAO finalProductGroupDAO = productGroupDAO;
-        if (request.getGroupIds() != null && request.getGroupIds().size() > 0) {
-            request.getGroupIds().forEach(groupId -> productRepository.findAllByProductGroupId(groupId).forEach(productDAO -> {
-                productDAO.setProductGroupId(finalProductGroupDAO.getId());
-                productDAO.setGroupStatus(ProductDAO.GroupStatus.grouped);
-                productRepository.save(productDAO);
-            }));
-        }
-
-        if (request.getProductIds() != null && request.getProductIds().size() > 0) {
-            request.getProductIds().forEach(productId -> {
-                ProductDAO productDAO = productRepository.findById(productId);
-                if (productDAO != null) {
-                    productDAO.setProductGroupId(finalProductGroupDAO.getId());
-                    productDAO.setGroupStatus(ProductDAO.GroupStatus.grouped);
-                    productRepository.save(productDAO);
-                }
-            });
-        }
+      });
     }
+  }
 
 
-    /**
-     * delete group and set null for products
-     *
-     * @param groupId the group id
-     * @throws EntityNotFoundException if group not exist
-     */
-    public void deleteGroup(Integer groupId) throws EntityNotFoundException {
-        getProductGroup(groupId);
-        List<ProductDAO> productDAOS = productRepository.findAllByProductGroupId(groupId);
-        productDAOS.forEach(productDAO -> {
-            productDAO.setGroupStatus(null);
-            productDAO.setProductGroupId(null);
-            productRepository.save(productDAO);
-        });
-        productGroupRepository.delete(groupId);
+  /**
+   * delete group and set null for products
+   *
+   * @param groupId the group id
+   * @throws EntityNotFoundException if group not exist
+   */
+  public void deleteGroup(Integer groupId) throws EntityNotFoundException {
+    getProductGroup(groupId);
+    List<ProductDAO> productDAOS = productRepository.findAllByProductGroupId(groupId);
+    productDAOS.forEach(productDAO -> {
+      productDAO.setGroupStatus(null);
+      productDAO.setProductGroupId(null);
+      productRepository.save(productDAO);
+    });
+    productGroupRepository.delete(groupId);
+  }
+
+  /**
+   * update group
+   *
+   * @param groupId  the group id
+   * @param groupDAO the group entity
+   * @throws EntityNotFoundException if group not found
+   * @throws BadRequestException     if params error
+   */
+  public void updateGroup(Integer groupId, ProductGroupDAO groupDAO) throws EntityNotFoundException, BadRequestException {
+    ProductGroupDAO dbEntity = getProductGroup(groupId);
+    if (groupDAO.getConfirmationStatus() != null) {
+      dbEntity.setConfirmationStatus(groupDAO.getConfirmationStatus());
     }
-
-    /**
-     * update group
-     *
-     * @param groupId  the group id
-     * @param groupDAO the group entity
-     * @throws EntityNotFoundException if group not found
-     * @throws BadRequestException     if params error
-     */
-    public void updateGroup(Integer groupId, ProductGroupDAO groupDAO) throws EntityNotFoundException, BadRequestException {
-        ProductGroupDAO dbEntity = getProductGroup(groupId);
-        if (groupDAO.getConfirmationStatus() != null) {
-            dbEntity.setConfirmationStatus(groupDAO.getConfirmationStatus());
-        }
-        if (groupDAO.getModelNo() != null && !groupDAO.getModelNo().equals(dbEntity.getModelNo())) {
-            if (productGroupRepository.getByModelNo(groupDAO.getModelNo()) != null) {
-                throw new BadRequestException("Model No " + groupDAO.getModelNo() + " already exist");
-            }
-            dbEntity.setModelNo(groupDAO.getModelNo());
-        }
-        if (groupDAO.getJanCode() != null && !groupDAO.getJanCode().equals(dbEntity.getJanCode())) {
-            if (productGroupRepository.getByJanCode(groupDAO.getJanCode()) != null) {
-                throw new BadRequestException("JAN Code " + groupDAO.getJanCode() + " already exist");
-            }
-            dbEntity.setJanCode(groupDAO.getJanCode());
-        }
-        dbEntity.setUpdateAt(Date.from(Instant.now()));
-        productGroupRepository.save(dbEntity);
+    if (groupDAO.getModelNo() != null && !groupDAO.getModelNo().equals(dbEntity.getModelNo())) {
+      if (productGroupRepository.getByModelNo(groupDAO.getModelNo()) != null) {
+        throw new BadRequestException("Model No " + groupDAO.getModelNo() + " already exist");
+      }
+      dbEntity.setModelNo(groupDAO.getModelNo());
     }
-
-    /**
-     * get all groups
-     *
-     * @return the groups
-     */
-    public List<ProductGroupDAO> getAllGroups() {
-        List<ProductGroupDAO> productGroupDAOS = new LinkedList<>();
-        productGroupRepository.findAll().forEach(productGroupDAOS::add);
-        return productGroupDAOS;
+    if (groupDAO.getJanCode() != null && !groupDAO.getJanCode().equals(dbEntity.getJanCode())) {
+      if (productGroupRepository.getByJanCode(groupDAO.getJanCode()) != null) {
+        throw new BadRequestException("JAN Code " + groupDAO.getJanCode() + " already exist");
+      }
+      dbEntity.setJanCode(groupDAO.getJanCode());
     }
+    dbEntity.setUpdateAt(Date.from(Instant.now()));
+    productGroupRepository.save(dbEntity);
+  }
+
+  /**
+   * get all groups
+   *
+   * @return the groups
+   */
+  public List<ProductGroupDAO> getAllGroups() {
+    List<ProductGroupDAO> productGroupDAOS = new LinkedList<>();
+    productGroupRepository.findAll().forEach(productGroupDAOS::add);
+    return productGroupDAOS;
+  }
 
 }

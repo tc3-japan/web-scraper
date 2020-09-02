@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface NormalDataRepository extends CrudRepository<NormalDataDAO, Integer> {
 
-    NormalDataDAO findFirstByEcSiteAndPageAndPageKey(String site, String page, String pageKey);
+  NormalDataDAO findFirstByEcSiteAndPageAndPageKey(String site, String page, String pageKey);
 }

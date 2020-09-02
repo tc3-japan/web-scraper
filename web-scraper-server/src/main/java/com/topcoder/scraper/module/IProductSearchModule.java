@@ -8,8 +8,8 @@ import com.topcoder.common.dao.ProductDAO;
  * abstract product search module
  */
 public interface IProductSearchModule extends IBasicModule {
-    /**
-     * search product for cross ec product
-     */
-    ProductDAO searchProductInfo(String siteName, String searchKey) throws IOException;
+  /**
+   * search product for cross ec product
+   */
+  ProductDAO searchProductInfo(String siteName, String searchKey) throws IOException;
 }

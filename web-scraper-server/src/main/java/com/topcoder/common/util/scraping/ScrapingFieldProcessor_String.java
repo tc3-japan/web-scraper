@@ -8,23 +8,23 @@ import java.util.regex.Pattern;
 
 public class ScrapingFieldProcessor_String extends ScrapingFieldProcessor<String> {
 
-    private Pattern regexPattern = null;
+  private Pattern regexPattern = null;
 
-    public ScrapingFieldProcessor_String(DomNode domNode, ScrapingFieldProperty scrapingFieldProperty) {
-        super(domNode, scrapingFieldProperty);
+  public ScrapingFieldProcessor_String(DomNode domNode, ScrapingFieldProperty scrapingFieldProperty) {
+    super(domNode, scrapingFieldProperty);
+  }
+
+  @Override
+  public String process() {
+    String value = this.domNode.querySelector(this.scrapingFieldProperty.selector).getTextContent();
+
+    if (StringUtils.isNotEmpty(scrapingFieldProperty.extractRegex)) {
+      if (regexPattern == null) {
+        this.regexPattern = Pattern.compile(scrapingFieldProperty.extractRegex);
+      }
+      value = HtmlUtils.extract(value, this.regexPattern);
     }
 
-    @Override
-    public String process() {
-        String value = this.domNode.querySelector(this.scrapingFieldProperty.selector).getTextContent();
-
-        if (StringUtils.isNotEmpty(scrapingFieldProperty.extractRegex)) {
-            if (regexPattern == null) {
-                this.regexPattern = Pattern.compile(scrapingFieldProperty.extractRegex);
-            }
-            value = HtmlUtils.extract(value, this.regexPattern);
-        }
-
-        return value;
-    }
+    return value;
+  }
 }

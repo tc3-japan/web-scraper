@@ -27,6 +27,7 @@ spec:
       containers:
       - image: tc3jp/scraper-web:dev1.0
         name: scraper-web
+        imagePullPolicy: Always
         ports:
         - containerPort: 80
         resources: {}

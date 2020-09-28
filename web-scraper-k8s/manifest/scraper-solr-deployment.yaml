@@ -27,6 +27,7 @@ spec:
       containers:
       - image: tc3jp/scraper-solr:dev1.0
         name: scraper-solr
+        imagePullPolicy: Always
         ports:
         - containerPort: 8983
         resources: {}

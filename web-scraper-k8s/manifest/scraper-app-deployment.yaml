@@ -28,12 +28,13 @@ spec:
       - args:
         - bash
         - -c
-        - sleep 10; cd /root/scraper/; java -jar web-scraper-server-*.jar --rest --spring.config.location=file:application.yaml
+        - sleep 10; cd /root/scraper/; java -jar web-scraper-server-*.jar --rest --spring.config.location=file:application.yaml > logs/app.log
         env:
         - name: SCRAPER_DB_PORT_3306_TCP_ADDR
           value: scraper-db
         image: tc3jp/scraper-app:dev1.0
         name: scraper-app
+        imagePullPolicy: Always
         ports:
         - containerPort: 8085
         resources: {}

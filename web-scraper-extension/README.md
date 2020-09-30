@@ -60,7 +60,7 @@ give zip file to anyone and do as:
 
 ### Validation
 
-open amazone history page, launch the devtools, you should see a new tab called 'Scrapper Helper', click it the tab switch this tool, current json file from heroku is write by hand, so there are some different with this tool, please clear it before test
+open e-commerce history page, launch the devtools, you should see a new tab called 'Scrapper Helper', click it the tab switch this tool, current json file from heroku is write by hand, so there are some different with this tool, please clear it before test
 
 - select site and type, then click load to load json
   - click current url to set current page url

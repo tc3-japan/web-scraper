@@ -84,7 +84,7 @@ The `proxy_server` must be a vaild value, other values can be default value
 
 #### To specify site, specify `site` argument
 
-`./gradlew bootRun -Pargs=--batch=purchase_history,--site=amazon`
+`./gradlew bootRun -Pargs=--batch=purchase_history,--site=<EC-Name>`
 
 If no `site` is specified, all sites will be run
 
@@ -124,7 +124,7 @@ You can do below features using scraper supporting features like follows.
 
 To specify site, specify site argument
 
-- `java -jar build/libs/web-scraper-server-0.0.1.jar --batch=purchase_history --site=amazon`, If no site is specified, all sites will be run (currently only amazon is implemented)
+- `java -jar build/libs/web-scraper-server-0.0.1.jar --batch=purchase_history --site=<EC-Name>`, If no site is specified, all sites will be run
 - or use `java -jar build/libs/web-scraper-server-0.0.1.jar --rest` to run rest api server, default port is 8085
 
 ## Import test data
@@ -137,19 +137,19 @@ import *./docs/test-data.sql* into mysql database (web_scraper database)
 
 ### File based purchase history 
 
-- change configure, updating amazon username and password either in configuration file, or through environment
+- change configure, updating EC sites username and password either in configuration file, or through environment
   variables, or through other way
 - run though gradle, or jar file
-- check `./logs/amazon` folder, `login-*.html` are initial pages after login and `history-*.json` are purchase histories.
+- check `./logs/<EC-Name>` folder, `login-*.html` are initial pages after login and `history-*.json` are purchase histories.
 - to verify incremental save, edit history json file, remove one order. Then rerun application, there should be a new json file containing removed order. 
 
 ### Mysql purchase history
 
-- change configure, updating mysql connect information, updating amazon username and password
+- change configure, updating mysql connect information, updating EC sites username and password
     changes could be made either in configuration file, or through environment
 	variables, or through other way
 - run though gradle, or jar file
-- check `./logs/amazon` folder, `login-*.html` are initial pages after login and `purchase-history-*.json` are purchase histories pages.
+- check `./logs/<EC-Name>` folder, `login-*.html` are initial pages after login and `purchase-history-*.json` are purchase histories pages.
 - to verify incremental save, delete last record in mysql. Then rerun application, there should be one new row containing removed order. 
 
 To connect to mysql in docker, please specify host as `0.0.0.0`, see below:

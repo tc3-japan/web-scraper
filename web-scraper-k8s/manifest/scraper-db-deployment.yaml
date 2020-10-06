@@ -46,9 +46,9 @@ spec:
         ports:
         - containerPort: 3306
         resources: {}
-        volumeMounts:
-        - mountPath: /etc/mysql/conf.d
-          name: scraper-db-claim0
+#        volumeMounts:
+#        - mountPath: /etc/mysql/conf.d
+#          name: scraper-db-claim0
 #        - mountPath: /root/mysql/initdb.d
 #          name: scraper-db-claim1
 #        - mountPath: /root/mysql/jobs.d
@@ -61,10 +61,10 @@ spec:
 #          name: scraper-db-claim5
       restartPolicy: Always
       serviceAccountName: ""
-      volumes:
-      - name: scraper-db-claim0
-        hostPath:
-          path: /etc/mysql/conf.d
+#      volumes:
+#      - name: scraper-db-claim0
+#        hostPath:
+#          path: /etc/mysql/conf.d
 #      - name: scraper-db-claim1
 #        hostPath:
 #          path: /etc/mysql/initdb.d

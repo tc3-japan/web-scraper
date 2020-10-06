@@ -175,7 +175,7 @@ public class CheckUtils {
             }
         }
         String productQuantityCheckResult = CheckUtils.check(checkItemsCheckPage.getCheckItems().getProducts().getProductQuantity(), String.valueOf(dbProductInfo.getQuantity()), String.valueOf(productInfo.getQuantity()));
-        if ((productInfo.getQuantity() != 0 || dbProductInfo.getQuantity() != 0) && productQuantityCheckResult != null) {
+        if ((getPrimitive(productInfo.getQuantity()) > 0 || getPrimitive(dbProductInfo.getQuantity()) > 0) && productQuantityCheckResult != null) {
             result.setQuantity(productQuantityCheckResult);
             if (!productQuantityCheckResult.equals(Consts.CHECK_RESULT_OK)) {
                 result.setOk(false);
@@ -210,4 +210,11 @@ public class CheckUtils {
 
         return result;
     }
+
+    public static int getPrimitive(Integer val, int defaltValue) {
+        if (val == null) return defaltValue;
+        return val.intValue();
+    }
+    public static int getPrimitive(Integer val) { return getPrimitive(val, -1); }
+
 }

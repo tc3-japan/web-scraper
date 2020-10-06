@@ -267,17 +267,15 @@ insert into web_scraper.user (id,email_for_contact,total_ec_status,id_expire_at,
  (1,'email@gmail.com','status','2020-10-10 12:00:00','2019-10-14 12:00:00');
 insert into web_scraper.ec_site_account (id, ec_site, ec_use_flag, user_id, update_at) values
  (1, 'amazon',  0, 1,'2019-03-08 12:00:00')
-,(3, 'kojima',  0, 1,'2019-03-08 12:00:00')
-,(5, 'yahoo',   0, 1,'2019-03-08 12:00:00')
-,(7, 'rakuten', 0, 1,'2019-03-08 12:00:00');
+,(3, 'yahoo',   0, 1,'2019-03-08 12:00:00')
+,(5, 'rakuten', 0, 1,'2019-03-08 12:00:00');
 
 insert into web_scraper.user (id,email_for_contact,total_ec_status,id_expire_at,update_at) values
  (2,'email2@gmail.com','status','2020-10-10 12:00:00','2019-10-14 12:00:00');
 insert into web_scraper.ec_site_account (id, ec_site, ec_use_flag, user_id, update_at) values
  (2, 'amazon',  0, 2,'2019-03-08 12:00:00')
-,(4, 'kojima',  0, 2,'2019-03-08 12:00:00')
-,(6, 'yahoo',   0, 2,'2019-03-08 12:00:00')
-,(8, 'rakuten', 0, 2,'2019-03-08 12:00:00');
+,(4, 'yahoo',   0, 2,'2019-03-08 12:00:00')
+,(6, 'rakuten', 0, 2,'2019-03-08 12:00:00');
 
 insert into web_scraper.configuration (id,site,type,config) values
  (1,'amazon','purchase_history',@amazon_purchase_history_script)

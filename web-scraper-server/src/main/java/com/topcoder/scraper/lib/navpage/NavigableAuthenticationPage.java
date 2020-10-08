@@ -22,12 +22,16 @@ public class NavigableAuthenticationPage extends NavigablePage {
         loggedIn = false;
     }
 
-    public boolean confirmLoginByElementExists(String selector) {
-        // If we see the yahoo image, consider ourselves logged in
+    public boolean confirmLoginByElementExists(String... selectors) {
 
-        HtmlElement yahooImg = getPage().querySelector(selector);
+        HtmlElement img = null;
+        for (String selector: selectors) {
+            img = getPage().querySelector(selector);
+            if (img != null) break;
+        }
+
         boolean loginSuccess;
-        if (yahooImg != null) {
+        if (img != null) {
             LOGGER.info("Logged in successfully");
             loginSuccess = true;
         } else {

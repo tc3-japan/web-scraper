@@ -1,0 +1,82 @@
+version: '3'
+services:
+
+  scraper-web:
+    image: scraper-web:latest
+    build: ./nginx
+    container_name: "scraper-web"
+    ports:
+      - 8080:80
+    links:
+      - scraper-app
+    networks:
+      scraper_net:
+        ipv4_address: 10.1.1.1
+    volumes:
+      - ./nginx/libs:/usr/share/nginx/html
+
+  scraper-app:
+    image: scraper-app:latest
+    build: ./scraper
+    container_name: "scraper-app"
+    ports:
+      - 8085:8085
+    links:
+      - scraper-db
+    depends_on:
+      - scraper-db
+    networks:
+      scraper_net:
+        ipv4_address: 10.1.1.2
+    environment:
+      SCRAPER_DB_PORT_3306_TCP_ADDR: 10.1.1.3
+    volumes:
+      - ./local-data/scraper/logs:/root/scraper/logs
+    command: bash -c "sleep 10; cd /root/scraper/; java -jar web-scraper-server-*.jar --rest --spring.config.location=file:application.yaml"
+    #tty: true
+
+  scraper-db:
+    build: ./mysql
+    image: scraper-db:latest
+    container_name: "scraper-db"
+    ports:
+      - 3306:3306
+    networks:
+      scraper_net:
+        ipv4_address: 10.1.1.3
+    environment:
+      MYSQL_ROOT_PASSWORD: mypassword
+      MYSQL_DATABASE: web_scraper
+#      MYSQL_USER: root
+      MYSQL_PASSWORD: mypassword
+    volumes:
+#      - "./mysql/conf.d:/etc/mysql/conf.d"
+#      - "./mysql/initdb.d:/root/mysql/initdb.d"
+#      - "./mysql/jobs.d:/root/mysql/jobs.d"
+      - "./local-data/mysql/data:/var/lib/mysql"
+      - "./local-data/mysql/logs:/var/log/mysql"
+      - "./local-data/mysql/backup:/root/mysql/backup"
+
+  scraper-solr:
+    image: scraper-solr:latest
+    container_name: "scraper-solr"
+    build:
+      context: ./solr/
+    ports:
+      - 9983:8983
+    networks:
+      scraper_net:
+        ipv4_address: 10.1.1.4
+    volumes:
+      - search-store:/var/solr/data
+
+networks:
+  scraper_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.1.0.0/16
+
+volumes:
+  search-store:
+    driver: local

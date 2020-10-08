@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: scraper-group-products-job
+spec:
+  template:
+    metadata:
+      labels:
+        app: scraper-group-products-job
+    spec:
+      restartPolicy: Never
+      containers:
+      - args:
+        - bash
+        - -c
+        - sleep 10; cd /root/scraper/; java -jar web-scraper-server-*.jar --batch=group_products --spring.config.location=file:application.yaml > logs_group_products.log
+        env:
+        - name: SCRAPER_DB_PORT_3306_TCP_ADDR
+          value: scraper-db
+        - name: SCRAPER_SOLR_PORT_9983_TCP_ADDR
+          value: scraper-solr
+        image: tc3jp/scraper-app:dev1.0
+        name: scraper-group-products-job

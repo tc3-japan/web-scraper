@@ -51,9 +51,7 @@ public class GeneralProductDetailModule implements IProductDetailModule {
     public void fetchProductDetailList(List<String> sites) {
         LOGGER.debug("[fetchProductDetailList] in");
         LOGGER.debug("[fetchProductDetailList] sites:" + sites);
-        this.webClient = new TrafficWebClient(0, false);
         for (String site : sites) {
-            this.crawler = new GeneralProductDetailCrawler(site, "product", this.webpageService, this.configurationRepository);
             List<ProductDAO> products = this.productService.getAllFetchInfoStatusIsNull(site);
             products.forEach(product -> {
                 try {
@@ -64,7 +62,6 @@ public class GeneralProductDetailModule implements IProductDetailModule {
                 }
             });
         }
-        this.webClient.finishTraffic();
     }
 
     private void processProductDetail(String site, int productId, String productCode) throws IOException {
@@ -87,7 +84,11 @@ public class GeneralProductDetailModule implements IProductDetailModule {
     }
 
     public GeneralProductDetailCrawlerResult fetchProductDetail(String site, String productCode) throws IOException {
-        return this.crawler.fetchProductInfo(webClient, productCode);
+        this.webClient = new TrafficWebClient(0, false);
+        this.crawler = new GeneralProductDetailCrawler(site, "product", this.webpageService, this.configurationRepository);
+        GeneralProductDetailCrawlerResult result = this.crawler.fetchProductInfo(webClient, productCode);
+        this.webClient.finishTraffic();
+        return result;
     }
 
 }

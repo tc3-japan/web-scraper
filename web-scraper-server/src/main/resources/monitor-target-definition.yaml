@@ -10,18 +10,18 @@ check-sites:
         check_target_keys:
           - B002C4KL88
           - B006GQYSC8
-  - ec-site: kojima
-    check-pages:
-      - page_name: purchase_history_list
-        # id of ec_site_account table
-        check_target_keys:
-          # TODO: set
-          - 1
-      - page_name: product_detail
-        # product code of product table
-        check_target_keys:
-          # TODO: set
-          - 4041134
+#  - ec-site: kojima
+#    check-pages:
+#      - page_name: purchase_history_list
+#        # id of ec_site_account table
+#        check_target_keys:
+#          # TODO: set
+#          - 1
+#      - page_name: product_detail
+#        # product code of product table
+#        check_target_keys:
+#          # TODO: set
+#          - 4041134
   - ec-site: yahoo
     check-pages:
       - page_name: purchase_history_list

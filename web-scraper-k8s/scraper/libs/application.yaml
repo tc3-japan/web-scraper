@@ -1,0 +1,22 @@
+logging:
+  level:
+    com.topcoder.api: debug
+    org.apache.http: off
+    com.gargoylesoftware: off
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  datasource:
+    url: "jdbc:mysql://${SCRAPER_DB_PORT_3306_TCP_ADDR}:3306/web_scraper"
+    username: root
+    password: mypassword
+
+server:
+  servlet-path: /api/v1
+  port: 8085
+
+solr:
+  uri: http://${SCRAPER_SOLR_PORT_9983_TCP_ADDR}:9983/solr/ecsite_products
+  load_batch_size: 100

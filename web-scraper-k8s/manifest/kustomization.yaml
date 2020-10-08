@@ -7,3 +7,4 @@ resources:
   - scraper-app-service.yaml
   - scraper-web-deployment.yaml
   - scraper-web-service.yaml
+  - scraper-change-detection-check-cronjob.yaml

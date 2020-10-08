@@ -32,6 +32,8 @@ spec:
         env:
         - name: SCRAPER_DB_PORT_3306_TCP_ADDR
           value: scraper-db
+        - name: SCRAPER_SOLR_PORT_9983_TCP_ADDR
+          value: scraper-solr
         image: tc3jp/scraper-app:dev1.0
         name: scraper-app
         imagePullPolicy: Always

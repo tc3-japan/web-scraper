@@ -24,8 +24,6 @@ Following can be configured in Kubernetes objects yaml for your environment.
 		* /root/mysql/backup : contains backup data files
 	- scraper-solr-deployment.yaml
 		* /var/solr/data :  contains data files
-	- scraper-solr-deployment.yaml
-		* /var/solr/data :  contains data files
 
 ## Create / Update Resources
 

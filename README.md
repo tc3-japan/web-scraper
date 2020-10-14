@@ -15,8 +15,8 @@ The app configuration can be changed in `./src/main/resources/application.yaml`
 
 The following variables need to be configured correctly:
 
-- `amazon.username` the username for amazon
-- `amazon.password` the password for amazon
+- `<EC-Name>.username` the username for &lt;EC-Name&gt;
+- `<EC-Name>.password` the password for &lt;EC-Name&gt;
 
 - `spring.datasource.url` mysql url
 - `spring.datasource.username` mysql username
@@ -26,8 +26,8 @@ The following variables need to be configured correctly:
 
 Values could be configured by environment variables also:
 
-- `AMAZON_USERNAME`
-- `AMAZON_PASSWORD`
+- `<EC-Name>_USERNAME`
+- `<EC-Name>_PASSWORD`
 
 ### arguments
 
@@ -35,7 +35,7 @@ Values could be configured by providing arguments:
 
 For example
 
-`java -Damazon.username=helloworld -jar build/libs/web-scraper-0.0.1.jar`
+`java -D<EC-Name>.username=helloworld -jar build/libs/web-scraper-0.0.1.jar`
 
 ### property file
 
@@ -57,9 +57,9 @@ In a new terminal, run
 
 To specify site, specify site argument
 
-`./gradlew bootRun -Drun.arguments=--site=amazon`
+`./gradlew bootRun -Drun.arguments=--site=<EC-Name>`
 
-If no site is specified, all sites will be run (currently only amazon is implemented)
+If no site is specified, all sites will be run (currently only &lt;EC-Name&gt; is implemented)
 
 ## Local run from jar
 
@@ -68,28 +68,28 @@ If no site is specified, all sites will be run (currently only amazon is impleme
 
 To specify site, specify site argument
 
-- `java -jar build/libs/web-scraper-0.0.1.jar --site=amazon`
+- `java -jar build/libs/web-scraper-0.0.1.jar --site=<EC-Name>`
 
-If no site is specified, all sites will be run (currently only amazon is implemented)
+If no site is specified, all sites will be run (currently only &lt;EC-Name&gt; is implemented)
 
 
 ## Verification
 
 ### File based purchase history 
 
-- change configure, updating amazon username and password either in configuration file, or through environment
+- change configure, updating &lt;EC-Name&gt; username and password either in configuration file, or through environment
 	variables, or through other way
 - run though gradle, or jar file
-- check `./amazon` folder, `login-*.html` are initial pages after login and `history-*.json` are purchase histories.
+- check `./<EC-Name>` folder, `login-*.html` are initial pages after login and `history-*.json` are purchase histories.
 - to verify incremental save, edit history json file, remove one order. Then rerun application, there should be a new json file containing removed order. 
 
 ### Mysql purchase history
 
-- change configure, updating mysql connect information, updating amazon username and password
+- change configure, updating mysql connect information, updating &lt;EC-Name&gt; username and password
     changes could be made either in configuration file, or through environment
 	variables, or through other way
 - run though gradle, or jar file
-- check `./amazon` folder, `login-*.html` are initial pages after login and `purchase-history-*.json` are purchase histories pages.
+- check `./<EC-Name>` folder, `login-*.html` are initial pages after login and `purchase-history-*.json` are purchase histories pages.
 - to verify incremental save, delete last record in mysql. Then rerun application, there should be one new row containing removed order. 
 
 To connect to mysql in docker, please specify host as `0.0.0.0`, see below:

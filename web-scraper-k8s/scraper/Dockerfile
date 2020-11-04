@@ -1,15 +1,6 @@
-FROM openjdk:8-jdk-slim
+FROM centos:8
 
-MAINTAINER tc3.co.jp
-
-RUN apt-get update && apt-get install -y \
-    binutils \
-    iputils-ping
-
-RUN apt update && apt install -y \
-    procps \
-    iproute2 \
-    vim
+RUN yum update -y && yum install -y java-1.8.0-openjdk java-1.8.0-openjdk-devel
 
 RUN mkdir /root/scraper
 

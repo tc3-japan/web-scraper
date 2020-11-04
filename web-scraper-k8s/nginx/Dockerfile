@@ -1,12 +1,9 @@
-FROM  nginx:latest
+FROM centos:8
 
-RUN apt-get update && apt-get install -y \
-    binutils \
-    iputils-ping
-
-RUN apt update && apt install -y \
-    procps \
-    iproute2 \
-    vim
+RUN yum update -y && yum install -y nginx
 
 ADD ./libs /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

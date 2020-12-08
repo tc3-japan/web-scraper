@@ -35,9 +35,9 @@ public class ChangeDetectionCheckCommand extends AbstractCommand<IChangeDetectio
     protected void process(IChangeDetectionCheckModule module) {
         try {
             if (this.sites == null || this.sites.size() == 0) {
-                module.check(Consts.ALL_SITES);
+                module.check(Consts.ALL_SITES, this.target);
             } else {
-                module.check(this.sites);
+                module.check(this.sites, this.target);
             }
         } catch (IOException e) {
             LOGGER.error("Fail to check change detection", e);

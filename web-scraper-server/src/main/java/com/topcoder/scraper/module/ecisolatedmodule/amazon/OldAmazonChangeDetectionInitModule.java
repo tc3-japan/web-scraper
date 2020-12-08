@@ -59,7 +59,7 @@ public class OldAmazonChangeDetectionInitModule implements IChangeDetectionInitM
      * Implementation of init method
      */
     @Override
-    public void init(List<String> sites) throws IOException {
+    public void init(List<String> sites, String target) throws IOException {
         for (MonitorTargetDefinitionProperty.MonitorTargetCheckSite monitorTargetCheckSite : monitorTargetDefinitionProperty.getCheckSites()) {
             if (!this.getModuleType().equalsIgnoreCase(monitorTargetCheckSite.getEcSite())) {
                 continue;

@@ -64,9 +64,9 @@ public class GeneralChangeDetectionCheckModule extends GeneralChangeDetectionCom
      * Implementation of check method
      */
     @Override
-    public void check(List<String> sites) throws IOException {
+    public void check(List<String> sites, String target) throws IOException {
         LOGGER.debug("[check]");
-        this.processMonitorTarget(sites);
+        this.processMonitorTarget(sites, target);
     }
 
     /**

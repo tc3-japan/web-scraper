@@ -53,4 +53,8 @@ public class Consts {
     public static final String CHECK_RESULT_NOT_EXIST = "NOT-EXIST";
     public static final String CHECK_RESULT_NOT_EQUAL = "NOT-EQUAL";
     public static final String CHECK_RESULT_BLANK = "<BLANK>";
+
+    public static final String TARGET_ALL = "target_all";
+    public static final String TARGET_PURCHASE_HISTORY = "purchase_history";
+    public static final String TARGET_PRODUCT = "product";
 }

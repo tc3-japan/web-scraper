@@ -35,9 +35,9 @@ public class ChangeDetectionInitCommand extends AbstractCommand<IChangeDetection
     protected void process(IChangeDetectionInitModule module) {
         try {
             if (this.sites == null || this.sites.size() == 0) {
-                module.init(Consts.ALL_SITES);
+                module.init(Consts.ALL_SITES, this.target);
             } else {
-                module.init(this.sites);
+                module.init(this.sites, this.target);
             }
         } catch (IOException e) {
             LOGGER.error("Fail to init check detection", e);

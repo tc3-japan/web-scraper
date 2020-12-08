@@ -68,7 +68,7 @@ public class OldAmazonChangeDetectionCheckModule implements IChangeDetectionChec
      * Implementation of check method
      */
     @Override
-    public void check(List<String> sites) throws IOException {
+    public void check(List<String> sites, String target) throws IOException {
         for (MonitorTargetDefinitionProperty.MonitorTargetCheckSite checkSite : monitorTargetDefinitionProperty.getCheckSites()) {
             if (!this.getModuleType().equalsIgnoreCase(checkSite.getEcSite())) {
                 continue;

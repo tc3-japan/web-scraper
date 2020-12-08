@@ -54,10 +54,6 @@ public abstract class GeneralChangeDetectionCommonModule implements IBasicModule
     /**
      * Implementation of check method
      */
-    protected void processMonitorTarget(List<String> sites) throws IOException {
-        this.processMonitorTarget(sites, Consts.TARGET_ALL);
-    }
-
     protected void processMonitorTarget(List<String> sites, String target) throws IOException {
         LOGGER.debug("[processMonitorTarget] in");
         for (MonitorTargetDefinitionProperty.MonitorTargetCheckSite checkSite : monitorTargetDefinitionProperty.getCheckSites()) {

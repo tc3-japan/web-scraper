@@ -27,7 +27,7 @@ SET
   "url": "https://www.amazon.co.jp/gp/your-account/order-history?opt=ab&digitalOrders=1&unifiedOrders=1&returnTo=&orderFilter=",
   "purchase_order": {
     "url_element": "",
-    "parent": "html > body > div > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(5) > div.a-box-group.a-spacing-base.order",
+    "parent": "html > body > div > div > div:nth-of-type(1) > div > div.a-box-group.a-spacing-base.order",
     "order_number": {
       "element": "div:nth-of-type(1) > div > div > div > div:nth-of-type(2) > div:nth-of-type(1) > span:nth-of-type(2).a-color-secondary.value",
       "full_path": false,
@@ -264,18 +264,18 @@ SET
 ';
 
 insert into web_scraper.user (id,email_for_contact,total_ec_status,id_expire_at,update_at) values
- (1,'email@gmail.com','status','2020-10-10 12:00:00','2019-10-14 12:00:00');
+ (1,'email@gmail.com','status', DATE_ADD(NOW(), INTERVAL 1 YEAR), NOW());
 insert into web_scraper.ec_site_account (id, ec_site, ec_use_flag, user_id, update_at) values
- (1, 'amazon',  0, 1,'2019-03-08 12:00:00')
-,(3, 'yahoo',   0, 1,'2019-03-08 12:00:00')
-,(5, 'rakuten', 0, 1,'2019-03-08 12:00:00');
+ (1, 'amazon',  0, 1, NOW())
+,(3, 'yahoo',   0, 1, NOW())
+,(5, 'rakuten', 0, 1, NOW());
 
 insert into web_scraper.user (id,email_for_contact,total_ec_status,id_expire_at,update_at) values
- (2,'email2@gmail.com','status','2020-10-10 12:00:00','2019-10-14 12:00:00');
+ (2,'email2@gmail.com','status', DATE_ADD(NOW(), INTERVAL 1 YEAR), NOW());
 insert into web_scraper.ec_site_account (id, ec_site, ec_use_flag, user_id, update_at) values
- (2, 'amazon',  0, 2,'2019-03-08 12:00:00')
-,(4, 'yahoo',   0, 2,'2019-03-08 12:00:00')
-,(6, 'rakuten', 0, 2,'2019-03-08 12:00:00');
+ (2, 'amazon',  0, 2, NOW())
+,(4, 'yahoo',   0, 2, NOW())
+,(6, 'rakuten', 0, 2, NOW());
 
 insert into web_scraper.configuration (id,site,type,config) values
  (1,'amazon','purchase_history',@amazon_purchase_history_script)

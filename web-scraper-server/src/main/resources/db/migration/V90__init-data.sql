@@ -24,7 +24,7 @@ delete from web_scraper.configuration;
 SET
 @amazon_purchase_history_script = '
 {
-  "url": "https://www.amazon.co.jp/gp/your-account/order-history?opt=ab&digitalOrders=1&unifiedOrders=1&returnTo=&orderFilter=",
+  "url": "https://www.amazon.co.jp/gp/your-account/order-history?orderFilter=year-{year}",
   "purchase_order": {
     "url_element": "",
     "parent": "html > body > div > div > div:nth-of-type(1) > div > div.a-box-group.a-spacing-base.order",

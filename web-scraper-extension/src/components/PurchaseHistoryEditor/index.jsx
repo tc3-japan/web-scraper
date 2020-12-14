@@ -362,6 +362,9 @@ export default class Editor extends React.Component {
             onClick={() => sendMessageToPage({ action: 'currentUrl' })}
           />
         </div>
+        <div className="currentUrlWarning">
+          {t('editor.currentUrlYearPlaceholder')}
+        </div>
         {isExpanded('history') && (
         <div className="indent">
           <div className={`editor-row ${!!isExpanded('order')}`}>

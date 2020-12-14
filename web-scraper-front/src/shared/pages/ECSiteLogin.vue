@@ -178,6 +178,11 @@ export default class ECSiteLogin extends Vue {
         }
 
         if (this.step === 'DONE') {
+
+          if (this.$router.currentRoute.name === 'Login') {
+            window.location.href = 'login_done.html';
+          }
+
           // login success
           this.$router.push({
             name: 'EC Site Settings',

@@ -393,9 +393,12 @@ export default class ProductGroup extends Vue {
    */
   public onGroup() {
     const {groupIds, productIds} = this.getSelectItems();
-    const modelNo     = this.selectGroupModelNo     === '__new_group' ? this.createGroupNameModelNo.trim()     : this.selectGroupModelNo;
-    const janCode     = this.selectGroupJanCode     === '__new_group' ? this.createGroupNameJanCode.trim()     : this.selectGroupJanCode;
-    const productName = this.selectGroupProductName === '__new_group' ? this.createGroupNameProductName.trim() : this.selectGroupProductName;
+    const modelNo     = this.selectGroupModelNo     ===
+      '__new_group' ? this.createGroupNameModelNo.trim()     : this.selectGroupModelNo;
+    const janCode     = this.selectGroupJanCode     ===
+      '__new_group' ? this.createGroupNameJanCode.trim()     : this.selectGroupJanCode;
+    const productName = this.selectGroupProductName ===
+      '__new_group' ? this.createGroupNameProductName.trim() : this.selectGroupProductName;
 
     ApiService.createOrUpdateGroup({groupIds, productIds, modelNo, janCode, productName}).then(() => {
       this.fetchData();

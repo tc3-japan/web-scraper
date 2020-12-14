@@ -1,9 +1,9 @@
 import Vue from 'vue';
-import App from './App.vue';
-import langs from '../translations.json';
+import App from '../shared/App.vue';
+import langs from '../../translations.json';
 import router from './router';
-import AppConfig from './config';
-import './styles.scss';
+import AppConfig from '../shared/config';
+import '../shared/styles.scss';
 
 Vue.prototype.trans = (str) => {
   const result = langs[AppConfig.lang][str];

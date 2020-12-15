@@ -83,7 +83,7 @@ public class GeneralLoginCheckModule implements ILoginCheckModule {
         boolean restoreRet = Common.restoreCookies(webClient.getWebClient(), ecSiteAccountDAO);
         if (!restoreRet) {
             LOGGER.error("skip ec site account id = " + ecSiteAccountDAO.getId() + ", restore cookies failed");
-            return LoginCheckResult.SKIPPED;
+            return LoginCheckResult.FAILED;
         }
 
         try {

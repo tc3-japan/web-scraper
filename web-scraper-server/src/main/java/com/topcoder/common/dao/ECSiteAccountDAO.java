@@ -99,7 +99,7 @@ public class ECSiteAccountDAO {
     private Boolean isLogin;
 
     /**
-     * update at time
+     * last logined at time
      */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "last_logined_at")

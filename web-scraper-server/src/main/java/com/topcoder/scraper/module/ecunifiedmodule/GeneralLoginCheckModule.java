@@ -20,7 +20,7 @@ import java.time.Instant;
 import java.util.*;
 
 /**
- *
+ * General implementation of LoginCheckModule
  */
 @Component
 public class GeneralLoginCheckModule implements ILoginCheckModule {
@@ -55,12 +55,15 @@ public class GeneralLoginCheckModule implements ILoginCheckModule {
             if (accountDAOS == null) { continue; }
 
             for (ECSiteAccountDAO ecSiteAccountDAO : accountDAOS) {
-                boolean isLogin = this.fetchPurchaseHistoryListForECSiteAccount(ecSiteAccountDAO);
-                if (isLogin) {
+                LoginCheckResult loginCheckResult = this.goToPurchaseHistoryListForECSiteAccount(ecSiteAccountDAO);
+
+                if (loginCheckResult.equals(LoginCheckResult.SKIPPED)) {
+                    continue;
+                } else if (loginCheckResult.equals(LoginCheckResult.SUCCESS)) {
                     ecSiteAccountDAO.setIsLogin(true);
                     ecSiteAccountDAO.setLastLoginedAt(Date.from(Instant.now()));
                     ecSiteAccountDAO.setUpdateAt(Date.from(Instant.now()));
-                } else {
+                } else if (loginCheckResult.equals(LoginCheckResult.FAILED)) {
                     ecSiteAccountDAO.setIsLogin(false);
                     ecSiteAccountDAO.setUpdateAt(Date.from(Instant.now()));
                 }
@@ -69,10 +72,10 @@ public class GeneralLoginCheckModule implements ILoginCheckModule {
         }
     }
 
-    private boolean fetchPurchaseHistoryListForECSiteAccount(ECSiteAccountDAO ecSiteAccountDAO) {
+    private LoginCheckResult goToPurchaseHistoryListForECSiteAccount(ECSiteAccountDAO ecSiteAccountDAO) {
         if (ecSiteAccountDAO.getEcUseFlag() != Boolean.TRUE) {
             LOGGER.info("EC Site [" + ecSiteAccountDAO.getId() + ":" + ecSiteAccountDAO.getEcSite() + "] is not active. Skipped.");
-            return false;
+            return LoginCheckResult.SKIPPED;
         }
         this.crawler = new GeneralPurchaseHistoryCrawler(ecSiteAccountDAO.getEcSite(), webpageService, this.configurationRepository);
 
@@ -80,18 +83,24 @@ public class GeneralLoginCheckModule implements ILoginCheckModule {
         boolean restoreRet = Common.restoreCookies(webClient.getWebClient(), ecSiteAccountDAO);
         if (!restoreRet) {
             LOGGER.error("skip ec site account id = " + ecSiteAccountDAO.getId() + ", restore cookies failed");
-            return false;
+            return LoginCheckResult.SKIPPED;
         }
 
         try {
             this.crawler.goToPurchaseHistoryListForLoginCheck(webClient);
             webClient.finishTraffic();
-            return true;
+            return LoginCheckResult.SUCCESS;
 
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error("failed to Login for ec site account id = " + ecSiteAccountDAO.getId());
-            return false;
+            return LoginCheckResult.FAILED;
         }
+    }
+
+    private enum LoginCheckResult {
+        SKIPPED,
+        SUCCESS,
+        FAILED,
     }
 }

@@ -51,7 +51,7 @@ public class GeneralLoginCheckModule implements ILoginCheckModule {
 
         Iterable<UserDAO> userDAOS = userRepository.findAll();
         for (UserDAO userDAO : userDAOS) {
-            Iterable<ECSiteAccountDAO> accountDAOS = ecSiteAccountRepository.findAllByUserId(userDAO.getId());
+            Iterable<ECSiteAccountDAO> accountDAOS = ecSiteAccountRepository.findAllByUserIdAndIsLogin(userDAO.getId(), Boolean.TRUE);
             if (accountDAOS == null) { continue; }
 
             for (ECSiteAccountDAO ecSiteAccountDAO : accountDAOS) {
@@ -75,10 +75,6 @@ public class GeneralLoginCheckModule implements ILoginCheckModule {
     private LoginCheckResult goToPurchaseHistoryListForECSiteAccount(ECSiteAccountDAO ecSiteAccountDAO) {
         if (ecSiteAccountDAO.getEcUseFlag() != Boolean.TRUE) {
             LOGGER.info("EC Site [" + ecSiteAccountDAO.getId() + ":" + ecSiteAccountDAO.getEcSite() + "] is not active. Skipped.");
-            return LoginCheckResult.SKIPPED;
-        }
-        if (ecSiteAccountDAO.getIsLogin() == Boolean.FALSE) {
-            LOGGER.info("EC Site [" + ecSiteAccountDAO.getId() + ":" + ecSiteAccountDAO.getEcSite() + "] is logged out. Skipped.");
             return LoginCheckResult.SKIPPED;
         }
         this.crawler = new GeneralPurchaseHistoryCrawler(ecSiteAccountDAO.getEcSite(), webpageService, this.configurationRepository);

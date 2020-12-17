@@ -77,6 +77,10 @@ public class GeneralLoginCheckModule implements ILoginCheckModule {
             LOGGER.info("EC Site [" + ecSiteAccountDAO.getId() + ":" + ecSiteAccountDAO.getEcSite() + "] is not active. Skipped.");
             return LoginCheckResult.SKIPPED;
         }
+        if (ecSiteAccountDAO.getIsLogin() == Boolean.FALSE) {
+            LOGGER.info("EC Site [" + ecSiteAccountDAO.getId() + ":" + ecSiteAccountDAO.getEcSite() + "] is logged out. Skipped.");
+            return LoginCheckResult.SKIPPED;
+        }
         this.crawler = new GeneralPurchaseHistoryCrawler(ecSiteAccountDAO.getEcSite(), webpageService, this.configurationRepository);
 
         TrafficWebClient webClient = new TrafficWebClient(ecSiteAccountDAO.getUserId(), true);

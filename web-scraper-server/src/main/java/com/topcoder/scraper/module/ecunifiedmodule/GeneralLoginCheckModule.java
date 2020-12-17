@@ -7,6 +7,7 @@ import com.topcoder.common.repository.ECSiteAccountRepository;
 import com.topcoder.common.repository.UserRepository;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.common.util.Common;
+import com.topcoder.scraper.exception.CheckLoginException;
 import com.topcoder.scraper.module.ILoginCheckModule;
 
 import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralPurchaseHistoryCrawler;
@@ -16,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
 
@@ -82,7 +84,7 @@ public class GeneralLoginCheckModule implements ILoginCheckModule {
         TrafficWebClient webClient = new TrafficWebClient(ecSiteAccountDAO.getUserId(), true);
         boolean restoreRet = Common.restoreCookies(webClient.getWebClient(), ecSiteAccountDAO);
         if (!restoreRet) {
-            LOGGER.error("skip ec site account id = " + ecSiteAccountDAO.getId() + ", restore cookies failed");
+            LOGGER.error("Skip ec site account id = " + ecSiteAccountDAO.getId() + ", restore cookies failed.");
             return LoginCheckResult.FAILED;
         }
 
@@ -91,9 +93,12 @@ public class GeneralLoginCheckModule implements ILoginCheckModule {
             webClient.finishTraffic();
             return LoginCheckResult.SUCCESS;
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
-            LOGGER.error("failed to Login for ec site account id = " + ecSiteAccountDAO.getId());
+            LOGGER.error("Error due to IOException. Failed to login for ec site account id = " + ecSiteAccountDAO.getId());
+            return LoginCheckResult.FAILED;
+        } catch (CheckLoginException e) {
+            LOGGER.error(e.getMessage());
             return LoginCheckResult.FAILED;
         }
     }

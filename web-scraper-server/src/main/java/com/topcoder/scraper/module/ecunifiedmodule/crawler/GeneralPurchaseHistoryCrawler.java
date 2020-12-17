@@ -318,11 +318,9 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
         purchaseHistoryConfig = new ObjectMapper().readValue(this.jsonConfigText, PurchaseHistoryConfig.class);
         historyPage.setPage(purchaseHistoryConfig.getUrl());
 
-        if (historyPage.getPage() != null) {
-            int statusCode = historyPage.getPage().getWebResponse().getStatusCode();
-            if (statusCode == HttpStatus.FOUND.value()) {
-                throw new CheckLoginException("Login failed due to redirection, url:" + purchaseHistoryConfig.getUrl());
-            }
+        int statusCode = historyPage.getPage().getWebResponse().getStatusCode();
+        if (statusCode == HttpStatus.FOUND.value()) {
+            throw new CheckLoginException("Login failed due to redirection, url:" + purchaseHistoryConfig.getUrl());
         }
     }
 }

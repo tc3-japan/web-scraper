@@ -539,13 +539,13 @@ SET
 }',
 @amazon_product_search_script = '{
   "url": "https://www.amazon.co.jp/s?k={word}",
-  "group_selector": "html > body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(1) > div > div span:nth-of-type(3) > div:nth-of-type(2) > div.sg-col-4-of-24.sg-col-4-of-12.sg-col-4-of-36.s-result-item.s-asin.sg-col-4-of-28.sg-col-4-of-16.sg-col.sg-col-4-of-20.sg-col-4-of-32",
+  "group_selector": "html > body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(2) > div > span:nth-of-type(3) > div:nth-of-type(2) > div.sg-col-4-of-12.s-result-item.s-asin.sg-col-4-of-16.sg-col.sg-col-4-of-20",
   "selector": "div > span > div > div div:nth-of-type(2) > h2 > a",
   "attribute": "href",
   "regex": "/dp/([A-Z0-9]+)/",
   "is_script": false,
   "script": "",
-  "excluded_selector": "div > span > div > div div:nth-of-type(2) > div > span > span > span:nth-of-type(1) > span"
+  "excluded_selector": "div span > div > div div:nth-of-type(2) > div > span span:nth-of-type(1) > span.a-size-mini"
 }',
 @rakuten_product_search_script = '{
   "url": "https://search.rakuten.co.jp/search/mall/{word}",

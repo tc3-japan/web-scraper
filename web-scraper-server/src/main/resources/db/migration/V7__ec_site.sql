@@ -17,5 +17,7 @@ CREATE TABLE ec_site_account (
   auth_status VARCHAR(255),
   auth_fail_reason VARCHAR (8192),
   update_at TIMESTAMP,
+  is_login TINYINT(1),
+  last_logined_at TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES user(id)
 );

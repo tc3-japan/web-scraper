@@ -16,6 +16,7 @@ import com.topcoder.scraper.command.impl.CrossECProductCommand;
 import com.topcoder.scraper.command.impl.DemoCommand;
 import com.topcoder.scraper.command.impl.GroovyDemoCommand;
 import com.topcoder.scraper.command.impl.GroupECProductsCommand;
+import com.topcoder.scraper.command.impl.LoginCheckCommand;
 import com.topcoder.scraper.command.impl.ProductDetailCommand;
 import com.topcoder.scraper.command.impl.PurchaseHistoryListCommand;
 import com.topcoder.scraper.command.impl.SearchProductDemoCommand;
@@ -40,13 +41,14 @@ public class AppRunner implements ApplicationRunner {
     private final SearchProductDemoCommand searchProductDemoCommand;
     private final GroupECProductsCommand groupECProductsCommand;
     private final BuildProductIndexCommand buildProductIndexCommand;
+    private final LoginCheckCommand loginCheckCommand;
 
     @Autowired
     public AppRunner(PurchaseHistoryListCommand purchaseHistoryListCommand, ProductDetailCommand productDetailCommand,
                      ChangeDetectionInitCommand changeDetectionInitCommand, ChangeDetectionCheckCommand changeDetectionCheckCommand,
                      UserEncoderCommand userEncoderCommand, CrossECProductCommand crossECProductCommand,
                      DemoCommand demoCommand, GroovyDemoCommand groovyDemoCommand, SearchProductDemoCommand searchProductDemoCommand,
-                     GroupECProductsCommand groupECProductsCommand, BuildProductIndexCommand buildProductIndexCommand) {
+                     GroupECProductsCommand groupECProductsCommand, BuildProductIndexCommand buildProductIndexCommand, LoginCheckCommand loginCheckCommand) {
         this.purchaseHistoryListCommand = purchaseHistoryListCommand;
         this.productDetailCommand = productDetailCommand;
         this.changeDetectionInitCommand = changeDetectionInitCommand;
@@ -58,6 +60,7 @@ public class AppRunner implements ApplicationRunner {
         this.searchProductDemoCommand = searchProductDemoCommand;
         this.groupECProductsCommand = groupECProductsCommand;
         this.buildProductIndexCommand = buildProductIndexCommand;
+        this.loginCheckCommand = loginCheckCommand;
     }
 
     /**
@@ -95,6 +98,8 @@ public class AppRunner implements ApplicationRunner {
             groupECProductsCommand.run(args);
         } else if (batches.contains("load_product_index")) {
             buildProductIndexCommand.run(args);
+        } else if (batches.contains("login_check")) {
+            loginCheckCommand.run(args);
         } else {
             usage();
         }

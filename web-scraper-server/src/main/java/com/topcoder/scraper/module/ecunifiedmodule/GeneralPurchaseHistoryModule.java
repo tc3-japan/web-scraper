@@ -68,6 +68,12 @@ public class GeneralPurchaseHistoryModule implements IPurchaseHistoryModule {
             Iterable<ECSiteAccountDAO> accountDAOS = ecSiteAccountRepository.findAllByEcSite(site);
 
             for (ECSiteAccountDAO ecSiteAccountDAO : accountDAOS) {
+                if (ecSiteAccountDAO.getIsLogin() != null && !ecSiteAccountDAO.getIsLogin()) {
+                    LOGGER.error("Not logged in EC Site [" + ecSiteAccountDAO.getId() + ":" + ecSiteAccountDAO.getEcSite() + "], Skipped.");
+                    continue;
+                }
+
+                // TODO: "lastPurchaseHistory" is no used.
                 Optional<PurchaseHistory> lastPurchaseHistory = purchaseHistoryService.fetchLast(ecSiteAccountDAO.getId());
 
                 GeneralPurchaseHistoryCrawlerResult crawlerResult =

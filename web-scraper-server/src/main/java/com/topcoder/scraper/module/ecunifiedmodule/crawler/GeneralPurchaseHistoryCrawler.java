@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.*;
 
 import com.topcoder.scraper.exception.CheckLoginException;
+import com.topcoder.scraper.exception.NotLoggedinException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -98,6 +99,8 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
             processPurchaseHistory();
         } catch (DuplicatedException de) {
             LOGGER.info("Scraping duplicated Order Number detected.");
+        } catch (NotLoggedinException e) {
+            LOGGER.error(e.getMessage());
         }
 
         return new GeneralPurchaseHistoryCrawlerResult(this.purchaseHistoryList, this.savedPathList);
@@ -112,6 +115,11 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
         LOGGER.debug("[processPurchaseHistory] in");
 
         while (this.historyPage.getPage() != null) {
+            int statusCode = historyPage.getPage().getWebResponse().getStatusCode();
+            if (statusCode == HttpStatus.FOUND.value()) {
+                throw new NotLoggedinException("Login failed due to redirection, url:" + historyPage.getPage().getUrl());
+            }
+
             // if called from dryrun module check over maxcount or not.
             if (dryRunUtils != null && dryRunUtils.checkCountOver(purchaseHistoryList)) break;
 

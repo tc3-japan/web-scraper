@@ -69,7 +69,7 @@ public class GeneralPurchaseHistoryModule implements IPurchaseHistoryModule {
 
             for (ECSiteAccountDAO ecSiteAccountDAO : accountDAOS) {
                 if (ecSiteAccountDAO.getIsLogin() != null && !ecSiteAccountDAO.getIsLogin()) {
-                    LOGGER.error("Not logged in EC Site [" + ecSiteAccountDAO.getId() + ":" + ecSiteAccountDAO.getEcSite() + "], Skipped.");
+                    LOGGER.info("Not logged in EC Site [" + ecSiteAccountDAO.getId() + ":" + ecSiteAccountDAO.getEcSite() + "], Skipped.");
                     continue;
                 }
 

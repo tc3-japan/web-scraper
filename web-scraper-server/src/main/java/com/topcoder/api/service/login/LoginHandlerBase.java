@@ -55,7 +55,7 @@ public abstract class LoginHandlerBase implements LoginHandler {
         ecSiteAccountDAO.setAuthFailReason(message);
         ecSiteAccountDAO.setUpdateAt(new Date());
 
-        boolean isLogin = status.equals(AuthStatusType.SUCCESS) ? Boolean.TRUE : Boolean.FALSE;
+        boolean isLogin = status.equals(AuthStatusType.SUCCESS);
         ecSiteAccountDAO.setIsLogin(isLogin);
         if (isLogin) {
             ecSiteAccountDAO.setLastLoginedAt(new Date());

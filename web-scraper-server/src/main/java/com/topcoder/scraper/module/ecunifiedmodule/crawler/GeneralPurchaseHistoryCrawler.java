@@ -79,7 +79,7 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
      * @return result
      * @throws IOException if save html failed/parse json failed/get page failed
      */
-    public GeneralPurchaseHistoryCrawlerResult fetchPurchaseHistoryList(TrafficWebClient webClient) throws IOException {
+    public GeneralPurchaseHistoryCrawlerResult fetchPurchaseHistoryList(TrafficWebClient webClient) throws IOException, NotLoggedinException {
         LOGGER.debug("[fetchPurchaseHistoryList] in");
 
         webClient.getWebClient().getOptions().setJavaScriptEnabled(true);
@@ -99,8 +99,6 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
             processPurchaseHistory();
         } catch (DuplicatedException de) {
             LOGGER.info("Scraping duplicated Order Number detected.");
-        } catch (NotLoggedinException e) {
-            LOGGER.error(e.getMessage());
         }
 
         return new GeneralPurchaseHistoryCrawlerResult(this.purchaseHistoryList, this.savedPathList);
@@ -111,13 +109,13 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
      *
      * @throws IOException if save html failed
      */
-    private void processPurchaseHistory() throws IOException, DuplicatedException {
+    private void processPurchaseHistory() throws IOException, DuplicatedException, NotLoggedinException {
         LOGGER.debug("[processPurchaseHistory] in");
 
         while (this.historyPage.getPage() != null) {
             int statusCode = historyPage.getPage().getWebResponse().getStatusCode();
             if (statusCode == HttpStatus.FOUND.value()) {
-                throw new NotLoggedinException("Login failed due to redirection, url:" + historyPage.getPage().getUrl());
+                throw new NotLoggedinException("Login failed due to redirection, url:" + historyPage.getPage().getUrl().toString());
             }
 
             // if called from dryrun module check over maxcount or not.

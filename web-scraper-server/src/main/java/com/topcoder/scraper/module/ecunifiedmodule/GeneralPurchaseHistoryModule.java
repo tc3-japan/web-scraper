@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+import com.topcoder.scraper.exception.NotLoggedinException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,11 +112,13 @@ public class GeneralPurchaseHistoryModule implements IPurchaseHistoryModule {
             LOGGER.info("succeed fetch purchaseHistory for ec site account id = " + ecSiteAccountDAO.getId());
             return crawlerResult;
 
-        } catch (Exception e) { // here catch all exception and did not throw it
+        } catch (IOException e) {
             // TODO: arrange login handler
             //this.loginHandler.saveFailedResult(ecSiteAccountDAO, e.getMessage());
             LOGGER.error("failed to PurchaseHistory for ec site account id = " + ecSiteAccountDAO.getId());
             e.printStackTrace();
+        } catch (NotLoggedinException e) {
+            LOGGER.error(e.getMessage());
         }
         return null;
     }

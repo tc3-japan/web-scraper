@@ -106,6 +106,7 @@ public class TrafficWebClient {
         webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
         webClient.getOptions().setJavaScriptEnabled(false);
 //    webClient.getOptions().setJavaScriptEnabled(true);
+        webClient.getOptions().setRedirectEnabled(false);
         tacticEventRepository = SpringTool.getApplicationContext().getBean(TacticEventRepository.class);
         requestEventRepository = SpringTool.getApplicationContext().getBean(RequestEventRepository.class);
 

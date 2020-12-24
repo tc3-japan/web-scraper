@@ -1,7 +1,10 @@
 package com.topcoder.scraper.module.ecunifiedmodule.crawler;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.*;
+import java.net.URL;
+import java.time.LocalDate;
 
 import com.topcoder.scraper.exception.CheckLoginException;
 import com.topcoder.scraper.exception.NotLoggedinException;
@@ -28,7 +31,6 @@ import com.topcoder.scraper.service.WebpageService;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.http.HttpStatus;
 
 public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
 
@@ -75,7 +77,6 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
      * fetch purchase history list
      *
      * @param webClient the web client
-     * @param saveHtml  is need save html ?
      * @return result
      * @throws IOException if save html failed/parse json failed/get page failed
      */
@@ -92,8 +93,6 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
         this.scrapedOrderNumberList = new ArrayList<>();
 
         purchaseHistoryConfig = new ObjectMapper().readValue(this.jsonConfigText, PurchaseHistoryConfig.class);
-        historyPage.setPage(purchaseHistoryConfig.getUrl());
-        scrapedPageList.add(purchaseHistoryConfig.getUrl());
 
         try {
             processPurchaseHistory();
@@ -105,16 +104,43 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
     }
 
     /**
-     * get all purchase history
-     *
-     * @throws IOException if save html failed
+     * @throws IOException          if save html failed
+     * @throws DuplicatedException  if duplicated
+     * @throws NotLoggedinException if logged in failed
      */
     private void processPurchaseHistory() throws IOException, DuplicatedException, NotLoggedinException {
+        if (purchaseHistoryConfig.getUrl().endsWith("{year}")) {
+            int year = LocalDate.now().getYear();
+            while (year >= 1994) { // 1994 is the year amazon was founded.
+                String url = purchaseHistoryConfig.getUrl().replace("{year}", String.valueOf(year));
+                int orderListSize = processPurchaseHistory(url);
+                if (orderListSize == 0) {
+                    break;
+                }
+                year--;
+            }
+        } else {
+            processPurchaseHistory(purchaseHistoryConfig.getUrl());
+        }
+    }
+
+    /**
+     * get all purchase history
+     *
+     * @param url the transition destination
+     * @throws IOException          if save html failed
+     * @throws DuplicatedException  if duplicated
+     * @throws NotLoggedinException if logged in failed
+     */
+    private int processPurchaseHistory(String url) throws IOException, DuplicatedException, NotLoggedinException {
         LOGGER.debug("[processPurchaseHistory] in");
 
+        historyPage.setPage(url);
+        scrapedPageList.add(url);
+
+        int orderListSize = 0;
         while (this.historyPage.getPage() != null) {
-            int statusCode = historyPage.getPage().getWebResponse().getStatusCode();
-            if (statusCode == HttpStatus.FOUND.value()) {
+            if (isRedirected()) {
                 throw new NotLoggedinException("Login failed due to redirection, url:" + historyPage.getPage().getUrl().toString());
             }
 
@@ -132,9 +158,11 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
                 rootPage = urlLink.click();
             }
             List<DomNode> orderList = rootPage.querySelectorAll(purchaseHistoryConfig.getPurchaseOrder().getParent());
+            orderListSize = orderList.size();
             processOrders(orderList, rootPage);
             this.historyPage.setPage(this.gotoNextPage(this.historyPage.getPage(), webClient));
         }
+        return orderListSize;
     }
 
     /**
@@ -311,7 +339,7 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
      * fetch purchase history list for login check
      *
      * @param webClient the web client
-     * @throws IOException if save html failed/parse json failed/get page failed
+     * @throws IOException         if save html failed/parse json failed/get page failed
      * @throws CheckLoginException if response http status code 302
      */
     public void goToPurchaseHistoryListForLoginCheck(TrafficWebClient webClient) throws IOException, CheckLoginException {
@@ -324,9 +352,24 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
         purchaseHistoryConfig = new ObjectMapper().readValue(this.jsonConfigText, PurchaseHistoryConfig.class);
         historyPage.setPage(purchaseHistoryConfig.getUrl());
 
-        int statusCode = historyPage.getPage().getWebResponse().getStatusCode();
-        if (statusCode == HttpStatus.FOUND.value()) {
-            throw new CheckLoginException("Login failed due to redirection, url:" + purchaseHistoryConfig.getUrl());
+        if (isRedirected()) {
+            throw new CheckLoginException("Login failed due to redirection, url:" + historyPage.getPage().getUrl().toString());
+        }
+    }
+
+    /**
+     * Determine if the URL was redirected.
+     *
+     * @return boolean isRedirected
+     */
+    private boolean isRedirected() {
+        try {
+            String domain = "https://" + historyPage.getPage().getUrl().getHost();
+            String configDomain = "https://" + new URL(purchaseHistoryConfig.getUrl()).getHost();
+            return !domain.equalsIgnoreCase(configDomain);
+        } catch (MalformedURLException e) {
+            LOGGER.error("Purchase History Config Url is a malformed URL. URL:" + purchaseHistoryConfig.getUrl());
+            return Boolean.FALSE;
         }
     }
 }

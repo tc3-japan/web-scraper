@@ -130,7 +130,7 @@ SET
       "script": ""
     },
     "purchase_product": {
-      "url_element": "td:nth-of-type(1) > div > ul:nth-of-type(1) > li > a.detail",
+      "url_element": "td:nth-of-type(1) > div > ul:nth-of-type(1) > li.oDrDetailList > a",
       "parent": "html > body > div:nth-of-type(1) > div:nth-of-type(7) > div > div > div:nth-of-type(3) > table:nth-of-type(1) > tbody > tr",
       "total_amount": {
         "element": "html > body > div:nth-of-type(1) > div:nth-of-type(7) > div > div > div:nth-of-type(3) > table:nth-of-type(2) > tbody > tr > td:nth-of-type(3) > table > tbody > tr:nth-of-type(1) > td",

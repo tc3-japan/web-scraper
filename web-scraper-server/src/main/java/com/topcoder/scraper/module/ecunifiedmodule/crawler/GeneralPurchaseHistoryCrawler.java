@@ -3,6 +3,7 @@ package com.topcoder.scraper.module.ecunifiedmodule.crawler;
 import java.io.IOException;
 import java.util.*;
 
+import com.topcoder.scraper.exception.CheckLoginException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -21,13 +22,12 @@ import com.topcoder.common.repository.ConfigurationRepository;
 import com.topcoder.common.repository.PurchaseHistoryRepository;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.common.util.Common;
-import com.topcoder.scraper.lib.navpage.NavigablePage;
 import com.topcoder.scraper.lib.navpage.NavigablePurchaseHistoryPage;
-import com.topcoder.scraper.module.ecunifiedmodule.dryrun.DryRunUtils;
 import com.topcoder.scraper.service.WebpageService;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.http.HttpStatus;
 
 public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
 
@@ -299,5 +299,28 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
             return nextPageAnchor.click();
         }
         return null;
+    }
+
+    /**
+     * fetch purchase history list for login check
+     *
+     * @param webClient the web client
+     * @throws IOException if save html failed/parse json failed/get page failed
+     * @throws CheckLoginException if response http status code 302
+     */
+    public void goToPurchaseHistoryListForLoginCheck(TrafficWebClient webClient) throws IOException, CheckLoginException {
+        LOGGER.debug("[goToPurchaseHistoryListForLoginCheck] in");
+
+        webClient.getWebClient().getOptions().setJavaScriptEnabled(true);
+        this.webClient = webClient;
+        this.historyPage = new NavigablePurchaseHistoryPage(this.webClient);
+
+        purchaseHistoryConfig = new ObjectMapper().readValue(this.jsonConfigText, PurchaseHistoryConfig.class);
+        historyPage.setPage(purchaseHistoryConfig.getUrl());
+
+        int statusCode = historyPage.getPage().getWebResponse().getStatusCode();
+        if (statusCode == HttpStatus.FOUND.value()) {
+            throw new CheckLoginException("Login failed due to redirection, url:" + purchaseHistoryConfig.getUrl());
+        }
     }
 }

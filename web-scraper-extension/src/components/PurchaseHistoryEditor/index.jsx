@@ -313,7 +313,7 @@ export default class Editor extends React.Component {
         });
         this.selectors = [];
         this.totalSelectorTimes = getTotalOfSelectorTimes(path);
-      }); // next tick
+      }, 0); // next tick
     } else {
       this.stopInspector('toggleSelectorBtn');
     }

@@ -170,7 +170,7 @@
       const fullPath = this.getFullPath(this.$target);
       console.log(`selector path = ${fullPath}`);
       try {
-        const optimalSelector = window.OptimalSelect.select(e.target, {
+        const optimalSelector = OptimalSelect.select(e.target, {
           ignore: {
             // The way this extension works, `block-event` class is used to
             // block user interaction with the page when elements are selected.

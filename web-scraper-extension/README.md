@@ -15,8 +15,6 @@ Scraper Configuration UI - Chrome Extension Development
  * Click 'Load unpacked extensions...'
  * Select the `build` folder from source-code folder
 
-Note: `npm install` emits 1 high vulnerability related to unused 'http-proxy' in this project though  react-scripts requries the library.
-
 ### Packaging
 
  there are three options:
@@ -51,7 +49,7 @@ give zip file to anyone and do as:
 
 ### Firefox support
 
-- all native api are used `chrome||browser` to compatibility for firefox, so it can run firefox in theory (didn't test).
+- all native api are used `chrome||browser` to compatibility for firefox, so it can run firefox.
 
 ### Log panel
 

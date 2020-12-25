@@ -41,7 +41,7 @@ public class PurchaseHistoryListCommand extends AbstractCommand<IPurchaseHistory
             }
         } catch (IOException e) {
             LOGGER.error("Fail to fetch purchase history list", e);
-            throw new FetchPurchaseHistoryListException();
+            return;
         }
         LOGGER.info("Successfully fetch purchase history");
     }

@@ -313,7 +313,7 @@ export default class Editor extends React.Component {
         });
         this.selectors = [];
         this.totalSelectorTimes = getTotalOfSelectorTimes(path);
-      }, 0); // next tick
+      }); // next tick
     } else {
       this.stopInspector('toggleSelectorBtn');
     }
@@ -361,6 +361,9 @@ export default class Editor extends React.Component {
             title={t('editor.currentUrl')}
             onClick={() => sendMessageToPage({ action: 'currentUrl' })}
           />
+        </div>
+        <div className="currentUrlWarning">
+          {t('editor.currentUrlYearPlaceholder')}
         </div>
         {isExpanded('history') && (
         <div className="indent">

@@ -51,6 +51,7 @@ function convertPurchaseHistoryToFrontend(site) {
         order: true,
         product: true,
         next: true,
+        order_filter: true,
       },
       advancedExpanded: {},
       highlight: '',

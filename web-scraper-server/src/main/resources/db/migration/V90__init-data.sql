@@ -25,6 +25,11 @@ SET
 @amazon_purchase_history_script = '
 {
   "url": "https://www.amazon.co.jp/gp/your-account/order-history?orderFilter=year-{year}",
+  "order_filter": {
+    "element": "html > body > div:nth-of-type(1) > div > div:nth-of-type(1) > div > div:nth-of-type(2) > span > form > span:nth-of-type(1) > select > option",
+    "attribute": "value",
+    "regex": "year-([0-9]{4})"
+  },
   "purchase_order": {
     "url_element": "",
     "parent": "html > body > div > div > div:nth-of-type(1) > div > div.a-box-group.a-spacing-base.order",

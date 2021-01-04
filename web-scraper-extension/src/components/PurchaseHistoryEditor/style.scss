@@ -30,10 +30,19 @@
     .parent-selector {
       display: none;
     }
+
+    .container {
+      display: none;
+    }
   }
 }
 
 .currentUrlWarning {
-  color: gray;
-  margin: 5px 0 5px 195px;
+  &.true {
+    color: gray;
+    margin: 5px 0 5px 195px;
+  }
+  &.false {
+    display: none;
+  }
 }

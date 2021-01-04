@@ -69,6 +69,10 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
     @Setter
     private PurchaseHistory currentPurchaseHistory; // OrderInfo (to be refactored)
 
+    public GeneralPurchaseHistoryCrawler(String site, WebpageService webpageService, ConfigurationRepository configurationRepository, PurchaseHistoryRepository historyRepository) {
+        super(site, "purchase_history", webpageService, configurationRepository);
+        this.historyRepository = historyRepository;
+    }
     public GeneralPurchaseHistoryCrawler(String site, WebpageService webpageService, ConfigurationRepository configurationRepository) {
         super(site, "purchase_history", webpageService, configurationRepository);
     }
@@ -190,7 +194,7 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
             if (!isNew()) {
                 LOGGER.debug(String.format("[processOrders] [%s] order %s already exist, skip this",
                         site, currentPurchaseHistory.getOrderNumber()));
-                continue;
+                throw new DuplicatedException();
             }
 
             HtmlPage orderPage = rootPage;
@@ -312,7 +316,7 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
      */
     protected boolean isNew() {
         return historyRepository == null
-                || historyRepository.getByEcSiteAndOrderNo(site, currentPurchaseHistory.getOrderNumber()) == null;
+                || historyRepository.getByEcSiteAndOrderNo(site, currentPurchaseHistory.getOrderNumber()).isEmpty();
     }
 
     /**

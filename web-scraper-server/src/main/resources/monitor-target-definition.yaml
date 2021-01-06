@@ -2,6 +2,7 @@ check-sites:
   - ec-site: amazon
     check-pages:
       - page_name: purchase_history_list
+        max_count: 20
         # id of ec_site_account table
         check_target_keys:
           - 1
@@ -25,6 +26,7 @@ check-sites:
   - ec-site: yahoo
     check-pages:
       - page_name: purchase_history_list
+        max_count: 20
         # id of ec_site_account table
         check_target_keys:
           # TODO: set
@@ -37,6 +39,7 @@ check-sites:
   - ec-site: rakuten
     check-pages:
       - page_name: purchase_history_list
+        max_count: 20
         # id of ec_site_account table
         check_target_keys:
           # TODO: set

@@ -56,11 +56,14 @@ public class MonitorTargetDefinitionProperty {
      */
     public static class MonitorTargetCheckPage {
         private String pageName;
+        private int maxCount;
         private List<String> checkTargetKeys;
 
         public void setPageName(String pageName) {
             this.pageName = pageName;
         }
+
+        public void setMaxCount(int maxCount) { this.maxCount = maxCount; }
 
         public void setCheckTargetKeys(List<String> checkTargetKeys) {
             this.checkTargetKeys = checkTargetKeys;
@@ -69,6 +72,8 @@ public class MonitorTargetDefinitionProperty {
         public String getPageName() {
             return pageName;
         }
+
+        public int getMaxCount() { return maxCount; }
 
         public List<String> getCheckTargetKeys() {
             return checkTargetKeys;

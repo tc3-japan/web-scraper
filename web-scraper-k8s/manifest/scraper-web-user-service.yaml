@@ -6,15 +6,15 @@ metadata:
     kompose.version: 1.21.0 ()
   creationTimestamp: null
   labels:
-    io.kompose.service: scraper-web
-  name: scraper-web
+    io.kompose.service: scraper-web-user
+  name: scraper-web-user
 spec:
   type: LoadBalancer
   ports:
-  - name: "8080"
-    port: 8080
+  - name: "8081"
+    port: 8081
     targetPort: 80
   selector:
-    io.kompose.service: scraper-web
+    io.kompose.service: scraper-web-user
 status:
   loadBalancer: {}

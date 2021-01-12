@@ -5,6 +5,10 @@ resources:
   - scraper-solr-service.yaml
   - scraper-app-deployment.yaml
   - scraper-app-service.yaml
-  - scraper-web-deployment.yaml
-  - scraper-web-service.yaml
-  - scraper-change-detection-check-cronjob.yaml
+  - scraper-web-admin-deployment.yaml
+  - scraper-web-admin-service.yaml
+  - scraper-web-user-deployment.yaml
+  - scraper-web-user-service.yaml
+  - scraper-login-check-cronjob.yaml
+  - scraper-purchase-history-cronjob.yaml
+  - scraper-group-products-cronjob.yaml

@@ -7,6 +7,7 @@ import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.model.PurchaseHistory;
 import com.topcoder.common.model.PurchaseHistoryCheckResultDetail;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -15,6 +16,9 @@ import java.util.stream.Collectors;
 public class CheckUtils {
     public static String equivalenceCheck(String oldValue, String newValue) {
         if (newValue == null) {
+
+            if (oldValue == null) return Consts.CHECK_RESULT_OK;
+
             return String.format("%s(%s, %s, %s)",
                     Consts.CHECK_RESULT_NG,
                     Consts.CHECK_RESULT_NOT_EXIST,
@@ -35,6 +39,9 @@ public class CheckUtils {
     public static String formatCheck(String definition, String oldValue, String newValue) {
         String regex = definition.split(":")[1];
         if (newValue == null) {
+
+            if (oldValue == null) return Consts.CHECK_RESULT_OK;
+
             return String.format("%s(%s, %s, %s)",
                     Consts.CHECK_RESULT_NG,
                     Consts.CHECK_RESULT_NOT_EXIST,
@@ -123,10 +130,13 @@ public class CheckUtils {
             }
 
             List<ProductInfo> dbProductInfoList = dbPurchaseHistory.getProducts();
+            if (dbProductInfoList == null) dbProductInfoList = new ArrayList<>();
 
             List<ProductCheckResultDetail> productResults =
                     dbProductInfoList.stream().map(dbProductInfo -> {
-                        ProductInfo matchedProductInfo = matchedPurchaseHistory.get().getProducts()
+                        List<ProductInfo> productList = matchedPurchaseHistory.get().getProducts();
+                        if (productList == null) productList = new ArrayList<>();
+                        ProductInfo matchedProductInfo = productList
                                 .stream()
                                 .filter(pi -> {
                                     if (pi.getCode() != null) {

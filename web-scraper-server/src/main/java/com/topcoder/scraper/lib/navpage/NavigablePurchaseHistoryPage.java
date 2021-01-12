@@ -396,4 +396,28 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
         return content;
     }
 
+    /**
+     * scrape value by node
+     *
+     * @param node        the node
+     * @param selector    the selector object
+     * @return final value
+     */
+    public String scrapeStringFromNode(DomNode node, Selector selector) {
+        if (selector == null) {
+            return null;
+        }
+
+        String content = null;
+        if (isValid(selector.getAttribute())) {
+            if (node.getAttributes().getNamedItem(selector.getAttribute()) != null) {
+                content = node.getAttributes().getNamedItem(selector.getAttribute()).getNodeValue();
+            }
+        }
+        if (isValid(selector.getRegex())) {
+            content = extract2(content, Pattern.compile(selector.getRegex()));
+        }
+        return content;
+    }
+
 }

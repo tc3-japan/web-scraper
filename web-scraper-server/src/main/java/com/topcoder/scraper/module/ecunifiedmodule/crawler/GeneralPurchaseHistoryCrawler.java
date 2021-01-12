@@ -18,10 +18,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.topcoder.common.model.ProductInfo;
 import com.topcoder.common.model.PurchaseHistory;
-import com.topcoder.common.model.scraper.PurchaseCommon;
-import com.topcoder.common.model.scraper.PurchaseHistoryConfig;
-import com.topcoder.common.model.scraper.PurchaseOrder;
-import com.topcoder.common.model.scraper.PurchaseProduct;
+import com.topcoder.common.model.scraper.*;
 import com.topcoder.common.repository.ConfigurationRepository;
 import com.topcoder.common.repository.PurchaseHistoryRepository;
 import com.topcoder.common.traffic.TrafficWebClient;
@@ -114,18 +111,49 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
      */
     private void processPurchaseHistory() throws IOException, DuplicatedException, NotLoggedinException {
         if (purchaseHistoryConfig.getUrl().endsWith("{year}")) {
-            int year = LocalDate.now().getYear();
-            while (year >= 1994) { // 1994 is the year amazon was founded.
+            List<Integer> years = getYearFromOrderFilter();
+            for (Integer year : years) {
+                // if called from dryrun module check over maxcount or not.
+                if (dryRunUtils != null && dryRunUtils.checkCountOver(purchaseHistoryList)) break;
+
                 String url = purchaseHistoryConfig.getUrl().replace("{year}", String.valueOf(year));
-                int orderListSize = processPurchaseHistory(url);
-                if (orderListSize == 0) {
-                    break;
-                }
-                year--;
+                processPurchaseHistory(url);
             }
         } else {
             processPurchaseHistory(purchaseHistoryConfig.getUrl());
         }
+    }
+
+    /**
+     * get purchase history year from order filter.
+     *
+     * @return purchase history year list
+     */
+    private List<Integer> getYearFromOrderFilter() {
+        LOGGER.debug("[getYearFromOrderFilter] in");
+        List<Integer> years = new LinkedList<>();
+
+        int currentYear = LocalDate.now().getYear();
+        String url = purchaseHistoryConfig.getUrl().replace("{year}", String.valueOf(currentYear));
+        historyPage.setPage(url);
+
+        if (this.historyPage.getPage() != null) {
+            if (isRedirected()) {
+                throw new NotLoggedinException("Login failed due to redirection, url:" + historyPage.getPage().getUrl().toString());
+            }
+
+            Selector orderFilter = purchaseHistoryConfig.getOrderFilter();
+            List<DomNode> orderFilterList = historyPage.getPage().querySelectorAll(orderFilter.getElement());
+
+            for (DomNode filterNode : orderFilterList) {
+                String yearStr = historyPage.scrapeStringFromNode(filterNode, orderFilter);
+                if (yearStr != null && !yearStr.isEmpty()) {
+                    years.add(Integer.valueOf(yearStr));
+                }
+            }
+        }
+        LOGGER.debug("[getYearFromOrderFilter] done, size = " + years.size());
+        return years;
     }
 
     /**
@@ -161,6 +189,7 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
                 HtmlAnchor urlLink = historyPage.getPage().querySelector(purchaseHistoryConfig.getPurchaseOrder().getUrlElement());
                 rootPage = urlLink.click();
             }
+
             List<DomNode> orderList = rootPage.querySelectorAll(purchaseHistoryConfig.getPurchaseOrder().getParent());
             orderListSize = orderList.size();
             processOrders(orderList, rootPage);

@@ -10,6 +10,9 @@ import lombok.Data;
 public class PurchaseHistoryConfig {
     private String url;
 
+    @JsonProperty("order_filter")
+    private Selector orderFilter;
+
     @JsonProperty("purchase_order")
     private PurchaseOrder purchaseOrder;
 

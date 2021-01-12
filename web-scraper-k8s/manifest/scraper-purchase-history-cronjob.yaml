@@ -17,8 +17,8 @@ spec:
             - bash
             - -c
             - cd /root/scraper/;
-            - java -jar web-scraper-server-*.jar --batch=change_detection_check --target=purchase_history --spring.config.location=file:application.yaml >> logs/change_detection_check_purchase_history.log &&
-            - java -jar web-scraper-server-*.jar --batch=purchase_history --spring.config.location=file:application.yaml >> logs/purchase_history.log
+            - java -jar web-scraper-server-*.jar --batch=change_detection_check --target=purchase_history --spring.config.location=file:application.yaml >> /root/scraper/logs/change_detection_check_purchase_history.log &&
+            - java -jar web-scraper-server-*.jar --batch=purchase_history --spring.config.location=file:application.yaml >> /root/scraper/logs/purchase_history.log
             env:
             - name: SCRAPER_DB_PORT_3306_TCP_ADDR
               value: scraper-db

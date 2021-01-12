@@ -16,7 +16,7 @@ spec:
           - args:
             - bash
             - -c
-            - cd /root/scraper/; java -jar web-scraper-server-*.jar --batch=login_check --spring.config.location=file:application.yaml >> logs/login_check.log
+            - cd /root/scraper/; java -jar web-scraper-server-*.jar --batch=login_check --spring.config.location=file:application.yaml >> /root/scraper/logs/login_check.log
             env:
             - name: SCRAPER_DB_PORT_3306_TCP_ADDR
               value: scraper-db

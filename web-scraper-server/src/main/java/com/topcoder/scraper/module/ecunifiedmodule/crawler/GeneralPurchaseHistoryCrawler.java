@@ -117,10 +117,7 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
                 if (dryRunUtils != null && dryRunUtils.checkCountOver(purchaseHistoryList)) break;
 
                 String url = purchaseHistoryConfig.getUrl().replace("{year}", String.valueOf(year));
-                int orderListSize = processPurchaseHistory(url);
-                if (orderListSize == 0) {
-                    break;
-                }
+                processPurchaseHistory(url);
             }
         } else {
             processPurchaseHistory(purchaseHistoryConfig.getUrl());

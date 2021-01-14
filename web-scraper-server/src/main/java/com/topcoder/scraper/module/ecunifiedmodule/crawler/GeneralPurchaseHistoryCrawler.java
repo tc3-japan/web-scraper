@@ -66,9 +66,13 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
     @Setter
     private PurchaseHistory currentPurchaseHistory; // OrderInfo (to be refactored)
 
-    public GeneralPurchaseHistoryCrawler(String site, WebpageService webpageService, ConfigurationRepository configurationRepository, PurchaseHistoryRepository historyRepository) {
+    private int maxCount = 0;
+    private int scrapedCount = 0;
+
+    public GeneralPurchaseHistoryCrawler(String site, WebpageService webpageService, ConfigurationRepository configurationRepository, PurchaseHistoryRepository historyRepository, int maxCount) {
         super(site, "purchase_history", webpageService, configurationRepository);
         this.historyRepository = historyRepository;
+        this.maxCount = maxCount;
     }
     public GeneralPurchaseHistoryCrawler(String site, WebpageService webpageService, ConfigurationRepository configurationRepository) {
         super(site, "purchase_history", webpageService, configurationRepository);
@@ -92,6 +96,7 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
         this.savedPathList = new LinkedList<>();
         this.scrapedPageList = new ArrayList<>();
         this.scrapedOrderNumberList = new ArrayList<>();
+        this.scrapedCount = 0;
 
         purchaseHistoryConfig = new ObjectMapper().readValue(this.jsonConfigText, PurchaseHistoryConfig.class);
 
@@ -215,6 +220,11 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
         int i = 1;
 
         for (DomNode orderNode : orderList) {
+            // if count over maxcount, break.
+            if (maxCount > -1 && maxCount < scrapedCount) {
+                break;
+            }
+
             this.currentPurchaseHistory = new PurchaseHistory();
             this.historyPage.setPurchaseHistory(this.currentPurchaseHistory);
             placeHolderNos.put("orderIndex", i);
@@ -249,6 +259,7 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
             processProducts(productList, orderPage, reuseProduct, placeHolderNos);
             this.purchaseHistoryList.add(this.currentPurchaseHistory);
             i++;
+            scrapedCount++;
         }
         LOGGER.info("[processOrders] done, size = " + this.purchaseHistoryList.size());
     }

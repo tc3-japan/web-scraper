@@ -78,7 +78,7 @@ public class GeneralPurchaseHistoryModule implements IPurchaseHistoryModule {
                 Optional<PurchaseHistory> lastPurchaseHistory = purchaseHistoryService.fetchLast(ecSiteAccountDAO.getId());
 
                 GeneralPurchaseHistoryCrawlerResult crawlerResult =
-                        this.fetchPurchaseHistoryListForECSiteAccount(ecSiteAccountDAO, lastPurchaseHistory.orElse(null));
+                        this.fetchPurchaseHistoryListForECSiteAccount(ecSiteAccountDAO, lastPurchaseHistory.orElse(null), -1);
 
                 if (crawlerResult != null) {
                     List<PurchaseHistory> list = crawlerResult.getPurchaseHistoryList();
@@ -91,12 +91,12 @@ public class GeneralPurchaseHistoryModule implements IPurchaseHistoryModule {
         }
     }
 
-    public GeneralPurchaseHistoryCrawlerResult fetchPurchaseHistoryListForECSiteAccount(ECSiteAccountDAO ecSiteAccountDAO, PurchaseHistory lastPurchaseHistory) {
+    public GeneralPurchaseHistoryCrawlerResult fetchPurchaseHistoryListForECSiteAccount(ECSiteAccountDAO ecSiteAccountDAO, PurchaseHistory lastPurchaseHistory, int maxCount) {
         if (ecSiteAccountDAO.getEcUseFlag() != Boolean.TRUE) {
             LOGGER.info("EC Site [" + ecSiteAccountDAO.getId() + ":" + ecSiteAccountDAO.getEcSite() + "] is not active. Skipped.");
             return null;
         }
-        this.crawler = new GeneralPurchaseHistoryCrawler(ecSiteAccountDAO.getEcSite(), webpageService, this.configurationRepository, this.historyRepository);
+        this.crawler = new GeneralPurchaseHistoryCrawler(ecSiteAccountDAO.getEcSite(), webpageService, this.configurationRepository, this.historyRepository, maxCount);
 
         TrafficWebClient webClient = new TrafficWebClient(ecSiteAccountDAO.getUserId(), true);
         LOGGER.info("web client version = " + webClient.getWebClient().getBrowserVersion());

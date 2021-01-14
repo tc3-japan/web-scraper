@@ -76,7 +76,7 @@ public abstract class GeneralChangeDetectionCommonModule implements IBasicModule
 
                     for (ECSiteAccountDAO ecSiteAccountDAO : accountDAOS) {
                         GeneralPurchaseHistoryCrawlerResult crawlerResult =
-                                this.purchaseHistoryModule.fetchPurchaseHistoryListForECSiteAccount(ecSiteAccountDAO, null);
+                                this.purchaseHistoryModule.fetchPurchaseHistoryListForECSiteAccount(ecSiteAccountDAO, null, monitorTargetCheckPage.getMaxCount());
                         if (crawlerResult != null) {
                             String key = Integer.toString(ecSiteAccountDAO.getId());
                             this.processPurchaseHistory(checkSite.getEcSite(), crawlerResult, key);

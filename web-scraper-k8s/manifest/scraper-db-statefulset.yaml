@@ -22,14 +22,11 @@ spec:
       labels:
         io.kompose.service: scraper-db
     spec:
-#      initContainers:
-#        - name: chmod
-#          image: tc3jp/scraper-db:dev1.0
-#          command: ["sh", "-c"]
-#          args:
-#            - |
-#              chmod 777 /var/log/mysql/mysqld.log; echo Done1.
-#              rm -f /var/log/mysql/mysqld.log; echo Done2.
+      # uid=999(mysql) gid=999(mysql) groups=999(mysql)
+      securityContext:
+        runAsUser: 999
+        runAsGroup: 999
+        fsGroup: 999
       containers:
       - env:
         - name: MYSQL_DATABASE
@@ -46,13 +43,29 @@ spec:
         volumeMounts:
           - name: data
             mountPath: /var/lib/mysql
-          - name: data
+          - name: log
             mountPath: /var/log/mysql
-          - name: data
+          - name: backup
             mountPath: /root/mysql/backup
   volumeClaimTemplates:
     - metadata:
         name: data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: gp2
+        resources:
+          requests:
+            storage: 1Gi
+    - metadata:
+        name: log
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: gp2
+        resources:
+          requests:
+            storage: 1Gi
+    - metadata:
+        name: backup
       spec:
         accessModes: [ "ReadWriteOnce" ]
         storageClassName: gp2

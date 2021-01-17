@@ -29,7 +29,7 @@ spec:
         - containerPort: 8983
         volumeMounts:
           - name: data
-            mountPath: /var/solr/data
+            mountPath: /var/solr/data/ecsite_products/data
   volumeClaimTemplates:
     - metadata:
         name: data

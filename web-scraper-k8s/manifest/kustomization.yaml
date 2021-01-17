@@ -1,7 +1,7 @@
 resources:
   - scraper-db-statefulset.yaml
   - scraper-db-service.yaml
-  - scraper-solr-deployment.yaml
+  - scraper-solr-statefulset.yaml
   - scraper-solr-service.yaml
   - scraper-app-deployment.yaml
   - scraper-web-admin-deployment.yaml

@@ -4,6 +4,7 @@ resources:
   - scraper-solr-statefulset.yaml
   - scraper-solr-service.yaml
   - scraper-app-deployment.yaml
+  - scraper-app-pvc.yaml
   - scraper-web-admin-deployment.yaml
   - scraper-web-user-deployment.yaml
   - scraper-login-check-cronjob.yaml

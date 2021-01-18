@@ -22,3 +22,10 @@ spec:
               value: scraper-db
             image: tc3jp/scraper-app:dev1.0
             name: scraper-login-check-cronjob
+            volumeMounts:
+              - name: log
+                mountPath: /root/scraper/logs
+          volumes:
+            - name: log
+              persistentVolumeClaim:
+                claimName: scraper-login-check-cronjob

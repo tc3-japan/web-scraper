@@ -13,4 +13,7 @@ public enum AuthStep {
 
     // END
     DONE,
+
+    // Error
+    ERROR,
 }

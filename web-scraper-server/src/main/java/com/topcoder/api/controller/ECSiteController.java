@@ -82,7 +82,7 @@ public class ECSiteController {
     public LoginResponse loginInit(@PathVariable("userId") String userId,
                                    @RequestParam("siteId") Integer siteId,
                                    @RequestParam("uuid") String uuid)
-            throws ApiException {
+            throws Exception {
         return ecSiteAccountService.loginInit(userId, siteId, uuid);
     }
 
@@ -94,7 +94,7 @@ public class ECSiteController {
      * @throws ApiException if any error happened
      */
     @PostMapping("/{userId}/login")
-    public LoginResponse login(@PathVariable("userId") String userId, @RequestBody LoginRequest request) throws ApiException {
+    public LoginResponse login(@PathVariable("userId") String userId, @RequestBody LoginRequest request) throws Exception {
         return ecSiteAccountService.login(userId, request);
     }
 }

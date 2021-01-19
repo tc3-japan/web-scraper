@@ -13,6 +13,7 @@ import com.topcoder.common.repository.UserRepository;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.module.ecisolatedmodule.amazon.crawler.AmazonAuthenticationCrawler;
 import com.topcoder.scraper.module.ecisolatedmodule.amazon.crawler.AmazonAuthenticationCrawlerResult;
+import com.topcoder.scraper.module.ecunifiedmodule.AuthStep;
 import com.topcoder.scraper.service.WebpageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +55,7 @@ public class AmazonLoginHandler extends LoginHandlerBase {
     }
 
     @Override
-    public LoginResponse loginInit(int userId, Integer siteId, String uuid) throws ApiException {
+    public LoginResponse loginInit(int userId, Integer siteId, String uuid) throws Exception {
         ECSiteAccountDAO ecSiteAccountDAO = ecSiteAccountRepository.findOne(siteId);
 
         CrawlerContext context = crawlerContextMap.get(siteId);
@@ -84,12 +85,12 @@ public class AmazonLoginHandler extends LoginHandlerBase {
             }
         } catch (Exception e) { // here is fatal error, cannot continue
             saveFailedResult(ecSiteAccountDAO, e.getMessage());
-            throw new ApiException(e.getMessage());
+            throw e;
         }
     }
 
     @Override
-    public LoginResponse login(int userId, LoginRequest request) throws ApiException {
+    public LoginResponse login(int userId, LoginRequest request) throws Exception {
 
         ECSiteAccountDAO ecSiteAccountDAO = ecSiteAccountRepository.findOne(request.getSiteId());
 
@@ -109,22 +110,6 @@ public class AmazonLoginHandler extends LoginHandlerBase {
                     context.getWebClient(), request.getEmail(), request.getPassword(), request.getCode(), false);
 
             if (result.isSuccess()) { // succeed , update status and save cookies
-        /*
-        List<ECCookie> ecCookies = new LinkedList<>();
-        for (Cookie cookie : context.getWebClient().getWebClient().getCookieManager().getCookies()) {
-          ECCookie ecCookie = new ECCookie();
-          ecCookie.setName(cookie.getName());
-          ecCookie.setDomain(cookie.getDomain());
-          ecCookie.setValue(cookie.getValue());
-          ecCookie.setExpires(cookie.getExpires());
-          ecCookie.setHttpOnly(cookie.isHttpOnly());
-          ecCookie.setPath(cookie.getPath());
-          ecCookie.setSecure(cookie.isSecure());
-          ecCookies.add(ecCookie);
-        }
-        ecSiteAccountDAO.setEcCookies(new ECCookies(ecCookies).toJSONString());
-        saveSuccessResult(ecSiteAccountDAO);
-        */
 
                 ByteArrayOutputStream bout = new ByteArrayOutputStream();
                 ObjectOutput oout = new ObjectOutputStream(bout);
@@ -138,7 +123,7 @@ public class AmazonLoginHandler extends LoginHandlerBase {
                         context.getCrawler().getAuthStep(), result.getReason());
             } else { // login failed
                 saveFailedResult(ecSiteAccountDAO, result.getReason());
-                if (result.isNeedContinue()) {
+                if (result.isNeedContinue() || context.getCrawler().getAuthStep() == AuthStep.ERROR) {
                     return new LoginResponse(ecSiteAccountDAO.getLoginEmail(), result.getCodeType(), result.getImg(),
                             context.getCrawler().getAuthStep(), result.getReason());
                 } else { // cannot continue, throw error
@@ -146,9 +131,8 @@ public class AmazonLoginHandler extends LoginHandlerBase {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
             saveFailedResult(ecSiteAccountDAO, e.getMessage());
-            throw new ApiException(e.getMessage());
+            throw e;
         }
     }
 }

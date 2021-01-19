@@ -2,9 +2,10 @@
   <div class="login-site">
     <div class="title" v-if="siteLoaded">{{site['ecSite'] + trans('login')}}</div>
     <div class="load-error" v-if="this.userLoadErrorMsg">{{this.userLoadErrorMsg}}</div>
+    <div class="unexpected-error" v-if="this.unexpectedError">{{this.unexpectedError}}</div>
     <div v-if="!siteLoaded">{{trans('loginInitializing')}}</div>
 
-    <div class="user-login" v-if="siteLoaded && !userLoadErrorMsg">
+    <div class="user-login" v-if="siteLoaded && !userLoadErrorMsg && !unexpectedError">
       <div class="row" v-if="site['ecSite'] === 'yahoo'">
         {{trans('yahooPasswordMessage')}}
       </div>
@@ -55,6 +56,7 @@ export default class ECSiteLogin extends Vue {
   public siteLoaded = false;
   public site = {};
   public userLoadErrorMsg = null;
+  public unexpectedError = null;
 
   public email = '';
   public password = '';
@@ -177,7 +179,10 @@ export default class ECSiteLogin extends Vue {
           this.loginError = rsp.data.reason;
         }
 
-        if (this.step === 'DONE') {
+        if (this.step === 'ERROR') {
+          this.unexpectedError = rsp.data.reason;
+          this.$forceUpdate();
+        } else if (this.step === 'DONE') {
 
           if (this.$router.currentRoute.name === 'Login') {
             window.location.href = 'login_done.html';
@@ -214,7 +219,7 @@ export default class ECSiteLogin extends Vue {
     font-weight: bold;
     color: #c93114;
   }
-  .login-error {
+  .login-error,.unexpected-error {
     color: #c93114;
   }
 

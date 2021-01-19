@@ -1,12 +1,12 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: scraper-change-detection-check-job
+  name: scraper-change-detection-check-purchase-history-job
 spec:
   template:
     metadata:
       labels:
-        app: scraper-change-detection-check-job
+        app: scraper-change-detection-check-purchase-history-job
     spec:
       restartPolicy: Never
       containers:
@@ -18,4 +18,4 @@ spec:
         - name: SCRAPER_DB_PORT_3306_TCP_ADDR
           value: scraper-db
         image: tc3jp/scraper-app:dev1.0
-        name: scraper-change-detection-check-job
+        name: scraper-change-detection-check-purchase-history-job

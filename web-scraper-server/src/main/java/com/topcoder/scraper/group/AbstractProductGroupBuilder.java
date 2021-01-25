@@ -1,5 +1,7 @@
 package com.topcoder.scraper.group;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -10,6 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,11 +47,11 @@ public abstract class AbstractProductGroupBuilder {
 
     abstract String getGroupingMethod();
 
-    abstract List<ProductDAO> findSameProducts(ProductDAO prod);
+    abstract List<ProductDAO> findSameProducts(ProductDAO prod) throws IOException, SolrServerException;
 
     abstract String getSearchParameter(ProductDAO product);
 
-    public List<ProductDAO> createProductGroup(ProductDAO product, Set<String> targetECSites) {
+    public List<ProductDAO> createProductGroup(ProductDAO product, Set<String> targetECSites) throws IOException, SolrServerException {
 
         logger.info(String.format("Trying to group the product#%d by \"%s\" ([%s] %s)",
                 product.getId(), getGroupingMethod(), product.getEcSite(), product.getProductName()));
@@ -77,8 +80,8 @@ public abstract class AbstractProductGroupBuilder {
                         result.setEcSite(site);
                         sameProducts.add(result);
                     }
-                } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
+                } catch (IOException e) {
+                    throw new UncheckedIOException(e);
                 }
             }
         });
@@ -86,6 +89,7 @@ public abstract class AbstractProductGroupBuilder {
         if (sameProducts.size() <= 1) {
             return sameProducts;
         }
+
         // create a group if there are products more than 1.
         ProductGroupDAO group = createOrUpdateGroup(getGroupingMethod(), sameProducts);
         if (group != null) {

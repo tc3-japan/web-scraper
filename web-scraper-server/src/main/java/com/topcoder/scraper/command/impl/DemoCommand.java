@@ -1,7 +1,9 @@
 package com.topcoder.scraper.command.impl;
 
+import java.io.IOException;
 import java.util.List;
 
+import org.apache.solr.client.solrj.SolrServerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,23 +32,20 @@ public class DemoCommand {
     @Autowired
     private SolrService solrService;
 
-    public void run(ApplicationArguments args) {
+    public void run(ApplicationArguments args) throws IOException, SolrServerException {
 
         if (args.containsOption("similar")) {
             LOGGER.info("--similar=" + args.getOptionValues("similar").get(0));
-            try {
-                int productId = Integer.valueOf(args.getOptionValues("similar").get(0));
-                ProductDAO product = productRepository.findById(productId);
-                List<SolrPorduct> similarProds = this.solrService.searchSimilarProducts(product);
-                LOGGER.info("Search similar products by:");
-                LOGGER.info(Common.toJSON(product));
-                LOGGER.info("# of results: " + similarProds.size());
-                similarProds.forEach(p -> {
-                    LOGGER.info(Common.toJSON(p));
-                });
-            } catch (Exception e) {
-                LOGGER.error(e.getMessage(), e);
-            }
+
+            int productId = Integer.valueOf(args.getOptionValues("similar").get(0));
+            ProductDAO product = productRepository.findById(productId);
+            List<SolrPorduct> similarProds = this.solrService.searchSimilarProducts(product);
+            LOGGER.info("Search similar products by:");
+            LOGGER.info(Common.toJSON(product));
+            LOGGER.info("# of results: " + similarProds.size());
+            similarProds.forEach(p -> {
+                LOGGER.info(Common.toJSON(p));
+            });
             return;
         }
 
@@ -54,7 +53,7 @@ public class DemoCommand {
         HtmlPage page = null;
         try {
             page = webClient.getPage("https://www.google.com");
-        } catch (Exception e) {
+        } catch (IOException e) {
         }
 
         ScrapingFieldProperty scrapingFieldProperty = new ScrapingFieldProperty("#fsl", "String", null, null);

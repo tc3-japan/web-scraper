@@ -209,9 +209,9 @@ public class TrafficWebClient {
         try {
             P p = doRequestUnderController(request, content, false);
             return p;
-        } catch (Exception e) {
+        } catch (IOException e) {
             afterTraffic(false);
-            throw new IOException(e);
+            throw e;
         }
     }
 
@@ -228,14 +228,14 @@ public class TrafficWebClient {
             Request request,
             String content,
             boolean skipWait
-    ) throws Exception {
+    ) throws IOException {
         RequestEventDAO eventDAO = beforeRequest(content, skipWait);
         try {
             P p = request.invoke();
             afterRequest(eventDAO, true);
             return p;
-        } catch (Exception e) {
-            logger.error(e.getMessage());
+        } catch (IOException e) {
+            Common.ZabbixLog(logger, e);
             afterRequest(eventDAO, false);
             if (whenRequestFailed()) {
                 return doRequestUnderController(request, content, true);
@@ -337,8 +337,8 @@ public class TrafficWebClient {
                 content = content + ", " + proxyMsg;
                 logger.info(proxyMsg + " for this request");
             } catch (MalformedURLException e) {
-                e.printStackTrace();
-                logger.error("proxy server parse error, url = " + tactic.getProxyServerByUserId(userId));
+                String message = "proxy server parse error, url = " + tactic.getProxyServerByUserId(userId);
+                Common.ZabbixLog(logger, message, e);
             }
         }
 

@@ -30,11 +30,7 @@ public class LoginCheckCommand extends AbstractCommand<ILoginCheckModule> {
     @Override
     protected void process(ILoginCheckModule module) {
         LOGGER.info("module=site: " + module);
-        try {
-            module.checkLogin();
-        } catch (Exception e) {
-            LOGGER.error("Fail to check login.", e);
-        }
+        module.checkLogin();
         LOGGER.info("Successfully check login");
     }
 }

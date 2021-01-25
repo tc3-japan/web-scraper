@@ -22,6 +22,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
@@ -55,7 +56,7 @@ public class AmazonLoginHandler extends LoginHandlerBase {
     }
 
     @Override
-    public LoginResponse loginInit(int userId, Integer siteId, String uuid) throws Exception {
+    public LoginResponse loginInit(int userId, Integer siteId, String uuid) throws IOException {
         ECSiteAccountDAO ecSiteAccountDAO = ecSiteAccountRepository.findOne(siteId);
 
         CrawlerContext context = crawlerContextMap.get(siteId);
@@ -83,14 +84,14 @@ public class AmazonLoginHandler extends LoginHandlerBase {
                 return new LoginResponse(ecSiteAccountDAO.getLoginEmail(), result.getCodeType(), result.getImg(),
                         context.getCrawler().getAuthStep(), result.getReason());
             }
-        } catch (Exception e) { // here is fatal error, cannot continue
+        } catch (IOException e) { // here is fatal error, cannot continue
             saveFailedResult(ecSiteAccountDAO, e.getMessage());
             throw e;
         }
     }
 
     @Override
-    public LoginResponse login(int userId, LoginRequest request) throws Exception {
+    public LoginResponse login(int userId, LoginRequest request) throws IOException, ApiException {
 
         ECSiteAccountDAO ecSiteAccountDAO = ecSiteAccountRepository.findOne(request.getSiteId());
 
@@ -130,7 +131,7 @@ public class AmazonLoginHandler extends LoginHandlerBase {
                     throw new ApiException(result.getReason());
                 }
             }
-        } catch (Exception e) {
+        } catch (IOException | ApiException e) {
             saveFailedResult(ecSiteAccountDAO, e.getMessage());
             throw e;
         }

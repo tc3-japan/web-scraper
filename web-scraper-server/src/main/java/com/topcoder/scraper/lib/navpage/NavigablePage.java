@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Map;
 
+import com.topcoder.common.util.Common;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,8 +108,9 @@ public class NavigablePage {
                     page = result;
                 }
                 LOGGER.info("Setting page to " + result);
-            } catch (Exception e) {
-                LOGGER.error(String.format("Failed to perform click on the element selected by '%s'. page: %s", selector, page.getUrl()), e);
+            } catch (IOException e) {
+                String message = String.format("Failed to perform click on the element selected by '%s'. page: %s", selector, page.getUrl());
+                Common.ZabbixLog(LOGGER, message, e);
             }
         }
     }

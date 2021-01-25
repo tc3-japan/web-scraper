@@ -51,7 +51,7 @@ public class DryRunPurchaseHistoryModule {
         }
 
         if (accountDAO == null) {
-            LOGGER.error("failed to get ecSite account");
+            Common.ZabbixLog(LOGGER, "failed to get ecSite account");
             return null;
         }
 
@@ -60,23 +60,17 @@ public class DryRunPurchaseHistoryModule {
         LOGGER.info("web client version = " + webClient.getWebClient().getBrowserVersion());
         boolean restoreRet = Common.restoreCookies(webClientForDryRun.getWebClient(), accountDAO);
         if (!restoreRet) {
-            LOGGER.error("skip ecSite id = " + accountDAO.getId() + ", restore cookies failed");
+            String message = "skip ecSite id = " + accountDAO.getId() + ", restore cookies failed";
+            Common.ZabbixLog(LOGGER, message);
             return null;
         }
 
-        try {
-            GeneralPurchaseHistoryCrawler crawler = new GeneralPurchaseHistoryCrawler(site, this.webpageService, this.configurationRepository);
-            crawler.setConfig(config);
-            DryRunUtils dru = new DryRunUtils(count);
-            crawler.setDryRunUtils(dru);
-            GeneralPurchaseHistoryCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClientForDryRun);
-            LOGGER.info("succeed fetch purchaseHistory for ecSite id = " + accountDAO.getId());
-            return dru.toJsonOfDryRunPurchasehistoryModule(crawlerResult.getPurchaseHistoryList(), crawlerResult.getHtmlPathList());
-        } catch (Exception e) {
-            LOGGER.error("failed to PurchaseHistory for ecSite id = " + accountDAO.getId());
-            e.printStackTrace();
-        }
-        return null;
+        GeneralPurchaseHistoryCrawler crawler = new GeneralPurchaseHistoryCrawler(site, this.webpageService, this.configurationRepository);
+        crawler.setConfig(config);
+        DryRunUtils dru = new DryRunUtils(count);
+        crawler.setDryRunUtils(dru);
+        GeneralPurchaseHistoryCrawlerResult crawlerResult = crawler.fetchPurchaseHistoryList(webClientForDryRun);
+        LOGGER.info("succeed fetch purchaseHistory for ecSite id = " + accountDAO.getId());
+        return dru.toJsonOfDryRunPurchasehistoryModule(crawlerResult.getPurchaseHistoryList(), crawlerResult.getHtmlPathList());
     }
-
 }

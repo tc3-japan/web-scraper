@@ -63,7 +63,7 @@ public class GeneralPurchaseHistoryModule implements IPurchaseHistoryModule {
     }
 
     @Override
-    public void fetchPurchaseHistoryList(List<String> sites) throws IOException {
+    public void fetchPurchaseHistoryList(List<String> sites) {
 
         for (String site : sites) {
             Iterable<ECSiteAccountDAO> accountDAOS = ecSiteAccountRepository.findAllByEcSite(site);
@@ -102,7 +102,8 @@ public class GeneralPurchaseHistoryModule implements IPurchaseHistoryModule {
         LOGGER.info("web client version = " + webClient.getWebClient().getBrowserVersion());
         boolean restoreRet = Common.restoreCookies(webClient.getWebClient(), ecSiteAccountDAO);
         if (!restoreRet) {
-            LOGGER.error("skip ec site account id = " + ecSiteAccountDAO.getId() + ", restore cookies failed");
+            String message = "skip ec site account id = " + ecSiteAccountDAO.getId() + ", restore cookies failed";
+            Common.ZabbixLog(LOGGER, message);
             return null;
         }
 
@@ -113,12 +114,10 @@ public class GeneralPurchaseHistoryModule implements IPurchaseHistoryModule {
             return crawlerResult;
 
         } catch (IOException e) {
-            // TODO: arrange login handler
-            //this.loginHandler.saveFailedResult(ecSiteAccountDAO, e.getMessage());
-            LOGGER.error("failed to PurchaseHistory for ec site account id = " + ecSiteAccountDAO.getId());
-            e.printStackTrace();
+            String message = "failed to PurchaseHistory for ec site account id = " + ecSiteAccountDAO.getId();
+            Common.ZabbixLog(LOGGER, message, e);
         } catch (NotLoggedinException e) {
-            LOGGER.error(e.getMessage());
+            Common.ZabbixLog(LOGGER, e);
         }
         return null;
     }

@@ -84,7 +84,8 @@ public class GeneralLoginCheckModule implements ILoginCheckModule {
         TrafficWebClient webClient = new TrafficWebClient(ecSiteAccountDAO.getUserId(), true);
         boolean restoreRet = Common.restoreCookies(webClient.getWebClient(), ecSiteAccountDAO);
         if (!restoreRet) {
-            LOGGER.error("Skip ec site account id = " + ecSiteAccountDAO.getId() + ", restore cookies failed.");
+            String message = "Skip ec site account id = " + ecSiteAccountDAO.getId() + ", restore cookies failed.";
+            Common.ZabbixLog(LOGGER, message);
             return LoginCheckResult.FAILED;
         }
 
@@ -94,11 +95,11 @@ public class GeneralLoginCheckModule implements ILoginCheckModule {
             return LoginCheckResult.SUCCESS;
 
         } catch (IOException e) {
-            e.printStackTrace();
-            LOGGER.error("Error due to IOException. Failed to login for ec site account id = " + ecSiteAccountDAO.getId());
+            String message = "Error due to IOException. Failed to login for ec site account id = " + ecSiteAccountDAO.getId();
+            Common.ZabbixLog(LOGGER, message, e);
             return LoginCheckResult.FAILED;
         } catch (CheckLoginException e) {
-            LOGGER.error(e.getMessage());
+            Common.ZabbixLog(LOGGER, e);
             return LoginCheckResult.FAILED;
         }
     }

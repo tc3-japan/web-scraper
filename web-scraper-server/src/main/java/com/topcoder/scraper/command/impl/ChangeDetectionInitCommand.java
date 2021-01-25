@@ -1,5 +1,6 @@
 package com.topcoder.scraper.command.impl;
 
+import com.topcoder.common.util.Common;
 import com.topcoder.scraper.Consts;
 import com.topcoder.scraper.command.AbstractCommand;
 import com.topcoder.scraper.exception.ChangeDetectionException;
@@ -40,7 +41,7 @@ public class ChangeDetectionInitCommand extends AbstractCommand<IChangeDetection
                 module.init(this.sites, this.target);
             }
         } catch (IOException e) {
-            LOGGER.error("Fail to init check detection", e);
+            Common.ZabbixLog(LOGGER, "Fail to init change detection", e);
             throw new ChangeDetectionException();
         }
         LOGGER.info("Successfully init check detection");

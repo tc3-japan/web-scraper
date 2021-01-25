@@ -401,7 +401,8 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
             String configDomain = "https://" + new URL(purchaseHistoryConfig.getUrl()).getHost();
             return !domain.equalsIgnoreCase(configDomain);
         } catch (MalformedURLException e) {
-            LOGGER.error("Purchase History Config Url is a malformed URL. URL:" + purchaseHistoryConfig.getUrl());
+            String message = "Purchase History Config Url is a malformed URL. URL:" + purchaseHistoryConfig.getUrl();
+            Common.ZabbixLog(LOGGER, message, e);
             return Boolean.FALSE;
         }
     }

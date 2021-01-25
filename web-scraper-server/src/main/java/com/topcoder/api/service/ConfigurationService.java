@@ -78,30 +78,25 @@ public class ConfigurationService {
      * @return the result message text
      * @throws ApiException if any error happened
      */
-    public String createOrUpdateConfiguration(String site, String type, String conf) throws ApiException {
-        try {
-            String resultText = "success ";
+    public String createOrUpdateConfiguration(String site, String type, String conf) {
+        String resultText = "success ";
 
-            ConfigurationDAO configurationDAO = get(site, type);
+        ConfigurationDAO configurationDAO = get(site, type);
 
-            if (configurationDAO == null) {
-                configurationDAO = new ConfigurationDAO();
-                resultText += "create record to scraper table";
-            } else {
-                resultText += "update record to scraper table";
-            }
-
-            configurationDAO.setSite(site);
-            configurationDAO.setType(type);
-            configurationDAO.setConfig(conf);
-            configurationRepository.save(configurationDAO);
-
-            return resultText;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new ApiException("failed to create or update conf");
+        if (configurationDAO == null) {
+            configurationDAO = new ConfigurationDAO();
+            resultText += "create record to scraper table";
+        } else {
+            resultText += "update record to scraper table";
         }
+
+        configurationDAO.setSite(site);
+        configurationDAO.setType(type);
+        configurationDAO.setConfig(conf);
+        configurationRepository.save(configurationDAO);
+
+        return resultText;
+
     }
 
     /**
@@ -113,21 +108,16 @@ public class ConfigurationService {
      * @param count
      * @throws ApiException if any error happened
      */
-    public List<Object> executeConfiguration(String site, String type, String conf, Integer count) throws ApiException {
-        try {
-            switch (type) {
-                case "purchase_history":
-                    return dryRunPurchaseHistoryModule.fetchPurchaseHistoryList(site, conf, count);
-                case "product":
-                    return dryRunProductModule.fetchProductDetailList(site, conf, count);
-                case "search":
-                    return dryRunProductSearchModule.searchProduct(site, conf, count);
-                default:
-                    throw new ApiException("the type:" + type + " was not supported");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new ApiException("failed to execute conf");
+    public List<Object> executeConfiguration(String site, String type, String conf, Integer count) throws IOException, ApiException {
+        switch (type) {
+            case "purchase_history":
+                return dryRunPurchaseHistoryModule.fetchPurchaseHistoryList(site, conf, count);
+            case "product":
+                return dryRunProductModule.fetchProductDetailList(site, conf, count);
+            case "search":
+                return dryRunProductSearchModule.searchProduct(site, conf, count);
+            default:
+                throw new ApiException("the type:" + type + " was not supported");
         }
     }
 
@@ -138,27 +128,19 @@ public class ConfigurationService {
      * @return the html data
      * @throws ApiException if any error happened
      */
-    public String getHtmlString(String htmlFileName) throws ApiException {
-        try {
-            String currentAbsolutePath = System.getProperty("user.dir");
-            String htmlFilePath = searchHtmlFilePath(currentAbsolutePath + "/logs", htmlFileName);
-            File htmlFile = new File(htmlFilePath);
-      //      FileReader fileReader = new FileReader(htmlFile, StandardCharsets.UTF_8);
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(htmlFile), "UTF-8"));
-            StringBuffer htmlData = new StringBuffer();
-            String tempHtmlData = "";
-            while ((tempHtmlData = bufferedReader.readLine()) != null) {
-                htmlData.append(tempHtmlData);
-            }
-            bufferedReader.close();
-            return htmlData.toString();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            throw new ApiException(htmlFileName + " does not exist");
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new ApiException("failed to get html file data");
+    public String getHtmlString(String htmlFileName) throws IOException {
+        String currentAbsolutePath = System.getProperty("user.dir");
+        String htmlFilePath = searchHtmlFilePath(currentAbsolutePath + "/logs", htmlFileName);
+        File htmlFile = new File(htmlFilePath);
+        //      FileReader fileReader = new FileReader(htmlFile, StandardCharsets.UTF_8);
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(htmlFile), "UTF-8"));
+        StringBuffer htmlData = new StringBuffer();
+        String tempHtmlData = "";
+        while ((tempHtmlData = bufferedReader.readLine()) != null) {
+            htmlData.append(tempHtmlData);
         }
+        bufferedReader.close();
+        return htmlData.toString();
     }
 
     /**

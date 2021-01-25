@@ -113,7 +113,7 @@ public class HtmlUtils {
         String numberTxt = intText.replaceAll(",", "").replaceAll("-", "");
         try {
             return Float.valueOf(numberTxt);
-        } catch (Exception e) {
+        } catch (NumberFormatException | NullPointerException e) {
             return null;
         }
     }

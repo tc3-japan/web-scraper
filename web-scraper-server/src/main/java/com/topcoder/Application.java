@@ -1,5 +1,6 @@
 package com.topcoder;
 
+import com.topcoder.common.util.Common;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -31,9 +32,14 @@ public class Application {
                 isRestMode = true;
             }
         }
-        new SpringApplicationBuilder(Application.class).web(isRestMode).run(args);
 
-
+        try {
+            new SpringApplicationBuilder(Application.class).web(isRestMode).run(args);
+        }
+        catch (Exception e)  {
+            Common.ZabbixLog(logger, e);
+            throw e;
+        }
     }
 
 }

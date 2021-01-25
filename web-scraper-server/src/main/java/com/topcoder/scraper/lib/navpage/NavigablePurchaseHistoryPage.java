@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import com.topcoder.common.util.Common;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -299,8 +300,8 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
         try {
             return DateUtils.fromString(dateStr, format);
         } catch (ParseException e) {
-            LOGGER.error(String.format("[extractDate] Failed to parse the input '%s'. Error: %s", dateStr, e.getMessage()));
-            e.printStackTrace();
+            String message = String.format("[extractDate] Failed to parse the input '%s'.", dateStr);
+            Common.ZabbixLog(LOGGER, message, e);
             return null;
         }
     }
@@ -318,11 +319,9 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
         // dateStr = dateStr.replace("年", "/");
         try {
             return DateUtils.fromString(text);// , FORMAT_DATE);
-        } catch (Exception e) {
-            // TODO: Logger
-            // LOGGER.error(String.format("Failed to parse the input '%s'. Error: %s",
-            // dateStr, e.getMessage()));
-            e.printStackTrace();
+        } catch (ParseException e) {
+            String message = String.format("Failed to parse the input '%s'.", text);
+            Common.ZabbixLog(LOGGER, message, e);
             return null;
         }
     }

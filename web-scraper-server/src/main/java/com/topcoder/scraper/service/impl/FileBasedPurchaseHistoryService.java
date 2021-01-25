@@ -3,6 +3,7 @@ package com.topcoder.scraper.service.impl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.topcoder.common.model.PurchaseHistory;
+import com.topcoder.common.util.Common;
 import com.topcoder.scraper.service.PurchaseHistoryService;
 import com.topcoder.common.util.DateUtils;
 
@@ -36,7 +37,7 @@ public class FileBasedPurchaseHistoryService implements PurchaseHistoryService {
         try {
             FileUtils.write(new File(filename(site)), OB.writeValueAsString(list), "UTF-8");
         } catch (IOException e) {
-            LOGGER.error("Fail to write purchase history file", e);
+            Common.ZabbixLog(LOGGER, "Fail to write purchase history file", e);
         }
 
         LOGGER.info("New purchase histories are saved");
@@ -53,7 +54,7 @@ public class FileBasedPurchaseHistoryService implements PurchaseHistoryService {
                         OB.readValue(f, new TypeReference<List<PurchaseHistory>>() {
                         }));
             } catch (IOException e) {
-                LOGGER.error("Fail to read json file, skip");
+                Common.ZabbixLog(LOGGER, "Fail to read json file, skip", e);
             }
         }
         return histories;

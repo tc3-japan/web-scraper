@@ -1,7 +1,9 @@
 package com.topcoder.scraper;
 
+import java.io.IOException;
 import java.util.List;
 
+import org.apache.solr.client.solrj.SolrServerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,14 +14,11 @@ import org.springframework.stereotype.Component;
 import com.topcoder.scraper.command.impl.BuildProductIndexCommand;
 import com.topcoder.scraper.command.impl.ChangeDetectionCheckCommand;
 import com.topcoder.scraper.command.impl.ChangeDetectionInitCommand;
-import com.topcoder.scraper.command.impl.CrossECProductCommand;
 import com.topcoder.scraper.command.impl.DemoCommand;
-import com.topcoder.scraper.command.impl.GroovyDemoCommand;
 import com.topcoder.scraper.command.impl.GroupECProductsCommand;
 import com.topcoder.scraper.command.impl.LoginCheckCommand;
 import com.topcoder.scraper.command.impl.ProductDetailCommand;
 import com.topcoder.scraper.command.impl.PurchaseHistoryListCommand;
-import com.topcoder.scraper.command.impl.SearchProductDemoCommand;
 import com.topcoder.scraper.command.impl.UserEncoderCommand;
 
 /**
@@ -35,10 +34,7 @@ public class AppRunner implements ApplicationRunner {
     private final ChangeDetectionInitCommand changeDetectionInitCommand;
     private final ChangeDetectionCheckCommand changeDetectionCheckCommand;
     private final UserEncoderCommand userEncoderCommand;
-    private final CrossECProductCommand crossECProductCommand;
     private final DemoCommand demoCommand;
-    private final GroovyDemoCommand groovyDemoCommand;
-    private final SearchProductDemoCommand searchProductDemoCommand;
     private final GroupECProductsCommand groupECProductsCommand;
     private final BuildProductIndexCommand buildProductIndexCommand;
     private final LoginCheckCommand loginCheckCommand;
@@ -46,18 +42,14 @@ public class AppRunner implements ApplicationRunner {
     @Autowired
     public AppRunner(PurchaseHistoryListCommand purchaseHistoryListCommand, ProductDetailCommand productDetailCommand,
                      ChangeDetectionInitCommand changeDetectionInitCommand, ChangeDetectionCheckCommand changeDetectionCheckCommand,
-                     UserEncoderCommand userEncoderCommand, CrossECProductCommand crossECProductCommand,
-                     DemoCommand demoCommand, GroovyDemoCommand groovyDemoCommand, SearchProductDemoCommand searchProductDemoCommand,
+                     UserEncoderCommand userEncoderCommand, DemoCommand demoCommand,
                      GroupECProductsCommand groupECProductsCommand, BuildProductIndexCommand buildProductIndexCommand, LoginCheckCommand loginCheckCommand) {
         this.purchaseHistoryListCommand = purchaseHistoryListCommand;
         this.productDetailCommand = productDetailCommand;
         this.changeDetectionInitCommand = changeDetectionInitCommand;
         this.changeDetectionCheckCommand = changeDetectionCheckCommand;
         this.userEncoderCommand = userEncoderCommand;
-        this.crossECProductCommand = crossECProductCommand;
         this.demoCommand = demoCommand;
-        this.groovyDemoCommand = groovyDemoCommand;
-        this.searchProductDemoCommand = searchProductDemoCommand;
         this.groupECProductsCommand = groupECProductsCommand;
         this.buildProductIndexCommand = buildProductIndexCommand;
         this.loginCheckCommand = loginCheckCommand;
@@ -69,7 +61,7 @@ public class AppRunner implements ApplicationRunner {
      * @param args ApplicationArguments from input
      */
     @Override
-    public void run(ApplicationArguments args) {
+    public void run(ApplicationArguments args) throws IOException, SolrServerException {
         List<String> batches = args.getOptionValues("batch");
         if (batches == null) {
             usage();
@@ -86,14 +78,8 @@ public class AppRunner implements ApplicationRunner {
             changeDetectionCheckCommand.run(args);
         } else if (batches.contains("encrypt_user")) {
             userEncoderCommand.run(args);
-        } else if (batches.contains("cross_ec_product")) {
-            crossECProductCommand.run(args);
         } else if (batches.contains("demo")) {
             demoCommand.run(args);
-        } else if (batches.contains("groovy_demo")) {
-            groovyDemoCommand.run(args);
-        } else if (batches.contains("search_product_demo")) {
-            searchProductDemoCommand.run(args);
         } else if (batches.contains("group_products")) {
             groupECProductsCommand.run(args);
         } else if (batches.contains("load_product_index")) {

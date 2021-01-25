@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
+import com.topcoder.common.util.Common;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,8 +58,8 @@ public class GeneralProductDetailModule implements IProductDetailModule {
                 try {
                     this.processProductDetail(site, product.getId(), product.getProductCode());
                 } catch (IOException | IllegalStateException e) {
-                    LOGGER.error(String.format("Fail to fetch product %s, please try again.", product.getProductCode()));
-                    e.printStackTrace();
+                    String message = String.format("Fail to fetch product %s, please try again.", product.getProductCode());
+                    Common.ZabbixLog(LOGGER, message, e);
                 }
             });
         }

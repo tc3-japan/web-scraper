@@ -66,9 +66,12 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
     @Setter
     private PurchaseHistory currentPurchaseHistory; // OrderInfo (to be refactored)
 
-    public GeneralPurchaseHistoryCrawler(String site, WebpageService webpageService, ConfigurationRepository configurationRepository, PurchaseHistoryRepository historyRepository) {
+    private int maxCount = 0;
+
+    public GeneralPurchaseHistoryCrawler(String site, WebpageService webpageService, ConfigurationRepository configurationRepository, PurchaseHistoryRepository historyRepository, int maxCount) {
         super(site, "purchase_history", webpageService, configurationRepository);
         this.historyRepository = historyRepository;
+        this.maxCount = maxCount;
     }
     public GeneralPurchaseHistoryCrawler(String site, WebpageService webpageService, ConfigurationRepository configurationRepository) {
         super(site, "purchase_history", webpageService, configurationRepository);
@@ -113,8 +116,7 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
         if (purchaseHistoryConfig.getUrl().endsWith("{year}")) {
             List<Integer> years = getYearFromOrderFilter();
             for (Integer year : years) {
-                // if called from dryrun module check over maxcount or not.
-                if (dryRunUtils != null && dryRunUtils.checkCountOver(purchaseHistoryList)) break;
+                if (isMaxCount()) break;
 
                 String url = purchaseHistoryConfig.getUrl().replace("{year}", String.valueOf(year));
                 processPurchaseHistory(url);
@@ -177,7 +179,7 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
             }
 
             // if called from dryrun module check over maxcount or not.
-            if (dryRunUtils != null && dryRunUtils.checkCountOver(purchaseHistoryList)) break;
+            if (isMaxCount()) break;
 
             String savedPath = historyPage.savePage(this.site, "purchase-history-list", historyPage, this.webpageService);
             if (savedPath != null) {
@@ -215,6 +217,7 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
         int i = 1;
 
         for (DomNode orderNode : orderList) {
+
             this.currentPurchaseHistory = new PurchaseHistory();
             this.historyPage.setPurchaseHistory(this.currentPurchaseHistory);
             placeHolderNos.put("orderIndex", i);
@@ -405,5 +408,11 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
             Common.ZabbixLog(LOGGER, message, e);
             return Boolean.FALSE;
         }
+    }
+
+    private boolean isMaxCount() {
+        if (dryRunUtils != null && dryRunUtils.checkCountOver(purchaseHistoryList)) return true;
+        if (maxCount > -1 && purchaseHistoryList.size() >= maxCount) return true;
+        return false;
     }
 }

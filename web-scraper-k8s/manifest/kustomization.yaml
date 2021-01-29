@@ -1,14 +1,20 @@
 resources:
-  - scraper-db-deployment.yaml
+  - scraper-db-statefulset.yaml
   - scraper-db-service.yaml
-  - scraper-solr-deployment.yaml
+  - scraper-db-node-port.yaml
+  - scraper-solr-statefulset.yaml
   - scraper-solr-service.yaml
+  - scraper-solr-node-port.yaml
   - scraper-app-deployment.yaml
-  - scraper-app-service.yaml
+  - scraper-app-deployment-pvc.yaml
+  - scraper-app-node-port.yaml
   - scraper-web-admin-deployment.yaml
-  - scraper-web-admin-service.yaml
+  - scraper-web-admin-node-port.yaml
   - scraper-web-user-deployment.yaml
-  - scraper-web-user-service.yaml
+  - scraper-web-user-node-port.yaml
   - scraper-login-check-cronjob.yaml
+  - scraper-login-check-cronjob-pvc.yaml
   - scraper-purchase-history-cronjob.yaml
+  - scraper-purchase-history-cronjob-pvc.yaml
   - scraper-group-products-cronjob.yaml
+  - scraper-group-products-cronjob-pvc.yaml

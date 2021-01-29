@@ -24,3 +24,10 @@ spec:
               value: scraper-db
             image: tc3jp/scraper-app:dev1.0
             name: scraper-purchase-history-cronjob
+            volumeMounts:
+              - name: log
+                mountPath: /root/scraper/logs
+          volumes:
+            - name: log
+              persistentVolumeClaim:
+                claimName: scraper-purchase-history-cronjob

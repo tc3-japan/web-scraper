@@ -41,21 +41,19 @@ public class RakutenAuthenticationCrawler extends AbstractAuthenticationCrawler 
         HtmlPage page = webClient.getPage("https://grp01.id.rakuten.co.jp/rms/nid/vc?__event=login&service_id=top");
         NavigableAuthenticationPage authPage = new NavigableAuthenticationPage(page, webClient);
 
+        authPage.savePage("rakuten-auth", this.siteName, webpageService);
+
         authPage.type(username, "#loginInner_u");
-        authPage.savePage("rakuten-auth-1", this.siteName, webpageService);
-
         authPage.typePassword(password, "#loginInner_p");
-        authPage.savePage("rakuten-auth-2", this.siteName, webpageService);
-
         authPage.typeCheckbox("off", "#auto_logout");
-        authPage.savePage("rakuten-auth-3", this.siteName, webpageService);
-
         authPage.click(".loginButton", webpageService);
-        authPage.savePage("rakuten-auth-5", "rakuten", webpageService);
 
         authPage.savePage("rakuten-authenticated", siteName, webpageService);
 
-        authPage.confirmLoginByElementExists(".header-logo", "div[irc='MembershipHeader']");
+        authPage.setPage("https://order.my.rakuten.co.jp/");
+        authPage.savePage("rakuten-order", siteName, webpageService);
+
+        authPage.confirmLoginByElementExists("h2.ri-cmn-hdr-unique-ttl.gs_copied", ".oDrListItem:nth-child(1) .purchaseDate");
 
         return new RakutenAuthenticationCrawlerResult(authPage.getLoginStatus(), null);
     }

@@ -41,10 +41,10 @@ public class LoggingAspect {
      */
     @AfterThrowing(pointcut = "within(com.topcoder.api.service..*)", throwing = "ex")
     public void logAfterThrowing(JoinPoint joinPoint, Throwable ex) {
-        String message = MessageFormat.format("Error in method {}.{}(): Cause={}",
+        String message = MessageFormat.format("Error in method {0}.{1}(): Cause={2}",
                 joinPoint.getSignature().getDeclaringTypeName(), joinPoint.getSignature().getName(),
                 ex.getCause() != null ? ex.getCause() : "NULL", ex.getMessage());
-        Common.ZabbixLog(logger, message);
+        Common.ZabbixLog(logger, message, ex);
     }
 
     /**
@@ -70,7 +70,7 @@ public class LoggingAspect {
             }
             return result;
         } catch (IllegalArgumentException ex) {
-            String message = MessageFormat.format("Illegal argument: {} in {}.{}()", Arrays.toString(joinPoint.getArgs()),
+            String message = MessageFormat.format("Illegal argument: {0} in {1}.{2}()", Arrays.toString(joinPoint.getArgs()),
                     joinPoint.getSignature().getDeclaringTypeName(), joinPoint.getSignature().getName());
             Common.ZabbixLog(logger, message, ex);
             throw ex;

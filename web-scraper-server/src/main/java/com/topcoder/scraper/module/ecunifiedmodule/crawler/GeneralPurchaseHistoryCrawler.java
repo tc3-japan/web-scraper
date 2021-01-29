@@ -1,11 +1,10 @@
 package com.topcoder.scraper.module.ecunifiedmodule.crawler;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.*;
-import java.net.URL;
 import java.time.LocalDate;
 
+import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.topcoder.scraper.exception.CheckLoginException;
 import com.topcoder.scraper.exception.NotLoggedinException;
 import org.slf4j.Logger;
@@ -66,13 +65,17 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
     @Setter
     private PurchaseHistory currentPurchaseHistory; // OrderInfo (to be refactored)
 
-    private int maxCount = 0;
+    private boolean isChangeDetection = false;
 
-    public GeneralPurchaseHistoryCrawler(String site, WebpageService webpageService, ConfigurationRepository configurationRepository, PurchaseHistoryRepository historyRepository, int maxCount) {
+    private Integer maxCountForDetection = null;
+
+    public GeneralPurchaseHistoryCrawler(String site, WebpageService webpageService, ConfigurationRepository configurationRepository, PurchaseHistoryRepository historyRepository, Integer maxCountForDetection) {
         super(site, "purchase_history", webpageService, configurationRepository);
         this.historyRepository = historyRepository;
-        this.maxCount = maxCount;
+        this.maxCountForDetection = maxCountForDetection;
+        this.isChangeDetection = maxCountForDetection != null;
     }
+
     public GeneralPurchaseHistoryCrawler(String site, WebpageService webpageService, ConfigurationRepository configurationRepository) {
         super(site, "purchase_history", webpageService, configurationRepository);
     }
@@ -137,11 +140,17 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
 
         int currentYear = LocalDate.now().getYear();
         String url = purchaseHistoryConfig.getUrl().replace("{year}", String.valueOf(currentYear));
-        historyPage.setPage(url);
+
+        try {
+            historyPage.setPage(url);
+        } catch(FailingHttpStatusCodeException e) {
+            LOGGER.info(e.getMessage());
+            throw new NotLoggedinException("Login check failed due to redirection, url:" + url);
+        }
 
         if (this.historyPage.getPage() != null) {
             if (isRedirected()) {
-                throw new NotLoggedinException("Login failed due to redirection, url:" + historyPage.getPage().getUrl().toString());
+                throw new NotLoggedinException("Login check failed due to redirection, url:" + url);
             }
 
             Selector orderFilter = purchaseHistoryConfig.getOrderFilter();
@@ -169,13 +178,36 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
     private int processPurchaseHistory(String url) throws IOException, DuplicatedException, NotLoggedinException {
         LOGGER.debug("[processPurchaseHistory] in");
 
-        historyPage.setPage(url);
+        // Rakuten dummy Cookies to test
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.setTime(new Date());
+//        calendar.add(Calendar.DATE, 1);
+//        Date date = calendar.getTime();
+//
+//        CookieManager cookieManager = webClient.getWebClient().getCookieManager();
+//        cookieManager.clearCookies();
+//        cookieManager.addCookie(new Cookie(".rakuten.co.jp", "Rq", "60121ce9", "/", date, true));
+//        cookieManager.addCookie(new Cookie(".rakuten.co.jp", "Rz", "A1y0UVjdn0f0cbv-fJexxmL8UpG8x2xt9pj7mkhcUj4ylwpvM2tDzyTG94guBi9nB5cx9-sI_99MbFy6q94_4J-60u0sv7oGzm7nKnFgbRRjGE6qR-5snKA2yJp0xQ_Ru8dHOW6gn6ybWesK5e7FuR4~", "/", date, true));
+//        cookieManager.addCookie(new Cookie(".rd.rakuten.co.jp", "Rp_s", "fb4ef25e.5b9df49a6255e", "/", date, false));
+//        cookieManager.addCookie(new Cookie(".rakuten.co.jp", "_ra", "1611743534888|37e03bfc-5778-4e5a-9fb6-4db862d532c3", "/", date, true));
+//        cookieManager.addCookie(new Cookie(".rakuten.co.jp", "Rb", "1s042c0s08", "/", date, true));
+//        cookieManager.addCookie(new Cookie(".rakuten.co.jp", "Ra", "Aw0uIfhlAuFfN8CgmjPaTR2Bc9CXMgQXU0GGB9nFmivkFFLT8tJRWKSi0lw0hrXg3LdZ0I7-d-kyiWt6XaTbaFZKKDKFXwUw6a1Aj-1wOqvPBwq4WbBNL3sBKgYA8Jo0XPY~", "/", date, true));
+//        cookieManager.addCookie(new Cookie(".rakuten.co.jp", "Ry", "1&5b857bd064dbdad4fc424b51efb0585d8d8427d40ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEF&20210128110945", "/", date, true));
+//        cookieManager.addCookie(new Cookie(".rakuten.co.jp", "Rp", "dc6b12127c270d068233e7be386011412ef0167", "/", date, true));
+
+        try {
+            historyPage.setPage(url);
+        } catch(FailingHttpStatusCodeException e) {
+            LOGGER.info(e.getMessage());
+            throw new NotLoggedinException("Login check failed due to redirection, url:" + url);
+        }
+
         scrapedPageList.add(url);
 
         int orderListSize = 0;
         while (this.historyPage.getPage() != null) {
             if (isRedirected()) {
-                throw new NotLoggedinException("Login failed due to redirection, url:" + historyPage.getPage().getUrl().toString());
+                throw new NotLoggedinException("Login check failed due to redirection, url:" + url);
             }
 
             // if called from dryrun module check over maxcount or not.
@@ -347,6 +379,7 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
      * @return result
      */
     protected boolean isNew() {
+        if (isChangeDetection) return true;
         return historyRepository == null
                 || historyRepository.getByEcSiteAndOrderNo(site, currentPurchaseHistory.getOrderNumber()).isEmpty();
     }
@@ -386,10 +419,16 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
         this.historyPage = new NavigablePurchaseHistoryPage(this.webClient);
 
         purchaseHistoryConfig = new ObjectMapper().readValue(this.jsonConfigText, PurchaseHistoryConfig.class);
-        historyPage.setPage(purchaseHistoryConfig.getUrl());
+
+        try {
+            historyPage.setPage(purchaseHistoryConfig.getUrl());
+        } catch(FailingHttpStatusCodeException e) {
+            LOGGER.info(e.getMessage());
+            throw new CheckLoginException("Login check failed due to redirection, url:" + purchaseHistoryConfig.getUrl());
+        }
 
         if (isRedirected()) {
-            throw new CheckLoginException("Login failed due to redirection, url:" + historyPage.getPage().getUrl().toString());
+            throw new CheckLoginException("Login check failed due to redirection, url:" + purchaseHistoryConfig.getUrl());
         }
     }
 
@@ -399,20 +438,15 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
      * @return boolean isRedirected
      */
     private boolean isRedirected() {
-        try {
-            String domain = "https://" + historyPage.getPage().getUrl().getHost();
-            String configDomain = "https://" + new URL(purchaseHistoryConfig.getUrl()).getHost();
-            return !domain.equalsIgnoreCase(configDomain);
-        } catch (MalformedURLException e) {
-            String message = "Purchase History Config Url is a malformed URL. URL:" + purchaseHistoryConfig.getUrl();
-            Common.ZabbixLog(LOGGER, message, e);
-            return Boolean.FALSE;
-        }
+        String domain = historyPage.getPageUrl().toString().split("\\?")[0];
+        String configDomain = purchaseHistoryConfig.getUrl().split("\\?")[0];
+        return !domain.contains(configDomain);
     }
 
     private boolean isMaxCount() {
         if (dryRunUtils != null && dryRunUtils.checkCountOver(purchaseHistoryList)) return true;
-        if (maxCount > -1 && purchaseHistoryList.size() >= maxCount) return true;
+        if (isChangeDetection && maxCountForDetection > 0 &&
+                purchaseHistoryList.size() >= maxCountForDetection) return true;
         return false;
     }
 }

@@ -1,9 +1,11 @@
 package com.topcoder.scraper.module.ecunifiedmodule;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
+import com.topcoder.common.model.AuthStatusType;
 import com.topcoder.scraper.exception.NotLoggedinException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,11 +76,8 @@ public class GeneralPurchaseHistoryModule implements IPurchaseHistoryModule {
                     continue;
                 }
 
-                // TODO: "lastPurchaseHistory" is no used.
-                Optional<PurchaseHistory> lastPurchaseHistory = purchaseHistoryService.fetchLast(ecSiteAccountDAO.getId());
-
                 GeneralPurchaseHistoryCrawlerResult crawlerResult =
-                        this.fetchPurchaseHistoryListForECSiteAccount(ecSiteAccountDAO, lastPurchaseHistory.orElse(null), -1);
+                        this.fetchPurchaseHistoryListForECSiteAccount(ecSiteAccountDAO, null);
 
                 if (crawlerResult != null) {
                     List<PurchaseHistory> list = crawlerResult.getPurchaseHistoryList();
@@ -91,12 +90,12 @@ public class GeneralPurchaseHistoryModule implements IPurchaseHistoryModule {
         }
     }
 
-    public GeneralPurchaseHistoryCrawlerResult fetchPurchaseHistoryListForECSiteAccount(ECSiteAccountDAO ecSiteAccountDAO, PurchaseHistory lastPurchaseHistory, int maxCount) {
+    public GeneralPurchaseHistoryCrawlerResult fetchPurchaseHistoryListForECSiteAccount(ECSiteAccountDAO ecSiteAccountDAO, Integer maxCountForDetection) {
         if (ecSiteAccountDAO.getEcUseFlag() != Boolean.TRUE) {
             LOGGER.info("EC Site [" + ecSiteAccountDAO.getId() + ":" + ecSiteAccountDAO.getEcSite() + "] is not active. Skipped.");
             return null;
         }
-        this.crawler = new GeneralPurchaseHistoryCrawler(ecSiteAccountDAO.getEcSite(), webpageService, this.configurationRepository, this.historyRepository, maxCount);
+        this.crawler = new GeneralPurchaseHistoryCrawler(ecSiteAccountDAO.getEcSite(), webpageService, this.configurationRepository, this.historyRepository, maxCountForDetection);
 
         TrafficWebClient webClient = new TrafficWebClient(ecSiteAccountDAO.getUserId(), true);
         LOGGER.info("web client version = " + webClient.getWebClient().getBrowserVersion());
@@ -118,6 +117,11 @@ public class GeneralPurchaseHistoryModule implements IPurchaseHistoryModule {
             Common.ZabbixLog(LOGGER, message, e);
         } catch (NotLoggedinException e) {
             Common.ZabbixLog(LOGGER, e);
+
+            ecSiteAccountDAO.setAuthStatus(AuthStatusType.LOGGED_OUT);
+            ecSiteAccountDAO.setIsLogin(false);
+            ecSiteAccountDAO.setUpdateAt(Date.from(Instant.now()));
+            ecSiteAccountRepository.save(ecSiteAccountDAO);
         }
         return null;
     }

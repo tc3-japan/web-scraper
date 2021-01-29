@@ -117,7 +117,7 @@ SET
 {
   "url": "https://order.my.rakuten.co.jp/?l-id=top_normal_function04&fidomy=1",
   "purchase_order": {
-    "parent": "html > body > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-type(2) > div:nth-of-type(1) > div > div > div.oDrListItem.clfx > table > tbody > tr",
+    "parent": "html > body > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div > div.oDrListItem.clfx > table > tbody > tr",
     "order_number": {
       "element": "td:nth-of-type(1) > div > ul:nth-of-type(1) > li:nth-of-type(2) > span.idNum",
       "full_path": false,
@@ -136,7 +136,7 @@ SET
     },
     "purchase_product": {
       "url_element": "td:nth-of-type(1) > div > ul:nth-of-type(1) > li.oDrDetailList > a",
-      "parent": "html > body > div:nth-of-type(1) > div:nth-of-type(7) > div > div > div:nth-of-type(3) > table:nth-of-type(1) > tbody > tr",
+      "parent": "html > body > div:nth-of-type(1) > div > div > div > div:nth-of-type(3) > table:nth-of-type(1) > tbody > tr",
       "total_amount": {
         "element": "html > body > div:nth-of-type(1) > div:nth-of-type(7) > div > div > div:nth-of-type(3) > table:nth-of-type(2) > tbody > tr > td:nth-of-type(3) > table > tbody > tr:nth-of-type(1) > td",
         "full_path": true,

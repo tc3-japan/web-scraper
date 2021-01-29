@@ -270,7 +270,6 @@ public class AmazonAuthenticationCrawler extends AbstractAuthenticationCrawler {
                     return new AmazonAuthenticationCrawlerResult(false,
                             "Landed unexpected page. Unable to proceed anymore.",
                             null, null, false);
-//                    throw new AuthenticationException("Landed unexpected page. Unable to proceed anymore.");
                 }
 
                 authStep = AuthStep.DONE;

@@ -2,6 +2,7 @@ package com.topcoder.scraper.module.ecunifiedmodule;
 
 import com.topcoder.common.dao.ECSiteAccountDAO;
 import com.topcoder.common.dao.UserDAO;
+import com.topcoder.common.model.AuthStatusType;
 import com.topcoder.common.repository.ConfigurationRepository;
 import com.topcoder.common.repository.ECSiteAccountRepository;
 import com.topcoder.common.repository.UserRepository;
@@ -66,6 +67,7 @@ public class GeneralLoginCheckModule implements ILoginCheckModule {
                     ecSiteAccountDAO.setLastLoginedAt(Date.from(Instant.now()));
                     ecSiteAccountDAO.setUpdateAt(Date.from(Instant.now()));
                 } else if (loginCheckResult.equals(LoginCheckResult.FAILED)) {
+                    ecSiteAccountDAO.setAuthStatus(AuthStatusType.LOGGED_OUT);
                     ecSiteAccountDAO.setIsLogin(false);
                     ecSiteAccountDAO.setUpdateAt(Date.from(Instant.now()));
                 }

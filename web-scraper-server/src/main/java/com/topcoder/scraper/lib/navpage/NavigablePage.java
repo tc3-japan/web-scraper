@@ -315,8 +315,13 @@ public class NavigablePage {
         return savePage(siteName, type, keyword, contents, webpageService);
     }
 
-    public String savePage(String siteName, String type, String contents, WebpageService webpageService) {
-        return savePage(siteName, type, "", contents, webpageService);
+    public String savePage(String fileName, String siteName, String contents, WebpageService webpageService) {
+        //Characters that cannot be used in folder names are replaced as underscore
+        fileName = fileName.replaceAll("[/><?:\"\\*|;]", "_");
+        // save html page
+        String saveContents = convertHtmlCharset(contents);
+        saveContents = convertToAbsolutePath(saveContents);
+        return webpageService.save(fileName, siteName, saveContents, true);
     }
 
     public String savePage(String siteName, String type, String keyword, String contents, WebpageService webpageService) {
@@ -331,12 +336,8 @@ public class NavigablePage {
                 fileName += keyword;
             }
         }
-        //Characters that cannot be used in folder names are replaced as underscore
-        fileName = fileName.replaceAll("[/><?:\"\\*|;]", "_");
-        // save html page
-        String saveContents = convertHtmlCharset(contents);
-        saveContents = convertToAbsolutePath(saveContents);
-        return webpageService.save(fileName, siteName, saveContents, true);
+
+        return savePage(fileName, siteName, contents, webpageService);
     }
 
     private String convertHtmlCharset(String contents) {

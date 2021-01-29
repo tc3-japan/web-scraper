@@ -211,8 +211,8 @@ public class Common {
         System.out.println(text);
     }
 
-    public static void ZabbixLog(Logger logger, String message, Exception e) {
-        logger.error("Zabbix [" + message + ":" + e.getMessage() + "]");
+    public static void ZabbixLog(Logger logger, String message, Throwable e) {
+        logger.error("Zabbix [" + message + ":" + getThrowableMessage(e) + "]");
         e.printStackTrace();
     }
 
@@ -220,9 +220,16 @@ public class Common {
         logger.error("Zabbix [" + message + "]");
     }
 
-    public static void ZabbixLog(Logger logger, Exception e) {
-        ZabbixLog(logger, e.getMessage());
+    public static void ZabbixLog(Logger logger, Throwable e) {
+        ZabbixLog(logger, getThrowableMessage(e));
         e.printStackTrace();
+    }
+
+    private static String getThrowableMessage(Throwable e) {
+        while (e.getCause() != null) {
+            e = e.getCause();
+        }
+        return e.getMessage();
     }
 
 }

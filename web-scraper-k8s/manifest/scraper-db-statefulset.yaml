@@ -72,35 +72,3 @@ spec:
         resources:
           requests:
             storage: 1Gi
-#        volumeMounts:
-#        - mountPath: /etc/mysql/conf.d
-#          name: scraper-db-claim0
-#        - mountPath: /root/mysql/initdb.d
-#          name: scraper-db-claim1
-#        - mountPath: /root/mysql/jobs.d
-#          name: scraper-db-claim2
-#        - mountPath: /var/lib/mysql
-#          name: scraper-db-claim3
-#        - mountPath: /var/log/mysql
-#          name: scraper-db-claim4
-#        - mountPath: /root/mysql/backup
-#          name: scraper-db-claim5
-#      volumes:
-#      - name: scraper-db-claim0
-#        hostPath:
-#          path: /etc/mysql/conf.d
-#      - name: scraper-db-claim1
-#        hostPath:
-#          path: /etc/mysql/initdb.d
-#      - name: scraper-db-claim2
-#        hostPath:
-#          path: /etc/mysql/jobs.d
-#      - name: scraper-db-claim3
-#        hostPath:
-#          path: /var/local/scraper/mysql/data
-#      - name: scraper-db-claim4
-#        hostPath:
-#          path: /var/local/scraper/mysql/logs
-#      - name: scraper-db-claim5
-#        hostPath:
-#          path: /var/local/scraper/mysql/backup

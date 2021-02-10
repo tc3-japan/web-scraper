@@ -14,16 +14,10 @@ Create Kubernetes cluster in advance by a Kubernetes cluster creation tool.
 
 Following can be configured in Kubernetes objects yaml for your environment.
 
- 1. Increase `replicas`
+ 1. Increase `replicas` if needed
 	 in scraper-app-deployment.yaml and scraper-web-deployment.yaml
 
- 2. Add `volumeMounts` and `volumes` for below paths
-	 - scraper-db-deployment.yaml
-		* /var/lib/mysql : contains data files
-		* /var/log/mysql : contains log files
-		* /root/mysql/backup : contains backup data files
-	- scraper-solr-deployment.yaml
-		* /var/solr/data :  contains data files
+ 2. Change `volumeMounts` and `volumes` for each deployment yaml
 
 ## Create / Update Resources
 
@@ -61,7 +55,6 @@ Please see [scraper-app description](../web-scraper-server/README.md) for more d
 
 If large scale scraper application is built for many users, following are needed to consider.
 
- 1. Scaling Mysql and Solr
- 2. DNS for scraper-app and scraper-web pods
- 3. Secrets Object for MySQL password in scraper-db-deployment
+ 1. DNS for scraper-app and scraper-web pods
+ 2. Secrets Object for MySQL password in scraper-db-deployment
 

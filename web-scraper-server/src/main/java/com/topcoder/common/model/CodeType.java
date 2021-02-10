@@ -7,6 +7,7 @@ package com.topcoder.common.model;
 public enum CodeType {
     MFA,
     Verification,
+    SMSApproval,
     CAPTCHA,
     VerifyCodeLogin,
 }

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --open src/admin/main.ts",
-    "build": "vue-cli-service build --dest dist/admin src/admin/main.ts",
+    "build": "vue-cli-service build --dest dist/admin src/admin/main.ts; vue-cli-service build --dest dist/user src/user/main.ts",
     "serve-user": "vue-cli-service serve --port 8081 --open src/user/main.ts",
     "build-user": "vue-cli-service build --dest dist/user src/user/main.ts",
     "lint": "vue-cli-service lint"

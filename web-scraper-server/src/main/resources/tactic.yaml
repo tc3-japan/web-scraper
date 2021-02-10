@@ -1,11 +1,11 @@
 default_tactic:
   request_headers:
     user-agents:
-      - "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.101 Safari/537.33"
+      - "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_2_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36"
   request_interval: 1
   request_interval_random: false
-  #proxy_servers:
-  #  - http://127.0.0.1:1087
+  proxy_servers:
+    - http://54.238.193.77:60088
   #  - socks5://127.0.0.1:1087
   #proxy_servers_random: true
   retry_interval: 1
@@ -14,12 +14,12 @@ tactics:
   - users_range: 1-1
     request_headers:
       user-agents:
-        - "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.111 Safari/537.11"
-        - "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.112 Safari/537.12"
+        - "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_2_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36"
+        - "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_2_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.97 Safari/537.37"
     request_interval: 1
     request_interval_random: false
-    #proxy_servers:
-    #  - http://127.0.0.1:1087
+    proxy_servers:
+      - http://54.238.193.77:60088
     #  - socks5://127.0.0.1:1087
     #proxy_servers_random: true
     retry_interval: 1
@@ -27,10 +27,12 @@ tactics:
   - users_range: 2-3
     request_headers:
       user-agents:
-        - "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.21"
-        - "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.122 Safari/537.22"
+        - "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_2_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36"
+        - "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_2_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.97 Safari/537.37"
     request_interval: 1
     request_interval_random: false
+    proxy_servers:
+      - http://54.238.193.77:60088
     #proxy_servers:
     #  - http://127.0.0.1:1087
     #  - socks5://127.0.0.1:1087

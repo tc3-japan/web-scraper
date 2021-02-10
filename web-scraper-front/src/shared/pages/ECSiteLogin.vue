@@ -5,7 +5,20 @@
     <div class="unexpected-error" v-if="this.unexpectedError">{{this.unexpectedError}}</div>
     <div v-if="!siteLoaded">{{trans('loginInitializing')}}</div>
 
-    <div class="user-login" v-if="siteLoaded && !userLoadErrorMsg && !unexpectedError">
+    <div class="user-login" v-if="smsChecking">
+      <div class="row">
+        {{trans('smsChecking')}}
+      </div>
+      <div class="row buttons">
+        <button
+          class="app-button"
+          :disabled="isDoingLogin"
+          @click="login()"
+        >{{trans('smsApproved')}}</button>
+      </div>
+    </div>
+
+    <div class="user-login" v-if="siteLoaded && !smsChecking && !userLoadErrorMsg && !unexpectedError">
       <div class="row" v-if="site['ecSite'] === 'yahoo'">
         {{trans('yahooPasswordMessage')}}
       </div>
@@ -54,6 +67,7 @@ export default class ECSiteLogin extends Vue {
   public siteId = null;
 
   public siteLoaded = false;
+  public smsChecking = false;
   public site = {};
   public userLoadErrorMsg = null;
   public unexpectedError = null;
@@ -178,21 +192,23 @@ export default class ECSiteLogin extends Vue {
         if (rsp.data.reason) {
           this.loginError = rsp.data.reason;
         }
+        this.smsChecking = this.codeType === 'SMSApproval';
 
         if (this.step === 'ERROR') {
           this.unexpectedError = rsp.data.reason;
           this.$forceUpdate();
         } else if (this.step === 'DONE') {
 
-          if (this.$router.currentRoute.name === 'Login') {
-            window.location.href = 'login_done.html';
-          }
-
           // login success
           this.$router.push({
             name: 'EC Site Settings',
             params: { id: this.userId },
           });
+        }
+
+        if (this.smsChecking) {
+          this.code = 'SMS-Approval';
+          this.$forceUpdate();
         }
       })
       .catch((err) => {
@@ -202,6 +218,44 @@ export default class ECSiteLogin extends Vue {
         this.isDoingLogin = false;
       });
   }
+
+  // /**
+  //  * when login clicked
+  //  */
+  // public approved() {
+  //   const loginBody = {
+  //     email: this.email,
+  //     password: this.password,
+  //     code: this.code.trim().length <= 0 ? null : this.code.trim(),
+  //     uuid: this.uuid,
+  //     siteId: this.siteId,
+  //   };
+
+  //   ApiService.approved(this.userId, null)
+  //     .then((rsp) => {
+  //       console.log(rsp);
+  //       this.step = rsp.data.authStep;
+
+  //       if (this.step === 'SMS') {
+  //         this.smsChecking = true;
+  //         this.$forceUpdate();
+  //       } else if (this.step === 'ERROR') {
+  //         this.unexpectedError = rsp.data.reason;
+  //         this.$forceUpdate();
+  //       } else if (this.step === 'DONE') {
+
+  //         // login success
+  //         this.$router.push({
+  //           name: 'EC Site Settings',
+  //           params: { id: this.userId },
+  //         });
+  //       }
+  //     })
+  //     .catch((err) => {
+  //         this.unexpectedError = "Unexpected Error";
+  //         this.$forceUpdate();
+  //     });
+  // }
 }
 </script>
 

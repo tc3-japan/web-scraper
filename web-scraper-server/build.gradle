@@ -1,10 +1,10 @@
 buildscript {
   ext.versions = [
     'springBoot'     : '1.5.7.RELEASE',
-    'htmlunit'       : '2.33',
+    'htmlunit'       : '2.47.0',
     'gson'           : '2.8.5',
     'jackson'        : '2.9.7',
-    'mysqlConnector' : '8.0.13',
+    'mysqlConnector' : '8.0.23',
     'flyway'         : '5.2.4',
     'groovy'         : '2.5.8',
     'solr'           : '8.2.0'

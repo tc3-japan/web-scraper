@@ -264,23 +264,22 @@ public class AmazonAuthenticationCrawler extends AbstractAuthenticationCrawler {
                             CodeType.Verification, null, true);
                 }
 
-                HtmlAnchor orderButton = finalPage.querySelector(property.getCrawling().getHomePage().getOrdersButton());
-                if (orderButton == null) {
-                    authStep = AuthStep.ERROR;
-                    return new AmazonAuthenticationCrawlerResult(false,
-                            "Landed unexpected page. Unable to proceed anymore.",
-                            null, null, false);
-                }
+                AmazonAuthenticationCrawlerResult amazonAuthenticationCrawlerResult = CheckSmsApprovalStatus();
+                if (amazonAuthenticationCrawlerResult != null) return amazonAuthenticationCrawlerResult;
 
-                authStep = AuthStep.DONE;
+            } else {
 
-            } else { // fill code
                 // verification code input
                 HtmlTextInput codeInput = finalPage.querySelector(property.getCrawling().getLoginPage().getVerificationCodeInput());
                 HtmlSubmitInput sendCode = finalPage.querySelector(property.getCrawling().getLoginPage().getVerificationCodeSubmit());
                 HtmlSubmitInput mfaLoginButton = finalPage.querySelector(property.getCrawling().getLoginPage().getMfaLoginButton());
+                HtmlSpan smsSpan = finalPage.querySelector(property.getCrawling().getLoginPage().getSmsApproval());
 
-                if (codeInput != null && sendCode != null) {
+                if (smsSpan != null) {
+                    finalPage = (HtmlPage) finalPage.refresh();
+                    AmazonAuthenticationCrawlerResult amazonAuthenticationCrawlerResult = CheckSmsApprovalStatus();
+                    if (amazonAuthenticationCrawlerResult != null) return amazonAuthenticationCrawlerResult;
+                } else if (codeInput != null && sendCode != null) {
                     codeInput.type(code);
                     finalPage = webClient.click(sendCode);
                     String path = webpageService.save("enter-verification-code", siteName, finalPage.getWebResponse().getContentAsString());
@@ -500,4 +499,24 @@ public class AmazonAuthenticationCrawler extends AbstractAuthenticationCrawler {
         }
     }
 
+    private AmazonAuthenticationCrawlerResult CheckSmsApprovalStatus() {
+
+        HtmlSpan smsSpan = finalPage.querySelector(property.getCrawling().getLoginPage().getSmsApproval());
+        if (smsSpan != null) {
+            LOGGER.info("SMS Approval Needed, at step = " + authStep);
+            return new AmazonAuthenticationCrawlerResult(false, "SMS Approval Needed",
+                    CodeType.SMSApproval, null, true);
+        }
+
+        HtmlAnchor orderButton = finalPage.querySelector(property.getCrawling().getHomePage().getOrdersButton());
+        if (orderButton == null) {
+            authStep = AuthStep.ERROR;
+            return new AmazonAuthenticationCrawlerResult(false,
+                    "Landed unexpected page. Unable to proceed anymore.",
+                    null, null, false);
+        }
+
+        authStep = AuthStep.DONE;
+        return null;
+    }
 }

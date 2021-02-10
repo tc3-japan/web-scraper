@@ -33,10 +33,12 @@ public class AmazonProperty {
         private String captchaSubmit1st;
 
         private String mfaInput;
+        private String mfaLoginButton;
+
         private String verificationCodeSubmit;
         private String verificationCodeInput;
 
-        private String mfaLoginButton;
+        private String smsApproval;
 
         public String getEmailInput() {
             return emailInput;
@@ -78,9 +80,7 @@ public class AmazonProperty {
             return mfaInput;
         }
 
-        public String getMfaLoginButton() {
-            return mfaLoginButton;
-        }
+        public String getMfaLoginButton() { return mfaLoginButton; }
 
         public String getVerificationCodeSubmit() {
             return verificationCodeSubmit;
@@ -97,6 +97,8 @@ public class AmazonProperty {
         public void setVerificationCodeInput(String verificationCodeInput) {
             this.verificationCodeInput = verificationCodeInput;
         }
+
+        public String getSmsApproval() { return smsApproval; }
 
         public void setEmailInput(String emailInput) {
             this.emailInput = emailInput;
@@ -141,6 +143,8 @@ public class AmazonProperty {
         public void setMfaLoginButton(String mfaLoginButton) {
             this.mfaLoginButton = mfaLoginButton;
         }
+
+        public void setSmsApproval(String smsApproval) { this.smsApproval = smsApproval; }
     }
 
     public static class HomePage {

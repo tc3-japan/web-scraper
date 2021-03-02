@@ -5,6 +5,8 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
+import com.topcoder.api.service.login.LoginHandler;
+import com.topcoder.api.service.login.LoginHandlerFactory;
 import com.topcoder.common.model.AuthStatusType;
 import com.topcoder.scraper.exception.NotLoggedinException;
 import org.slf4j.Logger;
@@ -45,18 +47,16 @@ public class GeneralPurchaseHistoryModule implements IPurchaseHistoryModule {
     @Autowired
     PurchaseHistoryRepository historyRepository;
 
-    // TODO: arrange login handler
-    //private final LoginHandlerBase loginHandler;
+    @Autowired
+    private LoginHandlerFactory loginHandlerFactory;
 
     @Autowired
     public GeneralPurchaseHistoryModule(PurchaseHistoryService purchaseHistoryService, ECSiteAccountRepository ecSiteAccountRepository, WebpageService webpageService
-                                        //LoginHandlerBase loginHandler
     ) {
         this.purchaseHistoryService = purchaseHistoryService;
         this.webpageService = webpageService;
         this.ecSiteAccountRepository = ecSiteAccountRepository;
         // TODO: arrange login handler
-        //this.loginHandler = loginHandler;
     }
 
     @Override
@@ -71,7 +71,7 @@ public class GeneralPurchaseHistoryModule implements IPurchaseHistoryModule {
             Iterable<ECSiteAccountDAO> accountDAOS = ecSiteAccountRepository.findAllByEcSite(site);
 
             for (ECSiteAccountDAO ecSiteAccountDAO : accountDAOS) {
-                if (ecSiteAccountDAO.getIsLogin() != null && !ecSiteAccountDAO.getIsLogin()) {
+                if (ecSiteAccountDAO.getIsLogin() == null) {
                     LOGGER.info("Not logged in EC Site [" + ecSiteAccountDAO.getId() + ":" + ecSiteAccountDAO.getEcSite() + "], Skipped.");
                     continue;
                 }
@@ -95,7 +95,12 @@ public class GeneralPurchaseHistoryModule implements IPurchaseHistoryModule {
             LOGGER.info("EC Site [" + ecSiteAccountDAO.getId() + ":" + ecSiteAccountDAO.getEcSite() + "] is not active. Skipped.");
             return null;
         }
-        this.crawler = new GeneralPurchaseHistoryCrawler(ecSiteAccountDAO.getEcSite(), webpageService, this.configurationRepository, this.historyRepository, maxCountForDetection);
+
+        LoginHandler loginHandler = loginHandlerFactory.getLoginHandler(ecSiteAccountDAO.getEcSite());
+        this.crawler = new GeneralPurchaseHistoryCrawler
+                (ecSiteAccountDAO.getEcSite(), webpageService,
+                        this.configurationRepository, this.historyRepository,
+                        loginHandler, ecSiteAccountDAO, maxCountForDetection);
 
         TrafficWebClient webClient = new TrafficWebClient(ecSiteAccountDAO.getUserId(), true);
         LOGGER.info("web client version = " + webClient.getWebClient().getBrowserVersion());

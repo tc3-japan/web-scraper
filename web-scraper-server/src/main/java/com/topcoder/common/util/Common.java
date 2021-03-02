@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -102,7 +103,8 @@ public class Common {
             cookies.append(cookie.getName()).append("=").append(cookie.getValue()).append("; ");
         }
         WebRequest page = new WebRequest(new URL(url));
-        page.setAdditionalHeader("cookie", cookies.substring(0, cookies.length() - 2));
+        if (StringUtils.isNotEmpty(cookies))
+            page.setAdditionalHeader("cookie", cookies.substring(0, cookies.length() - 2));
         return page;
     }
 

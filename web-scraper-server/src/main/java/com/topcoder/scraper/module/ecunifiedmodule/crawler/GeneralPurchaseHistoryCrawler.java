@@ -5,6 +5,9 @@ import java.util.*;
 import java.time.LocalDate;
 
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
+import com.topcoder.api.service.login.LoginHandler;
+import com.topcoder.common.dao.ECSiteAccountDAO;
+import com.topcoder.common.model.LoginResponse;
 import com.topcoder.scraper.exception.CheckLoginException;
 import com.topcoder.scraper.exception.NotLoggedinException;
 import org.slf4j.Logger;
@@ -62,17 +65,32 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
     private PurchaseHistoryRepository historyRepository;
 
     @Getter
+    private ECSiteAccountDAO ecSiteAccountDAO;
+
+    @Getter
     @Setter
     private PurchaseHistory currentPurchaseHistory; // OrderInfo (to be refactored)
 
     private boolean isChangeDetection = false;
 
+    private LoginHandler loginHandler = null;
+
     private Integer maxCountForDetection = null;
 
-    public GeneralPurchaseHistoryCrawler(String site, WebpageService webpageService, ConfigurationRepository configurationRepository, PurchaseHistoryRepository historyRepository, Integer maxCountForDetection) {
+    public GeneralPurchaseHistoryCrawler
+            (String site,
+             WebpageService webpageService,
+             ConfigurationRepository configurationRepository,
+             PurchaseHistoryRepository historyRepository,
+             LoginHandler loginHandler,
+             ECSiteAccountDAO ecSiteAccountDAO,
+             Integer maxCountForDetection) {
+
         super(site, "purchase_history", webpageService, configurationRepository);
         this.historyRepository = historyRepository;
         this.maxCountForDetection = maxCountForDetection;
+        this.loginHandler = loginHandler;
+        this.ecSiteAccountDAO = ecSiteAccountDAO;
         this.isChangeDetection = maxCountForDetection != null;
     }
 
@@ -134,7 +152,7 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
      *
      * @return purchase history year list
      */
-    private List<Integer> getYearFromOrderFilter() {
+    private List<Integer> getYearFromOrderFilter() throws IOException {
         LOGGER.debug("[getYearFromOrderFilter] in");
         List<Integer> years = new LinkedList<>();
 
@@ -145,12 +163,12 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
             historyPage.setPage(url);
         } catch(FailingHttpStatusCodeException e) {
             LOGGER.info(e.getMessage());
-            throw new NotLoggedinException("Login check failed due to redirection, url:" + url);
+            tryLogin(url);
         }
 
         if (this.historyPage.getPage() != null) {
             if (isRedirected()) {
-                throw new NotLoggedinException("Login check failed due to redirection, url:" + url);
+                tryLogin(url);
             }
 
             Selector orderFilter = purchaseHistoryConfig.getOrderFilter();
@@ -197,9 +215,11 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
 
         try {
             historyPage.setPage(url);
-        } catch(FailingHttpStatusCodeException e) {
+        } catch (FailingHttpStatusCodeException e) {
             LOGGER.info(e.getMessage());
-            throw new NotLoggedinException("Login check failed due to redirection, url:" + url);
+            e.printStackTrace();
+            webClient.finishTraffic();
+            tryLogin(url);
         }
 
         scrapedPageList.add(url);
@@ -207,7 +227,7 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
         int orderListSize = 0;
         while (this.historyPage.getPage() != null) {
             if (isRedirected()) {
-                throw new NotLoggedinException("Login check failed due to redirection, url:" + url);
+                tryLogin(url);
             }
 
             // if called from dryrun module check over maxcount or not.
@@ -230,6 +250,27 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
             this.historyPage.setPage(this.gotoNextPage(this.historyPage.getPage(), webClient));
         }
         return orderListSize;
+    }
+
+    private boolean tryLogin(String url) throws NotLoggedinException, IOException {
+        if (!"rakuten".equals(this.site)) {
+            throw new NotLoggedinException("Login check failed due to redirection, url:" + url);
+        }
+
+        LoginResponse loginResponse = loginHandler.login(ecSiteAccountDAO);
+        if (loginResponse == null) {
+            throw new NotLoggedinException("Login retry failed.");
+        }
+
+        boolean restoreRet = Common.restoreCookies(webClient.getWebClient(), ecSiteAccountDAO);
+        if (!restoreRet) {
+            String message = "skip ec site account id = " + ecSiteAccountDAO.getId() + ", restore cookies failed";
+            Common.ZabbixLog(LOGGER, message);
+            throw new NotLoggedinException(message);
+        }
+
+        historyPage.setPage(url);
+        return true;
     }
 
     /**
@@ -265,7 +306,12 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
             List<DomNode> productList;
             if (historyPage.isValid(orderConfig.getPurchaseProduct().getUrlElement())) {
                 HtmlAnchor anchor = orderNode.querySelector(orderConfig.getPurchaseProduct().getUrlElement());
-                orderPage = anchor.click();
+                orderPage = webClient.click(anchor);
+                if (!orderPage.getUrl().toString().equals(anchor.getHrefAttribute())) {
+                    LOGGER.debug("[processOrders] anchor.click() failed to URL = " + anchor.getHrefAttribute());
+                    orderPage = webClient.getPage(anchor.getHrefAttribute());
+                    LOGGER.debug("[processOrders] URL after getting href page = " + orderPage.getUrl().toString());
+                }
                 // fetch product by page root
                 productList = orderPage.querySelectorAll(orderConfig.getPurchaseProduct().getParent());
                 String savedPath = this.historyPage.savePage(this.site, "purchase-history-detail", orderPage, webpageService);
@@ -284,6 +330,8 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
             processProducts(productList, orderPage, reuseProduct, placeHolderNos);
             this.purchaseHistoryList.add(this.currentPurchaseHistory);
             i++;
+
+            if (isMaxCount()) break;
         }
         LOGGER.info("[processOrders] done, size = " + this.purchaseHistoryList.size());
     }

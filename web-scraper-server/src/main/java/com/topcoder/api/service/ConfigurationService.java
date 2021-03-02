@@ -2,10 +2,13 @@ package com.topcoder.api.service;
 
 import java.io.BufferedReader;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 
+import com.topcoder.scraper.module.ecunifiedmodule.GeneralChangeDetectionInitModule;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.topcoder.api.exception.ApiException;
@@ -53,6 +56,9 @@ public class ConfigurationService {
     @Autowired
     DryRunProductSearchModule dryRunProductSearchModule;
 
+    @Autowired
+    GeneralChangeDetectionInitModule generalChangeDetectionInitModule;
+
     /**
      * get config by site and type
      *
@@ -97,6 +103,13 @@ public class ConfigurationService {
 
         return resultText;
 
+    }
+
+    @Async
+    public void executeChangeDetectionInit(String site, String type) throws IOException {
+        List<String> sites = new ArrayList<>();
+        sites.add(site);
+        generalChangeDetectionInitModule.init(sites, type);
     }
 
     /**

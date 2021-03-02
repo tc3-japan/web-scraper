@@ -8,8 +8,10 @@ import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 // TODO: consider if we set FlywayAutoConfiguration.class, or not.
+@EnableAsync
 @SpringBootApplication(exclude = {SolrAutoConfiguration.class})
 //@SpringBootApplication(exclude = { FlywayAutoConfiguration.class, SolrAutoConfiguration.class })
 //Hack: Workaround for unable to component-scan "com.topcoder.common.util.SpringTool" by "java" command.

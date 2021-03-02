@@ -85,7 +85,6 @@ flyway {
 
 task copyJar(type: Copy) {
   from jar
-  into '../web-scraper-docker/scraper/build/libs'
   into '../web-scraper-k8s/scraper/libs'
 }
 build.dependsOn copyJar

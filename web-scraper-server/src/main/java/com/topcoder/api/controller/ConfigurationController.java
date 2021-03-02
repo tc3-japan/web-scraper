@@ -42,8 +42,10 @@ public class ConfigurationController {
      * @throws ApiException if any error happened
      */
     @PutMapping(path = "/{site}/{type}", consumes = "text/plain")
-    public String createOrUpdateConfig(@PathVariable("site") String site, @PathVariable("type") String type, @RequestBody String conf) {
-        return configurationService.createOrUpdateConfiguration(site, type, conf);
+    public String createOrUpdateConfig(@PathVariable("site") String site, @PathVariable("type") String type, @RequestBody String conf) throws IOException {
+        String result = configurationService.createOrUpdateConfiguration(site, type, conf);
+        configurationService.executeChangeDetectionInit(site, type);
+        return result;
     }
 
     /**

@@ -488,7 +488,11 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
     private boolean isRedirected() {
         String domain = historyPage.getPageUrl().toString().split("\\?")[0];
         String configDomain = purchaseHistoryConfig.getUrl().split("\\?")[0];
-        return !domain.contains(configDomain);
+
+        if (domain.contains(configDomain)) return false;
+
+        LOGGER.debug("Page URL:{}, Config URL:{}", domain, configDomain);
+        return true;
     }
 
     private boolean isMaxCount() {

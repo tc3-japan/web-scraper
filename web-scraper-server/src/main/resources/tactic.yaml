@@ -7,7 +7,7 @@ default_tactic:
   proxy_servers:
     - http://54.238.193.77:60088
   #  - socks5://127.0.0.1:1087
-  #proxy_servers_random: true
+  proxy_servers_random: true
   retry_interval: 1
   retry_trail_count: 10
 tactics:
@@ -21,7 +21,7 @@ tactics:
     proxy_servers:
       - http://54.238.193.77:60088
     #  - socks5://127.0.0.1:1087
-    #proxy_servers_random: true
+    proxy_servers_random: true
     retry_interval: 1
     retry_trail_count: 10
   - users_range: 2-3
@@ -33,9 +33,7 @@ tactics:
     request_interval_random: false
     proxy_servers:
       - http://54.238.193.77:60088
-    #proxy_servers:
-    #  - http://127.0.0.1:1087
     #  - socks5://127.0.0.1:1087
-    #proxy_servers_random: true
+    proxy_servers_random: true
     retry_interval: 1
     retry_trail_count: 10

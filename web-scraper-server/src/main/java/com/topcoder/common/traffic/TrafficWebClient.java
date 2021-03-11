@@ -233,6 +233,7 @@ public class TrafficWebClient {
         try {
             P p = request.invoke();
             afterRequest(eventDAO, true);
+            logger.debug(p.getWebResponse().getWebRequest().toString());
             return p;
         } catch (IOException e) {
             Common.ZabbixLog(logger, e);

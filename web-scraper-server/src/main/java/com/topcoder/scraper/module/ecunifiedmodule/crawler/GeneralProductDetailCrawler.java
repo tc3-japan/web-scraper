@@ -36,6 +36,7 @@ public class GeneralProductDetailCrawler extends AbstractGeneralCrawler {
         LOGGER.debug("url=" + url);
         ProductInfo productInfo = new ProductInfo();
         productInfo.setCode(productCode);
+        webClient.getWebClient().getCookieManager().clearCookies();
         NavigableProductDetailPage detailPage = new NavigableProductDetailPage(url, webClient, productInfo);
         for (List<ProductDetail> productDetails : productConfig.getProductDetails()) {
             for (ProductDetail productDetail : productDetails) {
@@ -55,7 +56,15 @@ public class GeneralProductDetailCrawler extends AbstractGeneralCrawler {
             savedPath = detailPage.savePage(site, "product-detail", productCode, detailPage, webpageService);
         }
 
-        return new GeneralProductDetailCrawlerResult(productInfo, savedPath);
+//        boolean isFailed = productInfo.getName() == null
+//                && productInfo.getPrice() == null
+//                && productInfo.getDistributor() == null
+//                && productInfo.getJanCode() == null
+//                && productInfo.getModelNo() == null;
+        String error = detailPage.scrapeText("#errorTxt > h2");
+        boolean isFailed = error == null ? false : error.startsWith("アクセスが集中し");
+
+        return new GeneralProductDetailCrawlerResult(isFailed ? null : productInfo, savedPath);
     }
 
     private boolean fetchProductInfo(String url, ProductDetail productDetail, NavigableProductDetailPage naviPage) {

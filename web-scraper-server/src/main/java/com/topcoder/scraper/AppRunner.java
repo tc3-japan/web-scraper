@@ -3,6 +3,7 @@ package com.topcoder.scraper;
 import java.io.IOException;
 import java.util.List;
 
+import com.topcoder.scraper.module.ecunifiedmodule.TestScrapingModule;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,12 +39,14 @@ public class AppRunner implements ApplicationRunner {
     private final GroupECProductsCommand groupECProductsCommand;
     private final BuildProductIndexCommand buildProductIndexCommand;
     private final LoginCheckCommand loginCheckCommand;
+    private final TestScrapingModule testScrapingModule;
 
     @Autowired
     public AppRunner(PurchaseHistoryListCommand purchaseHistoryListCommand, ProductDetailCommand productDetailCommand,
                      ChangeDetectionInitCommand changeDetectionInitCommand, ChangeDetectionCheckCommand changeDetectionCheckCommand,
                      UserEncoderCommand userEncoderCommand, DemoCommand demoCommand,
-                     GroupECProductsCommand groupECProductsCommand, BuildProductIndexCommand buildProductIndexCommand, LoginCheckCommand loginCheckCommand) {
+                     GroupECProductsCommand groupECProductsCommand, BuildProductIndexCommand buildProductIndexCommand,
+                     LoginCheckCommand loginCheckCommand, TestScrapingModule testScrapingModule) {
         this.purchaseHistoryListCommand = purchaseHistoryListCommand;
         this.productDetailCommand = productDetailCommand;
         this.changeDetectionInitCommand = changeDetectionInitCommand;
@@ -53,6 +56,7 @@ public class AppRunner implements ApplicationRunner {
         this.groupECProductsCommand = groupECProductsCommand;
         this.buildProductIndexCommand = buildProductIndexCommand;
         this.loginCheckCommand = loginCheckCommand;
+        this.testScrapingModule = testScrapingModule;
     }
 
     /**
@@ -86,6 +90,8 @@ public class AppRunner implements ApplicationRunner {
             buildProductIndexCommand.run(args);
         } else if (batches.contains("login_check")) {
             loginCheckCommand.run(args);
+        } else if (batches.contains("test")) {
+            testScrapingModule.run(args);
         } else {
             usage();
         }

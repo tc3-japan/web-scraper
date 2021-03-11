@@ -63,6 +63,10 @@ dependencies {
   compile("org.apache.solr:solr-solrj:${versions.solr}")
   compile("commons-codec:commons-codec:1.13")
 
+  compile("org.seleniumhq.selenium:selenium-java:3.141.59")
+  compile("org.seleniumhq.selenium:selenium-api:3.141.59")
+  compile("org.seleniumhq.selenium:selenium-chrome-driver:3.141.59")
+  compile("org.seleniumhq.selenium:selenium-remote-driver:3.141.59")
 
   testCompile("org.springframework.boot:spring-boot-starter-test:${versions.springBoot}")
 }

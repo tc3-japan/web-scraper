@@ -411,6 +411,14 @@ SET
         "script":""
       },
       {
+        "item": "product_distributor",
+        "selector": "#bylineInfo > span.author a.contributorNameID",
+        "attribute": "",
+        "regex": "",
+        "is_script": false,
+        "script": ""
+      },
+      {
         "item":"product_distributor",
         "selector":"#bylineInfo",
         "attribute":"",
@@ -475,72 +483,109 @@ SET
   ]
 }',
 @yahoo_product_detail_script = '{
-  "url": "https://store.shopping.yahoo.co.jp/{code}",
-  "product_details": [
-    [
-      {
-        "item": "product_code",
-        "selector": "head > link[rel=\\\"canonical\\\"]",
-        "attribute": "href",
-        "regex": "https:\\\/\\\/.*?\\\/(.*).html",
-        "is_script": false,
-        "script": ""
-      }
-    ],
-    [
-      {
-        "item":"unit_price",
-        "selector":".ItemPrice_price",
-        "attribute":"",
-        "regex":"",
-        "is_script": false,
-        "script":""
-      },
-      {
-        "item":"unit_price",
-        "selector":"p.elPrice:nth-child(2) > em",
-        "attribute":"",
-        "regex":"",
-        "is_script": false,
-        "script":""
-      }
-    ],
-    [
-      {
-        "item":"jan_code",
-        "selector":".mdItemInfoCode > p",
-        "attribute":"",
-        "regex":"[0-9]{13}",
-        "is_script": false,
-        "script":""
-      },
-      {
-        "attribute":"",
-        "item":"jan_code",
-        "regex":"JANコード/ISBNコード：(.+)",
-        "is_script": false,
-        "script":"",
-        "selector":".ItemDetails ul li:nth-of-type(2)"
-      }
-    ],
-    [
-      {
-        "attribute":"",
-        "item":"model_no",
-        "regex":"商品コード：(.+)",
-        "script":"(()=>{ var ifr = document.querySelector(''#itm_inf > div:nth-child(6) > div > iframe''); if (!ifr) return null; return ifr.contentDocument.body.querySelector(''#wrapper > table > tbody > tr:nth-child(4) > td > table > tbody > tr:nth-child(2) > td:nth-child(2) > font'').innerText; })();",
-        "selector":"#wrapper > table > tbody > tr:nth-child(4) > td > table > tbody > tr:nth-child(2) > td:nth-child(2) > font",
-        "is_script": false
-      },
-      {
-        "attribute":"",
-        "item":"model_no",
-        "regex":"商品コード：(.+)",
-        "script":"",
-        "selector":".ItemDetails li"
-      }
+   "url":"https://store.shopping.yahoo.co.jp/{code}",
+   "product_details":[
+      [
+         {
+            "item":"product_code",
+            "selector":"head > link[rel=\\\"canonical\\\"]",
+            "attribute":"href",
+            "regex":"https://.*?/(.*).html",
+            "is_script":false,
+            "script":""
+         }
+      ],
+      [
+         {
+            "item":"unit_price",
+            "selector":".isHighlight .elPriceValue span:nth-of-type(1)",
+            "attribute":"",
+            "regex":"",
+            "is_script":false,
+            "script":""
+         },
+         {
+            "attribute":"",
+            "item":"unit_price",
+            "regex":"([0-9]*)円",
+            "script":"",
+            "selector":".elPriceText span"
+         },
+         {
+            "attribute":"",
+            "item":"unit_price",
+            "regex":"",
+            "script":"",
+            "selector":"#prcdsp .elPrice span:nth-of-type(1)"
+         },
+         {
+            "item":"unit_price",
+            "selector":".ItemPrice-selling .ItemPrice_box p:nth-of-type(1)",
+            "attribute":"",
+            "regex":"",
+            "is_script":false,
+            "script":""
+         }
+      ],
+      [
+         {
+            "attribute":"",
+            "item":"jan_code",
+            "regex":"",
+            "script":"",
+            "selector":".elRows .elRow:nth-of-type(2) .elRowData p"
+         },
+         {
+            "item":"jan_code",
+            "selector":".mdItemInfoCode > p",
+            "attribute":"",
+            "regex":"[0-9]{13}",
+            "is_script":false,
+            "script":""
+         },
+         {
+            "attribute":"",
+            "item":"jan_code",
+            "regex":"JANコード/ISBNコード：(.+)",
+            "is_script":false,
+            "script":"",
+            "selector":".ItemDetails ul li:nth-of-type(2)"
+         }
+      ],
+      [
+         {
+            "attribute":"",
+            "item":"model_no",
+            "regex":"",
+            "script":"(()=>{ var ifr = document.querySelector(\'#itm_inf > div:nth-child(6) > div > iframe\'); if (!ifr) return null; return ifr.contentDocument.body.querySelector(\'#wrapper > table > tbody > tr:nth-child(4) > td > table > tbody > tr:nth-child(2) > td:nth-child(2) > font\').innerText; })();",
+            "selector":".elRows .elRow:nth-of-type(3) .elRowData p",
+            "is_script":false
+         },
+         {
+            "attribute":"",
+            "item":"model_no",
+            "regex":"商品コード：(.+)",
+            "script":"",
+            "selector":".ItemDetails li"
+         }
+      ],
+      [
+         {
+            "attribute":"",
+            "item":"product_distributor",
+            "regex":"",
+            "script":"",
+            "selector":".elMainItem [data-ylk=\\\"slk\\\\:storenam\\\\;pos\\\\:0\\\\;\\\"]"
+         },
+         {
+            "attribute":"",
+            "item":"product_distributor",
+            "regex":"",
+            "script":"",
+            "selector":"[data-ylk] h3"
+         }
+      ]
    ]
-  ]
 }',
 @amazon_product_search_script = '{
   "url": "https://www.amazon.co.jp/s?k={word}",

@@ -19,3 +19,4 @@ spec:
           value: scraper-db
         image: tc3jp/scraper-app:dev1.0
         name: scraper-product-job
+        imagePullPolicy: Always

@@ -21,3 +21,4 @@ spec:
           value: scraper-solr
         image: tc3jp/scraper-app:dev1.0
         name: scraper-group-products-job
+        imagePullPolicy: Always

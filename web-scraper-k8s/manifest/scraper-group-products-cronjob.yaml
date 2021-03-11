@@ -17,14 +17,15 @@ spec:
             - bash
             - -c
             - cd /root/scraper/;
-            - java -jar web-scraper-server-*.jar --batch=change_detection_check --target=product --spring.config.location=file:application.yaml &&
-            - java -jar web-scraper-server-*.jar --batch=product --spring.config.location=file:application.yaml &&
-            - java -jar web-scraper-server-*.jar --batch=group_products --spring.config.location=file:application.yaml
+              java -jar web-scraper-server-*.jar --batch=change_detection_check --target=product --spring.config.location=file:application.yaml &&
+              java -jar web-scraper-server-*.jar --batch=product --spring.config.location=file:application.yaml &&
+              java -jar web-scraper-server-*.jar --batch=group_products --spring.config.location=file:application.yaml
             env:
             - name: SCRAPER_DB_PORT_3306_TCP_ADDR
               value: scraper-db
             image: tc3jp/scraper-app:dev1.0
             name: scraper-product-search-cronjob
+            imagePullPolicy: Always
             volumeMounts:
               - name: log
                 mountPath: /root/scraper/logs

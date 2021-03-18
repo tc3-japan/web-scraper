@@ -4,8 +4,13 @@ default_tactic:
       - "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_2_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36"
   request_interval: 1
   request_interval_random: false
-  proxy_servers:
-    - http://54.238.193.77:60088
+#  proxy_servers:
+#    - http://lum-customer-c_5ae15880-zone-static_res-ip-161.123.3.80:zcv8ulq3zjdn@zproxy.lum-superproxy.io:22225
+#    - http://lum-customer-c_5ae15880-zone-dc_ex-route_err-block-country-jp:3k2wbko6xqvy@zproxy.lum-superproxy.io:22225
+#    - http://lum-customer-c_5ae15880-zone-dc_ex-ip-37.44.216.169:3k2wbko6xqvy@zproxy.lum-superproxy.io:22225
+#    - http://lum-customer-c_5ae15880-zone-dc_ex-ip-92.249.32.30:3k2wbko6xqvy@zproxy.lum-superproxy.io:22225
+#    - http://lum-customer-c_5ae15880-zone-dc_ex-ip-194.53.189.177:3k2wbko6xqvy@zproxy.lum-superproxy.io:22225
+#    - http://54.238.193.77:60088
   #  - socks5://127.0.0.1:1087
   proxy_servers_random: true
   retry_interval: 1
@@ -19,7 +24,10 @@ tactics:
     request_interval: 1
     request_interval_random: false
     proxy_servers:
-      - http://54.238.193.77:60088
+      - http://lum-customer-c_5ae15880-zone-dc_ex-ip-37.44.216.169:3k2wbko6xqvy@zproxy.lum-superproxy.io:22225
+      - http://lum-customer-c_5ae15880-zone-dc_ex-ip-92.249.32.30:3k2wbko6xqvy@zproxy.lum-superproxy.io:22225
+      - http://lum-customer-c_5ae15880-zone-dc_ex-ip-194.53.189.177:3k2wbko6xqvy@zproxy.lum-superproxy.io:22225
+#      - http://54.238.193.77:60088
     #  - socks5://127.0.0.1:1087
     proxy_servers_random: true
     retry_interval: 1
@@ -32,7 +40,10 @@ tactics:
     request_interval: 1
     request_interval_random: false
     proxy_servers:
-      - http://54.238.193.77:60088
+      - http://lum-customer-c_5ae15880-zone-dc_ex-ip-37.44.216.169:3k2wbko6xqvy@zproxy.lum-superproxy.io:22225
+      - http://lum-customer-c_5ae15880-zone-dc_ex-ip-92.249.32.30:3k2wbko6xqvy@zproxy.lum-superproxy.io:22225
+      - http://lum-customer-c_5ae15880-zone-dc_ex-ip-194.53.189.177:3k2wbko6xqvy@zproxy.lum-superproxy.io:22225
+#      - http://54.238.193.77:60088
     #  - socks5://127.0.0.1:1087
     proxy_servers_random: true
     retry_interval: 1

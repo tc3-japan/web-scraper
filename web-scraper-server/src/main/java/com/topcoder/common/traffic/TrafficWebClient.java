@@ -8,15 +8,11 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
+import com.gargoylesoftware.htmlunit.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.gargoylesoftware.htmlunit.BrowserVersion;
-import com.gargoylesoftware.htmlunit.Page;
-import com.gargoylesoftware.htmlunit.ProxyConfig;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.topcoder.common.config.TrafficProperty;
@@ -330,9 +326,19 @@ public class TrafficWebClient {
                     urlStr = urlStr.replaceAll("sock.*://", "http://");
                 }
                 URL url = new URL(urlStr);
-                proxyConfig.setProxyPort(url.getPort());
-                proxyConfig.setProxyHost(url.getHost());
-                webClient.getOptions().setProxyConfig(proxyConfig);
+
+                if (url.getUserInfo() == null) {
+                    proxyConfig.setProxyPort(url.getPort());
+                    proxyConfig.setProxyHost(url.getHost());
+
+                    webClient.getOptions().setProxyConfig(proxyConfig);
+                } else {
+                    String[] userInfo = url.getUserInfo().split(":");
+                    DefaultCredentialsProvider scp = new DefaultCredentialsProvider();
+                    scp.addCredentials(userInfo[0], userInfo[1], url.getHost(), url.getPort(), null);
+                    webClient.setCredentialsProvider(scp);
+                }
+
 
                 // traffic record to database
                 content = content + ", " + proxyMsg;

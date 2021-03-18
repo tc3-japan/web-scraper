@@ -35,8 +35,8 @@ check-sites:
         # product code of product table
         check_target_keys:
         # TODO: set
-  #          - proteinusa/op-02866
-  #          - booxstore/bk-4798053473
+#          - proteinusa/op-02866
+#          - booxstore/bk-4798053473
   - ec-site: yahoo
     check-pages:
       - page_name: purchase_history_list

@@ -187,7 +187,7 @@ SET
       }
     }
   },
-  "next_url_element": "#oDrCenterContents .clfx:nth-child(11) [data-ratid=\\\"ph_pc_pagi_next\\\"]"
+  "next_url_element": "#oDrCenterContents .clfx [data-ratid=\\\"ph_pc_pagi_next\\\"]"
 }
 ',
 @yahoo_purchase_history_script = '
@@ -531,7 +531,7 @@ SET
          {
             "attribute":"",
             "item":"jan_code",
-            "regex":"",
+            "regex": "^(?!.*[0-9]{4}\\/(0[1-9]|1[0-2])\\/(0[1-9]|[12][0-9]|3[01])).+",
             "script":"",
             "selector":".elRows .elRow:nth-of-type(2) .elRowData p"
          },
@@ -556,7 +556,7 @@ SET
          {
             "attribute":"",
             "item":"model_no",
-            "regex":"",
+            "regex": "^(?!.*[0-9]{4}\\/(0[1-9]|1[0-2])\\/(0[1-9]|[12][0-9]|3[01])).+",
             "script":"(()=>{ var ifr = document.querySelector(\'#itm_inf > div:nth-child(6) > div > iframe\'); if (!ifr) return null; return ifr.contentDocument.body.querySelector(\'#wrapper > table > tbody > tr:nth-child(4) > td > table > tbody > tr:nth-child(2) > td:nth-child(2) > font\').innerText; })();",
             "selector":".elRows .elRow:nth-of-type(3) .elRowData p",
             "is_script":false

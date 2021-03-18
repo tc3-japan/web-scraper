@@ -61,8 +61,15 @@ public class GeneralProductDetailCrawler extends AbstractGeneralCrawler {
 //                && productInfo.getDistributor() == null
 //                && productInfo.getJanCode() == null
 //                && productInfo.getModelNo() == null;
-        String error = detailPage.scrapeText("#errorTxt > h2");
-        boolean isFailed = error == null ? false : error.startsWith("アクセスが集中し");
+        String error1 = detailPage.scrapeText("#errorTxt > h2");
+        String error2 = detailPage.getNodeAttribute("body > :first-child", "name");
+        boolean isFailed = false;
+
+        if (error1 != null) {
+            isFailed = error1.startsWith("アクセスが集中し");
+        } else if (error2 != null) {
+            isFailed = error2.startsWith("AKAMAI");
+        }
 
         return new GeneralProductDetailCrawlerResult(isFailed ? null : productInfo, savedPath);
     }

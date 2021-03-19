@@ -18,6 +18,8 @@ Following can be configured in Kubernetes objects yaml for your environment.
 	 in scraper-app-deployment.yaml and scraper-web-deployment.yaml
 
  2. Change `volumeMounts` and `volumes` for each deployment yaml
+ 
+ 3. Change `image` if you need to pull image from your repository. `docker-compose build` command can be used to build images in this directory.
 
 ## Create / Update Resources
 
@@ -27,21 +29,33 @@ Following can be configured in Kubernetes objects yaml for your environment.
 
 ### Change Detection Init Job
 
-`kubectl apply -f manifest/scraper-change-detection-init-job.yaml`
+These jobs need to be execute manually after the manifest is deployed correctly.  
+
+#### Purchase History
+`kubectl apply -f manifest/scraper-change-detection-init-purchase-history-job.yaml`
+
+#### Products
+`kubectl apply -f manifest/scraper-change-detection-init-product-job.yaml`
 
 ### Purchase History Job
+
+This job is optional to execute.
 
 `kubectl apply -f manifest/scraper-purchase-history-job.yaml`
 
 ### Product Job
 
+This job is optional to execute.
+
 `kubectl apply -f manifest/scraper-product-job.yaml`
 
 ### Group Products Job
 
+This job is optional to execute.
+
 `kubectl apply -f manifest/scraper-group-products-job.yaml`
 
-### Run Scraping Command in scraper-app Pod
+### How to Run Scraping Command in scraper-app Pod
 
 `kubectl exec -it deployment.apps/scraper-app -- bash -c "cd /root/scraper/; export SCRAPER_DB_PORT_3306_TCP_ADDR=scraper-db; java -jar web-scraper-server-*.jar  --spring.config.location=file:application.yaml --batch=purchase_history --site={EC Name}"`
 

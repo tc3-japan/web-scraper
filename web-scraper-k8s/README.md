@@ -29,7 +29,7 @@ Following can be configured in Kubernetes objects yaml for your environment.
 
 ### Change Detection Init Job
 
-These jobs need to be execute manually after the manifest is deployed correctly.  
+These jobs need to be manually executed after the manifest is correctly deployed.  
 
 #### Purchase History
 `kubectl apply -f manifest/scraper-change-detection-init-purchase-history-job.yaml`

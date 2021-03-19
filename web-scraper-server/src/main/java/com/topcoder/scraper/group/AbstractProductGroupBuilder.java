@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.topcoder.common.util.Common;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.slf4j.Logger;
@@ -165,11 +166,16 @@ public abstract class AbstractProductGroupBuilder {
         if (sameProducts == null) {
             return null;
         }
+
         ProductGroupDAO group = findProductGroup(sameProducts);
+        String message = "group updated: ";
+
         if (group == null) {
             group = new ProductGroupDAO();
             group.setGroupingMethod(groupingMethod);
+            message = "new group created: ";
         }
+
         if (ProductGroupDAO.GroupingMethod.same_no.equalsIgnoreCase(groupingMethod)) {
             group.setModelNo(sameProducts.get(0).getModelNo());
         } else if (ProductGroupDAO.GroupingMethod.jan_code.equalsIgnoreCase(groupingMethod)) {
@@ -177,6 +183,8 @@ public abstract class AbstractProductGroupBuilder {
         } else if (ProductGroupDAO.GroupingMethod.product_name.equalsIgnoreCase(groupingMethod)) {
             group.setProductName(sameProducts.get(0).getProductName());
         }
+
+        Common.ZabbixLog(logger, message + group.toString());
         return this.productGroupRepository.save(group);
     }
 

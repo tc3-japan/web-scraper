@@ -1,10 +1,10 @@
 buildscript {
   ext.versions = [
     'springBoot'     : '1.5.7.RELEASE',
-    'htmlunit'       : '2.33',
+    'htmlunit'       : '2.47.0',
     'gson'           : '2.8.5',
     'jackson'        : '2.9.7',
-    'mysqlConnector' : '8.0.13',
+    'mysqlConnector' : '8.0.23',
     'flyway'         : '5.2.4',
     'groovy'         : '2.5.8',
     'solr'           : '8.2.0'
@@ -63,6 +63,10 @@ dependencies {
   compile("org.apache.solr:solr-solrj:${versions.solr}")
   compile("commons-codec:commons-codec:1.13")
 
+  compile("org.seleniumhq.selenium:selenium-java:3.141.59")
+  compile("org.seleniumhq.selenium:selenium-api:3.141.59")
+  compile("org.seleniumhq.selenium:selenium-chrome-driver:3.141.59")
+  compile("org.seleniumhq.selenium:selenium-remote-driver:3.141.59")
 
   testCompile("org.springframework.boot:spring-boot-starter-test:${versions.springBoot}")
 }
@@ -85,7 +89,6 @@ flyway {
 
 task copyJar(type: Copy) {
   from jar
-  into '../web-scraper-docker/scraper/build/libs'
   into '../web-scraper-k8s/scraper/libs'
 }
 build.dependsOn copyJar

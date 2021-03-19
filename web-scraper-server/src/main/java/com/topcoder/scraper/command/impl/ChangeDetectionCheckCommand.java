@@ -1,5 +1,6 @@
 package com.topcoder.scraper.command.impl;
 
+import com.topcoder.common.util.Common;
 import com.topcoder.scraper.Consts;
 import com.topcoder.scraper.command.AbstractCommand;
 import com.topcoder.scraper.exception.ChangeDetectionException;
@@ -35,12 +36,12 @@ public class ChangeDetectionCheckCommand extends AbstractCommand<IChangeDetectio
     protected void process(IChangeDetectionCheckModule module) {
         try {
             if (this.sites == null || this.sites.size() == 0) {
-                module.check(Consts.ALL_SITES);
+                module.check(Consts.ALL_SITES, this.target);
             } else {
-                module.check(this.sites);
+                module.check(this.sites, this.target);
             }
         } catch (IOException e) {
-            LOGGER.error("Fail to check change detection", e);
+            Common.ZabbixLog(LOGGER, "Fail to check change detection", e);
             throw new ChangeDetectionException();
         }
         LOGGER.info("Successfully check change detection");

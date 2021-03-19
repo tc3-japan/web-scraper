@@ -65,6 +65,8 @@ amazon:
       verificationCodeSubmit: "span.cvf-widget-btn-verify > span > input"
       verificationCodeInput:  "input.cvf-widget-input-code"
 
+      smsApproval: "#body > div > div > div.a-section.a-spacing-large > span.transaction-approval-word-break"
+
     homePage:
       ordersButton: "#nav-orders"
       # XPath Version

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.topcoder.common.util.Common;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +61,8 @@ public class DryRunProductDetailModule {
             try {
                 this.processProductDetail(product.getId(), product.getProductCode());
             } catch (IOException | IllegalStateException e) {
-                LOGGER.error(String.format("Fail to fetch product %s, please try again.", product.getProductCode()));
+                String message = String.format("Fail to fetch product %s, please try again.", product.getProductCode());
+                Common.ZabbixLog(LOGGER, message, e);
             }
             if (dru.checkCountOver(productInfoList)) {
                 break;

@@ -24,10 +24,15 @@ delete from web_scraper.configuration;
 SET
 @amazon_purchase_history_script = '
 {
-  "url": "https://www.amazon.co.jp/gp/your-account/order-history?opt=ab&digitalOrders=1&unifiedOrders=1&returnTo=&orderFilter=",
+  "url": "https://www.amazon.co.jp/gp/your-account/order-history?orderFilter=year-{year}",
+  "order_filter": {
+    "element": "html > body > div > div > div:nth-of-type(1) > div > div:nth-of-type(2) > span > form > span:nth-of-type(1) > select > option",
+    "attribute": "value",
+    "regex": "year-([0-9]{4})"
+  },
   "purchase_order": {
     "url_element": "",
-    "parent": "html > body > div > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(5) > div.a-box-group.a-spacing-base.order",
+    "parent": "html > body > div > div > div:nth-of-type(1) > div > div.a-box-group.a-spacing-base.order",
     "order_number": {
       "element": "div:nth-of-type(1) > div > div > div > div:nth-of-type(2) > div:nth-of-type(1) > span:nth-of-type(2).a-color-secondary.value",
       "full_path": false,
@@ -112,7 +117,7 @@ SET
 {
   "url": "https://order.my.rakuten.co.jp/?l-id=top_normal_function04&fidomy=1",
   "purchase_order": {
-    "parent": "html > body > div:nth-of-type(1) > div:nth-of-type(7) > div:nth-of-type(2) > div:nth-of-type(1) > div > div > div.oDrListItem.clfx > table > tbody > tr",
+    "parent": "html > body > div:nth-of-type(1) > div > div:nth-of-type(2) > div:nth-of-type(1) > div > div > div.oDrListItem.clfx > table > tbody > tr",
     "order_number": {
       "element": "td:nth-of-type(1) > div > ul:nth-of-type(1) > li:nth-of-type(2) > span.idNum",
       "full_path": false,
@@ -130,8 +135,8 @@ SET
       "script": ""
     },
     "purchase_product": {
-      "url_element": "td:nth-of-type(1) > div > ul:nth-of-type(1) > li > a.detail",
-      "parent": "html > body > div:nth-of-type(1) > div:nth-of-type(7) > div > div > div:nth-of-type(3) > table:nth-of-type(1) > tbody > tr",
+      "url_element": "td:nth-of-type(1) > div > ul:nth-of-type(1) > li.oDrDetailList > a",
+      "parent": "html > body > div:nth-of-type(1) > div > div > div > div:nth-of-type(3) > table:nth-of-type(1) > tbody > tr",
       "total_amount": {
         "element": "html > body > div:nth-of-type(1) > div:nth-of-type(7) > div > div > div:nth-of-type(3) > table:nth-of-type(2) > tbody > tr > td:nth-of-type(3) > table > tbody > tr:nth-of-type(1) > td",
         "full_path": true,
@@ -182,7 +187,7 @@ SET
       }
     }
   },
-  "next_url_element": "#oDrCenterContents .clfx:nth-child(11) [data-ratid=\\\"ph_pc_pagi_next\\\"]"
+  "next_url_element": "#oDrCenterContents .clfx [data-ratid=\\\"ph_pc_pagi_next\\\"]"
 }
 ',
 @yahoo_purchase_history_script = '
@@ -264,18 +269,18 @@ SET
 ';
 
 insert into web_scraper.user (id,email_for_contact,total_ec_status,id_expire_at,update_at) values
- (1,'email@gmail.com','status','2020-10-10 12:00:00','2019-10-14 12:00:00');
+ (1,'email@gmail.com','status', DATE_ADD(NOW(), INTERVAL 1 YEAR), NOW());
 insert into web_scraper.ec_site_account (id, ec_site, ec_use_flag, user_id, update_at) values
- (1, 'amazon',  0, 1,'2019-03-08 12:00:00')
-,(3, 'yahoo',   0, 1,'2019-03-08 12:00:00')
-,(5, 'rakuten', 0, 1,'2019-03-08 12:00:00');
+ (1, 'amazon',  0, 1, NOW())
+,(3, 'yahoo',   0, 1, NOW())
+,(5, 'rakuten', 0, 1, NOW());
 
 insert into web_scraper.user (id,email_for_contact,total_ec_status,id_expire_at,update_at) values
- (2,'email2@gmail.com','status','2020-10-10 12:00:00','2019-10-14 12:00:00');
+ (2,'email2@gmail.com','status', DATE_ADD(NOW(), INTERVAL 1 YEAR), NOW());
 insert into web_scraper.ec_site_account (id, ec_site, ec_use_flag, user_id, update_at) values
- (2, 'amazon',  0, 2,'2019-03-08 12:00:00')
-,(4, 'yahoo',   0, 2,'2019-03-08 12:00:00')
-,(6, 'rakuten', 0, 2,'2019-03-08 12:00:00');
+ (2, 'amazon',  0, 2, NOW())
+,(4, 'yahoo',   0, 2, NOW())
+,(6, 'rakuten', 0, 2, NOW());
 
 insert into web_scraper.configuration (id,site,type,config) values
  (1,'amazon','purchase_history',@amazon_purchase_history_script)
@@ -406,6 +411,14 @@ SET
         "script":""
       },
       {
+        "item": "product_distributor",
+        "selector": "#bylineInfo > span.author a.contributorNameID",
+        "attribute": "",
+        "regex": "",
+        "is_script": false,
+        "script": ""
+      },
+      {
         "item":"product_distributor",
         "selector":"#bylineInfo",
         "attribute":"",
@@ -470,82 +483,119 @@ SET
   ]
 }',
 @yahoo_product_detail_script = '{
-  "url": "https://store.shopping.yahoo.co.jp/{code}",
-  "product_details": [
-    [
-      {
-        "item": "product_code",
-        "selector": "head > link[rel=\\\"canonical\\\"]",
-        "attribute": "href",
-        "regex": "https:\\\/\\\/.*?\\\/(.*).html",
-        "is_script": false,
-        "script": ""
-      }
-    ],
-    [
-      {
-        "item":"unit_price",
-        "selector":".ItemPrice_price",
-        "attribute":"",
-        "regex":"",
-        "is_script": false,
-        "script":""
-      },
-      {
-        "item":"unit_price",
-        "selector":"p.elPrice:nth-child(2) > em",
-        "attribute":"",
-        "regex":"",
-        "is_script": false,
-        "script":""
-      }
-    ],
-    [
-      {
-        "item":"jan_code",
-        "selector":".mdItemInfoCode > p",
-        "attribute":"",
-        "regex":"[0-9]{13}",
-        "is_script": false,
-        "script":""
-      },
-      {
-        "attribute":"",
-        "item":"jan_code",
-        "regex":"JANコード/ISBNコード：(.+)",
-        "is_script": false,
-        "script":"",
-        "selector":".ItemDetails ul li:nth-of-type(2)"
-      }
-    ],
-    [
-      {
-        "attribute":"",
-        "item":"model_no",
-        "regex":"商品コード：(.+)",
-        "script":"(()=>{ var ifr = document.querySelector(''#itm_inf > div:nth-child(6) > div > iframe''); if (!ifr) return null; return ifr.contentDocument.body.querySelector(''#wrapper > table > tbody > tr:nth-child(4) > td > table > tbody > tr:nth-child(2) > td:nth-child(2) > font'').innerText; })();",
-        "selector":"#wrapper > table > tbody > tr:nth-child(4) > td > table > tbody > tr:nth-child(2) > td:nth-child(2) > font",
-        "is_script": false
-      },
-      {
-        "attribute":"",
-        "item":"model_no",
-        "regex":"商品コード：(.+)",
-        "script":"",
-        "selector":".ItemDetails li"
-      }
+   "url":"https://store.shopping.yahoo.co.jp/{code}",
+   "product_details":[
+      [
+         {
+            "item":"product_code",
+            "selector":"head > link[rel=\\\"canonical\\\"]",
+            "attribute":"href",
+            "regex":"https://.*?/(.*).html",
+            "is_script":false,
+            "script":""
+         }
+      ],
+      [
+         {
+            "item":"unit_price",
+            "selector":".isHighlight .elPriceValue span:nth-of-type(1)",
+            "attribute":"",
+            "regex":"",
+            "is_script":false,
+            "script":""
+         },
+         {
+            "attribute":"",
+            "item":"unit_price",
+            "regex":"([0-9]*)円",
+            "script":"",
+            "selector":".elPriceText span"
+         },
+         {
+            "attribute":"",
+            "item":"unit_price",
+            "regex":"",
+            "script":"",
+            "selector":"#prcdsp .elPrice span:nth-of-type(1)"
+         },
+         {
+            "item":"unit_price",
+            "selector":".ItemPrice-selling .ItemPrice_box p:nth-of-type(1)",
+            "attribute":"",
+            "regex":"",
+            "is_script":false,
+            "script":""
+         }
+      ],
+      [
+         {
+            "attribute":"",
+            "item":"jan_code",
+            "regex": "^(?!.*[0-9]{4}\\/(0[1-9]|1[0-2])\\/(0[1-9]|[12][0-9]|3[01])).+",
+            "script":"",
+            "selector":".elRows .elRow:nth-of-type(2) .elRowData p"
+         },
+         {
+            "item":"jan_code",
+            "selector":".mdItemInfoCode > p",
+            "attribute":"",
+            "regex":"[0-9]{13}",
+            "is_script":false,
+            "script":""
+         },
+         {
+            "attribute":"",
+            "item":"jan_code",
+            "regex":"JANコード/ISBNコード：(.+)",
+            "is_script":false,
+            "script":"",
+            "selector":".ItemDetails ul li:nth-of-type(2)"
+         }
+      ],
+      [
+         {
+            "attribute":"",
+            "item":"model_no",
+            "regex": "^(?!.*[0-9]{4}\\/(0[1-9]|1[0-2])\\/(0[1-9]|[12][0-9]|3[01])).+",
+            "script":"(()=>{ var ifr = document.querySelector(\'#itm_inf > div:nth-child(6) > div > iframe\'); if (!ifr) return null; return ifr.contentDocument.body.querySelector(\'#wrapper > table > tbody > tr:nth-child(4) > td > table > tbody > tr:nth-child(2) > td:nth-child(2) > font\').innerText; })();",
+            "selector":".elRows .elRow:nth-of-type(3) .elRowData p",
+            "is_script":false
+         },
+         {
+            "attribute":"",
+            "item":"model_no",
+            "regex":"商品コード：(.+)",
+            "script":"",
+            "selector":".ItemDetails li"
+         }
+      ],
+      [
+         {
+            "attribute":"",
+            "item":"product_distributor",
+            "regex":"",
+            "script":"",
+            "selector":".elMainItem [data-ylk=\\\"slk\\\\:storenam\\\\;pos\\\\:0\\\\;\\\"]"
+         },
+         {
+            "attribute":"",
+            "item":"product_distributor",
+            "regex":"",
+            "script":"",
+            "selector":"[data-ylk] h3"
+         }
+      ]
    ]
-  ]
 }',
 @amazon_product_search_script = '{
   "url": "https://www.amazon.co.jp/s?k={word}",
-  "group_selector": "html > body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(1) > div > div span:nth-of-type(3) > div:nth-of-type(2) > div.sg-col-4-of-24.sg-col-4-of-12.sg-col-4-of-36.s-result-item.s-asin.sg-col-4-of-28.sg-col-4-of-16.sg-col.sg-col-4-of-20.sg-col-4-of-32",
+  "group_selector": "html > body > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(2) > div > span:nth-of-type(3) > div:nth-of-type(2) > div.sg-col-4-of-12.s-result-item.s-asin.sg-col-4-of-16.sg-col.sg-col-4-of-20",
   "selector": "div > span > div > div div:nth-of-type(2) > h2 > a",
   "attribute": "href",
   "regex": "/dp/([A-Z0-9]+)/",
   "is_script": false,
   "script": "",
-  "excluded_selector": "div > span > div > div div:nth-of-type(2) > div > span > span > span:nth-of-type(1) > span"
+  "excluded_selector": "div span > div > div div:nth-of-type(2) > div > span span:nth-of-type(1) > span.a-size-mini"
 }',
 @rakuten_product_search_script = '{
   "url": "https://search.rakuten.co.jp/search/mall/{word}",

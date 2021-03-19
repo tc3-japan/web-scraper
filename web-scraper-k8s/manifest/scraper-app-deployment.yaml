@@ -4,7 +4,6 @@ metadata:
   annotations:
     kompose.cmd: kompose -f docker-compose.local.yml convert
     kompose.version: 1.21.0 ()
-  creationTimestamp: null
   labels:
     io.kompose.service: scraper-app
   name: scraper-app
@@ -20,7 +19,6 @@ spec:
       annotations:
         kompose.cmd: kompose -f docker-compose.local.yml convert
         kompose.version: 1.21.0 ()
-      creationTimestamp: null
       labels:
         io.kompose.service: scraper-app
     spec:
@@ -28,7 +26,7 @@ spec:
       - args:
         - bash
         - -c
-        - sleep 10; cd /root/scraper/; java -jar web-scraper-server-*.jar --rest --spring.config.location=file:application.yaml > logs/rest.log
+        - sleep 10; cd /root/scraper/; java -jar web-scraper-server-*.jar --rest --spring.config.location=file:application.yaml
         env:
         - name: SCRAPER_DB_PORT_3306_TCP_ADDR
           value: scraper-db
@@ -40,13 +38,11 @@ spec:
         ports:
         - containerPort: 8085
         resources: {}
-#        volumeMounts:
-#        - mountPath: /root/scraper/logs
-#          name: scraper-app-claim0
+        volumeMounts:
+        - name: log
+          mountPath: /root/scraper/logs
       restartPolicy: Always
-      serviceAccountName: ""
-#      volumes:
-#      - name: scraper-app-claim0
-#        hostPath:
-#          path: /var/local/scraper/app/logs
-status: {}
+      volumes:
+        - name: log
+          persistentVolumeClaim:
+            claimName: scraper-app

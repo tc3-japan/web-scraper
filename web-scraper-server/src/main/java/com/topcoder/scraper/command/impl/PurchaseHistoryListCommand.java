@@ -33,16 +33,12 @@ public class PurchaseHistoryListCommand extends AbstractCommand<IPurchaseHistory
     @Override
     protected void process(IPurchaseHistoryModule module) {
         LOGGER.info("module=site: " + module);
-        try {
-            if (this.sites == null || this.sites.size() == 0) {
-                module.fetchPurchaseHistoryList(Consts.ALL_SITES);
-            } else {
-                module.fetchPurchaseHistoryList(this.sites);
-            }
-        } catch (IOException e) {
-            LOGGER.error("Fail to fetch purchase history list", e);
-            throw new FetchPurchaseHistoryListException();
+        if (this.sites == null || this.sites.size() == 0) {
+            module.fetchPurchaseHistoryList(Consts.ALL_SITES);
+        } else {
+            module.fetchPurchaseHistoryList(this.sites);
         }
+
         LOGGER.info("Successfully fetch purchase history");
     }
 

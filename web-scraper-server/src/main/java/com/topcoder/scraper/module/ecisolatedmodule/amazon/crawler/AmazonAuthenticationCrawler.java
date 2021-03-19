@@ -5,21 +5,12 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
+import com.gargoylesoftware.htmlunit.html.*;
+import com.topcoder.scraper.exception.AuthenticationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.gargoylesoftware.htmlunit.html.HtmlButton;
-import com.gargoylesoftware.htmlunit.html.HtmlCheckBoxInput;
-import com.gargoylesoftware.htmlunit.html.HtmlEmailInput;
-import com.gargoylesoftware.htmlunit.html.HtmlImage;
-import com.gargoylesoftware.htmlunit.html.HtmlInput;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.gargoylesoftware.htmlunit.html.HtmlPasswordInput;
-import com.gargoylesoftware.htmlunit.html.HtmlRadioButtonInput;
-import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
-import com.gargoylesoftware.htmlunit.html.HtmlTelInput;
-import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 import com.topcoder.common.config.AmazonProperty;
 import com.topcoder.common.model.CodeType;
 import com.topcoder.common.traffic.TrafficWebClient;
@@ -168,7 +159,6 @@ public class AmazonAuthenticationCrawler extends AbstractAuthenticationCrawler {
                 HtmlEmailInput emailInput = loginPage.querySelector(property.getCrawling().getLoginPage().getEmailInput());
                 emailInput.type(username);
 
-                /* TODO: delete */
                 // Submit form
                 //HtmlSubmitInput submitInput1 = loginPage.getFirstByXPath("//input[@id=\"continue\"]");
                 HtmlSubmitInput submitInput1 = loginPage.querySelector(property.getCrawling().getLoginPage().getContinueInput());
@@ -180,22 +170,7 @@ public class AmazonAuthenticationCrawler extends AbstractAuthenticationCrawler {
                 // Save page
                 webpageService.save("login-pass", siteName, loginPage.getWebResponse().getContentAsString());
 
-                // Fill in password
-                //HtmlPasswordInput passwordInput = passwordPage.getFirstByXPath("//input[@id=\"ap_password\"]");
-                HtmlPasswordInput passwordInput = loginPage.querySelector(property.getCrawling().getLoginPage().getPasswordInput());
-                passwordInput.type(password);
-
-                // Fill in remember-me
-                // *Experimental Code*
-                HtmlCheckBoxInput rememberMeCheckInput = loginPage.querySelector("input[type='checkbox'][name='rememberMe']");
-                rememberMeCheckInput.setChecked(true);
-                LOGGER.info("Remember Me Check:" + rememberMeCheckInput.isChecked());
-
-                // Submit form
-                //HtmlSubmitInput submitInput2 = passwordPage.getFirstByXPath("//input[@id=\"signInSubmit\"]");
-                HtmlSubmitInput submitInput2 = loginPage.querySelector(property.getCrawling().getLoginPage().getSubmitButton());
-
-                finalPage = webClient.click(submitInput2);
+                finalPage = submitLogin(webClient, loginPage, username, password);
 
                 // Save page
                 webpageService.save("login-click", siteName, finalPage.getWebResponse().getContentAsString());
@@ -246,9 +221,17 @@ public class AmazonAuthenticationCrawler extends AbstractAuthenticationCrawler {
                     code = null; // and clear code
                 } else { // failed
                     logger.info("check Captcha in step2 failed, now return error to frontend again");
+
+                    HtmlPasswordInput passwordInput = finalPage.querySelector(property.getCrawling().getLoginPage().getPasswordInput());
+                    if (passwordInput != null) {
+                        finalPage = submitLogin(webClient, finalPage, username, password);
+                    }
+
                     HtmlImage htmlImg = finalPage.querySelector(property.getCrawling().getLoginPage().getCaptchaImage2nd());
-                    return new AmazonAuthenticationCrawlerResult(false,
-                            "CAPTCHA code needed on Login page", CodeType.CAPTCHA, webpageService.toBase64Image(htmlImg), true);
+                    if (htmlImg != null) {
+                        return new AmazonAuthenticationCrawlerResult(false,
+                                "CAPTCHA code needed on Login page", CodeType.CAPTCHA, webpageService.toBase64Image(htmlImg), true);
+                    }
                 }
             }
         }
@@ -272,6 +255,7 @@ public class AmazonAuthenticationCrawler extends AbstractAuthenticationCrawler {
                     return new AmazonAuthenticationCrawlerResult(false, "MFA Code Needed",
                             CodeType.MFA, null, true);
                 }
+
                 // Check Login Successfully > Verification Code Needed
                 HtmlRadioButtonInput smsInputCheck = finalPage.querySelector("input[type='radio'][name='option']");
                 if (smsInputCheck != null) {
@@ -279,15 +263,23 @@ public class AmazonAuthenticationCrawler extends AbstractAuthenticationCrawler {
                     return new AmazonAuthenticationCrawlerResult(false, "Verification Code Needed",
                             CodeType.Verification, null, true);
                 }
-                authStep = AuthStep.DONE;
 
-            } else { // fill code
+                AmazonAuthenticationCrawlerResult amazonAuthenticationCrawlerResult = CheckSmsApprovalStatus();
+                if (amazonAuthenticationCrawlerResult != null) return amazonAuthenticationCrawlerResult;
+
+            } else {
+
                 // verification code input
                 HtmlTextInput codeInput = finalPage.querySelector(property.getCrawling().getLoginPage().getVerificationCodeInput());
                 HtmlSubmitInput sendCode = finalPage.querySelector(property.getCrawling().getLoginPage().getVerificationCodeSubmit());
                 HtmlSubmitInput mfaLoginButton = finalPage.querySelector(property.getCrawling().getLoginPage().getMfaLoginButton());
+                HtmlSpan smsSpan = finalPage.querySelector(property.getCrawling().getLoginPage().getSmsApproval());
 
-                if (codeInput != null && sendCode != null) {
+                if (smsSpan != null) {
+                    finalPage = (HtmlPage) finalPage.refresh();
+                    AmazonAuthenticationCrawlerResult amazonAuthenticationCrawlerResult = CheckSmsApprovalStatus();
+                    if (amazonAuthenticationCrawlerResult != null) return amazonAuthenticationCrawlerResult;
+                } else if (codeInput != null && sendCode != null) {
                     codeInput.type(code);
                     finalPage = webClient.click(sendCode);
                     String path = webpageService.save("enter-verification-code", siteName, finalPage.getWebResponse().getContentAsString());
@@ -348,138 +340,32 @@ public class AmazonAuthenticationCrawler extends AbstractAuthenticationCrawler {
     public AmazonAuthenticationCrawlerResult authenticate(TrafficWebClient webClient,
                                                           String username, String password, String initCode // fixme: initCode -> xxxCode
     ) throws IOException {
+        throw new UnsupportedOperationException();
+    }
 
-        // TODO: consider whether we don't need below code
-        webClient.getWebClient().getCookieManager().clearCookies();
-
-
-        // Fetch homepage
-        HtmlPage homePage = webClient.getPage(property.getUrl());
-        System.out.println(property.getUrl());
-
-        // Save page
-        webpageService.save("home", siteName, homePage.getWebResponse().getContentAsString());
-
-        // Check CAPTCHA 1st
-        HtmlInput capthcaInput1st = homePage.querySelector(property.getCrawling().getLoginPage().getCaptchaInput1st());
-        if (capthcaInput1st != null) {
-            LOGGER.info("Captcha 1st Input Found!!!");
-            SubmitResult result = handleCaptchaInput1st(webClient, homePage, 1);
-            if (result.isSuccess()) {
-                homePage = webClient.getPage(property.getUrl());
-            } else {
-                return new AmazonAuthenticationCrawlerResult(result.isSuccess(), result.htmlPath);
-            }
-        }
-
-        // click login button
-        HtmlPage loginPage = webClient.click(homePage.querySelector(property.getCrawling().getLoginButton()));
-
-        // Save page
-        webpageService.save("login-email", siteName, loginPage.getWebResponse().getContentAsString());
-
-        // Fill in email
-        //HtmlEmailInput emailInput = loginPage.getFirstByXPath("//input[@id=\"ap_email\"]");
-        HtmlEmailInput emailInput = loginPage.querySelector(property.getCrawling().getLoginPage().getEmailInput());
-        emailInput.type(username);
-
-        // Submit form
-        //HtmlSubmitInput submitInput1 = loginPage.getFirstByXPath("//input[@id=\"continue\"]");
-        HtmlSubmitInput submitInput1 = loginPage.querySelector(property.getCrawling().getLoginPage().getContinueInput());
-        // continue button is optional, it shows sometimes
-        if (submitInput1 != null) {
-            loginPage = webClient.click(submitInput1);
-        }
-
-        // Save page
-        webpageService.save("login-pass", siteName, loginPage.getWebResponse().getContentAsString());
+    private HtmlPage submitLogin(TrafficWebClient webClient, HtmlPage page,
+                                 String username, String password) throws IOException {
 
         // Fill in password
         //HtmlPasswordInput passwordInput = passwordPage.getFirstByXPath("//input[@id=\"ap_password\"]");
-        HtmlPasswordInput passwordInput = loginPage.querySelector(property.getCrawling().getLoginPage().getPasswordInput());
+        HtmlPasswordInput passwordInput = page.querySelector(property.getCrawling().getLoginPage().getPasswordInput());
         passwordInput.type(password);
 
         // Fill in remember-me
         // *Experimental Code*
-        HtmlCheckBoxInput rememberMeCheckInput = loginPage.querySelector("input[type='checkbox'][name='rememberMe']");
+        HtmlCheckBoxInput rememberMeCheckInput = page.querySelector("input[type='checkbox'][name='rememberMe']");
         rememberMeCheckInput.setChecked(true);
         LOGGER.info("Remember Me Check:" + rememberMeCheckInput.isChecked());
 
         // Submit form
-        //HtmlSubmitInput submitInput2 = passwordPage.getFirstByXPath("//input[@id=\"signInSubmit\"]");
-        HtmlSubmitInput submitInput2 = loginPage.querySelector(property.getCrawling().getLoginPage().getSubmitButton());
-
-        finalPage = webClient.click(submitInput2);
+        HtmlSubmitInput submitInput2 = page.querySelector(property.getCrawling().getLoginPage().getSubmitButton());
+        HtmlPage result = webClient.click(submitInput2);
 
         // Save page
-        String path = webpageService.save("login", siteName, finalPage.getWebResponse().getContentAsString());
+        webpageService.save("login-click", siteName, result.getWebResponse().getContentAsString());
 
-        // Check Login Successfully > CAPTCHA
-        SubmitResult result;
-        HtmlEmailInput emailInputCheck = finalPage.querySelector(property.getCrawling().getLoginPage().getEmailInput());
-        if (emailInputCheck != null) {
-            // still in login page
-
-            HtmlTextInput captchaInput = finalPage.querySelector(property.getCrawling().getLoginPage().getCaptchaInput2nd());
-            if (captchaInput != null) {
-                LOGGER.info("Captcha 2nd Input Found!!!");
-                result = handleCaptchaInput2nd(webClient, finalPage, password, 1);
-                if (result.isSuccess()) {
-                    finalPage = result.getHtmlPage();
-                } else {
-                    return new AmazonAuthenticationCrawlerResult(false, result.getHtmlPath());
-                }
-            }
-        }
-
-        // verification code input
-        final HtmlTextInput codeInput = finalPage.querySelector(property.getCrawling().getLoginPage().getVerificationCodeInput());
-        final HtmlSubmitInput sendCode = finalPage.querySelector(property.getCrawling().getLoginPage().getVerificationCodeSubmit());
-        final HtmlSubmitInput mfaLoginButton = finalPage.querySelector(property.getCrawling().getLoginPage().getMfaLoginButton());
-
-        int count = 0;
-        SubmitResult codeAuthResult = null;
-        while (count++ < VERIFY_TRIAL_COUNT_MAX && (codeAuthResult == null || !codeAuthResult.isSuccess())) {
-            if (codeInput != null && sendCode != null) {
-                String code = readCodeFromFile("verification-code");
-                codeInput.type(code);
-                finalPage = webClient.click(sendCode);
-                path = webpageService.save("enter-verification-code", siteName, finalPage.getWebResponse().getContentAsString());
-
-                if (finalPage.querySelector(property.getCrawling().getLoginPage().getVerificationCodeSubmit()) != null) {
-                    codeAuthResult = new SubmitResult(false, finalPage, path);
-                } else {
-                    codeAuthResult = new SubmitResult(true, finalPage, path);
-                }
-            } else if (mfaLoginButton != null) {
-                String code = readCodeFromFile("mfa-code");
-                codeAuthResult = this.fillMFACodeNeeded(webClient, finalPage, code);
-            } else {
-                String code = readCodeFromFile("verification-code");
-                codeAuthResult = this.fillVerificationCodeNeeded(webClient, finalPage, code);
-            }
-        }
-        if (codeAuthResult == null) {
-            return new AmazonAuthenticationCrawlerResult(false, null);
-        }
-        return new AmazonAuthenticationCrawlerResult(codeAuthResult.isSuccess(), codeAuthResult.getHtmlPath());
-    /*
-    // Check Login Successfully > Verification Code Needed
-    HtmlRadioButtonInput smsInputCheck = finalPage.querySelector("input[type='radio'][name='option']");
-    if (smsInputCheck != null) {
-      LOGGER.info("Verification Code Needed!!!");
-      result = handleVerificationCodeNeeded(webClient, finalPage, 1);
-      if (result.isSuccess()) {
-        finalPage = result.getHtmlPage();
-        path = result.getHtmlPath();
-      } else {
-        return new AmazonAuthenticationCrawlerResult(false, result.getHtmlPath());
-      }
+        return result;
     }
-    return new AmazonAuthenticationCrawlerResult(true, path);
-    */
-    }
-
 
     private SubmitResult handleCaptchaInput1st(TrafficWebClient webClient, HtmlPage page, String code) throws IOException {
         // Fill in captcha
@@ -503,42 +389,6 @@ public class AmazonAuthenticationCrawler extends AbstractAuthenticationCrawler {
         }
     }
 
-    private SubmitResult handleCaptchaInput1st(TrafficWebClient webClient, HtmlPage page, int trialCount) throws IOException {
-        LOGGER.info("Handle Captcha Input 1st. Trial Count: " + trialCount);
-
-        // Save CAPTCHA Image
-        // see: https://stackoverflow.com/questions/3068543/how-to-get-base64-encoded-contents-for-an-imagereader
-        HtmlImage htmlImg = page.querySelector(property.getCrawling().getLoginPage().getCaptchaImage1st());
-        webpageService.saveImage("captcha-1st", "png", siteName, htmlImg);
-
-        // Fill in captcha
-        String captchaStr = readCodeFromFile("captcha code");
-        HtmlTextInput captchaInput = page.querySelector(property.getCrawling().getLoginPage().getCaptchaInput1st());
-        captchaInput.type(captchaStr);
-
-        // Submit form
-        HtmlButton submit = page.querySelector(property.getCrawling().getLoginPage().getCaptchaSubmit1st());
-        HtmlPage page2 = webClient.click(submit);
-
-        // Save page
-        String path = webpageService.save("login-captcha1st", siteName, page2.getWebResponse().getContentAsString());
-
-        // captcha input check
-        HtmlTextInput captchaInputCheck = page2.querySelector(property.getCrawling().getLoginPage().getCaptchaInput1st());
-        if (captchaInputCheck == null) {
-            // success case
-            return new SubmitResult(true, page2, path);
-        } else {
-            // failure case
-            if (trialCount >= CAPTCHA_TRIAL_COUNT_MAX) {
-                // retry out
-                return new SubmitResult(false, page2, path);
-            }
-            // retry
-            return handleCaptchaInput1st(webClient, page2, trialCount + 1);
-        }
-    }
-
     private SubmitResult handleCaptchaInput2st(TrafficWebClient webClient, HtmlPage page, String password, String code) throws IOException {
 
         // Fill in password
@@ -557,55 +407,14 @@ public class AmazonAuthenticationCrawler extends AbstractAuthenticationCrawler {
         String path = webpageService.save("login-captcha2nd", siteName, page2.getWebResponse().getContentAsString());
 
         // captcha input check
-        HtmlTextInput captchaInputCheck = page2.querySelector(property.getCrawling().getLoginPage().getCaptchaInput2nd());
-        if (captchaInputCheck == null) {
+        HtmlPasswordInput passwordInput2 = page2.querySelector(property.getCrawling().getLoginPage().getPasswordInput());
+        if (passwordInput2 == null) {
             // success case
             return new SubmitResult(true, page2, path);
         } else {
             return new SubmitResult(false, page2, path);
         }
     }
-
-    private SubmitResult handleCaptchaInput2nd(TrafficWebClient webClient, HtmlPage page, String password, int trialCount) throws IOException {
-        LOGGER.info("Handle Captcha Input 2nd. Trial Count: " + trialCount);
-
-        // Save CAPTCHA Image
-        // see: https://stackoverflow.com/questions/3068543/how-to-get-base64-encoded-contents-for-an-imagereader
-        HtmlImage htmlImg = (HtmlImage) page.querySelector(property.getCrawling().getLoginPage().getCaptchaImage2nd());
-        webpageService.saveImage("captcha-2nd", "png", siteName, htmlImg);
-
-        // Fill in password
-        HtmlPasswordInput passwordInput = page.querySelector(property.getCrawling().getLoginPage().getPasswordInput());
-        passwordInput.type(password);
-
-        // Fill in captcha
-        String captchaStr = readCodeFromFile("captcha code");
-        HtmlTextInput captchaInput = page.querySelector(property.getCrawling().getLoginPage().getCaptchaInput2nd());
-        captchaInput.type(captchaStr);
-
-        // Submit form
-        HtmlSubmitInput submitInput = page.querySelector(property.getCrawling().getLoginPage().getSubmitButton());
-        HtmlPage page2 = webClient.click(submitInput);
-
-        // Save page
-        String path = webpageService.save("login-captcha2nd", siteName, page2.getWebResponse().getContentAsString());
-
-        // captcha input check
-        HtmlTextInput captchaInputCheck = page2.querySelector(property.getCrawling().getLoginPage().getCaptchaInput2nd());
-        if (captchaInputCheck == null) {
-            // success case
-            return new SubmitResult(true, page2, path);
-        } else {
-            // failure case
-            if (trialCount >= CAPTCHA_TRIAL_COUNT_MAX) {
-                // retry out
-                return new SubmitResult(false, page2, path);
-            }
-            // retry
-            return handleCaptchaInput2nd(webClient, page2, password, trialCount + 1);
-        }
-    }
-
 
     private SubmitResult fillMFACodeNeeded(TrafficWebClient webClient, HtmlPage page, String code) throws IOException {
 
@@ -690,4 +499,24 @@ public class AmazonAuthenticationCrawler extends AbstractAuthenticationCrawler {
         }
     }
 
+    private AmazonAuthenticationCrawlerResult CheckSmsApprovalStatus() {
+
+        HtmlSpan smsSpan = finalPage.querySelector(property.getCrawling().getLoginPage().getSmsApproval());
+        if (smsSpan != null) {
+            LOGGER.info("SMS Approval Needed, at step = " + authStep);
+            return new AmazonAuthenticationCrawlerResult(false, "SMS Approval Needed",
+                    CodeType.SMSApproval, null, true);
+        }
+
+        HtmlAnchor orderButton = finalPage.querySelector(property.getCrawling().getHomePage().getOrdersButton());
+        if (orderButton == null) {
+            authStep = AuthStep.ERROR;
+            return new AmazonAuthenticationCrawlerResult(false,
+                    "Landed unexpected page. Unable to proceed anymore.",
+                    null, null, false);
+        }
+
+        authStep = AuthStep.DONE;
+        return null;
+    }
 }

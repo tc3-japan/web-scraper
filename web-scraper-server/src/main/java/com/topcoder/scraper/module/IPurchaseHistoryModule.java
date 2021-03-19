@@ -12,5 +12,5 @@ public interface IPurchaseHistoryModule extends IBasicModule {
     /**
      * fetch purchase history list
      */
-    void fetchPurchaseHistoryList(List<String> sites) throws IOException;
+    void fetchPurchaseHistoryList(List<String> sites);
 }

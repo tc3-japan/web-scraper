@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.topcoder.common.util.Common;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
@@ -103,21 +104,21 @@ public class SolrService {
                 SolrInputDocument document = toDocument(p);
                 UpdateResponse response = httpSolrClient.add(document);
                 if (response.getStatus() >= 300) { //TODO
-                    logger.error(
-                            "Received an error response in updating record in Index. Response: " + response.getResponse().jsonStr());
+                    String message = "Received an error response in updating record in Index. Response: " + response.getResponse().jsonStr();
+                    Common.ZabbixLog(logger, message);
                     continue;
                 }
                 count++;
-            } catch (Exception e) {
-                logger.error("Failed to update record in Index. " + e.getMessage());
+            } catch (IOException | SolrServerException e) {
+                Common.ZabbixLog(logger, "Failed to update record in Index. ", e);
             }
         }
         try {
             UpdateResponse response = httpSolrClient.commit(true, false);
             logger.info("Commit updates in Index. Response: " + response.getResponse().jsonStr());
             return count;
-        } catch (Exception e) {
-            logger.error("Failed to commit updates in Index. " + e.getMessage());
+        } catch (IOException | SolrServerException e) {
+            Common.ZabbixLog(logger, "Failed to commit updates in Index. ", e);
             return 0;
         }
     }

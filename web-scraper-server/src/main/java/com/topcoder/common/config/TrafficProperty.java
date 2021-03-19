@@ -103,8 +103,14 @@ public class TrafficProperty {
                 }
                 return index >= 0 ? proxyServers.get(index) : null;
             }
-            // for user-related request
-            index = getIndexInRange(id) % proxyServers.size();
+
+            if (getProxyServersRandom()) {
+                index = (int) Math.floor(Math.random() * proxyServers.size());
+            } else {
+                // for user-related request
+                index = getIndexInRange(id) % proxyServers.size();
+            }
+
             return proxyServers.get(index);
         }
 

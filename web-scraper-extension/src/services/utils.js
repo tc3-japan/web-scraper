@@ -51,6 +51,7 @@ function convertPurchaseHistoryToFrontend(site) {
         order: true,
         product: true,
         next: true,
+        order_filter: true,
       },
       advancedExpanded: {},
       highlight: '',
@@ -206,8 +207,12 @@ function getNative() {
   return chrome || browser;
 }
 
-if (getNative().runtime.onMessage) {
-  getNative().runtime.onMessage.addListener((request) => {
+if (getNative().runtime.connect) {
+  const backgroundPageConnection = getNative().runtime.connect({
+    name: 'devtools-page',
+  });
+  
+  backgroundPageConnection.onMessage.addListener(request => {
     if (window.onMessage) {
       window.onMessage(request);
     } else {
@@ -269,13 +274,14 @@ export function processError(e) {
  * @param args the args
  */
 export function sendMessageToPage(args) {
-  /* eslint-disable no-param-reassign */
   args.messageId = Date.now() + Math.random();
-  getNative().tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    logInfo(`send message = ${JSON.stringify(args)}`);
-    getNative().tabs.sendMessage(tabs[0].id, args);
+  const native = getNative();
+  const tabId = native.devtools.inspectedWindow.tabId;
+  native.runtime.sendMessage({
+    tabId,
+    action: 'relay',
+    payload: args,
   });
-  /* eslint-enable no-param-reassign */
 }
 
 /**

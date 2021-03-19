@@ -13,6 +13,7 @@ import com.topcoder.common.repository.CheckResultRepository;
 import com.topcoder.common.repository.ECSiteAccountRepository;
 import com.topcoder.common.repository.NormalDataRepository;
 import com.topcoder.common.util.CheckUtils;
+import com.topcoder.common.util.Common;
 import com.topcoder.scraper.Consts;
 import com.topcoder.scraper.module.IChangeDetectionCheckModule;
 import com.topcoder.scraper.module.ecunifiedmodule.crawler.GeneralProductDetailCrawlerResult;
@@ -64,9 +65,9 @@ public class GeneralChangeDetectionCheckModule extends GeneralChangeDetectionCom
      * Implementation of check method
      */
     @Override
-    public void check(List<String> sites) throws IOException {
+    public void check(List<String> sites, String target) throws IOException {
         LOGGER.debug("[check]");
-        this.processMonitorTarget(sites);
+        this.processMonitorTarget(sites, target);
     }
 
     /**
@@ -99,6 +100,10 @@ public class GeneralChangeDetectionCheckModule extends GeneralChangeDetectionCom
                 CheckUtils.checkPurchaseHistoryList(checkItemsCheckPage, dbPurchaseHistoryList, purchaseHistoryList);
 
         boolean passed = results.stream().allMatch(r -> r.isOk());
+        if (!passed) {
+            String message = site + " purchase history page change detected.";
+            Common.ZabbixLog(LOGGER, message);
+        }
 
         this.saveCheckResult(site, passed, PurchaseHistoryCheckResultDetail.toArrayJson(results), Consts.PURCHASE_HISTORY_LIST_PAGE_NAME, null);
 
@@ -133,6 +138,12 @@ public class GeneralChangeDetectionCheckModule extends GeneralChangeDetectionCom
 
         ProductInfo dbProductInfo = ProductInfo.fromJson(normalDataDAO.getNormalData());
         ProductCheckResultDetail result = CheckUtils.checkProductInfo(checkItemsCheckPage, dbProductInfo, productInfo);
+
+        if (!result.isOk()) {
+            String message = site + " product " + productInfo.getCode() + " page change detected.";
+            Common.ZabbixLog(LOGGER, message);
+        }
+
         this.saveCheckResult(site, result.isOk(), result.toJson(), Consts.PRODUCT_DETAIL_PAGE_NAME, productInfo.getCode());
 
         Notification notification = new Notification(site, Consts.PRODUCT_DETAIL_PAGE_NAME, productInfo.getCode());

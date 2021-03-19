@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import com.topcoder.common.util.Common;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +75,7 @@ public class DryRunProductSearchModule {
                     if (dru.checkCountOver(productCodeList)) break;
                 }
             } catch (IOException | IllegalStateException e) {
-                LOGGER.error(String.format("Fail to search product."));
+                Common.ZabbixLog(LOGGER, "Fail to search product.", e);
             }
         }
         ;

@@ -13,6 +13,6 @@ public interface IChangeDetectionInitModule extends IBasicModule {
     /**
      * init change detection
      */
-    void init(List<String> sites) throws IOException;
+    void init(List<String> sites, String target) throws IOException;
 }
 

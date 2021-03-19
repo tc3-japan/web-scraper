@@ -49,9 +49,9 @@ public class GeneralChangeDetectionInitModule extends GeneralChangeDetectionComm
      * Implementation of init method
      */
     @Override
-    public void init(List<String> sites) throws IOException {
+    public void init(List<String> sites, String target) throws IOException {
         LOGGER.debug("[init]");
-        this.processMonitorTarget(sites);
+        this.processMonitorTarget(sites, target);
     }
 
     /**

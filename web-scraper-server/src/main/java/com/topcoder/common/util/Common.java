@@ -2,6 +2,7 @@ package com.topcoder.common.util;
 
 import java.beans.FeatureDescriptor;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -10,6 +11,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,8 +23,6 @@ import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.util.Cookie;
 import com.topcoder.common.dao.ECSiteAccountDAO;
 import com.topcoder.common.model.AuthStatusType;
-import com.topcoder.common.model.ECCookie;
-import com.topcoder.common.model.ECCookies;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
@@ -61,7 +62,7 @@ public class Common {
             for (Cookie cookie : cookies) {
                 webClient.getCookieManager().addCookie(cookie);
             }
-        } catch (Exception e) {
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
             return false;
         }
@@ -102,7 +103,8 @@ public class Common {
             cookies.append(cookie.getName()).append("=").append(cookie.getValue()).append("; ");
         }
         WebRequest page = new WebRequest(new URL(url));
-        page.setAdditionalHeader("cookie", cookies.substring(0, cookies.length() - 2));
+        if (StringUtils.isNotEmpty(cookies))
+            page.setAdditionalHeader("cookie", cookies.substring(0, cookies.length() - 2));
         return page;
     }
 
@@ -182,8 +184,8 @@ public class Common {
             return "";
         try {
             return MAPPER.writeValueAsString(obj);
-        } catch (Exception e) {
-            logger.error("Failed to convert object to JSON.", e);
+        } catch (JsonProcessingException e) {
+            ZabbixLog(logger, "Failed to convert object to JSON.", e);
             return null;
         }
     }
@@ -210,4 +212,26 @@ public class Common {
         text = text.replaceAll("[\\p{Punct}¥]+", "-");
         System.out.println(text);
     }
+
+    public static void ZabbixLog(Logger logger, String message, Throwable e) {
+        logger.error("Zabbix [" + message + ":" + getThrowableMessage(e) + "]");
+        e.printStackTrace();
+    }
+
+    public static void ZabbixLog(Logger logger, String message) {
+        logger.error("Zabbix [" + message + "]");
+    }
+
+    public static void ZabbixLog(Logger logger, Throwable e) {
+        ZabbixLog(logger, getThrowableMessage(e));
+        e.printStackTrace();
+    }
+
+    private static String getThrowableMessage(Throwable e) {
+        while (e.getCause() != null) {
+            e = e.getCause();
+        }
+        return e.getMessage();
+    }
+
 }

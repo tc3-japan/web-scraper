@@ -3,9 +3,11 @@ package com.topcoder.api.service.login;
 import com.topcoder.common.dao.ECSiteAccountDAO;
 import com.topcoder.common.dao.UserDAO;
 import com.topcoder.common.model.AuthStatusType;
+import com.topcoder.common.model.LoginResponse;
 import com.topcoder.common.repository.ECSiteAccountRepository;
 import com.topcoder.common.repository.UserRepository;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -54,7 +56,17 @@ public abstract class LoginHandlerBase implements LoginHandler {
         ecSiteAccountDAO.setAuthStatus(status);
         ecSiteAccountDAO.setAuthFailReason(message);
         ecSiteAccountDAO.setUpdateAt(new Date());
+
+        boolean isLogin = status.equals(AuthStatusType.SUCCESS);
+        ecSiteAccountDAO.setIsLogin(isLogin);
+        if (isLogin) {
+            ecSiteAccountDAO.setLastLoginedAt(new Date());
+        }
         ecSiteAccountRepository.save(ecSiteAccountDAO);
     }
 
+    @Override
+    public LoginResponse login(ECSiteAccountDAO ecSiteAccountDAO) throws IOException {
+        throw new UnsupportedOperationException();
+    }
 }

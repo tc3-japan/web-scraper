@@ -10,6 +10,8 @@ import ExpandRow from './ExpandRow';
 import InputField from '../InputField';
 import IconButton, { TYPES as IB_TYPES } from '../IconButton';
 import SectionTitle from '../SectionTitle';
+import AttributeField from '../AttributeField';
+import RegexField from '../RegexField';
 
 import { JSON_DROPDOWN, VALID_SCRAPING_TYPES } from '../../config/dropdown-list';
 import getI18T from '../../i18nSetup';
@@ -31,7 +33,7 @@ import './style.scss';
  * @return {number}
  */
 function getTotalOfSelectorTimes(path) {
-  if (_.includes(['next_url_element'], path)) {
+  if (_.includes(['next_url_element', 'order_filter.element'], path)) {
     return 1;
   }
   return 2;
@@ -112,6 +114,7 @@ export default class Editor extends React.Component {
       || rootPathValue
       || path === 'purchase_order.parent'
       || path === 'next_url_element'
+      || path === 'order_filter.element'
       || path === 'purchase_order.url_element'
     ) {
       return basePath;
@@ -313,7 +316,7 @@ export default class Editor extends React.Component {
         });
         this.selectors = [];
         this.totalSelectorTimes = getTotalOfSelectorTimes(path);
-      }); // next tick
+      }, 0); // next tick
     } else {
       this.stopInspector('toggleSelectorBtn');
     }
@@ -335,6 +338,7 @@ export default class Editor extends React.Component {
 
     const orderRows = _.get(siteObj, 'purchase_order.rows') || [];
     const productRows = _.get(siteObj, 'purchase_order.purchase_product.rows') || [];
+    const orderFilterAdvanced = _.get(siteObj, 'meta.advancedExpanded.order_filter', false);
 
     const renderInputRow = (path, title) => (
       <InputField
@@ -362,171 +366,219 @@ export default class Editor extends React.Component {
             onClick={() => sendMessageToPage({ action: 'currentUrl' })}
           />
         </div>
+        <div className={`currentUrlWarning ${!!isExpanded('history')}`}>
+          {t('editor.currentUrlYearPlaceholder')}
+        </div>
         {isExpanded('history') && (
-        <div className="indent">
-          <div className={`editor-row ${!!isExpanded('order')}`}>
-            <SectionTitle
-              arrowUp={!isExpanded('order')}
-              onClick={() => this.toggle('order')}
-              title={t('editor.purchaseOrder')}
-            />
-            {renderInputRow('purchase_order.url_element')}
-            <Button
-              type="selector"
-              path="purchase_order.url_element"
-              highlight={siteObj.meta.highlight}
-              onClick={this.toggleSelectorBtn}
-            />
-          </div>
-          {isExpanded('order') && (
-          <div className="editor-row">
-            <div className="parent-selector" />
-            {renderInputRow('purchase_order.parent', t('editor.parentSelector'))}
-            <Button
-              type="selector"
-              path="purchase_order.parent"
-              highlight={siteObj.meta.highlight}
-              onClick={this.toggleSelectorBtn}
-            />
-          </div>
-          )}
-          {isExpanded('order') && (
           <div className="indent">
-            {_.map(orderRows, (key, i) => (
-              <ExpandRow
-                row={orderRows[i]}
-                rows={orderRows}
-                path={`purchase_order.rows.${i}`}
-                toggleSelectorBtn={this.toggleSelectorBtn}
-                highlight={siteObj.meta.highlight}
-                advancedExpanded={siteObj.meta.advancedExpanded}
-                selectorPrefix={_.get(siteObj, 'purchase_order.parent')}
-                onUpdate={onUpdate}
-                key={`order-${i}`}
-              />
-            ))}
-            {
-              orderRows.length < JSON_DROPDOWN.length && (
-                <IconButton
-                  onClick={
-                    () => onUpdate(
-                      `purchase_order.rows.${orderRows.length}`,
-                      {},
-                    )
-                  }
-                  topMargin
-                  title={t('editor.addItem')}
-                  type={IB_TYPES.PLUS}
-                />
-              )
-            }
-            <div className={`editor-row ${!!isExpanded('product')}`}>
+            <div className={`editor-row ${!!isExpanded('order_filter')}`}>
               <SectionTitle
-                arrowUp={!isExpanded('product')}
-                onClick={() => this.toggle('product')}
-                title={t('editor.purchaseProduct')}
+                arrowUp={!isExpanded('order_filter')}
+                onClick={() => this.toggle('order_filter')}
+                title={t('editor.orderFilter')}
               />
-              {renderInputRow('purchase_order.purchase_product.url_element')}
+              {renderInputRow('order_filter.element', t('editor.selector'))}
               <Button
                 type="selector"
-                path="purchase_order.purchase_product.url_element"
-                highlight={siteObj.meta.highlight}
                 onClick={this.toggleSelectorBtn}
-              />
-            </div>
-
-            {isExpanded('product') && (
-            <div className="editor-row">
-              <div className="parent-selector" />
-              {renderInputRow('purchase_order.purchase_product.parent', t('editor.parentSelector'))}
-              <Button
-                type="selector"
-                path="purchase_order.purchase_product.parent"
+                path="order_filter.element"
                 highlight={siteObj.meta.highlight}
-                onClick={this.toggleSelectorBtn}
               />
+              <div className="seq" />
+              <div className="container">
+                <IconButton
+                  onClick={() => onUpdate(`meta.advancedExpanded.order_filter`, !orderFilterAdvanced)}
+                  title={t('editor.advanced')}
+                  type={orderFilterAdvanced ? IB_TYPES.MINUS : IB_TYPES.PLUS}
+                />
+              </div>
             </div>
+            {orderFilterAdvanced && isExpanded('order_filter') && (
+              <div className={`editor-row`}>
+                <div className="seq big" />
+                <AttributeField
+                  attribute={_.get(siteObj, 'order_filter.attribute')}
+                  disabled={false}
+                  onChange={(value) => onUpdate(`order_filter.attribute`, value)}
+                  selector={_.get(siteObj, 'order_filter.element')}
+                />
+                <div className="seq big" />
+                <RegexField
+                  attribute={_.get(siteObj, 'order_filter.attribute')}
+                  disabled={false}
+                  onChange={(value) => onUpdate(`order_filter.regex`, value)}
+                  regex={_.get(siteObj, 'order_filter.regex')}
+                  selector={_.get(siteObj, 'order_filter.element')}
+                />
+              </div>
             )}
-
-            {isExpanded('product') && (
-            <div className="indent">
-              {
-                _.map(productRows, (key, i) => {
-                  let prefix = [];
-
-                  const productUrlSelector = _.get(
-                    siteObj,
-                    'purchase_order.purchase_product.url_element',
-                  );
-
-                  if (!productUrlSelector) {
-                    const orderParentSelector = _.get(
-                      siteObj,
-                      'purchase_order.parent',
-                    );
-                    if (orderParentSelector) prefix.push(orderParentSelector);
-                  }
-
-                  const purchaseParentSelector = _.get(
-                    siteObj,
-                    'purchase_order.purchase_product.parent',
-                  );
-                  if (purchaseParentSelector) {
-                    prefix.push(purchaseParentSelector);
-                  }
-
-                  prefix = prefix.join(' > ');
-
-                  return (
-                    <ExpandRow
-                      row={productRows[i]}
-                      rows={productRows}
-                      path={`purchase_order.purchase_product.rows.${i}`}
-                      toggleSelectorBtn={this.toggleSelectorBtn}
-                      highlight={siteObj.meta.highlight}
-                      selectorPrefix={prefix}
-                      advancedExpanded={siteObj.meta.advancedExpanded}
-                      onUpdate={onUpdate}
-                      key={`product-${i}`}
+          </div>
+        )}
+        {isExpanded('history') && (
+          <div className="indent">
+            <div className={`editor-row ${!!isExpanded('order')}`}>
+              <SectionTitle
+                arrowUp={!isExpanded('order')}
+                onClick={() => this.toggle('order')}
+                title={t('editor.purchaseOrder')}
+              />
+              {renderInputRow('purchase_order.url_element')}
+              <Button
+                type="selector"
+                path="purchase_order.url_element"
+                highlight={siteObj.meta.highlight}
+                onClick={this.toggleSelectorBtn}
+              />
+            </div>
+            {isExpanded('order') && (
+              <div className="editor-row">
+                <div className="parent-selector" />
+                {renderInputRow('purchase_order.parent', t('editor.parentSelector'))}
+                <Button
+                  type="selector"
+                  path="purchase_order.parent"
+                  highlight={siteObj.meta.highlight}
+                  onClick={this.toggleSelectorBtn}
+                />
+              </div>
+            )}
+            {isExpanded('order') && (
+              <div className="indent">
+                {_.map(orderRows, (key, i) => (
+                  <ExpandRow
+                    row={orderRows[i]}
+                    rows={orderRows}
+                    path={`purchase_order.rows.${i}`}
+                    toggleSelectorBtn={this.toggleSelectorBtn}
+                    highlight={siteObj.meta.highlight}
+                    advancedExpanded={siteObj.meta.advancedExpanded}
+                    selectorPrefix={_.get(siteObj, 'purchase_order.parent')}
+                    onUpdate={onUpdate}
+                    key={`order-${i}`}
+                  />
+                ))}
+                {
+                  orderRows.length < JSON_DROPDOWN.length && (
+                    <IconButton
+                      onClick={
+                        () => onUpdate(
+                          `purchase_order.rows.${orderRows.length}`,
+                          {},
+                        )
+                      }
+                      topMargin
+                      title={t('editor.addItem')}
+                      type={IB_TYPES.PLUS}
                     />
-                  );
-                })
-              }
-              {
-                productRows.length < JSON_DROPDOWN.length && (
-                  <IconButton
-                    onClick={
-                      () => onUpdate(
-                        `purchase_order.purchase_product.rows.${productRows.length}`,
-                        {},
+                  )
+                }
+                <div className={`editor-row ${!!isExpanded('product')}`}>
+                  <SectionTitle
+                    arrowUp={!isExpanded('product')}
+                    onClick={() => this.toggle('product')}
+                    title={t('editor.purchaseProduct')}
+                  />
+                  {renderInputRow('purchase_order.purchase_product.url_element')}
+                  <Button
+                    type="selector"
+                    path="purchase_order.purchase_product.url_element"
+                    highlight={siteObj.meta.highlight}
+                    onClick={this.toggleSelectorBtn}
+                  />
+                </div>
+
+                {isExpanded('product') && (
+                  <div className="editor-row">
+                    <div className="parent-selector" />
+                    {renderInputRow('purchase_order.purchase_product.parent', t('editor.parentSelector'))}
+                    <Button
+                      type="selector"
+                      path="purchase_order.purchase_product.parent"
+                      highlight={siteObj.meta.highlight}
+                      onClick={this.toggleSelectorBtn}
+                    />
+                  </div>
+                )}
+
+                {isExpanded('product') && (
+                  <div className="indent">
+                    {
+                      _.map(productRows, (key, i) => {
+                        let prefix = [];
+
+                        const productUrlSelector = _.get(
+                          siteObj,
+                          'purchase_order.purchase_product.url_element',
+                        );
+
+                        if (!productUrlSelector) {
+                          const orderParentSelector = _.get(
+                            siteObj,
+                            'purchase_order.parent',
+                          );
+                          if (orderParentSelector) prefix.push(orderParentSelector);
+                        }
+
+                        const purchaseParentSelector = _.get(
+                          siteObj,
+                          'purchase_order.purchase_product.parent',
+                        );
+                        if (purchaseParentSelector) {
+                          prefix.push(purchaseParentSelector);
+                        }
+
+                        prefix = prefix.join(' > ');
+
+                        return (
+                          <ExpandRow
+                            row={productRows[i]}
+                            rows={productRows}
+                            path={`purchase_order.purchase_product.rows.${i}`}
+                            toggleSelectorBtn={this.toggleSelectorBtn}
+                            highlight={siteObj.meta.highlight}
+                            selectorPrefix={prefix}
+                            advancedExpanded={siteObj.meta.advancedExpanded}
+                            onUpdate={onUpdate}
+                            key={`product-${i}`}
+                          />
+                        );
+                      })
+                    }
+                    {
+                      productRows.length < JSON_DROPDOWN.length && (
+                        <IconButton
+                          onClick={
+                            () => onUpdate(
+                              `purchase_order.purchase_product.rows.${productRows.length}`,
+                              {},
+                            )
+                          }
+                          topMargin
+                          title={t('editor.addItem')}
+                          type={IB_TYPES.PLUS}
+                        />
                       )
                     }
-                    topMargin
-                    title={t('editor.addItem')}
-                    type={IB_TYPES.PLUS}
-                  />
-                )
-              }
-            </div>
+                  </div>
+                )}
+              </div>
             )}
-          </div>
-          )}
 
-          <div className={`editor-row ${!!isExpanded('next')}`}>
-            <SectionTitle
-              arrowUp={!isExpanded('next')}
-              onClick={() => this.toggle('next')}
-              title={t('editor.nextPage')}
-            />
-            {renderInputRow('next_url_element', t('editor.selector'))}
-            <Button
-              type="selector"
-              onClick={this.toggleSelectorBtn}
-              path="next_url_element"
-              highlight={siteObj.meta.highlight}
-            />
+            <div className={`editor-row ${!!isExpanded('next')}`}>
+              <SectionTitle
+                arrowUp={!isExpanded('next')}
+                onClick={() => this.toggle('next')}
+                title={t('editor.nextPage')}
+              />
+              {renderInputRow('next_url_element', t('editor.selector'))}
+              <Button
+                type="selector"
+                onClick={this.toggleSelectorBtn}
+                path="next_url_element"
+                highlight={siteObj.meta.highlight}
+              />
+            </div>
           </div>
-        </div>
         )}
       </div>
     );

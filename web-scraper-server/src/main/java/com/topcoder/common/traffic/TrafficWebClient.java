@@ -8,15 +8,11 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
+import com.gargoylesoftware.htmlunit.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.gargoylesoftware.htmlunit.BrowserVersion;
-import com.gargoylesoftware.htmlunit.Page;
-import com.gargoylesoftware.htmlunit.ProxyConfig;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.topcoder.common.config.TrafficProperty;
@@ -209,9 +205,9 @@ public class TrafficWebClient {
         try {
             P p = doRequestUnderController(request, content, false);
             return p;
-        } catch (Exception e) {
+        } catch (IOException e) {
             afterTraffic(false);
-            throw new IOException(e);
+            throw e;
         }
     }
 
@@ -228,14 +224,15 @@ public class TrafficWebClient {
             Request request,
             String content,
             boolean skipWait
-    ) throws Exception {
+    ) throws IOException {
         RequestEventDAO eventDAO = beforeRequest(content, skipWait);
         try {
             P p = request.invoke();
             afterRequest(eventDAO, true);
+            logger.debug(p.getWebResponse().getWebRequest().toString());
             return p;
-        } catch (Exception e) {
-            logger.error(e.getMessage());
+        } catch (IOException e) {
+            Common.ZabbixLog(logger, e);
             afterRequest(eventDAO, false);
             if (whenRequestFailed()) {
                 return doRequestUnderController(request, content, true);
@@ -329,20 +326,49 @@ public class TrafficWebClient {
                     urlStr = urlStr.replaceAll("sock.*://", "http://");
                 }
                 URL url = new URL(urlStr);
-                proxyConfig.setProxyPort(url.getPort());
-                proxyConfig.setProxyHost(url.getHost());
-                webClient.getOptions().setProxyConfig(proxyConfig);
+
+                if (url.getUserInfo() == null) {
+                    proxyConfig.setProxyPort(url.getPort());
+                    proxyConfig.setProxyHost(url.getHost());
+
+                    webClient.getOptions().setProxyConfig(proxyConfig);
+                } else {
+                    String[] userInfo = url.getUserInfo().split(":");
+                    DefaultCredentialsProvider scp = new DefaultCredentialsProvider();
+                    scp.addCredentials(userInfo[0], userInfo[1], url.getHost(), url.getPort(), null);
+                    webClient.setCredentialsProvider(scp);
+                }
+
 
                 // traffic record to database
                 content = content + ", " + proxyMsg;
                 logger.info(proxyMsg + " for this request");
             } catch (MalformedURLException e) {
-                e.printStackTrace();
-                logger.error("proxy server parse error, url = " + tactic.getProxyServerByUserId(userId));
+                String message = "proxy server parse error, url = " + tactic.getProxyServerByUserId(userId);
+                Common.ZabbixLog(logger, message, e);
             }
         }
 
         logger.info("user-agent = " + webClient.getBrowserVersion().getUserAgent());
+
+        sleep(skipWait);
+
+        RequestEventDAO requestEventDAO = new RequestEventDAO();
+        requestEventDAO.setCreateAt(Date.from(ZonedDateTime.now().toInstant()));
+
+        requestEventDAO.setContents(content);
+        requestEventDAO.setTacticEventId(this.tacticEventDAO.getId());
+        saveRequestEventDAO(requestEventDAO);
+
+        return requestEventDAO;
+    }
+
+    public void sleep() {
+        sleep(false);
+    }
+
+    public void sleep(boolean skipWait) {
+        Tactic tactic = getTactic();
 
         long waitTime = 1000 * Common.getValueOrDefault(tactic.getRequestInterval(), 1);
         /*
@@ -353,12 +379,6 @@ public class TrafficWebClient {
         if (Boolean.TRUE.equals(tactic.getRequestIntervalRandom())) {
             waitTime = (int) (waitTime * (1.0 + Math.random()));
         }
-        // TODO: delete
-        //if (Boolean.TRUE.equals(tactic.getRequestIntervalRandom())) {
-        //  waitTime = 1000 + (int) (Math.random() * 1000);
-        //} else {
-        //  waitTime = 1000 * Common.getValueOrDefault(tactic.getRequestInterval(), 1);
-        //}
 
         if (!skipWait && waitTime > 0) {
             try {
@@ -368,15 +388,6 @@ public class TrafficWebClient {
                 // ignore this, we don't care
             }
         }
-
-        RequestEventDAO requestEventDAO = new RequestEventDAO();
-        requestEventDAO.setCreateAt(Date.from(ZonedDateTime.now().toInstant()));
-
-        requestEventDAO.setContents(content);
-        requestEventDAO.setTacticEventId(this.tacticEventDAO.getId());
-        saveRequestEventDAO(requestEventDAO);
-
-        return requestEventDAO;
     }
 
     /**

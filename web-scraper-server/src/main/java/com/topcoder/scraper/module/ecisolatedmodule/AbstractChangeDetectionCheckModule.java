@@ -64,7 +64,7 @@ public abstract class AbstractChangeDetectionCheckModule extends AbstractChangeD
      * Implementation of check method
      */
     @Override
-    public void check(List<String> sites) throws IOException {
+    public void check(List<String> sites, String target) throws IOException {
         LOGGER.debug("[check]");
         this.processMonitorTarget();
     }

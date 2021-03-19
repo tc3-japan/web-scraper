@@ -55,29 +55,42 @@ public class RakutenLoginHandler extends LoginHandlerBase {
         ecSiteAccountDAO.setLoginEmail(request.getEmail());
         ecSiteAccountRepository.save(ecSiteAccountDAO); // save it first
 
-        RakutenAuthenticationCrawler crawler = new RakutenAuthenticationCrawler(this.getECSite(), applicationContext.getBean(WebpageService.class));
-        TrafficWebClient webClient = new TrafficWebClient(userId, false);
-
         try {
-            RakutenAuthenticationCrawlerResult result = crawler.authenticate(webClient, request.getEmail(), request.getPassword(), null);
-            if (result.isSuccess()) { // succeed , update status and save cookies
-                ByteArrayOutputStream bout = new ByteArrayOutputStream();
-                ObjectOutput oout = new ObjectOutputStream(bout);
-                oout.writeObject(webClient.getWebClient().getCookieManager().getCookies());
-                oout.close();
-                bout.close();
-                ecSiteAccountDAO.setEcCookies(bout.toByteArray());
-                saveSuccessResult(ecSiteAccountDAO);
-
-                return new LoginResponse(ecSiteAccountDAO.getLoginEmail(), null, null, AuthStep.DONE, "");
-            } else { // login failed
-                saveFailedResult(ecSiteAccountDAO, "Authentication failed");
+            LoginResponse loginResponse = login(ecSiteAccountDAO);
+            if (loginResponse == null) {
                 throw new ApiException("Authentication failed");
             }
+            return loginResponse;
         } catch (IOException e) {
             saveFailedResult(ecSiteAccountDAO, e.getMessage());
             throw new ApiException(e.getMessage());
         }
     }
 
+    @Override
+    public LoginResponse login(ECSiteAccountDAO ecSiteAccountDAO) throws IOException {
+
+        TrafficWebClient webClient = new TrafficWebClient(ecSiteAccountDAO.getUserId(), false);
+
+        RakutenAuthenticationCrawler crawler =
+                new RakutenAuthenticationCrawler(this.getECSite(), applicationContext.getBean(WebpageService.class));
+        RakutenAuthenticationCrawlerResult result =
+                crawler.authenticate(webClient, ecSiteAccountDAO.getLoginEmail(), ecSiteAccountDAO.getPassword(), null);
+
+        if (result.isSuccess()) { // succeed , update status and save cookies
+            ByteArrayOutputStream bout = new ByteArrayOutputStream();
+            ObjectOutput oout = new ObjectOutputStream(bout);
+            oout.writeObject(webClient.getWebClient().getCookieManager().getCookies());
+            oout.close();
+            bout.close();
+            ecSiteAccountDAO.setEcCookies(bout.toByteArray());
+            saveSuccessResult(ecSiteAccountDAO);
+
+            return new LoginResponse(ecSiteAccountDAO.getLoginEmail(), null, null, AuthStep.DONE, "");
+        }
+
+        // login failed
+        saveFailedResult(ecSiteAccountDAO, "Authentication failed");
+        return null;
+    }
 }

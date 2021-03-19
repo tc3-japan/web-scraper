@@ -13,6 +13,6 @@ public interface IChangeDetectionCheckModule extends IBasicModule {
     /**
      * check change detection
      */
-    void check(List<String> sites) throws IOException;
+    void check(List<String> sites, String target) throws IOException;
 }
 

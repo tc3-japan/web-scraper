@@ -92,6 +92,19 @@ public class ECSiteAccountDAO {
     @Column(name = "update_at")
     private Date updateAt;
 
+    /**
+     * the login flag
+     */
+    @Column(name = "is_login")
+    private Boolean isLogin;
+
+    /**
+     * last logined at time
+     */
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "last_logined_at")
+    private Date lastLoginedAt;
+
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id", insertable = false, updatable = false)

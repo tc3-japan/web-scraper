@@ -96,7 +96,7 @@ public class ECSiteAccountService {
     }
 
 
-    public LoginResponse loginInit(String userId, Integer siteId, String uuid) throws ApiException {
+    public LoginResponse loginInit(String userId, Integer siteId, String uuid) throws Exception {
 
         UserDAO userDAO = checkUserByCryptoID(userId);
         ECSiteAccountDAO ecSiteAccountDAO = ecSiteAccountRepository.findOne(siteId);
@@ -106,7 +106,7 @@ public class ECSiteAccountService {
         return handler.loginInit(userDAO.getId(), siteId, uuid);
     }
 
-    public LoginResponse login(String userId, LoginRequest request) throws ApiException {
+    public LoginResponse login(String userId, LoginRequest request) throws Exception {
 
         UserDAO userDAO = checkUserByCryptoID(userId);
         ECSiteAccountDAO ecSiteAccountDAO = ecSiteAccountRepository.findOne(request.getSiteId());

@@ -1,9 +1,0 @@
-{
-  "add-field": {
-    "name": "group_id",
-    "type": "pint",
-    "required": false,
-    "indexed": true,
-    "stored": true
-  }
-}

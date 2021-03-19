@@ -54,7 +54,7 @@ public abstract class GeneralChangeDetectionCommonModule implements IBasicModule
     /**
      * Implementation of check method
      */
-    protected void processMonitorTarget(List<String> sites) throws IOException {
+    protected void processMonitorTarget(List<String> sites, String target) throws IOException {
         LOGGER.debug("[processMonitorTarget] in");
         for (MonitorTargetDefinitionProperty.MonitorTargetCheckSite checkSite : monitorTargetDefinitionProperty.getCheckSites()) {
             if (!sites.contains(checkSite.getEcSite())) {
@@ -64,6 +64,9 @@ public abstract class GeneralChangeDetectionCommonModule implements IBasicModule
             for (MonitorTargetDefinitionProperty.MonitorTargetCheckPage monitorTargetCheckPage : checkSite.getCheckPages()) {
 
                 if (monitorTargetCheckPage.getPageName().equalsIgnoreCase(Consts.PURCHASE_HISTORY_LIST_PAGE_NAME)) {
+                    if (!target.equalsIgnoreCase(Consts.TARGET_ALL) && !target.equalsIgnoreCase(Consts.TARGET_PURCHASE_HISTORY)) {
+                        continue;
+                    }
                     LOGGER.debug("[processMonitorTarget] processPurchaseHistory for target accounts");
 
                     List<Integer> userIdList = monitorTargetCheckPage.getCheckTargetKeys()
@@ -73,7 +76,7 @@ public abstract class GeneralChangeDetectionCommonModule implements IBasicModule
 
                     for (ECSiteAccountDAO ecSiteAccountDAO : accountDAOS) {
                         GeneralPurchaseHistoryCrawlerResult crawlerResult =
-                                this.purchaseHistoryModule.fetchPurchaseHistoryListForECSiteAccount(ecSiteAccountDAO, null);
+                                this.purchaseHistoryModule.fetchPurchaseHistoryListForECSiteAccount(ecSiteAccountDAO, monitorTargetCheckPage.getMaxCount());
                         if (crawlerResult != null) {
                             String key = Integer.toString(ecSiteAccountDAO.getId());
                             this.processPurchaseHistory(checkSite.getEcSite(), crawlerResult, key);
@@ -82,6 +85,9 @@ public abstract class GeneralChangeDetectionCommonModule implements IBasicModule
 
                     // process puchase history
                 } else if (monitorTargetCheckPage.getPageName().equalsIgnoreCase(Consts.PRODUCT_DETAIL_PAGE_NAME)) {
+                    if (!target.equalsIgnoreCase(Consts.TARGET_ALL) && !target.equalsIgnoreCase(Consts.TARGET_PRODUCT)) {
+                        continue;
+                    }
                     LOGGER.debug("[processMonitorTarget] processProductDetail for target products");
 
                     // TODO: fix below hacky code, monitorTargetCheckPage.getCheckTargetKeys() must not be null.

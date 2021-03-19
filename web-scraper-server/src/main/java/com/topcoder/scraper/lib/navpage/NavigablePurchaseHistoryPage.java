@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import com.topcoder.common.util.Common;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -299,8 +300,8 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
         try {
             return DateUtils.fromString(dateStr, format);
         } catch (ParseException e) {
-            LOGGER.error(String.format("[extractDate] Failed to parse the input '%s'. Error: %s", dateStr, e.getMessage()));
-            e.printStackTrace();
+            String message = String.format("[extractDate] Failed to parse the input '%s'.", dateStr);
+            Common.ZabbixLog(LOGGER, message, e);
             return null;
         }
     }
@@ -318,11 +319,9 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
         // dateStr = dateStr.replace("年", "/");
         try {
             return DateUtils.fromString(text);// , FORMAT_DATE);
-        } catch (Exception e) {
-            // TODO: Logger
-            // LOGGER.error(String.format("Failed to parse the input '%s'. Error: %s",
-            // dateStr, e.getMessage()));
-            e.printStackTrace();
+        } catch (ParseException e) {
+            String message = String.format("Failed to parse the input '%s'.", text);
+            Common.ZabbixLog(LOGGER, message, e);
             return null;
         }
     }
@@ -389,6 +388,30 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
         String content = getTextContent(element);
         if (isValid(selector.getAttribute())) {
             content = element.getAttribute(selector.getAttribute());
+        }
+        if (isValid(selector.getRegex())) {
+            content = extract2(content, Pattern.compile(selector.getRegex()));
+        }
+        return content;
+    }
+
+    /**
+     * scrape value by node
+     *
+     * @param node        the node
+     * @param selector    the selector object
+     * @return final value
+     */
+    public String scrapeStringFromNode(DomNode node, Selector selector) {
+        if (selector == null) {
+            return null;
+        }
+
+        String content = null;
+        if (isValid(selector.getAttribute())) {
+            if (node.getAttributes().getNamedItem(selector.getAttribute()) != null) {
+                content = node.getAttributes().getNamedItem(selector.getAttribute()).getNodeValue();
+            }
         }
         if (isValid(selector.getRegex())) {
             content = extract2(content, Pattern.compile(selector.getRegex()));

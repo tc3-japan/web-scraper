@@ -1,5 +1,6 @@
 package com.topcoder.scraper.command;
 
+import com.topcoder.scraper.Consts;
 import com.topcoder.scraper.module.IBasicModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,8 @@ public abstract class AbstractCommand<T extends IBasicModule> {
 
     protected List<String> sites;
 
+    protected String target;
+
     protected AbstractCommand(List<T> modules) {
         this.modules = modules;
     }
@@ -40,6 +43,9 @@ public abstract class AbstractCommand<T extends IBasicModule> {
     public void run(ApplicationArguments args) {
         this.sites = args.getOptionValues("site");
         List<String> moduletypes = args.getOptionValues("module");
+
+        List<String> targets = args.getOptionValues("target");
+        this.target = targets != null ? targets.get(0) : Consts.TARGET_ALL;
 
         if (moduletypes == null || moduletypes.size() == 0 || moduletypes.get(0).equals("unified")) {
             LOGGER.info("moduletype: unified, site=module: general");

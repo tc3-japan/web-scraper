@@ -1,5 +1,6 @@
 package com.topcoder.scraper.command.impl;
 
+import com.topcoder.common.util.Common;
 import com.topcoder.scraper.Consts;
 import com.topcoder.scraper.command.AbstractCommand;
 import com.topcoder.scraper.exception.FetchProductDetailException;
@@ -40,7 +41,7 @@ public class ProductDetailCommand extends AbstractCommand<IProductDetailModule> 
                 module.fetchProductDetailList(this.sites);
             }
         } catch (IOException e) {
-            LOGGER.error("Fail to fetch product detail list", e);
+            Common.ZabbixLog(LOGGER,"Fail to fetch product detail list", e);
             throw new FetchProductDetailException();
         }
         LOGGER.info("Successfully product detail list");

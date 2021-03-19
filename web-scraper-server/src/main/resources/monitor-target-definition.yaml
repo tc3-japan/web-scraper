@@ -2,6 +2,7 @@ check-sites:
   - ec-site: amazon
     check-pages:
       - page_name: purchase_history_list
+        max_count: 20
         # id of ec_site_account table
         check_target_keys:
           - 1
@@ -9,7 +10,7 @@ check-sites:
         # product code of product table
         check_target_keys:
           - B002C4KL88
-          - B006GQYSC8
+          - B073XFGC7K
 #  - ec-site: kojima
 #    check-pages:
 #      - page_name: purchase_history_list
@@ -22,21 +23,24 @@ check-sites:
 #        check_target_keys:
 #          # TODO: set
 #          - 4041134
-  - ec-site: yahoo
-    check-pages:
-      - page_name: purchase_history_list
-        # id of ec_site_account table
-        check_target_keys:
-          # TODO: set
-          - 1
-      - page_name: product_detail
-        # product code of product table
-        check_target_keys:
-          # TODO: set
-          - 4041134
   - ec-site: rakuten
     check-pages:
       - page_name: purchase_history_list
+        max_count: 20
+        # id of ec_site_account table
+        check_target_keys:
+          # TODO: set
+          - 1
+      - page_name: product_detail
+        # product code of product table
+        check_target_keys:
+        # TODO: set
+#          - proteinusa/op-02866
+#          - booxstore/bk-4798053473
+  - ec-site: yahoo
+    check-pages:
+      - page_name: purchase_history_list
+        max_count: 20
         # id of ec_site_account table
         check_target_keys:
           # TODO: set
@@ -45,4 +49,5 @@ check-sites:
         # product code of product table
         check_target_keys:
           # TODO: set
-          - 4041134
+          - speedbody/op-02866
+          - bookfan/bk-4798053473

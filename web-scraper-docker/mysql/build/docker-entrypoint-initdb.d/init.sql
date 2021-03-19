@@ -1,5 +1,0 @@
-CREATE DATABASE IF NOT EXISTS web_scraper;
-
-CREATE USER 'root'@'%' IDENTIFIED BY 'mypassword';
-GRANT ALL PRIVILEGES ON *.* TO 'root'@'%';
-FLUSH PRIVILEGES;

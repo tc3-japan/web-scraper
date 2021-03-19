@@ -49,7 +49,7 @@ public abstract class AbstractChangeDetectionInitModule extends AbstractChangeDe
      * Implementation of init method
      */
     @Override
-    public void init(List<String> sites) throws IOException {
+    public void init(List<String> sites, String target) throws IOException {
         LOGGER.debug("[init]");
         this.processMonitorTarget();
     }

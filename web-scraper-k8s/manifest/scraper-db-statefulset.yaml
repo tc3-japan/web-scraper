@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  annotations:
+    kompose.cmd: kompose -f docker-compose.local.yml convert
+    kompose.version: 1.21.0 ()
+  creationTimestamp: null
+  labels:
+    io.kompose.service: scraper-db
+  name: scraper-db
+spec:
+  replicas: 1
+  serviceName: scraper-db
+  selector:
+    matchLabels:
+      io.kompose.service: scraper-db
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose -f docker-compose.local.yml convert
+        kompose.version: 1.21.0 ()
+      labels:
+        io.kompose.service: scraper-db
+    spec:
+      # uid=999(mysql) gid=999(mysql) groups=999(mysql)
+      securityContext:
+        runAsUser: 999
+        runAsGroup: 999
+        fsGroup: 999
+      containers:
+      - env:
+        - name: MYSQL_DATABASE
+          value: web_scraper
+        - name: MYSQL_PASSWORD
+          value: mypassword
+        - name: MYSQL_ROOT_PASSWORD
+          value: mypassword
+        image: tc3jp/scraper-db:dev1.0
+        name: scraper-db
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+          - name: data
+            mountPath: /var/lib/mysql
+          - name: log
+            mountPath: /var/log/mysql
+          - name: backup
+            mountPath: /root/mysql/backup
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: gp2
+        resources:
+          requests:
+            storage: 1Gi
+    - metadata:
+        name: log
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: gp2
+        resources:
+          requests:
+            storage: 1Gi
+    - metadata:
+        name: backup
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: gp2
+        resources:
+          requests:
+            storage: 1Gi

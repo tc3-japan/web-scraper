@@ -1,19 +1,33 @@
 version: '3'
 services:
 
-  scraper-web:
-    image: scraper-web:dev1.0
-    build: ./nginx
-    container_name: "scraper-web"
+  scraper-web-admin:
+    image: scraper-web-admin:dev1.0
+    build: ./nginx/admin
+    container_name: "scraper-web-admin"
     ports:
       - 8080:80
     links:
       - scraper-app
     networks:
       scraper_net:
-        ipv4_address: 10.1.1.1
+        ipv4_address: 10.1.0.5
     volumes:
-      - ./nginx/libs:/usr/share/nginx/html
+      - ./nginx/admin/libs:/usr/share/nginx/html
+
+  scraper-web-user:
+    image: scraper-web-user:dev1.0
+    build: ./nginx/user
+    container_name: "scraper-web-user"
+    ports:
+      - 8081:80
+    links:
+      - scraper-app
+    networks:
+      scraper_net:
+        ipv4_address: 10.1.0.6
+    volumes:
+      - ./nginx/user/libs:/usr/share/nginx/html
 
   scraper-app:
     image: scraper-app:dev1.0
@@ -23,14 +37,15 @@ services:
       - 8085:8085
     links:
       - scraper-db
+      - scraper-solr
     depends_on:
       - scraper-db
     networks:
       scraper_net:
-        ipv4_address: 10.1.1.2
+        ipv4_address: 10.1.0.7
     environment:
-      SCRAPER_DB_PORT_3306_TCP_ADDR: 10.1.1.3
-      SCRAPER_SOLR_PORT_9983_TCP_ADDR: 10.1.1.4
+      SCRAPER_DB_PORT_3306_TCP_ADDR: 10.1.0.3
+      SCRAPER_SOLR_PORT_9983_TCP_ADDR: 10.1.0.2
     volumes:
       - ./local-data/scraper/logs:/root/scraper/logs
     command: bash -c "sleep 10; cd /root/scraper/; java -jar web-scraper-server-*.jar --rest --spring.config.location=file:application.yaml"
@@ -44,7 +59,7 @@ services:
       - 3306:3306
     networks:
       scraper_net:
-        ipv4_address: 10.1.1.3
+        ipv4_address: 10.1.0.3
     environment:
       MYSQL_ROOT_PASSWORD: mypassword
       MYSQL_DATABASE: web_scraper
@@ -67,14 +82,14 @@ services:
       - 9983:8983
     networks:
       scraper_net:
-        ipv4_address: 10.1.1.4
+        ipv4_address: 10.1.0.2
     volumes:
       - search-store:/var/solr/data
 
 networks:
   scraper_net:
-    driver: bridge
     ipam:
+      driver: default
       config:
         - subnet: 10.1.0.0/16
 

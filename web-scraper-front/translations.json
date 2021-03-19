@@ -32,7 +32,9 @@
     "productName"           : "Product Name (Orig. Model Number)",
     "price"                 : "Price",
     "groupDialogMessage"    : "You can select or rename the Grouping Key.",
-    "yahooPasswordMessage"  : "You can't input password if you use verify code login."
+    "yahooPasswordMessage"  : "You can't input password if you use verify code login.",
+    "smsApproved"           : "Approved",
+    "smsChecking"           : "Please check SMS message from Amazon and approve scraper login. After the approval, please press \"Approved\" button."
   },
   "ja" : {
     "title"                 : "ECサイトホームページ",
@@ -67,6 +69,8 @@
     "productName"           : "商品名 (元型番)",
     "price"                 : "価格",
     "groupDialogMessage"    : "紐付けのキーを選択するか、あるいは入力してください。",
-	"yahooPasswordMessage"  : "確認コードログインを使用する場合は、パスワードを入力しないでください。"
+  	"yahooPasswordMessage"  : "確認コードログインを使用する場合は、パスワードを入力しないでください。",
+    "smsApproved"           : "承認済",
+    "smsChecking"           : "アマゾンからのSMSメッセージを確認し、スクレイパーログインを承認してください。承認後、\"承認済\"ボタンを押してください。"
   }
 }

@@ -1,5 +1,7 @@
 package com.topcoder.scraper.command.impl;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,6 +14,7 @@ import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,22 +82,28 @@ public class GroupECProductsCommand {
 
             Map<Integer, ProductDAO> groupedProducts = new HashMap<>();
 
-            if (groupingMethod == null || "model-no".equalsIgnoreCase(groupingMethod)) {
-                putAll(groupedProducts, modelNoProductGroupBuilder.createProductGroup(product, ecSites)); // model-no
-            }
-
-            if (groupingMethod == null || "jan-code".equalsIgnoreCase(groupingMethod)) {
-                Set<String> targetSites = getIncompleteSites(getECSites(groupedProducts), ecSites);
-                if (targetSites.size() > 0) {
-                    putAll(groupedProducts, this.janCodeProductGroupBuilder.createProductGroup(product, targetSites)); // jan-code
+            try {
+                if (groupingMethod == null || "model-no".equalsIgnoreCase(groupingMethod)) {
+                    putAll(groupedProducts, modelNoProductGroupBuilder.createProductGroup(product, ecSites)); // model-no
                 }
-            }
 
-            if (groupingMethod == null || "product-name".equalsIgnoreCase(groupingMethod)) {
-                Set<String> targetSites = getIncompleteSites(getECSites(groupedProducts), ecSites);
-                if (targetSites.size() > 0) {
-                    putAll(groupedProducts, this.productNameProductGroupBuilder.createProductGroup(product, targetSites)); // product-name
+                if (groupingMethod == null || "jan-code".equalsIgnoreCase(groupingMethod)) {
+                    Set<String> targetSites = getIncompleteSites(getECSites(groupedProducts), ecSites);
+                    if (targetSites.size() > 0) {
+                        putAll(groupedProducts, this.janCodeProductGroupBuilder.createProductGroup(product, targetSites)); // jan-code
+                    }
                 }
+
+                if (groupingMethod == null || "product-name".equalsIgnoreCase(groupingMethod)) {
+                    Set<String> targetSites = getIncompleteSites(getECSites(groupedProducts), ecSites);
+                    if (targetSites.size() > 0) {
+                        putAll(groupedProducts, this.productNameProductGroupBuilder.createProductGroup(product, targetSites)); // product-name
+                    }
+                }
+            } catch(IOException e) {
+                throw new UncheckedIOException(e);
+            } catch(SolrServerException e) {
+                throw new RuntimeException(e);
             }
         });
     }

@@ -1,6 +1,10 @@
 package com.topcoder.api.exception;
 
+import com.topcoder.common.util.Common;
+import com.topcoder.scraper.group.AbstractProductGroupBuilder;
 import org.hibernate.exception.ConstraintViolationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpHeaders;
@@ -29,6 +33,7 @@ import java.util.Map;
 @RestControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
+    private static final Logger logger = LoggerFactory.getLogger(ApiExceptionHandler.class);
 
     /**
      * The message source.
@@ -61,7 +66,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseBody
     public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException ex) {
-        logger.error(ex);
+        Common.ZabbixLog(logger, ex);
         return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 

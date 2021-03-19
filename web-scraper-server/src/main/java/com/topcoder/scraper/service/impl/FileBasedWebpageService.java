@@ -1,6 +1,7 @@
 package com.topcoder.scraper.service.impl;
 
 import com.gargoylesoftware.htmlunit.html.HtmlImage;
+import com.topcoder.common.util.Common;
 import com.topcoder.scraper.service.WebpageService;
 import com.topcoder.common.util.DateUtils;
 import org.apache.commons.io.FileUtils;
@@ -34,7 +35,8 @@ public class FileBasedWebpageService implements WebpageService {
             FileUtils.write(new File(path), content, "UTF-8");
             LOGGER.info("Web page saved: " + path);
         } catch (IOException e) {
-            LOGGER.error("Fail to write webpage file: " + path);
+            String message = "Fail to write webpage file: " + path;
+            Common.ZabbixLog(LOGGER, message, e);
         }
         return path;
     }
@@ -59,7 +61,8 @@ public class FileBasedWebpageService implements WebpageService {
             ImageIO.write(bufferedImage, formatName, fileOutput);
             LOGGER.info("Image saved: " + path);
         } catch (IOException e) {
-            LOGGER.error("Fail to write image file: " + path);
+            String message = "Fail to write image file: " + path;
+            Common.ZabbixLog(LOGGER, message, e);
         }
         return path;
     }
@@ -79,7 +82,7 @@ public class FileBasedWebpageService implements WebpageService {
             ImageIO.write(bufferedImage, "png", os);
             return Base64.getEncoder().encodeToString(os.toByteArray());
         } catch (IOException e) {
-            LOGGER.error("convert image to base64 failed");
+            Common.ZabbixLog(LOGGER, "convert image to base64 failed", e);
         }
         return null;
     }

@@ -15,5 +15,5 @@ public interface PurchaseHistoryRepository extends CrudRepository<PurchaseHistor
     @Query("select h from PurchaseHistoryDAO h where h.accountId = :accountId order by h.orderDate desc")
     public List<PurchaseHistoryDAO> getPurchaseHistoriesByAccountIdOrderByOrderDateDesc(@Param("accountId") String accountId);
 
-    List<PurchaseHistoryDAO> getByEcSiteAndOrderNo(String site, String orderNo);
+    List<PurchaseHistoryDAO> getByEcSiteAndAccountIdAndOrderNo(String site, String accountId, String orderNo);
 }

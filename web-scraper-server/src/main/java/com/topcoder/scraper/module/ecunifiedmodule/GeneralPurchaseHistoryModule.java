@@ -82,7 +82,7 @@ public class GeneralPurchaseHistoryModule implements IPurchaseHistoryModule {
                 if (crawlerResult != null) {
                     List<PurchaseHistory> list = crawlerResult.getPurchaseHistoryList();
                     if (list != null && list.size() > 0) {
-                        list.forEach(purchaseHistory -> purchaseHistory.setAccountId(Integer.toString(ecSiteAccountDAO.getId())));
+//                        list.forEach(purchaseHistory -> purchaseHistory.setAccountId(Integer.toString(ecSiteAccountDAO.getId())));
                         purchaseHistoryService.save(site, list);
                     }
                 }

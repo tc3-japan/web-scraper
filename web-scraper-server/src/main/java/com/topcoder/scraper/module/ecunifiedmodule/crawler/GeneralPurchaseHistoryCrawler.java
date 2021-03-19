@@ -295,6 +295,7 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
             this.historyPage.setPurchaseHistory(this.currentPurchaseHistory);
             placeHolderNos.put("orderIndex", i);
             scrapeOrder(rootPage, orderNode, orderConfig, currentPurchaseHistory, placeHolderNos);
+            currentPurchaseHistory.setAccountId(Integer.toString(ecSiteAccountDAO.getId()));
             // skip process is database exist
             if (!isNew()) {
                 LOGGER.debug(String.format("[processOrders] [%s] order %s already exist, skip this",
@@ -429,7 +430,8 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
     protected boolean isNew() {
         if (isChangeDetection) return true;
         return historyRepository == null
-                || historyRepository.getByEcSiteAndOrderNo(site, currentPurchaseHistory.getOrderNumber()).isEmpty();
+                || historyRepository.getByEcSiteAndAccountIdAndOrderNo
+                (site, currentPurchaseHistory.getAccountId(), currentPurchaseHistory.getOrderNumber()).isEmpty();
     }
 
     /**

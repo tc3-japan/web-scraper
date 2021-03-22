@@ -7,9 +7,7 @@
     <br />
     <router-link to="/users/$2a$10$P6CimhjlJPSmk0B5pERDGODxh1xyPsixVKqplcLl.EFNE6eZ.vGoi/ec-site-settings">2. (user_id: 2){{ trans('clickHereFor') }} </router-link>
     <br />
-    <router-link to="/users/$2a$10$4OoyCDmEYVSBxTSOZ0DrWeWpUqHaKi4Bb3nlrBDQhixpwi793HAbW/ec-site-settings">3. (user_id: 1){{ trans('clickHereFor') }} </router-link>
-    <br />
-    <router-link to="/users/$2a$10$deEPiskgx7XOJE7e4sf5K.J20m6qWFnoKfo6H73r5aDoVliC5JNtG/ec-site-settings">4. (user_id: 2){{ trans('clickHereFor') }} </router-link>
+    <router-link to="/users/$2a$10$ksERrFAMRwsEptWCe.VUg.9.G6WV6y5zt6XCF1GrUjDgoDgjKaG6a/ec-site-settings">3. (user_id: 3){{ trans('clickHereFor') }} </router-link>
     <br />
     <router-link to="/product-groups">{{ trans('5ProductGroups') }}</router-link>
     <br />

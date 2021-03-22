@@ -272,15 +272,22 @@ insert into web_scraper.user (id,email_for_contact,total_ec_status,id_expire_at,
  (1,'email@gmail.com','status', DATE_ADD(NOW(), INTERVAL 1 YEAR), NOW());
 insert into web_scraper.ec_site_account (id, ec_site, ec_use_flag, user_id, update_at) values
  (1, 'amazon',  0, 1, NOW())
-,(3, 'yahoo',   0, 1, NOW())
-,(5, 'rakuten', 0, 1, NOW());
+,(4, 'yahoo',   0, 1, NOW())
+,(7, 'rakuten', 0, 1, NOW());
 
 insert into web_scraper.user (id,email_for_contact,total_ec_status,id_expire_at,update_at) values
  (2,'email2@gmail.com','status', DATE_ADD(NOW(), INTERVAL 1 YEAR), NOW());
 insert into web_scraper.ec_site_account (id, ec_site, ec_use_flag, user_id, update_at) values
  (2, 'amazon',  0, 2, NOW())
-,(4, 'yahoo',   0, 2, NOW())
-,(6, 'rakuten', 0, 2, NOW());
+,(5, 'yahoo',   0, 2, NOW())
+,(8, 'rakuten', 0, 2, NOW());
+
+insert into web_scraper.user (id,email_for_contact,total_ec_status,id_expire_at,update_at) values
+ (3,'email3@gmail.com','status', DATE_ADD(NOW(), INTERVAL 1 YEAR), NOW());
+insert into web_scraper.ec_site_account (id, ec_site, ec_use_flag, user_id, update_at) values
+ (3, 'amazon',  0, 3, NOW())
+,(6, 'yahoo',   0, 3, NOW())
+,(9, 'rakuten', 0, 3, NOW());
 
 insert into web_scraper.configuration (id,site,type,config) values
  (1,'amazon','purchase_history',@amazon_purchase_history_script)

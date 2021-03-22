@@ -474,11 +474,11 @@ public class GeneralPurchaseHistoryCrawler extends AbstractGeneralCrawler {
             historyPage.setPage(purchaseHistoryConfig.getUrl());
         } catch(FailingHttpStatusCodeException e) {
             LOGGER.info(e.getMessage());
-            throw new CheckLoginException("Login check failed due to redirection, url:" + purchaseHistoryConfig.getUrl());
+            throw new CheckLoginException("Login check failed due to too many redirection, User ID:" + webClient.getUserId() +" URL:" + purchaseHistoryConfig.getUrl());
         }
 
         if (isRedirected()) {
-            throw new CheckLoginException("Login check failed due to redirection, url:" + purchaseHistoryConfig.getUrl());
+            throw new CheckLoginException("Login check failed due to redirection, User ID:" + webClient.getUserId() +" URL:" + purchaseHistoryConfig.getUrl());
         }
     }
 

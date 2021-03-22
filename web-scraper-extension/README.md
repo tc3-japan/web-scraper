@@ -65,6 +65,6 @@ open e-commerce history page, launch the devtools, you should see a new tab call
   - **Purchase Order**.UrlSelecor is a root path, so it only need click 1 time when selector
   - click any selector button under **Purchase Order**, it will need click choose two elements, then it will fill parent(if not exist), and fill it owner self path, then click selector any, you will see the highlight elements
   - when Root path is checked, you will only need choose one element
-- when you completed edit json, click save button to save json, open log panel to check the json content
+- when you completed edit json, click save button to save json, open log panel to check the json content. after saving, detection check init process for the json you edited is executed.
 - You also can click test button to test, open log panel to check the returned content
 - click setting button, you can update the API base url 

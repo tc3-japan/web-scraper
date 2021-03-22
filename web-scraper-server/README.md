@@ -70,17 +70,23 @@ The `proxy_server` must be a vaild value, other values can be default value
 
 `./gradlew bootRun -Pargs=--batch=product ` to fetch products which is stored when purchase history has been scraped
 
-`./gradlew bootRun -Pargs=--batch=change_detection_init` to fetch initial data of purchase history and product to detect site change.
+`./gradlew bootRun -Pargs=--batch=change_detection_init,--target=purchase_hisotry` to fetch initial data of purchase history to detect site change.
 
-`./gradlew bootRun -Pargs=--batch=change_detection_check` to fetch current data of history and product and check them, comparing them to initital data.
+`./gradlew bootRun -Pargs=--batch=change_detection_init,--target=product` to fetch initial data of product to detect site change.
+
+--target parameter can be ommited to fetch initial data of both.
+
+`./gradlew bootRun -Pargs=--batch=change_detection_check,--target=purchase_hisotry` to fetch current data of  purchase history and check them, comparing them to initital data.
+
+`./gradlew bootRun -Pargs=--batch=change_detection_check,--target=product` to fetch current data of product and check them, comparing them to initital data.
+
+--target parameter can be ommited to fetch current data of both.
 
 `./gradlew bootRun -Pargs=--batch=group_products` to group each EC sites' products in product table.
 
 `./gradlew bootRun -Pargs=--batch=load_product_index` to create Solr index for the feature, grouping products by name, in batch `group_product`. You usually run it before running batch `group_product`.
 
 `./gradlew bootRun -Pargs=--rest ` to run rest api server
-
-`mysql --host 0.0.0.0 --port 3306 --user root --password web_scraper < docs/scraper-test_insert_script.sql` to import init config data
 
 #### To specify site, specify `site` argument
 

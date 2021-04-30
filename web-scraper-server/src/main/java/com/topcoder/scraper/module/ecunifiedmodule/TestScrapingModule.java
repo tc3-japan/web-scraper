@@ -26,9 +26,9 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
+import java.util.regex.Pattern;
 
 @Component
 public class TestScrapingModule implements IBasicModule {
@@ -38,18 +38,22 @@ public class TestScrapingModule implements IBasicModule {
      */
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    List<String> urls = new ArrayList<>();
+    private final List<String> urls = new ArrayList<>();
+    private final static long maxMin = 180;
 
     @Autowired
     private WebpageService webpageService;
 
     public void run(ApplicationArguments args) {
 
+        rakuten();
+
 //        urls.add("https://amiunique.org/fp");
 //        urls.add("https://firstpartysimulator.org/kcarter?aat=1");
 //        urls.add("https://antoinevastel.com/bots/datadome");
 //        urls.add("https://antoinevastel.com/bots/");
 
+        urls.add("https://item.rakuten.co.jp/auc-kurashi-kaientai/1043008-oma5kg");
         urls.add("https://item.rakuten.co.jp/bookfan/bk-4120040879");
         urls.add("https://item.rakuten.co.jp/compmoto-r/9999999999550");
         urls.add("https://item.rakuten.co.jp/gourmetcoffee/2624");
@@ -72,13 +76,84 @@ public class TestScrapingModule implements IBasicModule {
         urls.add("https://item.rakuten.co.jp/kk-shimaya/1022");
         urls.add("https://item.rakuten.co.jp/trust-rady/tl125");
         urls.add("https://item.rakuten.co.jp/sizemarusye/koganesizesatu");
-        urls.add("https://item.rakuten.co.jp/auc-kurashi-kaientai/1043008-oma5kg");
 
-        remoteGrid();
+//        remoteGrid();
+
 //        chrome(true);
 //        chrome(false);
-
 //        htmlUnit();
+    }
+
+    public void rakuten() {
+
+        String raSearch = "https://search.rakuten.co.jp/search/mall/%s/?p=%d";
+        Pattern pattern = Pattern.compile("https:\\/\\/item\\.rakuten\\.co\\.jp\\/.*?\\/.*?\\/");
+        List<String> keywords = new ArrayList<>();
+        keywords.add("食品");
+        keywords.add("服");
+        keywords.add("本");
+
+        ChromeOptions chromeOptions = new ChromeOptions();
+
+//        Proxy proxy = new Proxy();
+//        proxy.setHttpProxy("http://lum-customer-c_5ae15880-zone-unblocker1:al1otnykj38l@zproxy.lum-superproxy.io:22225");
+//        chromeOptions.setProxy(proxy);
+
+        WebDriver driver = null;
+        try {
+            driver = new RemoteWebDriver(new URL("http://localhost:4444"), chromeOptions);
+            int count = 0;
+            boolean halt = false;
+            Date start = new Date();
+
+            do {
+                for (String keyword: keywords) {
+
+                    Set<String> links = new HashSet<>();
+                    for (int j = 1; true; j++) {
+                        String search = String.format(raSearch, keyword, j);
+
+                        sleep();
+                        driver.manage().deleteAllCookies();
+                        driver.get(search);
+                        logger.debug(String.format("Search Title:%s", driver.getTitle()));
+
+                        for (WebElement a: driver.findElements(By.tagName("a"))) {
+                            String link = a.getAttribute("href");
+
+                            if (link != null && pattern.matcher(link).matches()) {
+                                links.add(link);
+                            }
+                        }
+
+                        for (String link: links) {
+                            sleep();
+                            driver.manage().deleteAllCookies();
+                            driver.get(link);
+                            logger.debug(String.format("Count:%d, Title:%s", count++, driver.getTitle()));
+
+                            long min = ((new Date()).getTime() - start.getTime()) / (60 * 1000) % 60;
+                            halt = min >= maxMin;
+                            if (halt) {
+                                logger.debug("Scraping Halt");
+                                break;
+                            }
+                        }
+
+                        if (halt) break;
+                    }
+
+                    if (halt) break;
+                }
+
+                if (halt) break;
+            } while(true);
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } finally {
+            if (driver != null) driver.quit();
+        }
     }
 
     public void htmlUnit() {

@@ -154,7 +154,7 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
         LOGGER.debug("[scrapeTotalAmount] in");
         HtmlElement num = node.querySelector(selector);
         if (num != null) {
-            Integer numInt = num != null ? extractInt(num.asText()) : null;
+            Integer numInt = num != null ? extractInt(num.asNormalizedText()) : null;
             LOGGER.debug("[scrapeTotalAmount] >>> Setting Total Amount >>>" + numInt);
             purchaseHistory.setTotalAmount(Integer.toString(numInt));
         }
@@ -253,7 +253,7 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
         LOGGER.info(">>> Selector: " + selector);
         HtmlElement num = node.querySelector(selector);
         if (num != null) {
-            Integer numInt = num != null ? extractInt(num.asText()) : null;
+            Integer numInt = num != null ? extractInt(num.asNormalizedText()) : null;
             LOGGER.debug("[scrapeUnitPrice] >>> Setting Unit Price >>>" + numInt);
             productInfo.setPrice(Integer.toString(numInt));
         }
@@ -263,7 +263,7 @@ public class NavigablePurchaseHistoryPage extends NavigablePage {
         LOGGER.debug("[scrapeProductQuantity] in");
         HtmlElement num = node.querySelector(selector);
         if (num != null) {
-            Integer numInt = num != null ? extractInt(num.asText()) : null;
+            Integer numInt = num != null ? extractInt(num.asNormalizedText()) : null;
             LOGGER.debug("[scrapeProductQuantity] >>> Setting Product Quantity >>>" + numInt);
             productInfo.setQuantity(numInt);
         }

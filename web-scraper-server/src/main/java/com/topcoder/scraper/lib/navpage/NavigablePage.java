@@ -183,7 +183,7 @@ public class NavigablePage {
         LOGGER.debug("[getText] in");
 
         HtmlElement node = page.querySelector(selector);
-        String str = node != null ? node.asText().replaceAll("\\n", " ").trim() : null;
+        String str = node != null ? node.asNormalizedText().replaceAll("\\n", " ").trim() : null;
         LOGGER.debug(">>> Got Text >>> " + str + " for " + selector);
         return str;
     }
@@ -228,7 +228,7 @@ public class NavigablePage {
         LOGGER.debug("[getText] in");
 
         HtmlElement node = sourceNode.querySelector(selector);
-        String str = node != null ? node.asText().replaceAll("\\n", " ").trim() : null;
+        String str = node != null ? node.asNormalizedText().replaceAll("\\n", " ").trim() : null;
         LOGGER.debug(">>> Got Text >>> " + str + " for " + selector);
         return str;
     }

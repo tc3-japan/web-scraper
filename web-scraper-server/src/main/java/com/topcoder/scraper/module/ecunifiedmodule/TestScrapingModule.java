@@ -28,6 +28,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component
@@ -41,12 +42,31 @@ public class TestScrapingModule implements IBasicModule {
     private final List<String> urls = new ArrayList<>();
     private final static long maxMin = 180;
 
+    private final List<String> keywords = new ArrayList<>();
+
     @Autowired
     private WebpageService webpageService;
 
     public void run(ApplicationArguments args) {
 
-        rakuten();
+        keywords.add("野菜");
+        keywords.add("肉");
+        keywords.add("魚");
+        keywords.add("酒");
+        keywords.add("レディース");
+        keywords.add("メンズ");
+        keywords.add("靴");
+        keywords.add("ビジネス");
+        keywords.add("漫画");
+        keywords.add("ゲーム");
+
+//        String search = "https://search.rakuten.co.jp/search/mall/%s/?p=%d";
+//        Pattern pattern = Pattern.compile("https:\\/\\/item\\.rakuten\\.co\\.jp\\/.*?\\/.*?\\/");
+
+        String search = "https://www.amazon.co.jp/s?k=%s&page=%d";
+        Pattern pattern = Pattern.compile("https:\\/\\/www\\.amazon\\.co\\.jp\\/.+?(\\/dp\\/.*?\\/)ref=.*");
+
+        products(search, pattern);
 
 //        urls.add("https://amiunique.org/fp");
 //        urls.add("https://firstpartysimulator.org/kcarter?aat=1");
@@ -84,14 +104,7 @@ public class TestScrapingModule implements IBasicModule {
 //        htmlUnit();
     }
 
-    public void rakuten() {
-
-        String raSearch = "https://search.rakuten.co.jp/search/mall/%s/?p=%d";
-        Pattern pattern = Pattern.compile("https:\\/\\/item\\.rakuten\\.co\\.jp\\/.*?\\/.*?\\/");
-        List<String> keywords = new ArrayList<>();
-        keywords.add("食品");
-        keywords.add("服");
-        keywords.add("本");
+    public void products(String search, Pattern pattern) {
 
         ChromeOptions chromeOptions = new ChromeOptions();
 
@@ -109,22 +122,26 @@ public class TestScrapingModule implements IBasicModule {
             do {
                 for (String keyword: keywords) {
 
-                    Set<String> links = new HashSet<>();
-                    for (int j = 1; true; j++) {
-                        String search = String.format(raSearch, keyword, j);
+                    for (int j = 1; j <= 10; j++) {
+                        String search_ = String.format(search, keyword, j);
 
                         sleep();
                         driver.manage().deleteAllCookies();
-                        driver.get(search);
-                        logger.debug(String.format("Search Title:%s", driver.getTitle()));
+                        driver.get(search_);
+                        logger.debug(String.format("Search : %s", search_));
 
+                        Set<String> links = new HashSet<>();
                         for (WebElement a: driver.findElements(By.tagName("a"))) {
                             String link = a.getAttribute("href");
+                            if (link == null) continue;
 
-                            if (link != null && pattern.matcher(link).matches()) {
-                                links.add(link);
+                            Matcher matcher = pattern.matcher(link);
+                            if (matcher.matches()) {
+                                links.add(matcher.group());
                             }
                         }
+
+                        if (links.isEmpty()) break;
 
                         for (String link: links) {
                             sleep();
@@ -182,7 +199,7 @@ public class TestScrapingModule implements IBasicModule {
                 e.printStackTrace();
             }
             webClient.getCookieManager().clearCookies();
-         }
+        }
     }
 
     public void remoteGrid() {

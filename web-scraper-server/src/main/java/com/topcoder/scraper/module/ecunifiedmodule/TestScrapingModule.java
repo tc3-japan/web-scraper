@@ -21,7 +21,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -34,21 +36,96 @@ import java.util.regex.Pattern;
 @Component
 public class TestScrapingModule implements IBasicModule {
 
+    private class ThreadHaltException extends Exception {}
+
+    @Service
+    private class AsyncService {
+
+        public AsyncService() {}
+
+        @Async
+        public void scrape(String search, Pattern pattern, String proxyString, int inc) {
+
+            ChromeOptions chromeOptions = new ChromeOptions();
+
+            Proxy proxy = new Proxy();
+            proxy.setHttpProxy(proxyString);
+            chromeOptions.setProxy(proxy);
+            logger.debug(String.format("Proxy : %s", proxyString));
+
+            WebDriver driver = null;
+            try {
+                driver = new RemoteWebDriver(new URL("http://localhost:4444"), chromeOptions);
+                int count = 0;
+
+                do {
+                    for (String keyword : keywords) {
+
+                        for (int j = 1; j <= 10 * inc; j += inc) {
+                            String search_ = String.format(search, keyword, j);
+
+                            sleep();
+                            driver.manage().deleteAllCookies();
+                            driver.get(search_);
+                            logger.debug(String.format("Search : %s", search_));
+
+                            Set<String> links = new HashSet<>();
+                            for (WebElement a : driver.findElements(By.tagName("a"))) {
+                                String link = a.getAttribute("href");
+                                if (link == null) continue;
+
+                                Matcher matcher = pattern.matcher(link);
+                                if (matcher.matches()) {
+                                    links.add(matcher.group());
+                                }
+                            }
+
+                            if (links.isEmpty()) break;
+
+                            for (String link : links) {
+                                sleep();
+                                driver.manage().deleteAllCookies();
+                                driver.get(link);
+                                logger.debug(String.format("Count:%d, Title:%s", count++, driver.getTitle()));
+
+                                if (halt) {
+                                    logger.debug("Scraping Halt");
+                                    throw new ThreadHaltException();
+                                }
+                            }
+                        }
+                    }
+                } while (true);
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (ThreadHaltException e) {
+            } finally {
+                if (driver != null) driver.quit();
+            }
+        }
+
+    }
+
     /**
      * logger instance
      */
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final List<String> urls = new ArrayList<>();
-    private final static long maxMin = 180;
+    private final static long maxMin = 10;
+    private boolean halt = false;
 
     private final List<String> keywords = new ArrayList<>();
+    private final List<String> proxies = new ArrayList<>();
 
     @Autowired
     private WebpageService webpageService;
 
-    public void run(ApplicationArguments args) {
+    @Autowired
+    private AsyncService asyncService;
 
+    public TestScrapingModule() {
         keywords.add("野菜");
         keywords.add("肉");
         keywords.add("魚");
@@ -60,42 +137,81 @@ public class TestScrapingModule implements IBasicModule {
         keywords.add("漫画");
         keywords.add("ゲーム");
 
-//        String search = "https://search.rakuten.co.jp/search/mall/%s/?p=%d";
-//        Pattern pattern = Pattern.compile("https:\\/\\/item\\.rakuten\\.co\\.jp\\/.*?\\/.*?\\/");
+        proxies.add("http://lum-customer-c_5ae15880-zone-ds_ex-ip-176.105.248.32:pq1gt7si9gcm@zproxy.lum-superproxy.io:22225");
+        proxies.add("http://lum-customer-c_5ae15880-zone-ds_ex-ip-176.105.250.93:pq1gt7si9gcm@zproxy.lum-superproxy.io:22225");
+//        proxies.add("http://lum-customer-c_5ae15880-zone-ds_ex-ip-195.234.89.242:pq1gt7si9gcm@zproxy.lum-superproxy.io:22225");
+//        proxies.add("http://lum-customer-c_5ae15880-zone-ds_ex-ip-92.249.32.103:pq1gt7si9gcm@zproxy.lum-superproxy.io:22225");
+//        proxies.add("http://lum-customer-c_5ae15880-zone-ds_ex-ip-195.234.88.202:pq1gt7si9gcm@zproxy.lum-superproxy.io:22225");
+//        proxies.add("http://lum-customer-c_5ae15880-zone-ds_ex-ip-194.110.88.99:pq1gt7si9gcm@zproxy.lum-superproxy.io:22225");
+//        proxies.add("http://lum-customer-c_5ae15880-zone-ds_ex-ip-43.225.80.250:pq1gt7si9gcm@zproxy.lum-superproxy.io:22225");
+//        proxies.add("http://lum-customer-c_5ae15880-zone-ds_ex-ip-43.225.80.224:pq1gt7si9gcm@zproxy.lum-superproxy.io:22225");
+//        proxies.add("http://lum-customer-c_5ae15880-zone-ds_ex-ip-194.110.91.188:pq1gt7si9gcm@zproxy.lum-superproxy.io:22225");
+//        proxies.add("http://lum-customer-c_5ae15880-zone-ds_ex-ip-194.53.189.253:pq1gt7si9gcm@zproxy.lum-superproxy.io:22225");
+    }
 
-        String search = "https://www.amazon.co.jp/s?k=%s&page=%d";
-        Pattern pattern = Pattern.compile("https:\\/\\/www\\.amazon\\.co\\.jp\\/.+?(\\/dp\\/.*?\\/)ref=.*");
+    public void run(ApplicationArguments args) {
 
-        products(search, pattern);
+        String a_search = "https://www.amazon.co.jp/s?k=%s&page=%d";
+        Pattern a_pattern = Pattern.compile("https:\\/\\/www\\.amazon\\.co\\.jp\\/.+?(\\/dp\\/.*?\\/)ref=.*");
+
+        String r_search = "https://search.rakuten.co.jp/search/mall/%s/?p=%d";
+        Pattern r_pattern = Pattern.compile("https:\\/\\/item\\.rakuten\\.co\\.jp\\/.*?\\/.*?\\/");
+
+        String y_search = "https://shopping.yahoo.co.jp/search?b=%d&p=%s";
+        Pattern y_pattern = Pattern.compile("https:\\/\\/store\\.shopping\\.yahoo\\.co\\.jp\\/.*?\\/.*?\\.html");
+
+//        products(a_search, a_pattern, null, 1);
+
+        Date start = new Date();
+        halt = false;
+
+        for (String proxy : proxies) {
+//            asyncService.scrape(a_search, a_pattern, proxy, 1);
+            asyncService.scrape(r_search, r_pattern, proxy, 1);
+//            asyncService.scrape(y_search, y_pattern, proxy, 30);
+        }
+
+        try {
+            do {
+                long min = ((new Date()).getTime() - start.getTime()) / (60 * 1000) % 60;
+                if (min >= maxMin) {
+                    halt = true;
+                    break;
+                }
+                Thread.sleep(60000);
+            } while (true);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
 //        urls.add("https://amiunique.org/fp");
 //        urls.add("https://firstpartysimulator.org/kcarter?aat=1");
 //        urls.add("https://antoinevastel.com/bots/datadome");
 //        urls.add("https://antoinevastel.com/bots/");
 
-        urls.add("https://item.rakuten.co.jp/auc-kurashi-kaientai/1043008-oma5kg");
-        urls.add("https://item.rakuten.co.jp/bookfan/bk-4120040879");
-        urls.add("https://item.rakuten.co.jp/compmoto-r/9999999999550");
-        urls.add("https://item.rakuten.co.jp/gourmetcoffee/2624");
-        urls.add("https://item.rakuten.co.jp/maxshare/a11846");
-        urls.add("https://item.rakuten.co.jp/yvetteonlineshop/080160");
-        urls.add("https://item.rakuten.co.jp/enetroom/569938-com");
-        urls.add("https://item.rakuten.co.jp/f406104-fukuchi/f99-03");
-        urls.add("https://item.rakuten.co.jp/f462039-kanoya/1361");
-        urls.add("https://item.rakuten.co.jp/f402290-miyama/b15");
-        urls.add("https://item.rakuten.co.jp/f452025-miyakonojo/mj-8404");
-        urls.add("https://item.rakuten.co.jp/f015814-atsuma/1018");
-        urls.add("https://item.rakuten.co.jp/gourmetcoffee/3204_200g");
-        urls.add("https://item.rakuten.co.jp/spg-sports/snw-stw150");
-        urls.add("https://item.rakuten.co.jp/tavola/59700303-a01ta");
-        urls.add("https://item.rakuten.co.jp/gourmetcoffee/0403-20s");
-        urls.add("https://item.rakuten.co.jp/premium-deli/tonkotsu");
-        urls.add("https://item.rakuten.co.jp/futon-colors/10000053");
-        urls.add("https://item.rakuten.co.jp/tansu/10119003");
-        urls.add("https://item.rakuten.co.jp/rakuten24/88483");
-        urls.add("https://item.rakuten.co.jp/kk-shimaya/1022");
-        urls.add("https://item.rakuten.co.jp/trust-rady/tl125");
-        urls.add("https://item.rakuten.co.jp/sizemarusye/koganesizesatu");
+//        urls.add("https://item.rakuten.co.jp/auc-kurashi-kaientai/1043008-oma5kg");
+//        urls.add("https://item.rakuten.co.jp/bookfan/bk-4120040879");
+//        urls.add("https://item.rakuten.co.jp/compmoto-r/9999999999550");
+//        urls.add("https://item.rakuten.co.jp/gourmetcoffee/2624");
+//        urls.add("https://item.rakuten.co.jp/maxshare/a11846");
+//        urls.add("https://item.rakuten.co.jp/yvetteonlineshop/080160");
+//        urls.add("https://item.rakuten.co.jp/enetroom/569938-com");
+//        urls.add("https://item.rakuten.co.jp/f406104-fukuchi/f99-03");
+//        urls.add("https://item.rakuten.co.jp/f462039-kanoya/1361");
+//        urls.add("https://item.rakuten.co.jp/f402290-miyama/b15");
+//        urls.add("https://item.rakuten.co.jp/f452025-miyakonojo/mj-8404");
+//        urls.add("https://item.rakuten.co.jp/f015814-atsuma/1018");
+//        urls.add("https://item.rakuten.co.jp/gourmetcoffee/3204_200g");
+//        urls.add("https://item.rakuten.co.jp/spg-sports/snw-stw150");
+//        urls.add("https://item.rakuten.co.jp/tavola/59700303-a01ta");
+//        urls.add("https://item.rakuten.co.jp/gourmetcoffee/0403-20s");
+//        urls.add("https://item.rakuten.co.jp/premium-deli/tonkotsu");
+//        urls.add("https://item.rakuten.co.jp/futon-colors/10000053");
+//        urls.add("https://item.rakuten.co.jp/tansu/10119003");
+//        urls.add("https://item.rakuten.co.jp/rakuten24/88483");
+//        urls.add("https://item.rakuten.co.jp/kk-shimaya/1022");
+//        urls.add("https://item.rakuten.co.jp/trust-rady/tl125");
+//        urls.add("https://item.rakuten.co.jp/sizemarusye/koganesizesatu");
 
 //        remoteGrid();
 
@@ -104,13 +220,15 @@ public class TestScrapingModule implements IBasicModule {
 //        htmlUnit();
     }
 
-    public void products(String search, Pattern pattern) {
+    private void products(String search, Pattern pattern, String proxyString, int inc) {
 
         ChromeOptions chromeOptions = new ChromeOptions();
 
-//        Proxy proxy = new Proxy();
-//        proxy.setHttpProxy("http://lum-customer-c_5ae15880-zone-unblocker1:al1otnykj38l@zproxy.lum-superproxy.io:22225");
-//        chromeOptions.setProxy(proxy);
+        if (proxyString != null) {
+            Proxy proxy = new Proxy();
+            proxy.setHttpProxy(proxyString);
+            chromeOptions.setProxy(proxy);
+        }
 
         WebDriver driver = null;
         try {
@@ -120,9 +238,9 @@ public class TestScrapingModule implements IBasicModule {
             Date start = new Date();
 
             do {
-                for (String keyword: keywords) {
+                for (String keyword : keywords) {
 
-                    for (int j = 1; j <= 10; j++) {
+                    for (int j = 1; j <= 10 * inc; j += inc) {
                         String search_ = String.format(search, keyword, j);
 
                         sleep();
@@ -131,7 +249,7 @@ public class TestScrapingModule implements IBasicModule {
                         logger.debug(String.format("Search : %s", search_));
 
                         Set<String> links = new HashSet<>();
-                        for (WebElement a: driver.findElements(By.tagName("a"))) {
+                        for (WebElement a : driver.findElements(By.tagName("a"))) {
                             String link = a.getAttribute("href");
                             if (link == null) continue;
 
@@ -143,7 +261,7 @@ public class TestScrapingModule implements IBasicModule {
 
                         if (links.isEmpty()) break;
 
-                        for (String link: links) {
+                        for (String link : links) {
                             sleep();
                             driver.manage().deleteAllCookies();
                             driver.get(link);
@@ -173,7 +291,7 @@ public class TestScrapingModule implements IBasicModule {
         }
     }
 
-    public void htmlUnit() {
+    private void htmlUnit() {
 
         String userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_2_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36";
         BrowserVersion browserVersion = new BrowserVersion
@@ -188,7 +306,7 @@ public class TestScrapingModule implements IBasicModule {
         scp.addCredentials("lum-customer-c_5ae15880-zone-unblocker1", "al1otnykj38l", "zproxy.lum-superproxy.io", 22225, null);
         webClient.setCredentialsProvider(scp);
 
-        for (String url: urls) {
+        for (String url : urls) {
             sleep();
             HtmlPage page = null;
             try {
@@ -202,7 +320,7 @@ public class TestScrapingModule implements IBasicModule {
         }
     }
 
-    public void remoteGrid() {
+    private void remoteGrid() {
         ChromeOptions chromeOptions = new ChromeOptions();
 
         Proxy proxy = new Proxy();
@@ -213,7 +331,7 @@ public class TestScrapingModule implements IBasicModule {
         try {
             driver = new RemoteWebDriver(new URL("http://localhost:4444"), chromeOptions);
 
-            for (String url: urls) {
+            for (String url : urls) {
                 sleep();
                 driver.get(url);
 
@@ -230,7 +348,7 @@ public class TestScrapingModule implements IBasicModule {
         }
     }
 
-    public void chrome(boolean isHeadless) {
+    private void chrome(boolean isHeadless) {
 
 //        String chromeDriverPath = "/usr/local/bin/chromedriver" ;
 //        System.setProperty("webdriver.chrome.driver", chromeDriverPath);
@@ -240,7 +358,7 @@ public class TestScrapingModule implements IBasicModule {
 
         ChromeOptions options = new ChromeOptions();
         if (isHeadless) {
-            options.addArguments("--headless", "--disable-gpu", "--window-size=1920,1200","--ignore-certificate-errors");
+            options.addArguments("--headless", "--disable-gpu", "--window-size=1920,1200", "--ignore-certificate-errors");
             options.setHeadless(true);
         }
 
@@ -256,7 +374,7 @@ public class TestScrapingModule implements IBasicModule {
 
         WebDriver driver = new ChromeDriver(options);
 
-        for (String url: urls) {
+        for (String url : urls) {
             sleep();
             driver.get(url);
             logger.debug(driver.getTitle());
@@ -271,7 +389,7 @@ public class TestScrapingModule implements IBasicModule {
 
     private void sleep() {
         try {
-            Thread.sleep(3000);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

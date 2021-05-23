@@ -41,6 +41,41 @@ public class TestScrapingModule implements IBasicModule {
     @Service
     private class AsyncService {
 
+        public AsyncService() {
+        }
+
+        public void test() throws InterruptedException, MalformedURLException {
+
+//            String proxyString = "http://zproxy.lum-superproxy.io:22225";
+            String proxyString = "zproxy.lum-superproxy.io:22225";
+//            String proxyString = "lum-customer-c_5ae15880-zone-ds_ex-ip-176.105.248.32:pq1gt7si9gcm@zproxy.lum-superproxy.io:22225";
+//            String proxyString = "http://lum-customer-c_5ae15880-zone-ds_ex-ip-176.105.248.32:pq1gt7si9gcm@zproxy.lum-superproxy.io:22225";
+//            String proxyString = "localhost:8081";
+//            String proxyString = "http://52.194.250.99:60088";
+
+            ChromeOptions chromeOptions = new ChromeOptions();
+            FirefoxOptions firefoxOptions = new FirefoxOptions();
+            Proxy proxy = new Proxy();
+            proxy.setProxyType(Proxy.ProxyType.MANUAL)
+                    .setAutodetect(false)
+                    .setHttpProxy(proxyString)
+                    .setSslProxy(proxyString);
+            chromeOptions.setProxy(proxy);
+            firefoxOptions.setProxy(proxy);
+
+            WebDriver driver = new RemoteWebDriver(new URL("http://localhost:4445"), firefoxOptions);
+//            WebDriver driver = new RemoteWebDriver(new URL("http://localhost:4444"), chromeOptions);
+            driver.get("https://lumtest.com/myip.json");
+//            Thread.sleep(5000);
+//            driver.wait();
+            Alert alert = driver.switchTo().alert();
+            alert.sendKeys("lum-customer-c_5ae15880-zone-ds_ex-ip-176.105.248.32");
+            alert.sendKeys(Keys.TAB.toString());
+            alert.sendKeys( "pq1gt7si9gcm");
+            alert.accept();
+
+            logger.debug(driver.getPageSource());
+        }
         public AsyncService() {}
 
         @Async
@@ -137,8 +172,11 @@ public class TestScrapingModule implements IBasicModule {
         keywords.add("漫画");
         keywords.add("ゲーム");
 
-        proxies.add("http://lum-customer-c_5ae15880-zone-ds_ex-ip-176.105.248.32:pq1gt7si9gcm@zproxy.lum-superproxy.io:22225");
-        proxies.add("http://lum-customer-c_5ae15880-zone-ds_ex-ip-176.105.250.93:pq1gt7si9gcm@zproxy.lum-superproxy.io:22225");
+        proxies.add("http://52.194.250.99:60088");
+//        proxies.add("http://54.150.254.214:60088");
+//        proxies.add("http://54.168.178.35:60088");
+//        proxies.add("http://lum-customer-c_5ae15880-zone-ds_ex-ip-176.105.248.32:pq1gt7si9gcm@zproxy.lum-superproxy.io:22225");
+//        proxies.add("http://lum-customer-c_5ae15880-zone-ds_ex-ip-176.105.250.93:pq1gt7si9gcm@zproxy.lum-superproxy.io:22225");
 //        proxies.add("http://lum-customer-c_5ae15880-zone-ds_ex-ip-195.234.89.242:pq1gt7si9gcm@zproxy.lum-superproxy.io:22225");
 //        proxies.add("http://lum-customer-c_5ae15880-zone-ds_ex-ip-92.249.32.103:pq1gt7si9gcm@zproxy.lum-superproxy.io:22225");
 //        proxies.add("http://lum-customer-c_5ae15880-zone-ds_ex-ip-195.234.88.202:pq1gt7si9gcm@zproxy.lum-superproxy.io:22225");
@@ -157,18 +195,27 @@ public class TestScrapingModule implements IBasicModule {
         String r_search = "https://search.rakuten.co.jp/search/mall/%s/?p=%d";
         Pattern r_pattern = Pattern.compile("https:\\/\\/item\\.rakuten\\.co\\.jp\\/.*?\\/.*?\\/");
 
-        String y_search = "https://shopping.yahoo.co.jp/search?b=%d&p=%s";
-        Pattern y_pattern = Pattern.compile("https:\\/\\/store\\.shopping\\.yahoo\\.co\\.jp\\/.*?\\/.*?\\.html");
+        String y_search = "https://shopping.yahoo.co.jp/search?p=%s&b=%d";
+        Pattern y_pattern = Pattern.compile("(https:\\/\\/store\\.shopping\\.yahoo\\.co\\.jp\\/.*?\\/.*?)");
 
 //        products(a_search, a_pattern, null, 1);
 
         Date start = new Date();
         halt = false;
 
+//        try {
+//            asyncService.test();
+//            if (true) return;
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        } catch (MalformedURLException e) {
+//            e.printStackTrace();
+//        }
+
         for (String proxy : proxies) {
 //            asyncService.scrape(a_search, a_pattern, proxy, 1);
-            asyncService.scrape(r_search, r_pattern, proxy, 1);
-//            asyncService.scrape(y_search, y_pattern, proxy, 30);
+//            asyncService.scrape(r_search, r_pattern, proxy, 1);
+            asyncService.scrape(y_search, y_pattern, proxy, 30);
         }
 
         try {
@@ -218,77 +265,6 @@ public class TestScrapingModule implements IBasicModule {
 //        chrome(true);
 //        chrome(false);
 //        htmlUnit();
-    }
-
-    private void products(String search, Pattern pattern, String proxyString, int inc) {
-
-        ChromeOptions chromeOptions = new ChromeOptions();
-
-        if (proxyString != null) {
-            Proxy proxy = new Proxy();
-            proxy.setHttpProxy(proxyString);
-            chromeOptions.setProxy(proxy);
-        }
-
-        WebDriver driver = null;
-        try {
-            driver = new RemoteWebDriver(new URL("http://localhost:4444"), chromeOptions);
-            int count = 0;
-            boolean halt = false;
-            Date start = new Date();
-
-            do {
-                for (String keyword : keywords) {
-
-                    for (int j = 1; j <= 10 * inc; j += inc) {
-                        String search_ = String.format(search, keyword, j);
-
-                        sleep();
-                        driver.manage().deleteAllCookies();
-                        driver.get(search_);
-                        logger.debug(String.format("Search : %s", search_));
-
-                        Set<String> links = new HashSet<>();
-                        for (WebElement a : driver.findElements(By.tagName("a"))) {
-                            String link = a.getAttribute("href");
-                            if (link == null) continue;
-
-                            Matcher matcher = pattern.matcher(link);
-                            if (matcher.matches()) {
-                                links.add(matcher.group());
-                            }
-                        }
-
-                        if (links.isEmpty()) break;
-
-                        for (String link : links) {
-                            sleep();
-                            driver.manage().deleteAllCookies();
-                            driver.get(link);
-                            logger.debug(String.format("Count:%d, Title:%s", count++, driver.getTitle()));
-
-                            long min = ((new Date()).getTime() - start.getTime()) / (60 * 1000) % 60;
-                            halt = min >= maxMin;
-                            if (halt) {
-                                logger.debug("Scraping Halt");
-                                break;
-                            }
-                        }
-
-                        if (halt) break;
-                    }
-
-                    if (halt) break;
-                }
-
-                if (halt) break;
-            } while(true);
-
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } finally {
-            if (driver != null) driver.quit();
-        }
     }
 
     private void htmlUnit() {
@@ -362,10 +338,10 @@ public class TestScrapingModule implements IBasicModule {
             options.setHeadless(true);
         }
 
-        DesiredCapabilities cap = DesiredCapabilities.chrome();
-        LoggingPreferences logPrefs = new LoggingPreferences();
-        logPrefs.enable(LogType.PERFORMANCE, Level.ALL);
-        cap.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
+//        DesiredCapabilities cap = DesiredCapabilities.chrome();
+//        LoggingPreferences logPrefs = new LoggingPreferences();
+//        logPrefs.enable(LogType.PERFORMANCE, Level.ALL);
+//        cap.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
 
 //        // Add the WebDriver proxy capability.
         Proxy proxy = new Proxy();

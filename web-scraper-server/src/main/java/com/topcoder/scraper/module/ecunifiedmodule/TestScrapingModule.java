@@ -1,15 +1,14 @@
 package com.topcoder.scraper.module.ecunifiedmodule;
 
-import com.gargoylesoftware.htmlunit.BrowserVersion;
-import com.gargoylesoftware.htmlunit.DefaultCredentialsProvider;
-import com.gargoylesoftware.htmlunit.ProxyConfig;
-import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.*;
+import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.topcoder.common.traffic.TrafficWebClient;
 import com.topcoder.scraper.module.IBasicModule;
 import com.topcoder.scraper.service.WebpageService;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.*;
+import org.openqa.selenium.firefox.*;
 import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.LogType;
@@ -47,9 +46,9 @@ public class TestScrapingModule implements IBasicModule {
         public void test() throws InterruptedException, MalformedURLException {
 
 //            String proxyString = "http://zproxy.lum-superproxy.io:22225";
-            String proxyString = "zproxy.lum-superproxy.io:22225";
+//            String proxyString = "zproxy.lum-superproxy.io:22225";
 //            String proxyString = "lum-customer-c_5ae15880-zone-ds_ex-ip-176.105.248.32:pq1gt7si9gcm@zproxy.lum-superproxy.io:22225";
-//            String proxyString = "http://lum-customer-c_5ae15880-zone-ds_ex-ip-176.105.248.32:pq1gt7si9gcm@zproxy.lum-superproxy.io:22225";
+            String proxyString = "http://lum-customer-c_5ae15880-zone-ds_ex-ip-176.105.248.32:pq1gt7si9gcm@zproxy.lum-superproxy.io:22225";
 //            String proxyString = "localhost:8081";
 //            String proxyString = "http://52.194.250.99:60088";
 
@@ -60,12 +59,13 @@ public class TestScrapingModule implements IBasicModule {
                     .setAutodetect(false)
                     .setHttpProxy(proxyString)
                     .setSslProxy(proxyString);
-            chromeOptions.setProxy(proxy);
+//            chromeOptions.setProxy(proxy);
             firefoxOptions.setProxy(proxy);
 
-            WebDriver driver = new RemoteWebDriver(new URL("http://localhost:4445"), firefoxOptions);
-//            WebDriver driver = new RemoteWebDriver(new URL("http://localhost:4444"), chromeOptions);
-            driver.get("https://lumtest.com/myip.json");
+//            WebDriver driver = new RemoteWebDriver(new URL("http://localhost:4445"), firefoxOptions);
+            WebDriver driver = new RemoteWebDriver(new URL("http://localhost:4444"), chromeOptions);
+//            driver.get("https://lumtest.com/myip.json");
+            driver.get(proxyString);
 //            Thread.sleep(5000);
 //            driver.wait();
             Alert alert = driver.switchTo().alert();
@@ -76,7 +76,6 @@ public class TestScrapingModule implements IBasicModule {
 
             logger.debug(driver.getPageSource());
         }
-        public AsyncService() {}
 
         @Async
         public void scrape(String search, Pattern pattern, String proxyString, int inc) {
@@ -84,7 +83,10 @@ public class TestScrapingModule implements IBasicModule {
             ChromeOptions chromeOptions = new ChromeOptions();
 
             Proxy proxy = new Proxy();
-            proxy.setHttpProxy(proxyString);
+            proxy.setProxyType(Proxy.ProxyType.MANUAL)
+                    .setAutodetect(false)
+                    .setHttpProxy(proxyString)
+                    .setSslProxy(proxyString);
             chromeOptions.setProxy(proxy);
             logger.debug(String.format("Proxy : %s", proxyString));
 
@@ -97,6 +99,10 @@ public class TestScrapingModule implements IBasicModule {
                     for (String keyword : keywords) {
 
                         for (int j = 1; j <= 10 * inc; j += inc) {
+
+                            driver.get("https://lumtest.com/myip.json");
+                            logger.debug(driver.getPageSource());
+
                             String search_ = String.format(search, keyword, j);
 
                             sleep();
@@ -140,6 +146,75 @@ public class TestScrapingModule implements IBasicModule {
             }
         }
 
+        @Async
+        public void scrapeByHtmlUnit(String search, Pattern pattern, String proxyString, int inc) {
+
+            String userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_2_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36";
+            BrowserVersion browserVersion = new BrowserVersion
+                    .BrowserVersionBuilder(BrowserVersion.CHROME).setUserAgent(userAgent).build();
+            WebClient webClient = new WebClient(browserVersion);
+
+            webClient.getOptions().setThrowExceptionOnScriptError(false);
+            webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
+            webClient.getOptions().setJavaScriptEnabled(false);
+
+            String[] proxy = proxyString.split(":");
+            ProxyConfig proxyConfig = new ProxyConfig(proxy[0],  Integer.parseInt(proxy[1]));
+            webClient.getOptions().setProxyConfig(proxyConfig);
+
+            try {
+                int count = 0;
+
+                do {
+                    for (String keyword : keywords) {
+
+                        for (int j = 1; j <= 10 * inc; j += inc) {
+
+                            Page page = webClient.getPage("https://lumtest.com/myip.json");
+                            logger.debug(page.getWebResponse().getContentAsString());
+
+                            String search_ = String.format(search, keyword, j);
+
+                            sleep();
+                            webClient.getCookieManager().clearCookies();
+                            HtmlPage htmlPage = webClient.getPage(search_);
+                            logger.debug(String.format("Search : %s", search_));
+
+                            Set<String> links = new HashSet<>();
+                            for (HtmlAnchor a : htmlPage.getAnchors()) {
+                                String link = a.getHrefAttribute();
+                                if (link == null) continue;
+
+                                Matcher matcher = pattern.matcher(link);
+                                if (matcher.matches()) {
+                                    links.add(matcher.group());
+                                }
+                            }
+
+                            if (links.isEmpty()) break;
+
+                            for (String link : links) {
+                                sleep();
+                                webClient.getCookieManager().clearCookies();
+                                htmlPage = webClient.getPage(link);
+                                logger.debug(String.format("Count:%d, Title:%s", count++, htmlPage.getTitleText()));
+
+                                if (halt) {
+                                    logger.debug("Scraping Halt");
+                                    throw new ThreadHaltException();
+                                }
+                            }
+                        }
+                    }
+                } while (true);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ThreadHaltException e) {
+            } finally {
+            }
+        }
+
     }
 
     /**
@@ -148,7 +223,8 @@ public class TestScrapingModule implements IBasicModule {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final List<String> urls = new ArrayList<>();
-    private final static long maxMin = 10;
+    private final static long maxMin = 60;
+    private final static int sleepMillisec = 1000;
     private boolean halt = false;
 
     private final List<String> keywords = new ArrayList<>();
@@ -172,9 +248,26 @@ public class TestScrapingModule implements IBasicModule {
         keywords.add("漫画");
         keywords.add("ゲーム");
 
-        proxies.add("http://52.194.250.99:60088");
-//        proxies.add("http://54.150.254.214:60088");
+//        proxies.add("http://52.194.250.99:60088");
+//        proxies.add("176.32.68.59:60088");
+//        proxies.add("54.150.254.214:60088");
 //        proxies.add("http://54.168.178.35:60088");
+//        proxies.add("http://54.168.26.47:60088");
+//        proxies.add("http://35.73.159.136:60088");
+//        proxies.add("http://52.197.86.52:60088");
+//        proxies.add("http://35.74.172.103:60088");
+//        proxies.add("http://52.198.130.166:60088");
+//        proxies.add("http://18.176.184.143:60088");
+        proxies.add("54.199.66.234:60089");
+        proxies.add("54.199.66.234:60089");
+        proxies.add("54.199.66.234:60089");
+        proxies.add("54.199.66.234:60089");
+        proxies.add("54.199.66.234:60089");
+        proxies.add("54.199.66.234:60089");
+        proxies.add("54.199.66.234:60089");
+        proxies.add("54.199.66.234:60089");
+        proxies.add("54.199.66.234:60089");
+        proxies.add("54.199.66.234:60089");
 //        proxies.add("http://lum-customer-c_5ae15880-zone-ds_ex-ip-176.105.248.32:pq1gt7si9gcm@zproxy.lum-superproxy.io:22225");
 //        proxies.add("http://lum-customer-c_5ae15880-zone-ds_ex-ip-176.105.250.93:pq1gt7si9gcm@zproxy.lum-superproxy.io:22225");
 //        proxies.add("http://lum-customer-c_5ae15880-zone-ds_ex-ip-195.234.89.242:pq1gt7si9gcm@zproxy.lum-superproxy.io:22225");
@@ -215,7 +308,8 @@ public class TestScrapingModule implements IBasicModule {
         for (String proxy : proxies) {
 //            asyncService.scrape(a_search, a_pattern, proxy, 1);
 //            asyncService.scrape(r_search, r_pattern, proxy, 1);
-            asyncService.scrape(y_search, y_pattern, proxy, 30);
+//            asyncService.scrape(y_search, y_pattern, proxy, 30);
+            asyncService.scrapeByHtmlUnit(r_search, r_pattern, proxy, 1);
         }
 
         try {
@@ -365,7 +459,7 @@ public class TestScrapingModule implements IBasicModule {
 
     private void sleep() {
         try {
-            Thread.sleep(1000);
+            Thread.sleep(sleepMillisec);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
